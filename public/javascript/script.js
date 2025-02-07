@@ -68,41 +68,6 @@ $(document).ready(function () {
         });
     }
 
-    // function delDataFun() {
-
-    //     $(".deleteDataBtn").click(function () {
-    //         let id = $(this).attr("delId");
-    //         let url = "/deleteCities";
-    //         let csrfToken = $('meta[name="csrf-token"]').attr("content");
-
-    //         $.ajax({
-    //             type: "POST",
-    //             url: url,
-    //             data: {
-    //                 city_id: id,
-    //             },
-    //             headers: {
-    //                 "X-CSRF-TOKEN": csrfToken,
-    //             },
-    //             beforeSend: function () {
-    //                 $("#loading").show();
-    //             },
-
-    //             success: function (response) {
-    //                 // $("#tableBody").load(" #tableBody > *");
-    //                 $("#loading").hide();
-    //                 // Reload the table body content
-    //                 reloadDataTable();
-    //                 $(document).trigger("formSubmissionResponse", [
-    //                     response,
-    //                     SuccessAlert(response.message),
-    //                 ]);
-    //             },
-    //         });
-    //     });
-    // }
-    // delDataFun();
-
     function delDataFun() {
         $(".deleteDataBtn").click(function () {
             let csrfToken = $('meta[name="csrf-token"]').attr("content");
