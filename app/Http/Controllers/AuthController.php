@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -44,21 +45,58 @@ class AuthController extends Controller
         }
     }
 
+    // public function login(Request $request)
+    // {
+    //     try {
+    //         $validatedData = $request->validate([
+    //             'user_email' => 'required|string|email',
+    //             'user_password' => 'required'
+    //         ]);
+    //         $user = User::where('user_email', $validatedData['user_email'])->first();
+    //         if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
+    //             return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
+    //         }
+    //     $token = $user->createToken('api-token')->plainTextToken;
+    //         return response()->json(['success' => true, 'message' => "Login successfully", 'access_token' => $token, 'user' => $user ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+    //     }
+    // }
+
     public function login(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'user_email' => 'required|string|email',
-                'user_password' => 'required'
-            ]);
-            $user = User::where('user_email', $validatedData['user_email'])->first();
-            if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
-                return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
-            }
-        $token = $user->createToken('api-token')->plainTextToken;
-            return response()->json(['success' => true, 'message' => "Login successfully", 'access_token' => $token, 'user' => $user ], 200);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+{
+    try {
+        // Validate request with custom messages
+        $validatedData = $request->validate([
+            'user_email' => 'required|string|email|max:255',
+            'user_password' => 'required|min:6'
+        ]);
+
+        // Check if user exists
+        $user = User::where('user_email', $validatedData['user_email'])->first();
+
+        if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
+            return response()->json(['success' => false,'message' => 'Invalid email or password.','errors' => ['user_email' => ['Invalid email or password.']]], 401);
         }
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json(['success' => true,'message' => "Login successful",'access_token' => $token,
+        'user' => ['id' => $user->id,'name' => $user->name,'email' => $user->user_email]], 200);
+
+    } catch (ValidationException $e) {
+        // Return validation errors
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        // Catch other exceptions
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong. Please try again later.',
+        ], 500);
     }
+}
 }
