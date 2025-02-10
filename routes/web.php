@@ -7,9 +7,9 @@ Route::get('/login', function () {
 });
 
 
-Route::middleware(['custom_auth'])->group(function () {
+// Route::middleware(['custom_auth'])->group(function () {
 Route::get('/', function () {
-    return view('welcome');
+    return view('layout');
 });
 
-});
+// });
