@@ -342,8 +342,8 @@
                 <li class="">
                     <a href="#"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary " viewBox="0 0 25 26" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                            viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M15.1041 23.407V19.7702C15.1041 18.7966 15.1041 18.3099 14.8948 17.9473C14.7577 17.7098 14.5604 17.5125 14.3229 17.3754C13.9603 17.166 13.4735 17.166 12.5 17.166C11.5264 17.166 11.0397 17.166 10.6771 17.3754C10.4396 17.5125 10.2423 17.7098 10.1051 17.9473C9.89581 18.3099 9.89581 18.7966 9.89581 19.7702V23.407H15.1041Z"
                                 fill="currentColor" />
@@ -383,8 +383,8 @@
                 <li class="">
                     <a href="#"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary " viewBox="0 0 25 26" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                            viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_1741_13705)">
                                 <path
                                     d="M15.5918 6.41984C14.9217 6.41868 14.8461 6.33527 14.845 5.6089C14.8439 4.16543 14.845 2.72196 14.845 1.20898H4.09275C3.24417 1.20898 3.00109 1.4708 3 2.38021C3 9.59988 3 16.8184 3.00109 24.038C3.00109 24.9486 3.24198 25.2081 4.09165 25.2081C9.03639 25.2093 13.98 25.2093 18.9237 25.2081C19.7482 25.2081 20 24.9451 20 24.0786V6.41984C18.4715 6.41984 17.0316 6.421 15.5918 6.41984ZM11.0982 10.5336C11.0982 10.4456 11.0686 10.4131 10.9909 10.3911C10.5989 10.2787 10.2145 10.1478 9.86416 9.92309C9.46451 9.66591 9.19844 9.30446 9.12727 8.80979C9.00026 7.93514 9.32764 7.16474 10.0766 6.69788C10.3689 6.51484 10.6876 6.41289 11.0215 6.3596C11.0839 6.34917 11.0971 6.31905 11.096 6.26229C11.096 6.114 11.0982 5.96571 11.096 5.81859C11.0938 5.75255 11.1113 5.72359 11.1792 5.72475C11.4058 5.72823 11.6336 5.72823 11.8613 5.72475C11.9281 5.72359 11.9467 5.74908 11.9456 5.81627C11.9413 5.96456 11.9467 6.11284 11.9424 6.26113C11.9402 6.3399 11.9697 6.36539 12.042 6.37582C12.7614 6.47081 13.3931 6.77434 13.9428 7.27364C13.9516 7.28175 13.957 7.29218 13.9691 7.3084C13.7589 7.60844 13.5497 7.90733 13.3351 8.21433C13.3077 8.19348 13.2837 8.17726 13.2618 8.15872C12.9037 7.8413 12.5008 7.61424 12.0497 7.48564C11.9511 7.459 11.9445 7.46247 11.9445 7.57137C11.9434 8.15061 11.9445 8.73101 11.9434 9.31026C11.9424 9.38092 11.9621 9.41336 12.031 9.43074C12.4252 9.52805 12.815 9.64274 13.1774 9.83737C13.518 10.0192 13.8092 10.2579 13.9844 10.6286C14.1443 10.9646 14.1804 11.3249 14.1366 11.6898C14.0151 12.7127 13.4008 13.2445 12.5062 13.4831C12.3519 13.5248 12.192 13.5399 12.0332 13.5596C11.9675 13.5677 11.9413 13.592 11.9434 13.6627C11.9467 13.8202 11.9413 13.9778 11.9456 14.1342C11.9478 14.2095 11.9216 14.2292 11.8537 14.228C11.6292 14.2245 11.4047 14.2245 11.1803 14.228C11.1146 14.2292 11.0938 14.2037 11.0949 14.1365C11.0982 13.9731 11.0927 13.8098 11.0982 13.6465C11.1003 13.5607 11.0642 13.5341 10.993 13.5248C10.2003 13.4113 9.50502 13.0707 8.905 12.5135C8.89186 12.5007 8.87872 12.488 8.86668 12.4752C8.8623 12.4706 8.86011 12.4648 8.85025 12.4486C9.07252 12.1578 9.2937 11.8682 9.52254 11.5705C9.97475 12.0037 10.4839 12.3026 11.0872 12.4405C11.0905 12.3941 11.096 12.3617 11.096 12.3293C11.096 11.7315 11.0949 11.1325 11.0982 10.5336ZM5.74282 15.9206C9.57291 15.9229 13.403 15.9229 17.232 15.9194C17.5386 15.9194 17.8802 15.9113 17.8736 16.3353C17.8682 16.7547 17.5265 16.7384 17.221 16.7373C15.3246 16.7315 13.4282 16.7338 11.5318 16.7338C9.59809 16.7338 7.66553 16.7315 5.73296 16.7373C5.4439 16.7373 5.13403 16.7442 5.1198 16.3527C5.10447 15.9136 5.43843 15.9206 5.74282 15.9206ZM5.77348 18.4843C9.58714 18.4773 13.4008 18.4727 17.2134 18.4611C17.5254 18.46 17.8583 18.4808 17.8802 18.8735C17.9043 19.3149 17.543 19.2883 17.2473 19.2883H11.4453C9.54773 19.2883 7.6502 19.2929 5.75267 19.2848C5.48113 19.2825 5.09352 19.3763 5.11432 18.8909C5.13184 18.46 5.47675 18.4843 5.77348 18.4843ZM17.8671 21.5114C17.8364 21.7338 17.6864 21.8022 17.5068 21.8242C17.5046 21.823 17.5035 21.8242 17.5024 21.8242C17.4882 21.83 17.4729 21.8335 17.4576 21.8346C16.9134 21.8763 16.3648 21.852 15.8184 21.852C14.3797 21.8531 12.9398 21.852 11.5011 21.852C9.58824 21.852 7.67429 21.852 5.76143 21.8531C5.47018 21.8531 5.11213 21.8937 5.12089 21.4604C5.1198 21.4558 5.1198 21.4523 5.1198 21.4477C5.10447 21.0075 5.43843 21.0156 5.74282 21.0156C9.57291 21.0179 13.403 21.0179 17.232 21.0144C17.5386 21.0144 17.8802 21.0051 17.8736 21.4291C17.8736 21.4465 17.8725 21.4627 17.8703 21.479C17.8747 21.4848 17.8802 21.4894 17.8846 21.4952C17.8791 21.4998 17.8725 21.5056 17.8671 21.5114ZM12.0759 12.4822C12.3508 12.43 12.6026 12.3246 12.7887 12.0906C13.0406 11.7732 13.0329 11.3086 12.7657 11.0526C12.5391 10.8348 12.2522 10.7491 11.9511 10.6518C11.9478 10.7085 11.9445 10.7479 11.9445 10.7873C11.9434 11.311 11.9445 11.8357 11.9445 12.3594C11.9445 12.5042 11.9445 12.5077 12.0759 12.4822ZM11.0106 7.459C10.8157 7.52387 10.6427 7.62466 10.5014 7.78569C10.2134 8.1147 10.1872 8.69626 10.658 8.96619C10.7445 9.016 10.8343 9.06002 10.9241 9.10404C10.9733 9.12721 11.0248 9.14227 11.0817 9.16313C11.0883 9.12837 11.096 9.10752 11.096 9.08783C11.096 8.56651 11.096 8.04519 11.0971 7.52503C11.0971 7.45321 11.0708 7.4393 11.0106 7.459Z"
@@ -395,7 +395,8 @@
                             </g>
                             <defs>
                                 <clipPath id="clip0_1741_13705">
-                                    <rect width="25" height="25" fill="currentColor" transform="translate(0 0.5)" />
+                                    <rect width="25" height="25" fill="currentColor"
+                                        transform="translate(0 0.5)" />
                                 </clipPath>
                             </defs>
                         </svg>
@@ -438,131 +439,142 @@
     </aside>
 
     <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-            <div class="grid grid-cols-3 gap-4 mb-4">
-                <div class="flex items-center justify-center h-24 rounded-sm bg-gray-50 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
+
+        <nav class="bg-white border-gray-200 dark:bg-gray-900">
+            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4">
+                <h2 class="font-bold text-3xl">
+                    @yield('nav-title', 'No title')
+                </h2>
+                <div class="flex items-center md:order-2 space-x-3 md:space-x-5 rtl:space-x-reverse">
+
+                    <div>
+                        <a href="">
+                            <svg width="23" height="22" viewBox="0 0 26 25" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M20.1084 0C21.4345 0 22.7062 0.554514 23.6439 1.54155C24.5816 2.52859 25.1084 3.86731 25.1084 5.2632V15.7896C25.1084 17.1855 24.5816 18.5242 23.6439 19.5112C22.7062 20.4983 21.4345 21.0528 20.1084 21.0528H16.8759L13.4921 24.6147C13.2769 24.8412 12.9905 24.9773 12.6868 24.9974C12.383 25.0175 12.0827 24.9203 11.8421 24.7239L11.7246 24.6147L8.33965 21.0528H5.1084C3.8256 21.0528 2.59186 20.5338 1.66238 19.6031C0.732904 18.6725 0.178789 17.4014 0.114649 16.0527L0.108398 15.7896V5.2632C0.108398 3.86731 0.635183 2.52859 1.57286 1.54155C2.51055 0.554514 3.78232 0 5.1084 0H20.1084ZM15.1084 11.8422H7.6084C7.27688 11.8422 6.95894 11.9808 6.72451 12.2276C6.49009 12.4743 6.3584 12.809 6.3584 13.158C6.3584 13.507 6.49009 13.8416 6.72451 14.0884C6.95894 14.3352 7.27688 14.4738 7.6084 14.4738H15.1084C15.4399 14.4738 15.7579 14.3352 15.9923 14.0884C16.2267 13.8416 16.3584 13.507 16.3584 13.158C16.3584 12.809 16.2267 12.4743 15.9923 12.2276C15.7579 11.9808 15.4399 11.8422 15.1084 11.8422ZM17.6084 6.579H7.6084C7.27688 6.579 6.95894 6.71762 6.72451 6.96438C6.49009 7.21114 6.3584 7.54582 6.3584 7.89479C6.3584 8.24377 6.49009 8.57844 6.72451 8.8252C6.95894 9.07197 7.27688 9.21059 7.6084 9.21059H17.6084C17.9399 9.21059 18.2579 9.07197 18.4923 8.8252C18.7267 8.57844 18.8584 8.24377 18.8584 7.89479C18.8584 7.54582 18.7267 7.21114 18.4923 6.96438C18.2579 6.71762 17.9399 6.579 17.6084 6.579Z"
+                                    fill="#D9D9D9" />
+                            </svg>
+
+                        </a>
+                    </div>
+                    <button id="dropdownNotificationButton" data-dropdown-toggle="dropdownNotification"
+                        class="relative inline-flex items-center text-sm font-medium text-center text-gray-500 hover:text-gray-900 focus:outline-none dark:hover:text-white dark:text-gray-400"
+                        type="button">
+                        <svg width="20" height="23" viewBox="0 0 23 25" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M11.1628 0.5C5.92985 0.5 1.68765 4.52931 1.68765 9.49973V14.8783L0.57098 15.9389C0.119327 16.3679 -0.0157738 17.013 0.228656 17.5735C0.473085 18.1341 1.04893 18.4995 1.68765 18.4995H20.6381C21.2769 18.4995 21.8526 18.1341 22.0971 17.5735C22.3416 17.013 22.2064 16.3679 21.7547 15.9389L20.6381 14.8783V9.49973C20.6381 4.52931 16.3958 0.5 11.1628 0.5Z"
+                                fill="#D9D9D9" />
+                            <path
+                                d="M11.1632 24.4999C8.54665 24.4999 6.42554 22.4853 6.42554 20H15.9008C15.9008 22.4853 13.7797 24.4999 11.1632 24.4999Z"
+                                fill="#D9D9D9" />
                         </svg>
-                    </p>
+
+
+                        <div
+                            class="absolute block w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900">
+                        </div>
+                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div id="dropdownNotification"
+                        class="z-20 hidden w-full max-w-sm bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-800 dark:divide-gray-700"
+                        aria-labelledby="dropdownNotificationButton">
+                        <div
+                            class="block px-4 py-2 font-medium text-center text-gray-700 rounded-t-lg bg-gray-50 dark:bg-gray-800 dark:text-white">
+                            Notifications
+                        </div>
+                        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                            <a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <div class="shrink-0">
+                                    <img class="rounded-full w-11 h-11" src="{{asset('asset/Ellipse 2.png')}}"
+                                        alt="Jese image">
+                                    <div
+                                        class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
+                                        <svg class="w-2 h-2 text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
+                                            <path
+                                                d="M1 18h16a1 1 0 0 0 1-1v-6h-4.439a.99.99 0 0 0-.908.6 3.978 3.978 0 0 1-7.306 0 .99.99 0 0 0-.908-.6H0v6a1 1 0 0 0 1 1Z" />
+                                            <path
+                                                d="M4.439 9a2.99 2.99 0 0 1 2.742 1.8 1.977 1.977 0 0 0 3.638 0A2.99 2.99 0 0 1 13.561 9H17.8L15.977.783A1 1 0 0 0 15 0H3a1 1 0 0 0-.977.783L.2 9h4.239Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="w-full ps-3">
+                                    <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">New message from <span
+                                            class="font-semibold text-gray-900 dark:text-white">Jese Leos</span>: "Hey,
+                                        what's up? All set for the presentation?"</div>
+                                    <div class="text-xs text-blue-600 dark:text-blue-500">a few moments ago</div>
+                                </div>
+                            </a>
+                        </div>
+                        <a href="#"
+                            class="block py-2 text-sm font-medium text-center text-gray-900 rounded-b-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white">
+                            <div class="inline-flex items-center ">
+                                <svg class="w-4 h-4 me-2 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                                    <path
+                                        d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+                                </svg>
+                                View all
+                            </div>
+                        </a>
+                    </div>
+
+                    <button type="button"
+                        class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                        id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
+                        data-dropdown-placement="bottom">
+                        <span class="sr-only">Open user menu</span>
+                        <img class="w-12 h-12 rounded-full" src="{{asset('asset/Ellipse 2.png')}}"
+                            alt="user photo">
+                    </button>
+                    <!-- Dropdown menu -->
+                    <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+                        id="user-dropdown">
+                        <div class="px-4 py-3">
+                            <span class="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
+                            <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
+                        </div>
+                        <ul class="py-2" aria-labelledby="user-menu-button">
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
+                                    out</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button data-collapse-toggle="navbar-user" type="button"
+                        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                        aria-controls="navbar-user" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 17 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M1 1h15M1 7h15M1 13h15" />
+                        </svg>
+                    </button>
                 </div>
-                <div class="flex items-center justify-center h-24 rounded-sm bg-gray-50 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center h-24 rounded-sm bg-gray-50 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
+                <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+
                 </div>
             </div>
-            <div class="flex items-center justify-center h-48 mb-4 rounded-sm bg-gray-50 dark:bg-gray-800">
-                <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 1v16M1 9h16" />
-                    </svg>
-                </p>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center justify-center h-48 mb-4 rounded-sm bg-gray-50 dark:bg-gray-800">
-                <p class="text-2xl text-gray-400 dark:text-gray-500">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 1v16M1 9h16" />
-                    </svg>
-                </p>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-                <div class="flex items-center justify-center rounded-sm bg-gray-50 h-28 dark:bg-gray-800">
-                    <p class="text-2xl text-gray-400 dark:text-gray-500">
-                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 18 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 1v16M1 9h16" />
-                        </svg>
-                    </p>
-                </div>
-            </div>
-        </div>
+        </nav>
+
     </div>
 
 @endsection
