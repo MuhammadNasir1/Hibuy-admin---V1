@@ -16,7 +16,7 @@
     </button>
 
     <aside id="default-sidebar"
-        class="fixed top-0 left-0 z-40 w-64 h-[97vh] transition-transform -translate-x-full sm:translate-x-0"
+        class="fixed top-0 left-0 z-40 w-[300px] h-[97vh] transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidebar">
         <div
             class="h-full pl-3 py-4 ml-3 mt-3 overflow-y-auto bg-primary text-white rounded-tl-[30px] rounded-tr-[15px] rounded-br-[80px] rounded-bl-[5px]">
@@ -41,12 +41,12 @@
                         </svg>
 
 
-                        <span class="ms-3">Dashboard</span>
+                        <span class="ms-3 text-custom15">Dashboard</span>
                     </a>
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="../products"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +56,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Product</span>
+                        <span class="ms-3 text-custom15">Product</span>
                     </a>
                 </li>
 
@@ -71,7 +71,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Packages Offer</span>
+                        <span class="ms-3 text-custom15">Packages Offer</span>
                     </a>
                 </li>
 
@@ -106,7 +106,7 @@
                         </svg>
 
 
-                        <span class="ms-3">KYC</span>
+                        <span class="ms-3 text-custom15">KYC</span>
                     </a>
                 </li>
 
@@ -129,7 +129,7 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Orders</span>
+                        <span class="ms-3 text-custom15">Orders</span>
                     </a>
                 </li>
 
@@ -148,7 +148,7 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Returns</span>
+                        <span class="ms-3 text-custom15">Returns</span>
                     </a>
                 </li>
 
@@ -191,7 +191,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Sellers Management</span>
+                        <span class="ms-3 text-custom15">Sellers Management</span>
 
                     </a>
                 </li>
@@ -235,7 +235,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Buyers Management</span>
+                        <span class="ms-3 text-custom15">Buyers Management</span>
                     </a>
                 </li>
 
@@ -273,7 +273,7 @@
                                 </clipPath>
                             </defs>
                         </svg>
-                        <span class="ms-3">Freelancers Management</span>
+                        <span class="ms-3 text-custom15">Freelancers Management</span>
                     </a>
                 </li>
 
@@ -288,7 +288,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Credits Requests</span>
+                        <span class="ms-3 text-custom15">Credits Requests</span>
                     </a>
                 </li>
                 <li class="">
@@ -302,7 +302,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Hibuy Products</span>
+                        <span class="ms-3 text-custom15">Hibuy Products</span>
                     </a>
                 </li>
 
@@ -316,7 +316,7 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Queries</span>
+                        <span class="ms-3 text-custom15">Queries</span>
                     </a>
                 </li>
 
@@ -335,7 +335,7 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Notifications</span>
+                        <span class="ms-3 text-custom15">Notifications</span>
                     </a>
                 </li>
                 {{-- Sellers Links --}}
@@ -362,7 +362,7 @@
                         </svg>
 
 
-                        <span class="ms-3">My Store - Name Here</span>
+                        <span class="ms-3 text-custom15">My Store - Name Here</span>
                     </a>
                 </li>
 
@@ -376,7 +376,7 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Other Sellers Products</span>
+                        <span class="ms-3 text-custom15">Other Sellers Products</span>
                     </a>
                 </li>
 
@@ -402,7 +402,7 @@
                         </svg>
 
 
-                        <span class="ms-3">Purchases</span>
+                        <span class="ms-3 text-custom15">Purchases</span>
                     </a>
                 </li>
                 {{-- Sellers Links --}}
@@ -416,7 +416,7 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Settings</span>
+                        <span class="ms-3 text-custom15">Settings</span>
                     </a>
                 </li>
 
@@ -431,17 +431,17 @@
                                 fill="currentColor" />
                         </svg>
 
-                        <span class="ms-3">Logout</span>
+                        <span class="ms-3 text-custom15">Logout</span>
                     </a>
                 </li>
             </ul>
         </div>
     </aside>
 
-    <div class="p-4 sm:ml-64">
+    <div class="p-4 sm:ml-[300px]">
 
-        <nav class="bg-white border-gray-200 dark:bg-gray-900">
-            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4">
+        <nav class="bg-white border-gray-200 ">
+            <div class="w-full flex flex-wrap items-center justify-between mx-auto px-4">
                 <h2 class="font-bold text-3xl">
                     @yield('nav-title', 'No title')
                 </h2>
@@ -482,7 +482,7 @@
                         class="z-20 hidden w-full max-w-sm bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-800 dark:divide-gray-700"
                         aria-labelledby="dropdownNotificationButton">
                         <div
-                            class="block px-4 py-2 font-medium text-center text-gray-700 rounded-t-lg bg-gray-50 dark:bg-gray-800 dark:text-white">
+                            class="block px-4 py-2 font-medium text-center text-white  rounded-t-lg bg-primary dark:bg-gray-800 dark:text-white">
                             Notifications
                         </div>
                         <div class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -510,9 +510,9 @@
                             </a>
                         </div>
                         <a href="#"
-                            class="block py-2 text-sm font-medium text-center text-gray-900 rounded-b-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white">
+                            class="block py-2 text-sm font-medium text-center text-white rounded-b-lg  bg-primary">
                             <div class="inline-flex items-center ">
-                                <svg class="w-4 h-4 me-2 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                <svg class="w-4 h-4 me-2 text-white" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
                                     <path
                                         d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
@@ -574,7 +574,9 @@
                 </div>
             </div>
         </nav>
-
+        <div class="mt-6">
+            @yield('content')
+        </div>
     </div>
 
 @endsection

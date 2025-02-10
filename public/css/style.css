@@ -211,7 +211,7 @@ aside .listItem:hover::after {
     content: "";
     position: absolute;
     background-color: transparent;
-    top: 44px;
+    top: 42px;
     right: 0;
     height: 35px;
     width: 35px;
@@ -232,4 +232,7 @@ aside .listItem:hover::after {
 }
 .drop-shadow{
     box-shadow: 0px 0px 3.02px 0px rgba(0, 0, 0, 0.2);
+}
+.custom-shadow{
+    box-shadow: 0px 0px 9px 0px #0000001A;
 }

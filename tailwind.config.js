@@ -14,7 +14,7 @@ module.exports = {
                 customBlackColor: "#333333",
                 customGrayColor: "#F0F0F3",
                 customGrayColorDark: "#A4A4AA",
-                customGradient:
+                customGradient: 
                     "linear-gradient(to right, #ff5733, #ffbd33)",
             },
             backgroundImage: {
@@ -23,7 +23,9 @@ module.exports = {
             },
             fontSize: {
                 custom16: "16px", // Add your custom font size here
+                custom15: "15px", // Add your custom font size here
             },
+           
         },
     },
     plugins: [

@@ -12,4 +12,7 @@ Route::get('/', function () {
     return view('layout');
 });
 
+Route::get('products', function () {
+    return view('pages.products');
+});
 // });
