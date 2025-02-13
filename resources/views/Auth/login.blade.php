@@ -45,7 +45,7 @@
 @section('js')
     <script>
         $(document).ready(function() {
-            console.log(document.cookie); 
+            // console.log(document.cookie);
 
             $("#loginForm").submit(function(e) {
                 e.preventDefault();
@@ -65,7 +65,7 @@
                     },
                     success: function(response) {
                         console.log("Login successful", response);
-                        window.location.href = "../"; 
+                        window.location.href = "../";
                     },
                     error: function(jqXHR) {
                         $("#btnSpinner").addClass("hidden");
