@@ -28,7 +28,7 @@
                     </a>
                 </li>
                 <li class="mt-6">
-                    <a href="#"
+                    <a href="{{ route('dashboard') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,7 +46,7 @@
                 </li>
 
                 <li class="">
-                    <a href="../products"
+                    <a href="{{ route('products') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +61,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('PackagesOffer') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -76,7 +76,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('KYC_auth') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
@@ -111,7 +111,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('allorders') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,7 +134,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('return_orders') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -153,7 +153,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('manage_seller') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -197,7 +197,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('manage_buyer') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -240,7 +240,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('manage_freelancer') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -278,7 +278,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('credit_request') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -292,7 +292,7 @@
                     </a>
                 </li>
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('hibuy_product') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -305,9 +305,48 @@
                         <span class="ms-3 text-custom15">Hibuy Products</span>
                     </a>
                 </li>
-
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('promotion_list') }}"
+                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
+                        <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_1853_20490)">
+                                <path
+                                    d="M12.0627 25.5007C9.85645 24.8669 7.75983 24.267 5.66718 23.6611C3.12413 22.9257 3.12213 22.9237 3.12413 20.3129C3.12612 18.9218 3.1321 17.5307 3.14007 16.1376C3.14007 16.0758 3.17594 16.012 3.23972 15.8008C4.03492 16.0758 4.83013 16.3469 5.62135 16.6259C6.62183 16.9766 7.65021 17.2676 8.60884 17.7101C9.53757 18.1386 10.2291 17.9891 10.8868 17.2457C11.1818 16.9109 11.5744 16.6637 12.0607 16.2612C12.0627 19.4141 12.0627 22.3677 12.0627 25.5007Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M12.9316 16.324C13.2724 16.5711 13.5554 16.6947 13.7209 16.9099C14.6596 18.1276 15.7378 18.0459 17.0332 17.4879C18.5459 16.8362 20.1363 16.3678 21.8862 15.75C21.8862 16.9896 21.8862 18.0938 21.8862 19.1979C21.8862 20.2263 21.9141 21.2546 21.8662 22.279C21.8543 22.5421 21.655 22.9646 21.4557 23.0244C18.6954 23.8475 15.9191 24.6208 13.1449 25.4001C13.0931 25.414 13.0233 25.3642 12.9316 25.3343C12.9316 22.3867 12.9316 19.4271 12.9316 16.324Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M18.526 11.4689C19.0781 11.6363 19.8833 11.8815 20.6904 12.1246C20.7004 12.1984 20.7083 12.2721 20.7183 12.3439C20.2739 12.4933 19.8314 12.6488 19.385 12.7943C17.3362 13.4619 15.2894 14.1395 13.2326 14.7813C12.8719 14.8929 12.4295 14.9746 12.0867 14.869C9.49179 14.0658 6.91286 13.2128 4.28809 12.1705C5.09325 11.9074 5.89643 11.6463 6.68964 11.3872C6.88296 11.8237 7.00055 12.4654 7.21181 12.4973C7.98309 12.6169 8.79424 12.583 9.5735 12.4854C9.715 12.4674 9.90832 11.8675 9.86647 11.5666C9.73493 10.608 10.1375 10.1974 11.0463 10.014C11.8495 9.85261 12.569 9.56363 13.4558 9.83268C14.5739 10.1715 15.4369 10.4963 15.1559 11.9293C15.122 12.1027 15.5345 12.5152 15.7857 12.5611C16.3317 12.6607 16.9476 12.7165 17.4578 12.5531C17.8305 12.4375 18.0836 11.9413 18.526 11.4689Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M11.7677 15.5297C11.0642 16.1356 10.5082 16.6378 9.92023 17.1002C9.79069 17.2038 9.5296 17.2457 9.37017 17.1899C6.88291 16.3269 4.39964 15.446 1.80078 14.5272C2.1376 13.9672 2.37476 13.4968 2.68766 13.0863C2.81123 12.9229 3.14605 12.7614 3.31745 12.8152C6.07974 13.6802 8.83405 14.579 11.7677 15.5297Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M13.2207 15.5364C16.1504 14.5857 18.8768 13.6909 21.6112 12.8299C21.7985 12.7701 22.1553 12.8718 22.2709 13.0212C22.6057 13.4577 22.8568 13.956 23.1996 14.5259C20.6247 15.4387 18.1733 16.3236 15.706 17.1587C15.4688 17.2384 15.0742 17.069 14.837 16.8976C14.3268 16.5369 13.8744 16.0984 13.2207 15.5364Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M14.5117 3.64072C15.287 2.48677 15.9048 1.56402 16.6103 0.511719C17.3338 1.57797 17.9716 2.51866 18.7389 3.65068C17.3956 3.42946 17.3956 4.11704 17.4075 4.92221C17.4414 7.2002 17.4195 9.48018 17.4195 11.814C16.8575 11.814 16.411 11.814 15.8331 11.814C15.8331 9.92861 15.8331 8.0831 15.8331 6.23759C15.8331 5.77322 15.8032 5.30686 15.8391 4.84648C15.9028 4.03732 15.7593 3.44142 14.5117 3.64072Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M9.1688 11.8302C8.59282 11.8302 8.17031 11.8302 7.61227 11.8302C7.61227 9.13564 7.61227 6.471 7.61227 3.76452C7.17381 3.69078 6.86091 3.63697 6.34473 3.54928C7.01437 2.55079 7.64017 1.61408 8.38754 0.5C9.09705 1.56027 9.72086 2.49299 10.4583 3.59312C9.19271 3.4576 9.14089 4.13522 9.15684 4.97825C9.19471 7.22236 9.1688 9.47046 9.1688 11.8302Z"
+                                    fill="currentColor" />
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_1853_20490">
+                                    <rect width="25" height="25" fill="currentColor" transform="translate(0 0.5)" />
+                                </clipPath>
+                            </defs>
+                        </svg>
+
+
+
+                        <span class="ms-3 text-custom15">Promotions</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{{ route('queries') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -321,7 +360,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('notifications') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -339,7 +378,7 @@
                     </a>
                 </li>
                 {{-- Sellers Links --}}
-                <li class="">
+                {{-- <li class="">
                     <a href="#"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
@@ -404,10 +443,10 @@
 
                         <span class="ms-3 text-custom15">Purchases</span>
                     </a>
-                </li>
+                </li> --}}
                 {{-- Sellers Links --}}
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('editsettings') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -442,9 +481,9 @@
 
         <nav class="bg-white border-gray-200 ">
             <div class="w-full flex flex-wrap items-center justify-between mx-auto px-4">
-                <h2 class="font-bold text-3xl">
+                <h3 class="font-bold text-3xl">
                     @yield('nav-title', 'No title')
-                </h2>
+                </h3>
                 <div class="flex items-center md:order-2 space-x-3 md:space-x-5 rtl:space-x-reverse">
 
                     <div>
@@ -470,8 +509,6 @@
                                 d="M11.1632 24.4999C8.54665 24.4999 6.42554 22.4853 6.42554 20H15.9008C15.9008 22.4853 13.7797 24.4999 11.1632 24.4999Z"
                                 fill="#D9D9D9" />
                         </svg>
-
-
                         <div
                             class="absolute block w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900">
                         </div>
@@ -488,7 +525,7 @@
                         <div class="divide-y divide-gray-100 dark:divide-gray-700">
                             <a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <div class="shrink-0">
-                                    <img class="rounded-full w-11 h-11" src="{{asset('asset/Ellipse 2.png')}}"
+                                    <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}"
                                         alt="Jese image">
                                     <div
                                         class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
@@ -527,8 +564,7 @@
                         id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                         data-dropdown-placement="bottom">
                         <span class="sr-only">Open user menu</span>
-                        <img class="w-12 h-12 rounded-full" src="{{asset('asset/Ellipse 2.png')}}"
-                            alt="user photo">
+                        <img class="w-12 h-12 rounded-full" src="{{ asset('asset/Ellipse 2.png') }}" alt="user photo">
                     </button>
                     <!-- Dropdown menu -->
                     <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"

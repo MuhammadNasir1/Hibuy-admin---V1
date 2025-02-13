@@ -4,19 +4,34 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl font-bold ">product List</h1>
+            <h2 class="text-3xl text-customBlack font-bold ">Product List</h1>
                 <button id="addModalBtn" data-modal-target="product-modal" data-modal-toggle="product-modal"
                     class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
 
         </div>
+
+        <div class="my-5 px-5">
+            <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                <li class="me-2">
+                    <a href="#" class="border inline-block px-4 py-1 text-white bg-primary rounded-3xl active"
+                        aria-current="page">All</a>
+                </li>
+                <li class="me-2">
+                    <a href="#"
+                        class="border inline-block px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Boosted</a>
+                </li>
+            </ul>
+        </div>
+
         @php
             $headers = [
                 'ID',
                 'Image',
                 'Title',
                 'Category',
-                'Discount %',
                 'price',
+                'Listed on',
+                'Seller',
                 'Orders',
                 'Rating',
                 'Status',
@@ -29,15 +44,17 @@
 
                 <tr>
                     <td>1</td>
-                    <td></td>
-                    <td>lorem</td>
-                    <td>Cloths</td>
-                    <td>20%</td>
+                    <td>
+                        <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}" alt="Jese image">
+                    </td>
+                    <td>Product Title</td>
+                    <td>Clothes</td>
                     <td>RS150</td>
-                    <td>5</td>
+                    <td>Jan 2, 2024</td>
+                    <td>Noman Ahmad</td>
                     <td>4</td>
-                    <td>approved</td>
-
+                    <td>4</td>
+                    <td>Approved</td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
@@ -59,7 +76,8 @@
                                 </svg>
                             </button>
 
-                            <button class="viewModalBtn">
+                            <button class="viewModalBtn" id="viewModalBtn" data-modal-target="view-product-modal"
+                                data-modal-toggle="view-product-modal">
                                 <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
                                     <path fill-rule='evenodd' clip-rule='evenodd'
@@ -91,10 +109,382 @@
 
 
         <x-modal id="product-modal">
-            <x-slot name="title">Details</x-slot>
+            <x-slot name="title">Add Product </x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                
+                <div class="">
+                    <div class="">
+                        <form>
+                            @csrf
+                            <div class="p-4 md:p-5">
+                                <div class="flex items-start gap-4">
+                                    <!-- Main Image Upload -->
+                                    <div class="w-1/3">
+                                        <div
+                                            class="flex items-center justify-center h-48 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                                <input type="file" class="hidden">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <!-- Sub Images and Video Upload -->
+                                    <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                                        <div
+                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                                <input type="file" class="hidden">
+                                            </label>
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <input type="file" class="hidden">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                            </label>
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                                <input type="file" class="hidden">
+                                            </label>
+                                        </div>
+                                        <div class="">
+                                            <div
+                                                class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                                <label class="font-medium text-blue-600 cursor-pointer">
+                                                    <div class="flex justify-center align-middle">
+                                                        <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                    </div>
+                                                    <span class="block">Video</span>
+                                                    <input type="file" class="hidden">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Title -->
+                                <div class="mt-6">
+                                    <label class="block font-medium text-gray-700">Title</label>
+                                    <input type="text" placeholder="Enter Title"
+                                        class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mt-4">
+                                    <label class="block font-medium text-gray-700">Description</label>
+                                    <textarea placeholder="Enter Description here " class="w-full h-32 p-2 mt-1 border border-gray-300 rounded-lg "></textarea>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4 mt-4">
+                                    <!-- Brand / Company -->
+                                    <div>
+                                        <label class="block font-medium text-gray-700">Brand / Company</label>
+                                        <input placeholder="Enter Here" type="text"
+                                            class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                    </div>
+
+                                    <!-- Category -->
+                                    <div>
+                                        <label class="block font-medium text-gray-700">Category</label>
+                                        <select class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                            <option>Options</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Available Stock -->
+                                    <div>
+                                        <label class="block font-medium text-gray-700">Available Stock</label>
+                                        <input placeholder="Enter Here" type="text"
+                                            class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                    </div>
+
+                                    <!-- Price -->
+                                    <div>
+                                        <label class="block font-medium text-gray-700">Price</label>
+                                        <input placeholder="Enter Here" type="text"
+                                            class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                    </div>
+
+                                    <!-- Discount -->
+                                    <div>
+                                        <label class="block font-medium text-gray-700">Discount %</label>
+                                        <input placeholder="Enter Here" type="text"
+                                            class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                    </div>
+                                </div>
+
+                                <!-- Color Family and Weight -->
+                                <div class="grid grid-cols-1 gap-4 mt-4">
+                                    <div class="flex items-center">
+                                        <div class="flex-3">
+                                            <label class="block font-medium text-gray-700">Color Family</label>
+                                            <input type="text" id="counter-input1" data-input-counter
+                                                placeholder="vgvhh"
+                                                class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                        </div>
+                                        <button type="button" id="increment-button"
+                                            data-input-counter-increment="counter-input1"
+                                            class="inline-flex items-center justify-center flex-shrink-0 mt-6 ml-2 border border-gray-300 rounded-md w-7 h-7 bg-customblue">
+                                            <svg class="w-5 h-5 p-1 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="flex-3">
+                                            <label class="block font-medium text-gray-700">Weight</label>
+                                            <input type="text" id="counter-input" data-input-counter
+                                                placeholder="vgvhh" value="2" required
+                                                class="w-full p-2 mt-1 border border-gray-300 rounded-lg">
+                                        </div>
+                                        <button type="button" id="increment-button"
+                                            data-input-counter-increment="counter-input"
+                                            class="inline-flex items-center justify-center flex-shrink-0 mt-6 ml-2 border border-gray-300 rounded-md w-7 h-7 bg-customblue">
+                                            <svg class="w-5 h-5 p-1 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="mt-6 bg-gray-300 rounded-b-xl">
+                                <div class="flex items-center justify-between p-2">
+                                    <button type="button"
+                                        class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
+                                        Close
+                                    </button>
+                                    <button type="submit" class="px-6 py-2 text-white bg-blue-600 rounded-lg">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </x-slot>
+        </x-modal>
+
+        {{-- view product detail --}}
+        <x-modal id="view-product-modal">
+            <x-slot name="title">Details </x-slot>
+            <x-slot name="modal_width">max-w-4xl</x-slot>
+            <x-slot name="body">
+                <div class="">
+                    <div class="">
+                        <form>
+                            @csrf
+                            <div class="md:p-5">
+                                <div class="flex items-start gap-4">
+                                    <!-- Main Image Upload -->
+                                    <div class="w-1/3">
+                                        <div
+                                            class="flex items-center justify-center h-48 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                                <input type="file" class="hidden">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <!-- Sub Images and Video Upload -->
+                                    <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                                        <div
+                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                                <input type="file" class="hidden">
+                                            </label>
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <input type="file" class="hidden">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                            </label>
+                                        </div>
+                                        <div
+                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                            <label class="font-medium text-blue-600 cursor-pointer">
+                                                <div class="flex justify-center align-middle">
+                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                </div>
+                                                <span class="block">Upload</span>
+                                                <input type="file" class="hidden">
+                                            </label>
+                                        </div>
+                                        <div class="">
+                                            <div
+                                                class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
+                                                <label class="font-medium text-blue-600 cursor-pointer">
+                                                    <div class="flex justify-center align-middle">
+                                                        <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                                    </div>
+                                                    <span class="block">Video</span>
+                                                    <input type="file" class="hidden">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Title -->
+                                <div class="grid grid-cols-2 mt-6 gap-y-4">
+                                    <div class="space-y-4 ">
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Title</div>
+                                            <div>1231231</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Rating</div>
+                                            <div>4.5</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Brand</div>
+                                            <div>store</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Stock</div>
+                                            <div>1234</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Discount %</div>
+                                            <div>31%</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Color Family</div>
+                                            <div class="flex flex-wrap gap-2">
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">c1</span>
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">c2</span>
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">red</span>
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">green</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Weight</div>
+                                            <div class="flex flex-wrap gap-2">
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">1.4kg</span>
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">4.5kg</span>
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">10kg</span>
+                                                <span
+                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">15kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Orders</div>
+                                            <div>56</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Category</div>
+                                            <div>1231231</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Old Price</div>
+                                            <div>$78</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-8 align-middle">
+                                            <div class="text-sm text-gray-500">Price</div>
+                                            <div>$34</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-center gap-8 mt-4 space-y-2">
+                                    <div class="text-sm text-gray-500">Description</div>
+                                    <div>
+                                        <p class="text-sm">
+                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. In, iure minus error
+                                            doloribus saepe natus.
+                                        </p>
+                                        <p class="text-sm font-medium">Lorem ipsum dolor sit amet</p>
+                                        <p class="text-sm">
+                                            consectetur adipisicing elit. In, iure minus error doloribus saepe natus. Lorem
+                                            ipsum dolor sit amet consectetur adipisicing elit. In, iure minus error
+                                            doloribus
+                                            saepe natus. Lorem ipsum dolor sit amet consectetur adipisicing elit. In, iure
+                                            minus
+                                            error doloribus saepe natus.
+                                        </p>
+                                    </div>
+                                </div>
+                                <form class="max-w-sm mx-auto">
+
+                                </form>
+                                <div class="flex items-center mt-5 mb-4">
+                                    <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
+                                    <div>
+                                        <select id="countries"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option selected>Select the Status</option>
+                                            <option value="US">approved</option>
+                                            <option value="CA">Pending</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Buttons -->
+                            <div class="mt-6 bg-gray-300 rounded-b-xl">
+                                <div class="flex items-center justify-between p-2">
+                                    <button type="button"
+                                        class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
+                                        Close
+                                    </button>
+                                    {{-- <button type="submit" class="px-6 py-2 text-white bg-blue-600 rounded-lg">
+                                        Add
+                                    </button> --}}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </x-slot>
         </x-modal>
     </div>

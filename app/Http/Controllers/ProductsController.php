@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductsController extends Controller
 {
+
+
+    public function index()
+    {
+        return view('pages.products');
+    }
+
     public function storeProduct(Request $request)
     {
         try {
