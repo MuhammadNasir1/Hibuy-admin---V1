@@ -25,7 +25,7 @@
     </div>
     <div class="w-full mt-3 pt-10 min-h-[86vh] rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl font-bold text-customBlack ">Credit Request History</h2>
+            <h2 class="text-2xl font-medium ">Credit Request History</h2>
         </div>
         @php
             $headers = ['Sr.', 'Freelancers Name', 'Requested Amount', 'Reason', 'Joined Date', 'Status', 'Action'];

@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl text-customBlack font-bold">Sellers Management</h1>
+            <h2 class="text-2xl font-medium ">Sellers Management</h1>
         </div>
         @php
             $headers = [

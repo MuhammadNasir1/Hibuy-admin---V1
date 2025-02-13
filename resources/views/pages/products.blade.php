@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl text-customBlack font-bold ">Product List</h1>
+            <h2 class="text-2xl font-medium ">Product List</h1>
                 <button id="addModalBtn" data-modal-target="product-modal" data-modal-toggle="product-modal"
                     class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
 
@@ -180,9 +180,7 @@
 
                                 <!-- Title -->
                                 <div class="mt-6">
-                                    <label class="block font-medium text-gray-700">Title</label>
-                                    <input type="text" placeholder="Enter Title"
-                                        class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                    <x-input type="text" name="title" id="title" label="Title" placeholder="Enter Title" />
                                 </div>
 
                                 <!-- Description -->
@@ -194,9 +192,7 @@
                                 <div class="grid grid-cols-2 gap-4 mt-4">
                                     <!-- Brand / Company -->
                                     <div>
-                                        <label class="block font-medium text-gray-700">Brand / Company</label>
-                                        <input placeholder="Enter Here" type="text"
-                                            class="w-full p-2 mt-1 border border-gray-300 rounded-lg ">
+                                        <x-input type="text" name="company" id="company" label="Brand / Company" placeholder="Enter Here" />
                                     </div>
 
                                     <!-- Category -->
