@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl text-customBlack font-bold ">Product List</h1>
+            <h2 class="text-2xl font-medium ">Product List</h1>
                 <button id="addModalBtn" data-modal-target="product-modal" data-modal-toggle="product-modal"
                     class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
 

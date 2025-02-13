@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="px-5">
-            <h2 class="text-3xl text-customBlack font-bold ">
+            <h2 class="text-2xl font-medium ">
                 Orders List
             </h2>
             <div class="my-5">
