@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductsController;
 
 
-Route::get('/Login', function () {
+Route::get('/login', function () {
     return view('Auth.login');
 });
 
@@ -69,3 +69,8 @@ Route::get('/Notifications', function () {
 Route::get('/Settings', function () {
     return view('pages.Settings');
 })->name('editsettings');
+
+
+// Add Product
+
+Route::view('/product/add' , 'pages.AddProduct')->name('product.add');

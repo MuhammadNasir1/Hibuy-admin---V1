@@ -14,16 +14,14 @@ class textarea extends Component
     public $label;
     public $placeholder;
     public $name;
-    public $type;
     public $id;
     public $required;
 
-    public function __construct($label, $placeholder, $name, $type, $id ,$required)
+    public function __construct($label, $placeholder, $name, $id ,$required)
     {
         $this->label = $label;
         $this->placeholder = $placeholder;
         $this->name = $name;
-        $this->type = $type;
         $this->id = $id;
         $this->required = $required;
 
