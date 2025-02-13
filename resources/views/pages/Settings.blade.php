@@ -62,8 +62,7 @@
                 </ul>
             </div>
             <div id="default-tab-content">
-                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="profile" role="tabpanel"
-                    aria-labelledby="profile-tab">
+                <div class="hidden rounded-lg" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="mt-6">
                         <h3 class="text-lg font-semibold">About</h3>
                         <p class="mt-2 text-gray-500">
@@ -97,8 +96,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel"
-                    aria-labelledby="dashboard-tab">
+                <div class="hidden rounded-lg" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                     <div class="pt-3 tab-pane fade profile-edit" id="profile-edit">
                         <!-- Profile Edit Form -->
                         <form id="settingForm" url="updateUserDetails" method="POST" enctype="multipart/form-data">
@@ -157,8 +155,7 @@
                     </div>
 
                 </div>
-                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="settings" role="tabpanel"
-                    aria-labelledby="settings-tab">
+                <div class="hidden rounded-lg" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                     <div class="pt-3 tab-pane fade" id="profile-settings">
                         <!-- Settings Form -->
                         <form>
@@ -206,8 +203,7 @@
                     </div>
 
                 </div>
-                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel"
-                    aria-labelledby="contacts-tab">
+                <div class="hidden rounded-lg" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
                     <div class="pt-3 tab-pane fade" id="profile-change-password">
                         <!-- Change Password Form -->
                         <form id="passwordForm" url="updateUserPassword" method="POST">
@@ -284,10 +280,9 @@
                         </form>
                     </div>
                 </div>
-                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="referrals" role="tabpanel"
-                    aria-labelledby="referrals-tab">
-                    <div class="pt-3 tab-pane fade" id="profile-change-password">
-                        <div class="relative w-full h-screen bg-cover bg-center"
+                <div class="hidden rounded-lg" id="referrals" role="tabpanel" aria-labelledby="referrals-tab">
+                    <div class="pt-3 pb-5 tab-pane fade" id="profile-change-password">
+                        <div class="relative w-full min-h-[400px] bg-cover bg-center"
                             style="background-image: url('{{ asset('asset/Rectanglesettings.png') }}');">
                             <!-- Overlay (Optional for better readability) -->
                             {{-- <div class="absolute inset-0 bg-black bg-opacity-50"></div> --}}
@@ -300,39 +295,87 @@
                                     </h3>
                                 </div>
                                 <div>
-                                    <form class="bg-white p-6 rounded-lg shadow-lg w-96">
-                                        <h2 class="text-2xl font-bold text-center mb-4">Login</h2>
-                                        <div class="flex">
-                                            <input type="text" id="website-admin"
-                                                class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                placeholder="Bonnie Green">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button onclick="copyText()" class="flex items-center">
-                                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M6 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6l-4-4H6Zm7 2 3 3h-3V4ZM4 4a2 2 0 0 1 2-2h6v4h4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4Z"/>
-                                                    </svg>
-                                                </button>
-                                            </span>
+                                    <form class="bg-primary bg-opacity-20 p-6 rounded-lg shadow-lg w-96">
+                                        <div class="mb-4">
+                                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
+                                                ID</h2>
+                                            <div class="flex">
+                                                <input type="text" id="referral-id" value="ABC12345"
+                                                    class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    readonly>
+                                                <span
+                                                    class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                                    <button type="button" onclick="copyToClipboard('referral-id')"
+                                                        class="flex items-center">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            class="w-5 h-5 text-gray-900 dark:text-gray-400"
+                                                            viewBox="0 0 448 512" fill="currentColor">
+                                                            <path
+                                                                d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z" />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div class="flex">
-                                            <input type="text" id="website-admin"
-                                                class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                placeholder="Bonnie Green">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button onclick="copyText()" class="flex items-center">
-                                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M6 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6l-4-4H6Zm7 2 3 3h-3V4ZM4 4a2 2 0 0 1 2-2h6v4h4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4Z"/>
-                                                    </svg>
-                                                </button>
-                                            </span>
+
+                                        <div class="mb-4">
+                                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
+                                                Link</h2>
+                                            <div class="flex">
+                                                <input type="text" id="referral-link"
+                                                    value="https://example.com/referral/ABC12345"
+                                                    class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    readonly>
+                                                <span
+                                                    class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                                    <button type="button" onclick="copyToClipboard('referral-link')"
+                                                        class="flex items-center">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            class="w-5 h-5 text-gray-900 dark:text-gray-400"
+                                                            viewBox="0 0 448 512" fill="currentColor">
+                                                            <path
+                                                                d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z" />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            </div>
                                         </div>
-                                        <button
+                                        <button type="button"
                                             class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Invite
                                             Friends</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="bg-none">
+                        <h3 class="text-3xl font-bold text-customBlack">
+                            My Referals (5)
+                        </h3>
+                        @php
+                            $headers = [
+                                'Sr.',
+                                'ID',
+                                'Name',
+                                'Email Address',
+                                'Date Joined'
+                            ];
+                        @endphp
+
+                        <x-table :headers="$headers">
+                            <x-slot name="tablebody">
+
+                                <tr>
+                                    <td>1</td>
+                                    <td>A2132</td>
+                                    <td>Noman Ahmad</td>
+                                    <td>email@gmail.com</td>
+                                    <td>Jan 2, 2024</td>
+                                </tr>
+
+
+                            </x-slot>
+                        </x-table>
                     </div>
                 </div>
             </div>
@@ -352,7 +395,18 @@
                 });
             });
         });
+
+        function copyToClipboard(elementId) {
+            var input = document.getElementById(elementId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+
+            // Show a temporary tooltip or alert (optional)
+            alert("Copied: " + input.value);
+        }
     </script>
+
 @endsection
 
 
