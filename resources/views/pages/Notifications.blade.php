@@ -4,7 +4,7 @@
 @section('content')
     <div class="px-5 w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl font-bold ">Notifications List</h1>
+            <h2 class="text-2xl font-medium ">Notifications List</h1>
                 <button id="addModalBtn" data-modal-target="notification-modal" data-modal-toggle="notification-modal"
                     class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
 
@@ -23,7 +23,7 @@
                     <td>KYC update</td>
                     <td>Seller</td>
                     <td>Jan 2, 2024</td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">

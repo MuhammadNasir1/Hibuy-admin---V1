@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl font-bold ">Buyers List</h1>
+            <h2 class="text-2xl font-medium  ">Buyers List</h1>
         </div>
         @php
             $headers = [
@@ -31,7 +31,7 @@
                     <td>Jan 2, 2024</td>
                     <td>500</td>
                     <td>Rs 1850</td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">

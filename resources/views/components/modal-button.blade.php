@@ -1,4 +1,4 @@
-<button class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-customblue" id="submitBtn">
+<button class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary" id="submitBtn">
     <div id="btnSpinner" class="hidden">
         <svg aria-hidden="true" class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
             viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

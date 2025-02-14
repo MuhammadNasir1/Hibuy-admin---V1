@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl font-bold ">Packages Offer</h1>
+            <h2 class="text-2xl font-medium ">Packages List</h1>
                 <button id="addModalBtn" data-modal-target="packages-modal" data-modal-toggle="packages-modal"
                     class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
 
@@ -40,7 +40,7 @@
                     <td>Noman Ahmad</td>
                     <td>4</td>
                     <td>4</td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
@@ -62,8 +62,8 @@
                                 </svg>
                             </button>
 
-                            <button id="updatePackagesBtn" data-modal-target="view-packages-modal" data-modal-toggle="view-packages-modal"
-                                class="viewModalBtn">
+                            <button id="updatePackagesBtn" data-modal-target="view-packages-modal"
+                                data-modal-toggle="view-packages-modal" class="viewModalBtn">
                                 <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
                                     <path fill-rule='evenodd' clip-rule='evenodd'
@@ -96,12 +96,11 @@
 
         <x-modal id="packages-modal">
             <x-slot name="title">Add Packages</x-slot>
-            <x-slot name="modal_width">max-w-4xl</x-slot>
+            <x-slot name="modal_width">max-w-5xl</x-slot>
             <x-slot name="body">
                 <div id="pkg-container" class="p-6 bg-white rounded-lg ">
                     <div class="flex gap-2 border-b">
-                        <button id="product-pkg-btn"
-                            class="px-6 py-2 font-medium text-customblue bg-customblue rounded-t-2xl ">
+                        <button id="product-pkg-btn" class="px-6 py-2 font-medium text-white bg-primary rounded-t-2xl ">
                             Products Pkg
                         </button>
                         <button id="custom-pkg-btn" class="px-6 py-2 font-medium text-customblue rounded-t-2xl ">
@@ -112,7 +111,7 @@
                 <div id="product-pkg-form" class="pkg-form">
                     <form>
                         @csrf
-                        <div class="max-w-4xl px-6 mx-auto">
+                        <div class="w-full px-6">
                             <div class="grid grid-cols-12 gap-6">
                                 <div class="col-span-12 md:col-span-3 ">
                                     <div
@@ -128,53 +127,49 @@
                                 </div>
                                 <div class="grid grid-cols-1 col-span-9 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Title</label>
-                                        <input type="text" placeholder="Enter here"
-                                            class="sm:w-full w-[82vw] px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customblue">
+                                        <x-input type="text" name="title" id="title" label="Title"
+                                            placeholder="Enter Here" />
                                     </div>
                                     <div>
-                                        <label class="block mb-2 text-sm font-medium text-gray-700">Category</label>
-                                        <select
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customblue">
-                                            <option>Options</option>
-                                        </select>
+                                        <x-select name="category" id="category" label="Category">
+                                            <x-slot name="options">
+                                                <option disabled selected> Select Category</option>
+                                            </x-slot>
+                                        </x-select>
                                     </div>
                                 </div>
                                 <div class="col-span-12">
-                                    <label class="block text-sm font-medium text-gray-700">Description</label>
-                                    <textarea placeholder="Enter Description here"
-                                        class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customblue"></textarea>
+                                    <x-textarea name="description" id="description" label="Description"
+                                        placeholder="Enter Here" required></x-textarea>
                                 </div>
 
                                 <!-- Stock and Discount -->
                                 <div class="col-span-6">
-                                    <label class="block text-sm font-medium text-gray-700">Available Stock</label>
-                                    <input type="text" placeholder="Enter here"
-                                        class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customblue">
+                                    <x-input type="number" name="available_stock" id="available_stock"
+                                        label="Available Stock" placeholder="Enter Here" />
                                 </div>
                                 <div class="col-span-6">
-                                    <label class="block text-sm font-medium text-gray-700">Discount %</label>
-                                    <input type="text" placeholder="Enter here"
-                                        class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-customblue">
+                                    <x-input type="number" name="discount" id="discount" label="Discount %"
+                                        placeholder="Enter Here" />
                                 </div>
                             </div>
 
                             <!-- Select Product Button -->
                             <div class="flex justify-end mt-4">
-                                <button class="px-6 py-2 text-white bg-customblue rounded-3xl hover:bg-blue-600">Select
+                                <button class="px-6 py-2 text-white bg-customblue rounded-3xl bg-primary">Select
                                     Product</button>
                             </div>
 
                             <!-- Table -->
-                            <div class="mt-6 overflow-y-scroll border-2 border-gray-300 ">
+                            <div class="mt-3 overflow-y-auto border rounded-md ">
                                 <table class="w-full text-left border-collapse">
-                                    <div class="p-3 font-bold text-gray-500">
+                                    <div class="p-3 font-bold text-black">
                                         <h1>Item Details</h1>
                                     </div>
                                     <thead>
-                                        <tr class="text-gray-500 ">
+                                        <tr class="text-white bg-primary">
                                             <th class="px-4 py-2">Image</th>
-                                            <th class="px-4 py-2">Product Name</th>
+                                            <th class="px-4 py-2">P-Name</th>
                                             <th class="px-4 py-2">Qty</th>
                                             <th class="px-4 py-2">U.Price</th>
                                             <th class="px-4 py-2">Subtotal</th>
@@ -257,7 +252,7 @@
                     <div id="custom-pkg-form" class="hidden pkg-form">
                         <form>
                             @csrf
-                            <div class="max-w-4xl px-6 mx-auto bg-white rounded-lg">
+                            <div class="w-full px-6  bg-white rounded-lg">
                                 <div class="grid grid-cols-12 gap-6">
                                     <!-- Upload Section -->
                                     <div class="col-span-12 md:col-span-3 ">
@@ -556,52 +551,16 @@
             } else {}
         });
     </script>
-    <script>
-        // JavaScript to toggle between forms
-        const productPkgBtn = document.getElementById("product-pkg-btn");
-        const customPkgBtn = document.getElementById("custom-pkg-btn");
-        const productPkgForm = document.getElementById("product-pkg-form");
-        const customPkgForm = document.getElementById("custom-pkg-form");
 
-        productPkgBtn.addEventListener("click", () => {
-            // Show product package form and hide custom package form
-            productPkgForm.classList.remove("hidden");
-            customPkgForm.classList.add("hidden");
-
-            // Set active styles for the product package button
-            productPkgBtn.classList.add("bg-customblue", "text-white");
-            productPkgBtn.classList.remove("text-customblue");
-
-            // Reset styles for the custom package button
-            customPkgBtn.classList.remove("bg-customblue", "text-white");
-            customPkgBtn.classList.add("text-customblue");
-        });
-
-        customPkgBtn.addEventListener("click", () => {
-            // Show custom package form and hide product package form
-            customPkgForm.classList.remove("hidden");
-            productPkgForm.classList.add("hidden");
-
-            // Set active styles for the custom package button
-            customPkgBtn.classList.add("bg-customblue", "text-white");
-            customPkgBtn.classList.remove("text-customblue");
-
-            // Reset styles for the product package button
-            productPkgBtn.classList.remove("bg-customblue", "text-white");
-            productPkgBtn.classList.add("text-customblue");
-        });
-    </script>
 
     <script>
-        const dropdownButtons = document.getElementsByClassName('dropdownButton');
-        const dropdownContents = document.getElementsByClassName('dropdownContent');
-        const dropdownArrows = document.getElementsByClassName('dropdownArrow');
+        $(document).ready(function() {
+            $("#custom-pkg-btn, #product-pkg-btn").on("click", function() {
+                $("#custom-pkg-btn, #product-pkg-btn").removeClass("text-white bg-primary");
+                $(this).addClass("text-white bg-primary");
 
-        for (let i = 0; i < dropdownButtons.length; i++) {
-            dropdownButtons[i].addEventListener('click', () => {
-                dropdownContents[i].classList.toggle('hidden');
-                dropdownArrows[i].classList.toggle('rotate-180');
+                $("#product-pkg-form, #custom-pkg-form").toggleClass("hidden");
             });
-        }
+        });
     </script>
 @endsection

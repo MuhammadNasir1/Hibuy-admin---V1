@@ -25,7 +25,7 @@
     </div>
     <div class="w-full mt-3 pt-10 min-h-[86vh] rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-3xl font-bold text-customBlack ">Credit Request History</h2>
+            <h2 class="text-2xl font-medium ">Credit Request History</h2>
         </div>
         @php
             $headers = ['Sr.', 'Freelancers Name', 'Requested Amount', 'Reason', 'Joined Date', 'Status', 'Action'];
@@ -40,7 +40,7 @@
                     <td>Rs 5000</td>
                     <td>Reason</td>
                     <td>Jan 2, 2024</td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
