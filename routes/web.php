@@ -73,6 +73,7 @@ Route::get('/Settings', function () {
 
 // Add Product
 
+Route::view('/ProductCategory' , 'admin.AddProduct')->name('addProductCategory');
 Route::view('/product/add' , 'pages.AddProduct')->name('product.add');
 Route::view('/mystore' , 'seller.Store')->name('mystore');
 Route::view('/other-seller-product' , 'seller.OtherSeller')->name('other-seller-product');
