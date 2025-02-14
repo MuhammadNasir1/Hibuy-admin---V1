@@ -32,6 +32,7 @@
                 'price',
                 'Listed on',
                 'Seller',
+                'Boosted',
                 'Orders',
                 'Rating',
                 'Status',
@@ -52,9 +53,10 @@
                     <td>RS150</td>
                     <td>Jan 2, 2024</td>
                     <td>Noman Ahmad</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded">Boosted</span></td>
                     <td>4</td>
                     <td>4</td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
@@ -180,7 +182,8 @@
 
                                 <!-- Title -->
                                 <div class="mt-6">
-                                    <x-input type="text" name="title" id="title" label="Title" placeholder="Enter Title" />
+                                    <x-input type="text" name="title" id="title" label="Title"
+                                        placeholder="Enter Title" />
                                 </div>
 
                                 <!-- Description -->
@@ -192,7 +195,8 @@
                                 <div class="grid grid-cols-2 gap-4 mt-4">
                                     <!-- Brand / Company -->
                                     <div>
-                                        <x-input type="text" name="company" id="company" label="Brand / Company" placeholder="Enter Here" />
+                                        <x-input type="text" name="company" id="company" label="Brand / Company"
+                                            placeholder="Enter Here" />
                                     </div>
 
                                     <!-- Category -->

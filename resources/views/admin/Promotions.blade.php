@@ -21,7 +21,7 @@
                     <td>
                         <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}" alt="Jese image">
                     </td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">

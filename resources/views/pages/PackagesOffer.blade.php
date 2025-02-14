@@ -40,7 +40,7 @@
                     <td>Noman Ahmad</td>
                     <td>4</td>
                     <td>4</td>
-                    <td>Approved</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
