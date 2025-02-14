@@ -74,81 +74,97 @@
         </x-table>
 
         <x-modal id="productcategory-modal">
-            <x-slot name="title">Details</x-slot>
+            <x-slot name="title">Product Category</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data"
-                    class="space-y-4">
+                <form>
                     @csrf
-
-                    <!-- Category Name -->
-                    <div>
-                        <label for="category_name" class="block text-sm font-medium text-gray-700">Category Name</label>
-                        <input type="text" id="category_name" name="category_name"
-                            class="mt-1 p-2 w-full border rounded-lg focus:ring focus:ring-blue-300">
-                    </div>
-
-                    <!-- Category Image -->
-                    <div>
-                        <label for="category_image" class="block text-sm font-medium text-gray-700">Category Image</label>
-                        <input type="file" id="category_image" name="category_image" accept="image/*"
-                            class="mt-1 p-2 w-full border rounded-lg">
-                    </div>
-
-                    <!-- Subcategories Section -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Sub Categories</label>
-                        <div id="subcategories">
-                            <div class="flex gap-2 mt-2 subcategory-item">
-                                <input type="text" name="subcategories[]" class="p-2 w-full border rounded-lg"
-                                    placeholder="Subcategory Name">
-                                <button type="button"
-                                    class="bg-red-500 text-white px-3 py-1 rounded-lg remove-subcategory hidden">X</button>
+                    <div class="md:py-5">
+                        {{-- Product Category Form --}}
+                        <div class="px-6 mt-5 w-[200px] h-[150px] mb-5 mx-auto">
+                            <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Category Image</label>
+                            <x-file-uploader type="text" label="Banner" placeholder="Banner Here" id="Banner"
+                                name="Banner" />
+                        </div>
+                        <div class="px-6 mt-5">
+                            <x-input type="text" label="Category Name" placeholder="Name Here" id="store_name"
+                                name="store_name" />
+                        </div>
+                        <div class="px-6 mt-5">
+                            <label class="block mb-2 text-sm font-medium text-customBlack ">Sub Categories</label>
+                            <div id="tag-container" class="flex flex-wrap gap-2 border p-2 rounded-md hidden">
+                                <!-- Tags will be added here -->
+                            </div>
+                            <div class="flex mt-2">
+                                <input type="text" id="tag-input"
+                                    class=" border border-gray-300 text-gray-900 text-sm rounded-l-md focus:ring-primary focus:border-primary block w-full p-2.5"
+                                    placeholder="Enter a tag...">
+                                <button type="button" id="add-tag-btn"
+                                    class="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">
+                                    +
+                                </button>
                             </div>
                         </div>
-                        <button type="button" id="add-subcategory"
-                            class="mt-2 bg-blue-500 text-white px-3 py-2 rounded-lg">+ Add Subcategory</button>
                     </div>
-
-                    <!-- Submit Button -->
-                    <div>
-                        <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg">Submit</button>
+                    <!-- Buttons -->
+                    <div class="mt-6 bg-gray-300 rounded-b-lg">
+                        <div class="flex items-center justify-between p-2">
+                            <div></div>
+                            <button type="button" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                Submit
+                            </button>
+                        </div>
                     </div>
                 </form>
-
-                <!-- JavaScript for Dynamic Subcategories -->
-                <script>
-                    document.getElementById('add-subcategory').addEventListener('click', function() {
-                        let subcategoryContainer = document.getElementById('subcategories');
-
-                        let subcategoryDiv = document.createElement('div');
-                        subcategoryDiv.classList.add('flex', 'gap-2', 'mt-2', 'subcategory-item');
-
-                        subcategoryDiv.innerHTML = `
-                            <input type="text" name="subcategories[]" class="p-2 w-full border rounded-lg" placeholder="Subcategory Name">
-                            <button type="button" class="bg-red-500 text-white px-3 py-1 rounded-lg remove-subcategory">X</button>
-                        `;
-
-                        subcategoryContainer.appendChild(subcategoryDiv);
-
-                        // Add event listener to new remove button
-                        subcategoryDiv.querySelector('.remove-subcategory').addEventListener('click', function() {
-                            subcategoryDiv.remove();
-                        });
-
-                        // Show remove button for all subcategories
-                        document.querySelectorAll('.remove-subcategory').forEach(button => button.classList.remove('hidden'));
-                    });
-
-                    // Initial remove button should be hidden if only one subcategory exists
-                    document.querySelector('.remove-subcategory').addEventListener('click', function() {
-                        this.parentElement.remove();
-                    });
-                </script>
             </x-slot>
-
         </x-modal>
     </div>
 
 
 @endsection
+@section('js')
+<script>
+    $(document).ready(function () {
+        $("#add-tag-btn").click(function () {
+            addTag();
+        });
+
+        $("#tag-input").keypress(function (e) {
+            if (e.which === 13) { // Enter key pressed
+                e.preventDefault(); // Prevent form submission
+                addTag();
+            }
+        });
+
+        function addTag() {
+            let tagText = $("#tag-input").val().trim();
+            if (tagText !== "" && !isDuplicateTag(tagText)) {
+                let tag = `
+                    <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
+                        <span>${tagText}</span>
+                        <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
+                    </div>
+                `;
+                $("#tag-container").append(tag).removeClass("hidden"); // Show container
+                $("#tag-input").val("").focus(); // Clear input & refocus
+            }
+        }
+
+        function isDuplicateTag(tagText) {
+            let isDuplicate = false;
+            $("#tag-container span").each(function () {
+                if ($(this).text().trim() === tagText) {
+                    isDuplicate = true;
+                }
+            });
+            return isDuplicate;
+        }
+
+        $(document).on("click", ".remove-tag", function () {
+            $(this).parent().remove();
+            if ($("#tag-container").children().length === 0) {
+                $("#tag-container").addClass("hidden"); // Hide container when empty
+            }
+        });
+    });
+</script>
