@@ -106,7 +106,7 @@
 
                                 <div class="px-6 mt-5 ">
                                     <label class="block text-gray-700  font-medium text-sm mb-2">Banner</label>
-                                    <x-file-uploader type="text" label="Banner" placeholder="Banner Here" id="Banner"
+                                    <x-file-uploader type="text" label="Banner" id="Banner"
                                         name="Banner" />
                                 </div>
 
