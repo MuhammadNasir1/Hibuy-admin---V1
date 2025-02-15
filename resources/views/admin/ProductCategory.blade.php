@@ -45,7 +45,8 @@
                                 </svg>
                             </button>
 
-                            <button class="viewModalBtn">
+                            <button class="viewModalBtn" data-modal-target="editproductcategory-modal"
+                                data-modal-toggle="editproductcategory-modal">
                                 <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
                                     <path fill-rule='evenodd' clip-rule='evenodd'
@@ -118,53 +119,85 @@
                 </form>
             </x-slot>
         </x-modal>
-    </div>
 
+        <x-modal id="editproductcategory-modal">
+            <x-slot name="title">View Product Category</x-slot>
+            <x-slot name="modal_width">max-w-4xl</x-slot>
+            <x-slot name="body">
+                <div class="md:py-5 grid grid-cols-3 gap-6 bg-white shadow-md rounded-lg p-6">
+                    {{-- Category Image --}}
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold text-lg mb-2">Category Image</label>
+                        <img class="rounded-lg w-full h-40 object-cover shadow-md border border-gray-300"
+                            src="{{ asset('asset/mockup1.jpg') }}"
+                            alt="Category Image">
+                    </div>
+
+                    {{-- Category Name --}}
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold text-lg mb-2">Category Name</label>
+                        <div class="text-gray-900 text-xl font-bold">Clothes</div>
+                    </div>
+
+                    {{-- Sub Categories --}}
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold text-lg mb-2">Sub Categories</label>
+                        <ul class="bg-gray-100 p-3 rounded-lg shadow-sm">
+                            <li class="text-gray-800 font-medium py-1">T-Shirts</li>
+                            <li class="text-gray-800 font-medium py-1">Jeans</li>
+                            <li class="text-gray-800 font-medium py-1">Jackets</li>
+                            <li class="text-gray-800 font-medium py-1">Dresses</li>
+                        </ul>
+                    </div>
+                </div>
+            </x-slot>
+        </x-modal>
+    </div>
 
 @endsection
 @section('js')
-<script>
-    $(document).ready(function () {
-        $("#add-tag-btn").click(function () {
-            addTag();
-        });
-
-        $("#tag-input").keypress(function (e) {
-            if (e.which === 13) { // Enter key pressed
-                e.preventDefault(); // Prevent form submission
+    <script>
+        $(document).ready(function() {
+            $("#add-tag-btn").click(function() {
                 addTag();
-            }
-        });
+            });
 
-        function addTag() {
-            let tagText = $("#tag-input").val().trim();
-            if (tagText !== "" && !isDuplicateTag(tagText)) {
-                let tag = `
+            $("#tag-input").keypress(function(e) {
+                if (e.which === 13) { // Enter key pressed
+                    e.preventDefault(); // Prevent form submission
+                    addTag();
+                }
+            });
+
+            function addTag() {
+                let tagText = $("#tag-input").val().trim();
+                if (tagText !== "" && !isDuplicateTag(tagText)) {
+                    let tag = `
                     <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
                         <span>${tagText}</span>
                         <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
                     </div>
                 `;
-                $("#tag-container").append(tag).removeClass("hidden"); // Show container
-                $("#tag-input").val("").focus(); // Clear input & refocus
+                    $("#tag-container").append(tag).removeClass("hidden"); // Show container
+                    $("#tag-input").val("").focus(); // Clear input & refocus
+                }
             }
-        }
 
-        function isDuplicateTag(tagText) {
-            let isDuplicate = false;
-            $("#tag-container span").each(function () {
-                if ($(this).text().trim() === tagText) {
-                    isDuplicate = true;
+            function isDuplicateTag(tagText) {
+                let isDuplicate = false;
+                $("#tag-container span").each(function() {
+                    if ($(this).text().trim() === tagText) {
+                        isDuplicate = true;
+                    }
+                });
+                return isDuplicate;
+            }
+
+            $(document).on("click", ".remove-tag", function() {
+                $(this).parent().remove();
+                if ($("#tag-container").children().length === 0) {
+                    $("#tag-container").addClass("hidden"); // Hide container when empty
                 }
             });
-            return isDuplicate;
-        }
-
-        $(document).on("click", ".remove-tag", function () {
-            $(this).parent().remove();
-            if ($("#tag-container").children().length === 0) {
-                $("#tag-container").addClass("hidden"); // Hide container when empty
-            }
         });
-    });
-</script>
+    </script>
