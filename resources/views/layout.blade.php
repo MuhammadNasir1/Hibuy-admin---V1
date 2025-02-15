@@ -294,9 +294,22 @@
                 <li class="">
                     <a href="{{ route('mystore') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white transition duration-25  group-hover:fill-primary " viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white transition duration-25  group-hover:fill-primary " viewBox="0 0 576 512"><path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z"/></svg>
 
                         <span class="ms-3 text-custom15">My Store</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{{ route('other-seller-product') }}"
+                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
+                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                        viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12.5002 10.4736L16.2861 8.9592L6.91094 5.20915L3.67864 6.50207C3.51274 6.56843 3.36015 6.65677 3.22367 6.76295L12.5002 10.4736ZM2.54427 7.83748C2.51519 7.96885 2.5 8.10465 2.5 8.24296V17.8004C2.5 18.5671 2.96678 19.2565 3.67864 19.5413L10.8752 22.4199C11.1993 22.5495 11.535 22.6389 11.8752 22.688V11.5698L2.54427 7.83748ZM13.1252 22.6879C13.4652 22.6388 13.8008 22.5495 14.1248 22.4199L21.3214 19.5413C22.0332 19.2565 22.5 18.5671 22.5 17.8004V8.24296C22.5 8.1047 22.4848 7.96894 22.4558 7.83762L13.1252 11.5698V22.6879ZM21.7765 6.76305L17.9689 8.28606L8.5938 4.53601L10.8752 3.62346C11.9182 3.20624 13.0818 3.20624 14.1248 3.62346L21.3214 6.50207C21.4873 6.56845 21.6399 6.65683 21.7765 6.76305Z"
+                            fill="currentColor" />
+                    </svg>
+
+                        <span class="ms-3 text-custom15">Other Seller Product</span>
                     </a>
                 </li>
                 <li class="">

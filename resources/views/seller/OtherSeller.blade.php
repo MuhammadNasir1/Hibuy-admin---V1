@@ -37,9 +37,9 @@
 
                 <div class="relative">
                     <input type="search" name="search" id="search" placeholder="Search for products"
-                        class="border border-gray-300 text-gray-900 focus:pl-8  pl-8    text-sm rounded-md focus:ring-primary focus:border-primary  w-[300px] p-2.5" />
+                        class="border border-gray-300 text-gray-900 focus:pl-8 pl-8 text-sm rounded-md focus:ring-primary focus:border-primary w-[300px] p-2.5" />
                     <svg xmlns="http://www.w3.org/2000/svg"
-                        class="translate-y-[-30.5px] absolute pl-1.5   h-[20px] fill-gray-600" viewBox="0 0 512 512">
+                        class="translate-y-[-30.5px] absolute pl-1.5 h-[20px] fill-gray-600" viewBox="0 0 512 512">
                         <path
                             d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
                     </svg>
@@ -99,214 +99,16 @@
         {{-- Products --}}
 
         <div id="productContainer" class="grid grid-cols-4 gap-5 px-5 mt-5">
-
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
+            <div class="product border p-5 rounded-xl flex-column" data-name="airpods pro wireless earbuds bluetooth 5.0">
+                <img src="{{ asset('asset/product.png') }}" alt="product"
+                    class="product-img w-full object-contain rounded-xl">
                 <div class="flex-1 mt-3 product-info">
                     <p class="text-gray-600">Tech</p>
                     <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
                     <div class="flex justify-between rating mt-2">
                         <p class="text-gray-500">By TechDad</p>
                         <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
-                </div>
-            </div>
-            <div class="product border p-5 rounded-xl flex-column">
-                <img src="{{ asset('asset/product.png') }}" alt="product" class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{asset("asset/emojione_star.png") }}" class="h-[20px]" alt="">
+                            <img src="{{ asset('asset/emojione_star.png') }}" class="h-[20px]" alt="">
                             <p class="text-gray-500 ml-1">(4.0)</p>
                         </div>
                     </div>
@@ -317,6 +119,65 @@
                 </div>
             </div>
 
+            <div class="product border p-5 rounded-xl flex-column" data-name="wireless headphones">
+                <img src="{{ asset('asset/product.png') }}" alt="product"
+                    class="product-img w-full object-contain rounded-xl">
+                <div class="flex-1 mt-3 product-info">
+                    <p class="text-gray-600">Tech</p>
+                    <h1 class="font-bold title">Wireless Headphones</h1>
+                    <div class="flex justify-between rating mt-2">
+                        <p class="text-gray-500">By TechDad</p>
+                        <div class="flex items-center">
+                            <img src="{{ asset('asset/emojione_star.png') }}" class="h-[20px]" alt="">
+                            <p class="text-gray-500 ml-1">(4.5)</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-2 items-center buy-btn-container">
+                        <p class="text-green-600 font-bold">$32.50</p>
+                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product border p-5 rounded-xl flex-column" data-name="bluetooth speaker">
+                <img src="{{ asset('asset/product.png') }}" alt="product"
+                    class="product-img w-full object-contain rounded-xl">
+                <div class="flex-1 mt-3 product-info">
+                    <p class="text-gray-600">Tech</p>
+                    <h1 class="font-bold title">Bluetooth Speaker</h1>
+                    <div class="flex justify-between rating mt-2">
+                        <p class="text-gray-500">By TechDad</p>
+                        <div class="flex items-center">
+                            <img src="{{ asset('asset/emojione_star.png') }}" class="h-[20px]" alt="">
+                            <p class="text-gray-500 ml-1">(4.3)</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-2 items-center buy-btn-container">
+                        <p class="text-green-600 font-bold">$19.99</p>
+                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product border p-5 rounded-xl flex-column" data-name="gaming mouse">
+                <img src="{{ asset('asset/product.png') }}" alt="product"
+                    class="product-img w-full object-contain rounded-xl">
+                <div class="flex-1 mt-3 product-info">
+                    <p class="text-gray-600">Tech</p>
+                    <h1 class="font-bold title">Gaming Mouse</h1>
+                    <div class="flex justify-between rating mt-2">
+                        <p class="text-gray-500">By TechDad</p>
+                        <div class="flex items-center">
+                            <img src="{{ asset('asset/emojione_star.png') }}" class="h-[20px]" alt="">
+                            <p class="text-gray-500 ml-1">(4.6)</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-2 items-center buy-btn-container">
+                        <p class="text-green-600 font-bold">$15.99</p>
+                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -342,13 +203,29 @@
             });
 
             $("#rowView").click(function() {
-                $("#productContainer").removeClass("grid grid-cols-4 gap-5").addClass("flex flex-col gap-5");
+                $("#productContainer").removeClass("grid grid-cols-4 gap-5").addClass(
+                "flex flex-col gap-5");
                 $(".product-img").removeClass("w-full").addClass("h-[210px]");
                 $(".product ").removeClass("flex-column").addClass("flex gap-5 items-center");
                 $(".rating ").removeClass("justify-between flex").addClass("flex-column");
                 $(".buy-btn-container ").removeClass("flex justify-between").addClass("flex-column");
                 $(".title ").addClass("w-[300px]");
                 $(".product-info ").removeClass("mt-3")
+            });
+        });
+
+        $(document).ready(function () {
+            $("#search").on("keyup", function () {
+                let searchText = $(this).val().toLowerCase();
+
+                $(".product").each(function () {
+                    let productName = $(this).attr("data-name").toLowerCase();
+                    if (productName.includes(searchText)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
             });
         });
     </script>
