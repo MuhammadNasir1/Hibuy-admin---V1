@@ -5,20 +5,9 @@
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium ">Queries List</h1>
-                <button id="addModalBtn" data-modal-target="queries-modal" data-modal-toggle="queries-modal"
-                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
-
         </div>
         @php
-            $headers = [
-                'Sr.',
-                'Subject',
-                'Message',
-                'Email',
-                'Date',
-                'Status',
-                'Action',
-            ];
+            $headers = ['Sr.', 'Subject', 'Message', 'Email', 'Date', 'Status', 'Action'];
         @endphp
 
         <x-table :headers="$headers">
@@ -52,7 +41,8 @@
                                 </svg>
                             </button>
 
-                            <button class="viewModalBtn">
+                            <button class="viewModalBtn" data-modal-target="queries-modal"
+                                data-modal-toggle="queries-modal">
                                 <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
                                     <path fill-rule='evenodd' clip-rule='evenodd'
@@ -87,7 +77,85 @@
             <x-slot name="title">Details</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
+                <form>
+                    @csrf
+                    <div class="md:py-5">
+                        {{-- Product Category Form --}}
+                        <div class="flex gap-6 px-6 mt-5">
+                            <!-- Status -->
+                            <div class="w-1/2">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Status</label>
+                                <select id="type"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option selected>Select Status</option>
+                                    <option value="new">New</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                            </div>
+                            <div class="w-1/2">
+                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Date</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    {{ $date ?? '24 Jan, 2024' }}
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Email -->
+                        <div class="flex gap-6 px-6 mt-5">
+                            <div class="w-1/2">
+                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Email</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    {{ $email ?? 'email@gmail.com' }}
+                                </p>
+                            </div>
+                            <div class="w-1/2">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Subject</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    {{ $subject ?? 'Subject Details' }}
+                                </p>
+                            </div>
+                        </div>
 
+                        <!-- Message -->
+                        <div class="flex gap-6 px-6 mt-5">
+                            <div class="w-full">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Message</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    Got it! Here's the updated form where Date, Email, Subject, and Message are displayed
+                                    inside
+                                    tags instead of input fields. The Response field remains as a textarea for user input.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Response -->
+                        <div class="flex gap-6 px-6 mt-5">
+                            <div class="w-full">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Response</label>
+                                <textarea id="response" rows="4"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Enter response"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="mt-6 bg-gray-300 rounded-b-lg">
+                        <div class="flex items-center justify-between p-2">
+                            <div></div>
+                            <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </x-slot>
         </x-modal>
     </div>
