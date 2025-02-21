@@ -89,13 +89,16 @@
                                         name="store_name" />
                                 </div>
                                 <div class="px-6 mt-5">
-                                    <label class="block text-gray-700 font-medium text-sm mb-2">Tags</label>
-                                    <div id="tag-container" class="flex flex-wrap gap-2 border p-2 rounded-md hidden  mb-1 text-sm font-medium text-customBlack ">
+                                    <label class="block mb-2 text-sm font-medium text-customBlack ">Tags</label>
+                                    <div id="tag-container" class="flex flex-wrap gap-2 border p-2 rounded-md hidden">
                                         <!-- Tags will be added here -->
                                     </div>
                                     <div class="flex mt-2">
-                                        <input type="text" id="tag-input" class="border border-gray-300 text-gray-900 text-sm rounded-l-md focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="Enter a tag...">
-                                        <button id="add-tag-btn" class="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">
+                                        <input type="text" id="tag-input"
+                                            class=" border border-gray-300 text-gray-900 text-sm rounded-l-md focus:ring-primary focus:border-primary block w-full p-2.5"
+                                            placeholder="Enter a tag...">
+                                        <button type="button" id="add-tag-btn"
+                                            class="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">
                                             +
                                         </button>
                                     </div>
@@ -103,7 +106,8 @@
 
                                 <div class="px-6 mt-5 ">
                                     <label class="block text-gray-700  font-medium text-sm mb-2">Banner</label>
-                                    <x-file-uploader type="text" label="Banner" placeholder="Banner Here" id="Banner" name="Banner" />
+                                    <x-file-uploader type="text" label="Banner" id="Banner"
+                                        name="Banner" />
                                 </div>
 
                                 <div class="px-6 mt-5">
@@ -141,28 +145,28 @@
 <script>
     $(document).ready(function () {
         $("#add-tag-btn").click(function () {
-            let tagText = $("#tag-input").val().trim();
-            if (tagText !== "" && !isDuplicateTag(tagText)) {
-                addTag(tagText);
-                $("#tag-input").val("");
-            }
+            addTag();
         });
 
         $("#tag-input").keypress(function (e) {
-            if (e.which === 13) {
-                e.preventDefault();
-                $("#add-tag-btn").click();
+            if (e.which === 13) { // Enter key pressed
+                e.preventDefault(); // Prevent form submission
+                addTag();
             }
         });
 
-        function addTag(tagText) {
-            let tag = `
-                <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
-                    <span>${tagText}</span>
-                    <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
-                </div>
-            `;
-            $("#tag-container").append(tag).removeClass("hidden");
+        function addTag() {
+            let tagText = $("#tag-input").val().trim();
+            if (tagText !== "" && !isDuplicateTag(tagText)) {
+                let tag = `
+                    <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
+                        <span>${tagText}</span>
+                        <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
+                    </div>
+                `;
+                $("#tag-container").append(tag).removeClass("hidden"); // Show container
+                $("#tag-input").val("").focus(); // Clear input & refocus
+            }
         }
 
         function isDuplicateTag(tagText) {
@@ -178,18 +182,19 @@
         $(document).on("click", ".remove-tag", function () {
             $(this).parent().remove();
             if ($("#tag-container").children().length === 0) {
-                $("#tag-container").addClass("hidden");
+                $("#tag-container").addClass("hidden"); // Hide container when empty
             }
         });
-
-        $("#store_name").on("input", function () {
-            $("#storeName").text($(this).val());
-            if(this.value === ""){
-                $("#storeName").text("My Store");
-            }
-        });
-
-
     });
 </script>
+    <script>
+        $(document).ready(function() {
+            $("#store_name").on("input", function() {
+                $("#storeName").text($(this).val());
+                if (this.value === "") {
+                    $("#storeName").text("My Store");
+                }
+            });
+        });
+    </script>
 @endsection

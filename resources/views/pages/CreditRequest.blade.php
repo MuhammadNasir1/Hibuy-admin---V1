@@ -95,7 +95,72 @@
             <x-slot name="title">Details</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
+                <form>
+                    @csrf
+                    <div class="md:py-5">
+                        {{-- Product Category Form --}}
+                        <div class="flex gap-6 px-6 mt-5">
+                            <div class="w-1/2">
+                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Status</label>
+                                <select id="type"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option selected>Select Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="w-1/2">
+                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Date</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    {{ $date ?? '24 Jan, 2024' }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 px-6 mt-5">
+                            <div class="w-1/2">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Amount</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    {{ $amount ?? 'PKR500' }}
+                                </p>
+                            </div>
+                            <div class="w-1/2">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Subject</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    {{ $subject ?? 'John Eliya' }}
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Email -->
+                        <div class="flex gap-6 px-6 mt-5">
+                            <div class="w-full">
+                                <label
+                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Reason</label>
+                                <p
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    Got it! Here's the updated form where Date, Email, Subject, and Message are displayed
+                                    inside
+                                    tags instead of input fields. The Response field remains as a textarea for user input.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
+                    <!-- Buttons -->
+                    <div class="mt-6 bg-gray-300 rounded-b-lg">
+                        <div class="flex items-center justify-between p-2">
+                            <div></div>
+                            <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </x-slot>
         </x-modal>
     </div>

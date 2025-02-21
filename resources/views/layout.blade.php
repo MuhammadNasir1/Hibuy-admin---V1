@@ -61,6 +61,28 @@
                 </li>
 
                 <li class="">
+                    <a href="{{ route('addProductCategory') }}"
+                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
+                        <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M11.6146 4.04258L7.73959 10.3759C7.3125 11.0634 7.8125 11.9592 8.625 11.9592H16.3646C17.1771 11.9592 17.6771 11.0634 17.25 10.3759L13.3854 4.04258C13.2933 3.89012 13.1634 3.76402 13.0083 3.67649C12.8532 3.58896 12.6781 3.54297 12.5 3.54297C12.3219 3.54297 12.1468 3.58896 11.9917 3.67649C11.8366 3.76402 11.7067 3.89012 11.6146 4.04258Z"
+                                fill="currentColor" />
+                            <path
+                                d="M18.2292 23.418C20.818 23.418 22.9167 21.3193 22.9167 18.7305C22.9167 16.1416 20.818 14.043 18.2292 14.043C15.6404 14.043 13.5417 16.1416 13.5417 18.7305C13.5417 21.3193 15.6404 23.418 18.2292 23.418Z"
+                                fill="currentColor" />
+                            <path
+                                d="M4.16667 22.8958H10.4167C10.9896 22.8958 11.4583 22.4271 11.4583 21.8542V15.6042C11.4583 15.0312 10.9896 14.5625 10.4167 14.5625H4.16667C3.59375 14.5625 3.125 15.0312 3.125 15.6042V21.8542C3.125 22.4271 3.59375 22.8958 4.16667 22.8958Z"
+                                fill="currentColor" />
+                        </svg>
+
+
+
+                        <span class="ms-3 text-custom15">Product Categories</span>
+                    </a>
+                </li>
+
+                <li class="">
                     <a href="{{ route('PackagesOffer') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
@@ -294,7 +316,12 @@
                 <li class="">
                     <a href="{{ route('mystore') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white transition duration-25  group-hover:fill-primary " viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5 fill-white transition duration-25  group-hover:fill-primary "
+                            viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <path
+                                d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z" />
+                        </svg>
 
                         <span class="ms-3 text-custom15">My Store</span>
                     </a>
@@ -343,7 +370,8 @@
                             </g>
                             <defs>
                                 <clipPath id="clip0_1853_20490">
-                                    <rect width="25" height="25" fill="currentColor" transform="translate(0 0.5)" />
+                                    <rect width="25" height="25" fill="currentColor"
+                                        transform="translate(0 0.5)" />
                                 </clipPath>
                             </defs>
                         </svg>

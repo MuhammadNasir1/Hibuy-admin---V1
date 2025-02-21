@@ -1,18 +1,15 @@
 @extends('layout')
-@section('title', 'Notifications')
-@section('nav-title', 'Notifications')
+@section('title', 'Product Category')
+@section('nav-title', 'Product Category')
 @section('content')
-    <div class="px-5 w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
+    <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-2xl font-medium ">Notifications List</h1>
-                <button id="addModalBtn" data-modal-target="notification-modal" data-modal-toggle="notification-modal"
-                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
-                    Send New
-                </button>
-
+            <h2 class="text-2xl font-medium">Product Category List</h1>
+                <button id="addModalBtn" data-modal-target="productcategory-modal" data-modal-toggle="productcategory-modal"
+                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
         </div>
         @php
-            $headers = ['Sr.', 'Title', 'Description', 'Type', 'Audience', 'Date Sent', 'Status', 'Action'];
+            $headers = ['ID', 'Image', 'Name', 'No. of Sub Category', 'No. of Products', 'Status', 'Action'];
         @endphp
 
         <x-table :headers="$headers">
@@ -20,14 +17,13 @@
 
                 <tr>
                     <td>1</td>
-                    <td>Subject Title</td>
-                    <td>Notification Detail</td>
-                    <td>KYC update</td>
-                    <td>Seller</td>
-                    <td>Jan 2, 2024</td>
                     <td>
-                        <span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
+                        <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}" alt="Jese image">
                     </td>
+                    <td>Clothes</td>
+                    <td>50</td>
+                    <td>4</td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
@@ -49,7 +45,8 @@
                                 </svg>
                             </button>
 
-                            <button class="viewModalBtn">
+                            <button class="viewModalBtn" data-modal-target="editproductcategory-modal"
+                                data-modal-toggle="editproductcategory-modal">
                                 <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
                                     <path fill-rule='evenodd' clip-rule='evenodd'
@@ -74,56 +71,39 @@
                         </span>
                     </td>
                 </tr>
-
-
             </x-slot>
         </x-table>
 
-
-        <x-modal id="notification-modal">
-            <x-slot name="title">Send Notification</x-slot>
+        <x-modal id="productcategory-modal">
+            <x-slot name="title">Product Category</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
                 <form>
                     @csrf
                     <div class="md:py-5">
                         {{-- Product Category Form --}}
-                        <div class="px-6 mt-5">
-                            {{-- <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Title</label> --}}
-                            <x-input type="text" label="Title" placeholder="Name Here" id="notification_title"
-                                name="notification_title" />
+                        <div class="px-6 mt-5 w-[200px] h-[150px] mb-5 mx-auto">
+                            <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Category Image</label>
+                            <x-file-uploader type="text" label="Banner" placeholder="Banner Here" id="Banner"
+                                name="Banner" />
                         </div>
                         <div class="px-6 mt-5">
-                            <label class="block text-gray-700  font-medium text-sm mb-2">Description</label>
-                            <x-input type="text" label="" placeholder="Name Here" id="notification_title"
-                                name="notification_title" />
+                            <x-input type="text" label="Category Name" placeholder="Name Here" id="store_name"
+                                name="store_name" />
                         </div>
-                        <div class="flex gap-6 px-6 mt-5">
-                            <!-- Type -->
-                            <div class="w-1/2">
-                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Type</label>
-                                <select id="type"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option selected>Choose a country</option>
-                                    <option value="US">United States</option>
-                                    <option value="CA">Canada</option>
-                                    <option value="FR">France</option>
-                                    <option value="DE">Germany</option>
-                                </select>
+                        <div class="px-6 mt-5">
+                            <label class="block mb-2 text-sm font-medium text-customBlack ">Sub Categories</label>
+                            <div id="tag-container" class="flex flex-wrap gap-2 border p-2 rounded-md hidden">
+                                <!-- Tags will be added here -->
                             </div>
-
-                            <!-- Target Audience -->
-                            <div class="w-1/2">
-                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Target
-                                    Audience</label>
-                                <select id="target-audience"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option selected>Choose audience</option>
-                                    <option value="US">United States</option>
-                                    <option value="CA">Canada</option>
-                                    <option value="FR">France</option>
-                                    <option value="DE">Germany</option>
-                                </select>
+                            <div class="flex mt-2">
+                                <input type="text" id="tag-input"
+                                    class=" border border-gray-300 text-gray-900 text-sm rounded-l-md focus:ring-primary focus:border-primary block w-full p-2.5"
+                                    placeholder="Enter a tag...">
+                                <button type="button" id="add-tag-btn"
+                                    class="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">
+                                    +
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -139,7 +119,85 @@
                 </form>
             </x-slot>
         </x-modal>
+
+        <x-modal id="editproductcategory-modal">
+            <x-slot name="title">View Product Category</x-slot>
+            <x-slot name="modal_width">max-w-4xl</x-slot>
+            <x-slot name="body">
+                <div class="md:py-5 grid grid-cols-3 gap-6 bg-white shadow-md rounded-lg p-6">
+                    {{-- Category Image --}}
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold text-lg mb-2">Category Image</label>
+                        <img class="rounded-lg w-full h-40 object-cover shadow-md border border-gray-300"
+                            src="{{ asset('asset/mockup1.jpg') }}"
+                            alt="Category Image">
+                    </div>
+
+                    {{-- Category Name --}}
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold text-lg mb-2">Category Name</label>
+                        <div class="text-gray-900 text-xl font-bold">Clothes</div>
+                    </div>
+
+                    {{-- Sub Categories --}}
+                    <div class="w-full">
+                        <label class="block text-gray-700 font-semibold text-lg mb-2">Sub Categories</label>
+                        <ul class="bg-gray-100 p-3 rounded-lg shadow-sm">
+                            <li class="text-gray-800 font-medium py-1">T-Shirts</li>
+                            <li class="text-gray-800 font-medium py-1">Jeans</li>
+                            <li class="text-gray-800 font-medium py-1">Jackets</li>
+                            <li class="text-gray-800 font-medium py-1">Dresses</li>
+                        </ul>
+                    </div>
+                </div>
+            </x-slot>
+        </x-modal>
     </div>
 
-
 @endsection
+@section('js')
+    <script>
+        $(document).ready(function() {
+            $("#add-tag-btn").click(function() {
+                addTag();
+            });
+
+            $("#tag-input").keypress(function(e) {
+                if (e.which === 13) { // Enter key pressed
+                    e.preventDefault(); // Prevent form submission
+                    addTag();
+                }
+            });
+
+            function addTag() {
+                let tagText = $("#tag-input").val().trim();
+                if (tagText !== "" && !isDuplicateTag(tagText)) {
+                    let tag = `
+                    <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
+                        <span>${tagText}</span>
+                        <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
+                    </div>
+                `;
+                    $("#tag-container").append(tag).removeClass("hidden"); // Show container
+                    $("#tag-input").val("").focus(); // Clear input & refocus
+                }
+            }
+
+            function isDuplicateTag(tagText) {
+                let isDuplicate = false;
+                $("#tag-container span").each(function() {
+                    if ($(this).text().trim() === tagText) {
+                        isDuplicate = true;
+                    }
+                });
+                return isDuplicate;
+            }
+
+            $(document).on("click", ".remove-tag", function() {
+                $(this).parent().remove();
+                if ($("#tag-container").children().length === 0) {
+                    $("#tag-container").addClass("hidden"); // Hide container when empty
+                }
+            });
+        });
+    </script>
