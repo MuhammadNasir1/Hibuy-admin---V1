@@ -104,8 +104,6 @@
                         </span>
                     </td>
                 </tr>
-
-
             </x-slot>
         </x-table>
 

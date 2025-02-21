@@ -73,6 +73,9 @@ Route::get('/Settings', function () {
 
 // Add Product
 
+Route::view('/FreelancerProfile' , 'admin.FreelancerProfile')->name('FreelancerProfile');
+Route::view('/SellerProfile' , 'admin.SellerProfile')->name('SellerProfile');
+Route::view('/BuyerProfile' , 'admin.BuyerProfile')->name('BuyerProfile');
 Route::view('/ProductCategory' , 'admin.ProductCategory')->name('addProductCategory');
 Route::view('/product/add' , 'pages.AddProduct')->name('product.add');
 Route::view('/mystore' , 'seller.Store')->name('mystore');

@@ -6,7 +6,9 @@
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium ">Notifications List</h1>
                 <button id="addModalBtn" data-modal-target="notification-modal" data-modal-toggle="notification-modal"
-                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
+                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
+                    Send New
+                </button>
 
         </div>
         @php
@@ -23,7 +25,9 @@
                     <td>KYC update</td>
                     <td>Seller</td>
                     <td>Jan 2, 2024</td>
-                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
+                    <td>
+                        <span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
+                    </td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">
@@ -77,10 +81,62 @@
 
 
         <x-modal id="notification-modal">
-            <x-slot name="title">Details</x-slot>
+            <x-slot name="title">Send Notification</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
+                <form>
+                    @csrf
+                    <div class="md:py-5">
+                        {{-- Product Category Form --}}
+                        <div class="px-6 mt-5">
+                            {{-- <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Title</label> --}}
+                            <x-input type="text" label="Title" placeholder="Name Here" id="notification_title"
+                                name="notification_title" />
+                        </div>
+                        <div class="px-6 mt-5">
+                            <label class="block text-gray-700  font-medium text-sm mb-2">Description</label>
+                            <x-input type="text" label="" placeholder="Name Here" id="notification_title"
+                                name="notification_title" />
+                        </div>
+                        <div class="flex gap-6 px-6 mt-5">
+                            <!-- Type -->
+                            <div class="w-1/2">
+                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Type</label>
+                                <select id="type"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option selected>Choose a country</option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="FR">France</option>
+                                    <option value="DE">Germany</option>
+                                </select>
+                            </div>
 
+                            <!-- Target Audience -->
+                            <div class="w-1/2">
+                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Target
+                                    Audience</label>
+                                <select id="target-audience"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option selected>Choose audience</option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="FR">France</option>
+                                    <option value="DE">Germany</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="mt-6 bg-gray-300 rounded-b-lg">
+                        <div class="flex items-center justify-between p-2">
+                            <div></div>
+                            <button type="button" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </x-slot>
         </x-modal>
     </div>
