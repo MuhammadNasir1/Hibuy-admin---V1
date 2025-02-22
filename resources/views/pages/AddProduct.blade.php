@@ -203,9 +203,9 @@
             // Attribute Selection
             $(document).on("click", ".attribute-item", function() {
                 let parent = $(this).closest(".attribute-group");
-                parent.find(".attribute-item").removeClass("bg-blue-500 text-white").addClass(
+                parent.find(".attribute-item").removeClass("bg-primary text-white").addClass(
                     "bg-gray-200");
-                $(this).removeClass("bg-gray-200").addClass("bg-blue-500 text-white");
+                $(this).removeClass("bg-gray-200").addClass("bg-primary text-white");
             });
 
             // Add Variant to Table
@@ -213,7 +213,7 @@
                 e.preventDefault();
                 let selectedAttributes = [];
                 $(".attribute-group").each(function() {
-                    let selectedOption = $(this).find(".bg-blue-500");
+                    let selectedOption = $(this).find(".bg-primary");
                     if (selectedOption.length) {
                         selectedAttributes.push(selectedOption.data("value"));
                     }
