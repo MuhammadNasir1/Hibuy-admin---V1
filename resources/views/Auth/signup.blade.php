@@ -3,11 +3,19 @@
 @section('content')
     <div
         class="w-full max-w-sm  p-4 mx-auto mt-5 bg-white shadow-lg rounded-tr-[40px] rounded-tl-[100px]  rounded-br-[100px]  rounded-bl-[20px] lg:px-6 lg:py-20  lg:max-w-lg">
-        <h2 class="text-4xl font-medium text-center ">LOG IN</h2>
+        <h2 class="text-4xl font-medium text-center ">Sign Up</h2>
         <p class="mt-3 text-sm font-medium text-center">Fill in your details below and Sign up</p>
 
         <form id="loginForm">
             @csrf
+            <div class="mt-4 grid md:grid-cols-2 gap-3">
+                <div>
+                    <x-input id="first_name" label="First Name" placeholder="Name Here" name='first_name' type="text"></x-input>
+                </div>
+                <div>
+                    <x-input id="last_name" label="Last Name" placeholder="Name Here" name='last_name' type="text"></x-input>
+                </div>
+            </div>
             <div class="mt-4">
                 <x-input id="email" label="Email" placeholder="Enter Email" name='user_email' type="email"></x-input>
             </div>
@@ -31,15 +39,15 @@
 
                     </div>
                     <div id="btnText" class="">
-                        Log In
+                       <a href="{{ route("CreateStore") }}"> Create Account</a>
                     </div>
                 </button>
             </div>
         </form>
         <div class="flex justify-center mt-6">
-            <h1 class="">Forgot Password?<span class="text-primary font-bold ml-2">Reset here</span></h1>
+            <h1 class="">Already Have An Account?<a href="{{ route("login") }}" class="text-primary  font-bold ml-2">Login Now</a></h1>
         </div>
-        <h1 class="text-center mt-3">Join Us<a href="{{ route("signup") }}" class="text-primary font-bold ml-2">Create Store</a></h1>
+        <h1 class="text-center mt-5 text-sm">By Signing up to HiBuy platform you understand and agree with our <a href="" class="text-primary font-bold ml-2">Terms Of Service And Privacy Policy</a></h1>
 
     </div>
 @endsection
