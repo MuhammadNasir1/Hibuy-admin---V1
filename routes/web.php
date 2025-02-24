@@ -6,11 +6,23 @@ use App\Http\Controllers\ProductsController;
 
 Route::get('/login', function () {
     return view('Auth.login');
-});
+})->name("login");
+Route::get('/signup', function () {
+    return view('Auth.signup');
+})->name("signup");
+Route::get('/create-store', function () {
+    return view('Auth.CreateStore');
+})->name("CreateStore");
+Route::get('/create-profile', function () {
+    return view('Auth.CreateProfile');
+})->name("CreateProfile");
+Route::get('/profile-detail', function () {
+    return view('Auth.ProfileDetail');
+})->name("ProfileDetail");
 
 // Route::middleware(['custom_auth'])->group(function () {
 Route::get('/', function () {
-    return view('layout');
+    return view('pages.dashboard');
 })->name('dashboard');
 
 Route::controller(ProductsController::class)->group(function () {
