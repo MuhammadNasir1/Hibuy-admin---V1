@@ -85,7 +85,9 @@ Route::get('/Settings', function () {
 
 // Add Product
 
-Route::view('/savePurchases' , 'seller.Purchases')->name('savePurchases');
+Route::view('/PurchaseProducts' , 'seller.PurchaseProducts')->name('PurchaseProducts');
+
+Route::view('/Purchases' , 'seller.Purchases')->name('savePurchases');
 Route::view('/BoostProducts' , 'seller.BoostProducts')->name('BoostProducts');
 Route::view('/FreelancerProfile' , 'admin.FreelancerProfile')->name('FreelancerProfile');
 Route::view('/SellerProfile' , 'admin.SellerProfile')->name('SellerProfile');
