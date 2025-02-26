@@ -19,7 +19,7 @@
                     <td>Message Detail</td>
                     <td>example@gmail.com</td>
                     <td>Jan 2, 2024</td>
-                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
+                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">New</span></td>
                     <td>
                         <span class='flex gap-4'>
                             <button class="updateDataBtn">

@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductsController;
 
 
-Route::get('/login', function () {
+Route::get('/Login', function () {
     return view('Auth.login');
 })->name("login");
 Route::get('/signup', function () {
@@ -82,18 +83,20 @@ Route::get('/Settings', function () {
     return view('pages.Settings');
 })->name('editsettings');
 
+Route::post('login',[AuthController::class,'login']);
+
 
 // Add Product
 
-Route::view('/PurchaseProducts' , 'seller.PurchaseProducts')->name('PurchaseProducts');
+Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
 
-Route::view('/Purchases' , 'seller.Purchases')->name('savePurchases');
-Route::view('/BoostProducts' , 'seller.BoostProducts')->name('BoostProducts');
-Route::view('/FreelancerProfile' , 'admin.FreelancerProfile')->name('FreelancerProfile');
-Route::view('/SellerProfile' , 'admin.SellerProfile')->name('SellerProfile');
-Route::view('/BuyerProfile' , 'admin.BuyerProfile')->name('BuyerProfile');
-Route::view('/ProductCategory' , 'admin.ProductCategory')->name('addProductCategory');
-Route::view('/product/add' , 'pages.AddProduct')->name('product.add');
-Route::view('/mystore' , 'seller.Store')->name('mystore');
-Route::view('/other-seller-product' , 'seller.OtherSeller')->name('other-seller-product');
-
+Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
+Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
+Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
+Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
+Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
+Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
+Route::view('/ProductCategory', 'admin.ProductCategory')->name('addProductCategory');
+Route::view('/product/add', 'pages.AddProduct')->name('product.add');
+Route::view('/mystore', 'seller.Store')->name('mystore');
+Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');

@@ -33,6 +33,7 @@
                 'Address',
                 'Bill Amount',
                 'Date',
+                'Return Reason',
                 'Status',
                 'Action',
             ];
@@ -49,6 +50,7 @@
                     <td>Kohenoor City</td>
                     <td>Rs 1850</td>
                     <td>Jan 2, 2024</td>
+                    <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Id rerum accusantium, iste quidem possimus veritatis praesentium eos autem</td>
                     <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Ongoing</span></td>
                     <td>
                         <span class='flex gap-4'>
