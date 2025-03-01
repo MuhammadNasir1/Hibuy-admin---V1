@@ -16,6 +16,7 @@ class StoreController extends Controller
 
             // Find the seller record for the authenticated user
             $seller = Seller::where('user_id', $user->user_id)->first();
+            // return $seller;
             if (!$seller) {
                 return response()->json(['error' => 'Seller record not found'], 404);
             }

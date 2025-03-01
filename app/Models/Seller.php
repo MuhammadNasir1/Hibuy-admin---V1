@@ -17,4 +17,9 @@ class Seller extends Model
         'bank_info',
         'business_info',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
 }

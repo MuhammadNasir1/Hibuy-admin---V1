@@ -34,7 +34,7 @@ class AuthController extends Controller
                 Customer::create([
                     'user_id' => $user->user_id,
                 ]);
-            } else if ($validatedData['user_role'] == 'seller') {
+            } else if ($validatedData['user_role'] == 'seller' || $validatedData['user_role'] == 'freelancer') {
                 Seller::create([
                     'user_id' => $user->user_id,
                 ]);
