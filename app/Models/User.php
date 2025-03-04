@@ -66,6 +66,6 @@ class User extends Authenticatable
     // Relationship with Seller model
     public function stores()
     {
-        return $this->hasOne(Store::class, 'user_id', 'user_id');
+        return $this->hasOne(Store::class, 'user_id', 'user_id')->withDefault();
     }
 }

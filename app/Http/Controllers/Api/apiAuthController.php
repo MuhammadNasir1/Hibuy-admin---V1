@@ -5,14 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Mail\SellerRegistration;
-use App\Models\Customer;
-use App\Models\Seller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
 
 class apiAuthController extends Controller

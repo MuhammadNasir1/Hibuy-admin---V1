@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\Api\apiAuthController;
+use App\Http\Controllers\Api\apiproductController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -21,6 +22,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
   Route::post('logout',[apiAuthController::class,'logout']);
 
   Route::get('userdetail',[apiAuthController::class,'userdetail']);
+
+  Route::POST('toggleWishlist',[apiproductController::class,'toggleWishlist']);
 
   Route::post('editProfile',[UserController::class,'editProfile']);
 

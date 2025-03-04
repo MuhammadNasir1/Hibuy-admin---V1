@@ -528,7 +528,7 @@
                 </li>
 
                 <li class="">
-                    <a href="#"
+                    <a href="{{ route('logout') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -48,58 +48,71 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        try {
-            // Validate request
-            $validatedData = $request->validate([
-                'user_email' => 'required|string|email|max:255',
-                'user_password' => 'required|min:6'
-            ]);
+        // Validate request
+        $validatedData = $request->validate([
+            'user_email' => 'required|string|email|max:255',
+            'user_password' => 'required|min:6'
+        ]);
 
-            // Check if user exists
-            $user = User::where('user_email', $validatedData['user_email'])->first();
+        // Find user by email
+        $user = User::where('user_email', $validatedData['user_email'])->first();
 
-            if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid email or password.',
-                    'errors' => ['user_email' => ['Invalid email or password.']]
-                ], 401);
-            }
-
-            // Store user_id and user_role in session
-            session([
-                "user_details" => [
-                    'user_id' => $user->user_id,
-                    'user_role' => $user->user_role
-                ]
-            ]);
-
-
-            // Generate API token
-            $token = $user->createToken('api-token')->plainTextToken;
-
-            return response()->json([
-                'success' => true,
-                'message' => "Login successful",
-                'access_token' => $token,
-                'user' => [
-                    'id' => $user->user_id,
-                    'name' => $user->user_name,
-                    'email' => $user->user_email,
-                    'user_role' => $user->user_role
-                ]
-            ], 200);
-        } catch (ValidationException $e) {
+        // Check if user exists and password is correct
+        if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong. Please try again later.',
-            ], 500);
+                'message' => 'Invalid email or password.',
+                'errors' => ['user_email' => ['Invalid email or password.']]
+            ], 401);
         }
+
+        // Regenerate session to prevent session fixation attacks
+        session()->regenerate();
+
+        // Store user_id and user_role in session
+        session([
+            'user_details' => [
+                'user_id' => $user->user_id,
+                'user_role' => $user->user_role
+            ]
+        ]);
+
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successful',
+            'user' => [
+                'id' => $user->user_id,
+                'name' => $user->user_name,
+                'email' => $user->user_email,
+                'user_role' => $user->user_role
+            ]
+        ], 200);
     }
+
+
+
+    public function logout(Request $request)
+    {
+        // Check if the user is authenticated
+        if (!session()->has('user_details')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not logged in.',
+            ], 401);
+        }
+
+        // Destroy the session
+        session()->forget('user_details');
+        session()->invalidate();
+        session()->regenerateToken(); // Regenerate token for security
+
+        return redirect('../');
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Logout successful.',
+        // ], 200);
+    }
+
+
 }
