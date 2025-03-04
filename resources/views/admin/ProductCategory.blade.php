@@ -83,7 +83,7 @@
                     <div class="md:py-5">
                         {{-- Product Category Form --}}
                         <div class="px-6 mt-5 w-[200px] h-[150px] mb-5 mx-auto">
-                            <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Category Image</label>
+                            <label class="block mb-2 text-sm font-medium text-center text-gray-700">Category Image</label>
                             <x-file-uploader type="text" label="Banner" placeholder="Banner Here" id="Banner"
                                 name="Banner" />
                         </div>
@@ -93,7 +93,7 @@
                         </div>
                         <div class="px-6 mt-5">
                             <label class="block mb-2 text-sm font-medium text-customBlack ">Sub Categories</label>
-                            <div id="tag-container" class="flex flex-wrap gap-2 border p-2 rounded-md hidden">
+                            <div id="tag-container" class="flex flex-wrap hidden gap-2 p-2 border rounded-md">
                                 <!-- Tags will be added here -->
                             </div>
                             <div class="flex mt-2">
@@ -101,7 +101,7 @@
                                     class=" border border-gray-300 text-gray-900 text-sm rounded-l-md focus:ring-primary focus:border-primary block w-full p-2.5"
                                     placeholder="Enter a tag...">
                                 <button type="button" id="add-tag-btn"
-                                    class="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">
+                                    class="px-3 py-1 text-white bg-blue-500 rounded-r-md hover:bg-blue-600">
                                     +
                                 </button>
                             </div>
@@ -124,29 +124,28 @@
             <x-slot name="title">View Product Category</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                <div class="md:py-5 grid grid-cols-3 gap-6 bg-white shadow-md rounded-lg p-6">
+                <div class="grid grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow-md md:py-5">
                     {{-- Category Image --}}
                     <div class="w-full">
-                        <label class="block text-gray-700 font-semibold text-lg mb-2">Category Image</label>
-                        <img class="rounded-lg w-full h-40 object-cover shadow-md border border-gray-300"
-                            src="{{ asset('asset/mockup1.jpg') }}"
-                            alt="Category Image">
+                        <label class="block mb-2 text-lg font-semibold text-gray-700">Category Image</label>
+                        <img class="object-cover w-full h-40 border border-gray-300 rounded-lg shadow-md"
+                            src="{{ asset('asset/mockup1.jpg') }}" alt="Category Image">
                     </div>
 
                     {{-- Category Name --}}
                     <div class="w-full">
-                        <label class="block text-gray-700 font-semibold text-lg mb-2">Category Name</label>
-                        <div class="text-gray-900 text-xl font-bold">Clothes</div>
+                        <label class="block mb-2 text-lg font-semibold text-gray-700">Category Name</label>
+                        <div class="text-xl font-bold text-gray-900">Clothes</div>
                     </div>
 
                     {{-- Sub Categories --}}
                     <div class="w-full">
-                        <label class="block text-gray-700 font-semibold text-lg mb-2">Sub Categories</label>
-                        <ul class="bg-gray-100 p-3 rounded-lg shadow-sm">
-                            <li class="text-gray-800 font-medium py-1">T-Shirts</li>
-                            <li class="text-gray-800 font-medium py-1">Jeans</li>
-                            <li class="text-gray-800 font-medium py-1">Jackets</li>
-                            <li class="text-gray-800 font-medium py-1">Dresses</li>
+                        <label class="block mb-2 text-lg font-semibold text-gray-700">Sub Categories</label>
+                        <ul class="p-3 bg-gray-100 rounded-lg shadow-sm">
+                            <li class="py-1 font-medium text-gray-800">T-Shirts</li>
+                            <li class="py-1 font-medium text-gray-800">Jeans</li>
+                            <li class="py-1 font-medium text-gray-800">Jackets</li>
+                            <li class="py-1 font-medium text-gray-800">Dresses</li>
                         </ul>
                     </div>
                 </div>
@@ -156,6 +155,7 @@
 
 @endsection
 @section('js')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             $("#add-tag-btn").click(function() {
@@ -173,7 +173,7 @@
                 let tagText = $("#tag-input").val().trim();
                 if (tagText !== "" && !isDuplicateTag(tagText)) {
                     let tag = `
-                    <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
+                    <div class="flex items-center px-3 py-1 text-sm bg-gray-200 rounded-md">
                         <span>${tagText}</span>
                         <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
                     </div>
@@ -197,6 +197,26 @@
                 $(this).parent().remove();
                 if ($("#tag-container").children().length === 0) {
                     $("#tag-container").addClass("hidden"); // Hide container when empty
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#add-tag-btn").click(function() {
+                var tagInput = $("#tag-input");
+                var tagValue = tagInput.val().trim();
+
+                if (tagValue !== "") {
+                    // Get existing value and append new one separated by a comma
+                    var existingTags = tagInput.val();
+                    var newTags = existingTags ? existingTags + ", " + tagValue : tagValue;
+
+                    // Set the updated value
+                    tagInput.val(newTags);
+
+                    // Clear input field for next entry
+                    tagInput.val("");
                 }
             });
         });

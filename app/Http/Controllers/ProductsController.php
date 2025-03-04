@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\product_category;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
@@ -87,5 +88,29 @@ class ProductsController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+    public function categories(Request $request)
+    {
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'sub_categories' => 'required|array', // Ensure it's an array
+            'sub_categories.*' => 'string|max:255', // Validate each sub-category
+        ]);
+
+        // Handle Image Upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('categories', 'public');
+        }
+
+        // Store in the database
+        $category = new product_category();
+        $category->name = $request->name;
+        $category->image = $imagePath;
+        $category->sub_categories = json_encode($request->sub_categories);
+        $category->save();
+
+        return response()->json(['message' => 'Category added successfully', 'category' => $category], 201);
     }
 }
