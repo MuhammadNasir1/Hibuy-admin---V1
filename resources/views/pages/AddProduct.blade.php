@@ -137,7 +137,7 @@
                             </button>
                         </div>
                     </div>
-                    <div id="options-container"></div>
+                    <div id="options-container" class="flex wrap"></div>
                     <!-- Button -->
                     {{-- <div class="flex justify-between  items-center px-5 py-5">
                         <h3 class="text-xl font-medium  ">Variants</h3>
@@ -226,7 +226,7 @@
         $(document).ready(function() {
             $("#add-option-btn").click(function() {
                 let optionHtml = `
-        <div class="variant-box p-4 border rounded-lg bg-gray-100 mb-4">
+        <div class="variant-box mr-3  border rounded-lg bg-gray-100 mb-4">
             <div class="input-group mb-2">
                 <label>Option name</label>
                 <input type="text" placeholder="Add Name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
