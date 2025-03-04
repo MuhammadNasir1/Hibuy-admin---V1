@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\User;
+use App\Models\Reviews;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class apiAuthController extends Controller
@@ -157,6 +159,60 @@ class apiAuthController extends Controller
                 'success' => false,
                 'message' => 'Something went wrong. Please try again later.',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function storeReview(Request $request)
+    {
+        try {
+            $User = Auth::user();
+
+            // Validate input
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required|integer|exists:products,product_id',
+                'rating'     => 'required|integer|min:1|max:5',
+                'review'     => 'required|string',
+                'images'     => 'nullable|array',
+                'images.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Optional image validation
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors'  => $validator->errors()
+                ], 422);
+            }
+
+            // Handle image upload
+            $imagePaths = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $imagePaths[] = $image->store('review_images', 'public'); // Store in `storage/app/public/review_images`
+                }
+            }
+
+            // Create the review
+            $review = Reviews::create([
+                'user_id'    => $User->id, // Get user_id from authenticated user
+                'product_id' => $request->product_id,
+                'rating'     => $request->rating,
+                'review'     => $request->review,
+                'images'     => json_encode($imagePaths), // Store image paths as JSON
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Review added successfully',
+                'review'  => $review
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong!',
+                'error'   => $e->getMessage()
             ], 500);
         }
     }

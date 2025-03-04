@@ -12,22 +12,25 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('register',[AuthController::class,'register']);
-Route::post('login',[apiAuthController::class,'login']);
-Route::post('setPassword',[UserController::class,'setPassword']);
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [apiAuthController::class, 'login']);
+Route::post('setPassword', [UserController::class, 'setPassword']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-  Route::post('logout',[apiAuthController::class,'logout']);
 
-  Route::get('userdetail',[apiAuthController::class,'userdetail']);
+    Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
 
-  Route::POST('toggleWishlist',[apiproductController::class,'toggleWishlist']);
+    Route::get('userdetail', [apiAuthController::class, 'userdetail']);
 
-  Route::post('editProfile',[UserController::class,'editProfile']);
+    Route::POST('toggleWishlist', [apiproductController::class, 'toggleWishlist']);
 
-  Route::post('editStoreProfile',[StoreController::class,'editStoreProfile']);
+    Route::post('editProfile', [UserController::class, 'editProfile']);
 
-  Route::post('KYC_Authentication',[UserController::class,'KYC_Authentication']);
+    Route::post('editStoreProfile', [StoreController::class, 'editStoreProfile']);
+
+    Route::post('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
+
+    Route::post('logout', [apiAuthController::class, 'logout']);
 });
