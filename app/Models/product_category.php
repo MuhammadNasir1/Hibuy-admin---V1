@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class product_category extends Model
 {
-    protected $table = 'product_category';
-    protected $primaryKey = 'category_id';
+    protected $table = 'categories';
+    protected $primaryKey = 'id';
     protected $fillable = [
-        'seller_id',
-        'store_info',
-        'store_profile_detail',
-        'store_status'
+        'name',
+        'image',
+        'sub_categories',
     ];
+    public $timestamps = true;
 
 }

@@ -4,12 +4,13 @@
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow-sm ">
             <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 bg-primary text-white border-b rounded-t-md border-gray-200">
+            <div
+                class="flex items-center justify-between p-4 text-white border-b border-gray-200 md:p-5 bg-primary rounded-t-md">
                 <h3 class="text-xl font-semibold">
                     {{ $title }}
                 </h3>
                 <button type="button"
-                    class="text-white bg-transparent    text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                    class="inline-flex items-center justify-center w-8 h-8 text-sm text-white bg-transparent close-modal ms-auto"
                     data-modal-hide="{{ $id }}">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 14 14">
