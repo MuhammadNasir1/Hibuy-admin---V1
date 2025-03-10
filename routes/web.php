@@ -91,12 +91,12 @@ Route::middleware(['custom_auth'])->group(function () {
         return view('pages.Settings');
     })->name('editsettings');
 
-    Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
-    Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
+    Route::post('/addProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
+    Route::post('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
     Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
     Route::get('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategory']);
     Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
-    Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
+    Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update'])->name('updateCategory');
 
     // Add Product
 

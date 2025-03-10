@@ -87,7 +87,7 @@
             <x-slot name="title">Product Category</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                <form action="" method="POST" id="categoryForm" enctype="multipart/form-data">
+                <form action="addProductCategory" method="POST" id="categoryForm" enctype="multipart/form-data">
                     @csrf
                     <div class="md:py-5">
                         <!-- Image Upload -->
@@ -106,11 +106,13 @@
                         <!-- Sub Categories -->
                         <div class="px-6 mt-5">
                             <label class="block mb-2 text-sm font-medium text-customBlack">Sub Categories</label>
-                            <div id="tag-container" class="flex flex-wrap gap-2 p-2 border rounded-md">
+                            <div class="flex flex-wrap gap-2 p-2 border rounded-md">
                                 <input type="text" id="tag-input-field"
                                     class="border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-primary focus:border-primary block p-2.5 w-full"
                                     placeholder="Enter a tag and press Enter">
                                 <input type="hidden" name="sub_categories" id="tag-inputs">
+                                <div id="tag-container"></div>
+
                             </div>
                             {{-- <button type="button" id="add-tag-btn"
                                 class="px-3 py-1 text-white bg-blue-500 rounded-r-md hover:bg-blue-600">
@@ -167,9 +169,79 @@
 @section('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Define createTagElement globally
+        $("#tag-container").html("");
 
-        let tags = []; // Move this outside to make it globally accessible
+        function closeModal() {
+            $("#productcategory-modal").addClass("hidden"); // Hide modal
+            $("#categoryForm")[0].reset(); // Reset form fields
+            $("#categoryForm").attr("action", "/ProductCategory"); // Reset form action (if needed)
+            $("#submit").text("Submit"); // Reset button text
+
+
+            // Reset tags
+            tags = [];
+            $("#tag-inputs").val("");
+            $("#tag-container").html("");
+            updateHiddenInput();
+        }
+        $(document).ready(function() {
+            // Bind closeModal function to close button
+            $(".close-modal").on("click", function(event) {
+
+                closeModal();
+            });
+        });
+
+
+        // Close modal when clicking outside
+        $(document).on("click", function(event) {
+            if ($(event.target).is("#productcategory-modal")) {
+                closeModal();
+            }
+        });
+        $(document).ready(function() {
+            $('#categoryForm').on('submit', function(e) {
+                let url = $(this).attr('action');
+                e.preventDefault(); // Prevent default form submission
+
+                let formData = new FormData(this); // FormData to handle file uploads
+
+                $.ajax({
+                    url: url, // Update this to your route
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Important: Prevent jQuery from processing data
+                    contentType: false, // Important: Prevent jQuery from setting contentType
+                    success: function(response) {
+                        console.log(response);
+                        Swal.fire({
+                            title: "Success!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location
+                                    .reload(); // Reload the page after closing SweetAlert
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        let errorMessage = "Something went wrong!";
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+                        Swal.fire({
+                            title: "Error!",
+                            text: errorMessage,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            });
+        });
+        let tags = [];
 
         function createTagElement(tag) {
             let tagElement = $("<span>")
@@ -190,68 +262,97 @@
         }
 
         function updateHiddenInput() {
-            $("#tag-inputs").val(JSON.stringify(tags)); // Store as a proper JSON string
+            $("#tag-inputs").val(JSON.stringify(tags));
         }
 
-        // Ensure updateData is defined globally
         function updateData(id) {
             $("#categoryForm").attr("action", "/ProductCategory/update/" + id);
-            $("#productcategory-modal").removeClass("hidden");
-            $('#productcategory-modal').removeClass('hidden flex items-start')
-                .addClass('flex items-center justify-center bg-gray-900 bg-opacity-50');
+            $("#productcategory-modal").removeClass("hidden flex items-start")
+                .addClass("flex items-center justify-center bg-gray-900 bg-opacity-50");
 
             $.ajax({
                 url: '/ProductCategory/getforupdate/' + id,
                 type: 'GET',
-                data: {
-                    id: id
-                },
                 dataType: 'json',
                 success: function(response) {
-                    console.log("AJAX Response:", response);
-
                     if (response.status === 'success') {
-                        $('#productcategory-modal').attr("aria-hidden", "true");
                         $('#name').val(response.data.name);
                         $("#submit").text("Update");
 
-
-                        console.log("Raw sub_categories:", response.data.sub_categories);
-
                         let subCategories = [];
-
                         try {
                             if (typeof response.data.sub_categories === "string") {
                                 subCategories = JSON.parse(response.data.sub_categories);
                             } else if ($.isArray(response.data.sub_categories)) {
                                 subCategories = response.data.sub_categories;
-                            } else {
-                                console.error("Unexpected sub_categories format:", response.data
-                                    .sub_categories);
                             }
                         } catch (error) {
                             console.error("JSON Parse Error:", error);
                         }
 
-                        console.log("Parsed subCategories:", subCategories);
-
                         tags = subCategories.slice();
                         $("#tag-inputs").val("");
+                        // $("#tag-container").empty();
 
                         $.each(subCategories, function(index, tag) {
                             createTagElement(tag);
                         });
 
                         updateHiddenInput();
+
+                        // Swal.fire({
+                        //     title: "Data Loaded",
+                        //     text: "Category data successfully loaded!",
+                        //     icon: "success",
+                        //     timer: 2000,
+                        //     showConfirmButton: false
+                        // });
+
                     } else {
-                        alert('Data not found!');
+                        Swal.fire({
+                            title: "Not Found",
+                            text: "Data not found!",
+                            icon: "warning"
+                        });
                     }
                 },
                 error: function() {
-                    alert('Error fetching data.');
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error fetching data.",
+                        icon: "error"
+                    });
                 }
             });
         }
+
+        // Bind function to form submit event
+        $("#categoryForm").submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let formData = new FormData(this); // Create FormData
+            let id = $(this).data("id"); // Fetch ID from a data attribute
+
+            if (!id) {
+                console.error("Error: ID not found in form data");
+                Swal.fire({
+                    title: "Error",
+                    text: "Category ID is missing!",
+                    icon: "error",
+                });
+                return;
+            }
+
+            categoryupdate(id, formData); // Call the function
+        });
+
+
+        // Bind function to form submit event
+        $("#categoryForm").submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
+            let id = $(this).attr("action").split("/").pop(); // Extract ID from action URL
+            categoryupdate(id); // Call the function
+        });
 
         $(document).ready(function() {
             $("#tag-input-field").keypress(function(event) {
@@ -263,6 +364,20 @@
                         tags.push(newTag);
                         createTagElement(newTag);
                         updateHiddenInput();
+
+                        // Swal.fire({
+                        //     title: "Tag Added",
+                        //     text: `"${newTag}" added successfully!`,
+                        //     icon: "success",
+                        //     timer: 1500,
+                        //     showConfirmButton: false
+                        // });
+                    } else {
+                        Swal.fire({
+                            title: "Duplicate Tag",
+                            text: `"${newTag}" is already added!`,
+                            icon: "warning"
+                        });
                     }
 
                     $(this).val("");
@@ -278,13 +393,14 @@
                     dataType: "json",
                     success: function(response) {
                         if (response.status == "success") {
-                            $("#categoryImage").attr("src", "{{ asset('storage') }}/" + response
+                            $("#categoryImage").attr("src", "{{ asset('storage') }}/" +
+                                response
                                 .data.image);
                             $("#categoryName").text(response.data.name);
 
-                            let subCategories = JSON.parse(response.data.sub_categories);
+                            let subCategories = JSON.parse(response.data
+                                .sub_categories);
                             let subCategoryHtml = "";
-
                             subCategories.forEach(function(sub) {
                                 subCategoryHtml +=
                                     `<li class="py-1 font-medium text-gray-800">${sub}</li>`;
@@ -292,36 +408,46 @@
 
                             $("#categorySubCategories").html(subCategoryHtml);
                             $("#editproductcategory-modal").show();
+
+                            Swal.fire({
+                                title: "Category Loaded",
+                                text: "Category details retrieved successfully!",
+                                icon: "success",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         } else {
-                            alert("Category not found!");
+                            Swal.fire({
+                                title: "Not Found",
+                                text: "Category not found!",
+                                icon: "warning"
+                            });
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error("Error:", error);
-                        alert("Something went wrong. Please try again.");
+                        Swal.fire({
+                            title: "Error",
+                            text: "Something went wrong. Please try again.",
+                            icon: "error"
+                        });
                     }
                 });
             });
+
             $("#addModalBtn").on("click", function() {
                 $("#submit").text("Submit");
-                $("#categoryForm").attr("action", "/ProductCategory");
-            });
-            $(document).ready(function() {
-                // When any close button inside a modal is clicked
-                $("[data-modal-hide]").click(function() {
-                    let modalId = $(this).attr("data-modal-hide"); // Get the modal ID
-                    let modal = $("#" + modalId);
+                $("#categoryForm").attr("action", "/addProductCategory");
 
-                    modal.addClass("hidden"); // Hide modal
-
-                    // Remove dynamically added hidden inputs inside the modal forms
-                    modal.find("form").each(function() {
-                        $(this).find("input[type='hidden']")
-                    .remove(); // Remove all hidden inputs
-                        this.reset(); // Reset the form fields
-                    });
+                Swal.fire({
+                    title: "Add New Category",
+                    text: "You can now enter category details.",
+                    icon: "info",
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             });
+
+
 
         });
     </script>
