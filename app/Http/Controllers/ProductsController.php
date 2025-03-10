@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\product_category;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
@@ -134,4 +135,134 @@ class ProductsController extends Controller
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
+    public function categories(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'sub_categories' => 'required|string', // It comes as a JSON string
+            ]);
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('categories', 'public');
+            }
+
+            // Convert JSON string to array
+            $subCategories = json_decode($request->input('sub_categories'));
+            if (!is_array($subCategories)) {
+                return response()->json(['error' => 'Invalid sub_categories format'], 400);
+            }
+            $category = new product_category();
+            $category->name = $request->input('name');
+            $category->image = $imagePath;
+            $category->sub_categories = json_encode($subCategories); // Save as JSON
+            $category->save();
+
+            return response()->json(['message' => 'Category added successfully', 'category' => $category], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+    public function showcat()
+    {
+        $categories = product_category::all();
+
+        // Loop through each category and count subcategories
+        foreach ($categories as $category) {
+            $category->subcategory_count = is_array(json_decode($category->sub_categories, true))
+                ? count(json_decode($category->sub_categories, true))
+                : 0;
+        }
+
+        return view('admin.ProductCategory', compact('categories'));
+    }
+
+    public function fetchCategory($id)
+    {
+        $category = product_category::find($id);
+        // return $category;
+        if ($category) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $category,
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No record found!'
+        ], 404);
+    }
+    public function deleteCategory($id)
+    {
+        $category = product_category::find($id);
+        if ($category) {
+            $category->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Category deleted successfully',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No record found!'
+        ], 404);
+    }
+    public function getforupdate($id)
+    {
+        try {
+            $category = product_category::find($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $category,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'false',
+                'data' => null,
+            ]);
+        }
+    }
+    public function update(Request $request, $id)
+{
+    try {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'sub_categories' => 'required|string', // JSON string of subcategories
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Find the category by ID
+        $category = product_category::find($id);
+        if (!$category) {
+            return response()->json(['error' => 'Category not found'], 404);
+        }
+
+        // Update category details
+        $category->name = $request->input('name');
+
+        // Handle new image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('categories', 'public');
+            $category->image = $imagePath; // Update image only if a new one is uploaded
+        }
+
+        // Convert subcategories JSON string to an array and save it
+        $subCategories = json_decode($request->input('sub_categories'));
+        if (!is_array($subCategories)) {
+            return response()->json(['error' => 'Invalid sub_categories format'], 400);
+        }
+        $category->sub_categories = json_encode($subCategories); // Save as JSON
+
+        // Save the updated category
+        $category->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Category updated successfully', 'category' => $category], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['error' => $th->getMessage()], 500);
+    }
+}
+
 }
