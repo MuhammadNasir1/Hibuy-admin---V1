@@ -23,7 +23,7 @@ class apiproductController extends Controller
             }
 
             // Fetch products where user_id matches the logged-in user
-            $products = Products::where('user_id', $loggedInUser->id)->get();
+            $products = Products::all();
 
             // Decode JSON fields for better readability
             foreach ($products as $product) {
