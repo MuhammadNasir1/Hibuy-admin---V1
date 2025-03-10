@@ -17,6 +17,9 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware(['custom_auth'])->group(function () {
 
+    Route::post('upload-images', [ProductsController::class, 'getFileName'])->name('upload.images');
+
+    Route::post('/submit-product', [ProductsController::class, 'storeProduct'])->name('product.store');
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 

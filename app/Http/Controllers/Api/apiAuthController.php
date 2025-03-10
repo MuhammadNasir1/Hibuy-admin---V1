@@ -23,9 +23,10 @@ class apiAuthController extends Controller
                 'user_password' => 'required|min:6'
             ]);
 
-            // Fetch user with relationships
+            // Fetch user where role is 'customer'
             $user = User::where('user_email', $validatedData['user_email'])
-                ->with(['customer', 'seller']) // Load relationships
+                // ->where('user_role', 'customer') // Allow only customers
+                ->with(['customer','seller']) // Load customer relationship
                 ->first();
 
             // Check if user exists and password is correct
@@ -40,7 +41,7 @@ class apiAuthController extends Controller
             // Generate API token
             $token = $user->createToken('api-token')->plainTextToken;
 
-            // Initialize user data
+            // Prepare user data
             $userData = [
                 'user_id' => $user->user_id,
                 'user_name' => $user->user_name,
@@ -48,11 +49,9 @@ class apiAuthController extends Controller
                 'user_role' => $user->user_role
             ];
 
-            // Merge additional details based on role
-            if ($user->user_role === 'customer' && $user->customer) {
+            // Merge customer-specific details
+            if ($user->customer) {
                 $userData = array_merge($userData, $user->customer->toArray());
-            } elseif (in_array($user->user_role, ['seller', 'freelancer']) && $user->seller) {
-                $userData = array_merge($userData, $user->seller->toArray());
             }
 
             return response()->json([
@@ -74,6 +73,7 @@ class apiAuthController extends Controller
             ], 500);
         }
     }
+
 
 
     public function logout(Request $request)

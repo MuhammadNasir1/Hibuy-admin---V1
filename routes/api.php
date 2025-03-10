@@ -20,6 +20,8 @@ Route::post('setPassword', [UserController::class, 'setPassword']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
 
+    Route::GET('getProducts', [apiproductController::class, 'getProducts']);
+
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
 
     Route::get('userdetail', [apiAuthController::class, 'userdetail']);

@@ -126,7 +126,8 @@ class UserController extends Controller
             $seller->save();
 
             return response()->json([
-                'success' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully'
+                'success' => true,
+                'message' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully'
             ], 200);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
