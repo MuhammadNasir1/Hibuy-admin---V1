@@ -55,7 +55,9 @@ class AuthController extends Controller
         ]);
 
         // Find user by email
-        $user = User::where('user_email', $validatedData['user_email'])->first();
+        $user = User::where('user_email', $validatedData['user_email'])
+            ->whereIn('user_role', ['seller', 'freelancer', 'admin'])
+            ->first();
 
         // Check if user exists and password is correct
         if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
@@ -113,6 +115,4 @@ class AuthController extends Controller
         //     'message' => 'Logout successful.',
         // ], 200);
     }
-
-
 }

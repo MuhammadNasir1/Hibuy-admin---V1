@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('product_name');
             $table->text('product_description')->nullable();
             $table->string('product_brand');
-            $table->string('product_category');
+            $table->integer('product_category');
+            $table->string('product_subcategory');
             $table->integer('product_stock')->default(0);
             $table->float('purchase_price');
             $table->float('product_price');

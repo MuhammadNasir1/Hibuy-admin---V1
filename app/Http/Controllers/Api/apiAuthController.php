@@ -15,65 +15,72 @@ use Illuminate\Validation\ValidationException;
 class apiAuthController extends Controller
 {
     public function login(Request $request)
-    {
-        try {
-            // Validate request
-            $validatedData = $request->validate([
-                'user_email' => 'required|string|email|max:255',
-                'user_password' => 'required|min:6'
-            ]);
+{
+    try {
+        // Validate request
+        $validatedData = $request->validate([
+            'user_email' => 'required|string|email|max:255',
+            'user_password' => 'required|min:6'
+        ]);
 
-            // Fetch user with relationships
-            $user = User::where('user_email', $validatedData['user_email'])
-                ->with(['customer', 'seller']) // Load relationships
-                ->first();
+        // Fetch user where role is 'customer'
+        $user = User::where('user_email', $validatedData['user_email'])
+            ->where('user_role', 'customer') // Allow only customers
+            ->with(['customer']) // Load customer relationship
+            ->first();
 
-            // Check if user exists and password is correct
-            if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid email or password.',
-                    'errors' => ['user_email' => ['Invalid email or password.']]
-                ], 401);
-            }
-
-            // Generate API token
-            $token = $user->createToken('api-token')->plainTextToken;
-
-            // Initialize user data
-            $userData = [
-                'user_id' => $user->user_id,
-                'user_name' => $user->user_name,
-                'user_email' => $user->user_email,
-                'user_role' => $user->user_role
-            ];
-
-            // Merge additional details based on role
-            if ($user->user_role === 'customer' && $user->customer) {
-                $userData = array_merge($userData, $user->customer->toArray());
-            } elseif (in_array($user->user_role, ['seller', 'freelancer']) && $user->seller) {
-                $userData = array_merge($userData, $user->seller->toArray());
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => "Login successful",
-                'access_token' => $token,
-                'user' => $userData
-            ], 200);
-        } catch (ValidationException $e) {
+        // Check if user exists and password is correct
+        if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong. Please try again later.',
-            ], 500);
+                'message' => 'Invalid email or password.',
+                'errors' => ['user_email' => ['Invalid email or password.']]
+            ], 401);
         }
+
+        // Generate API token
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        // Prepare user data
+        $userData = [
+            'user_id' => $user->user_id,
+            'user_name' => $user->user_name,
+            'user_email' => $user->user_email,
+            'user_role' => $user->user_role
+        ];
+
+        // Merge customer-specific details
+        if ($user->customer) {
+            $customerData = $user->customer->toArray();
+
+            // Decode the `customer_addresses` JSON string into an array
+            $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
+
+            // Merge with user data
+            $userData = array_merge($userData, $customerData);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Login successful",
+            'access_token' => $token,
+            'user' => $userData
+        ], 200);
+    } catch (ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong. Please try again later.',
+        ], 500);
     }
+}
+
+
 
 
     public function logout(Request $request)
