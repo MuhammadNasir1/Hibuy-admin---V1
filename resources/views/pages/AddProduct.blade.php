@@ -115,10 +115,10 @@
 
         /* Upload Progress Bar */
         /* .dz-progress {
-                                background: green !important;
-                                height: 5px !important;
-                                border-radius: 3px;
-                            } */
+                                                background: green !important;
+                                                height: 5px !important;
+                                                border-radius: 3px;
+                                            } */
 
         /* Styling for a Specific Dropzone */
         #my-dropzone {
@@ -156,18 +156,18 @@
                                 name="category">
                                 <x-slot name="options">
                                     <option disabled selected>Select Category</option>
-                                    <option value="1">Food</option>
-                                    <option value="2">Clothes</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
                                 </x-slot>
                             </x-select>
                         </div>
+
                         <div>
                             <x-select type="text" label="Sub Category" placeholder="Sub Category Here" id="sub_category"
                                 name="sub_category">
                                 <x-slot name="options">
                                     <option disabled selected>Select Sub Category</option>
-                                    <option value="Pizza">Pizza</option>
-                                    <option value="Pents">Pents</option>
                                 </x-slot>
                             </x-select>
                         </div>
@@ -499,6 +499,38 @@
 
 
         $(document).ready(function() {
+            $('#category').on('change', function() {
+                let categoryId = $(this).val();
+                let subCategoryDropdown = $('#sub_category');
+
+                // Clear previous options
+                subCategoryDropdown.html('<option disabled selected>Loading...</option>');
+
+                $.ajax({
+                    url: `/get-subcategories/${categoryId}`,
+                    type: 'GET',
+                    success: function(response) {
+                        subCategoryDropdown.html(
+                            '<option disabled selected>Select Sub Category</option>');
+
+                        if (response.success && response.sub_categories.length > 0) {
+                            response.sub_categories.forEach(subCategory => {
+                                subCategoryDropdown.append(
+                                    `<option value="${subCategory}">${subCategory}</option>`
+                                );
+                            });
+                        } else {
+                            subCategoryDropdown.html(
+                                '<option disabled>No Subcategories Found</option>');
+                        }
+                    },
+                    error: function() {
+                        subCategoryDropdown.html(
+                            '<option disabled>Error fetching data</option>');
+                    }
+                });
+            });
+
             $("#product_price, #discount").on("input", function() {
                 let price = parseFloat($("#product_price").val()) || 0;
                 let discount = parseFloat($("#discount").val()) || 0;

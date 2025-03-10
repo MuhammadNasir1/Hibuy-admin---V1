@@ -102,7 +102,9 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
 
 
-    Route::GET('/product/add', [ProductsController::class, 'productswithcategory'])->name('product.add');
+    Route::GET('/product/add', [ProductsController::class, 'getCategories'])->name('product.add');
+
+    Route::get('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
 
     // Add Product
 

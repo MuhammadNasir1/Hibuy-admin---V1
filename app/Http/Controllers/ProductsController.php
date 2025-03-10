@@ -19,7 +19,40 @@ class ProductsController extends Controller
         return view('pages.products');
     }
 
+    public function getCategories()
+    {
+        try {
+            // Fetch all categories from the database
+            $categories = product_category::select('id', 'name', 'image', 'sub_categories')->get();
 
+            // Decode JSON fields if sub_categories are stored as JSON
+            foreach ($categories as $category) {
+                $category->sub_categories = json_decode($category->sub_categories, true);
+            }
+
+            // Return to the Blade view with compacted data
+            return view('pages.AddProduct', compact('categories'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
+    }
+    public function getSubCategories($category_id)
+    {
+        try {
+            $category = product_category::find($category_id);
+
+            if (!$category) {
+                return response()->json(['success' => false, 'message' => 'Category not found'], 404);
+            }
+
+            // Decode JSON stored subcategories
+            $subCategories = json_decode($category->sub_categories, true) ?? [];
+
+            return response()->json(['success' => true, 'sub_categories' => $subCategories], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
     public function getFileName(Request $request)
     {
         $request->validate([
@@ -226,43 +259,42 @@ class ProductsController extends Controller
         }
     }
     public function update(Request $request, $id)
-{
-    try {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'sub_categories' => 'required|string', // JSON string of subcategories
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'sub_categories' => 'required|string', // JSON string of subcategories
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
 
-        // Find the category by ID
-        $category = product_category::find($id);
-        if (!$category) {
-            return response()->json(['error' => 'Category not found'], 404);
+            // Find the category by ID
+            $category = product_category::find($id);
+            if (!$category) {
+                return response()->json(['error' => 'Category not found'], 404);
+            }
+
+            // Update category details
+            $category->name = $request->input('name');
+
+            // Handle new image upload
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('categories', 'public');
+                $category->image = $imagePath; // Update image only if a new one is uploaded
+            }
+
+            // Convert subcategories JSON string to an array and save it
+            $subCategories = json_decode($request->input('sub_categories'));
+            if (!is_array($subCategories)) {
+                return response()->json(['error' => 'Invalid sub_categories format'], 400);
+            }
+            $category->sub_categories = json_encode($subCategories); // Save as JSON
+
+            // Save the updated category
+            $category->save();
+
+            return response()->json(['status' => 'success', 'message' => 'Category updated successfully', 'category' => $category], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
         }
-
-        // Update category details
-        $category->name = $request->input('name');
-
-        // Handle new image upload
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
-            $category->image = $imagePath; // Update image only if a new one is uploaded
-        }
-
-        // Convert subcategories JSON string to an array and save it
-        $subCategories = json_decode($request->input('sub_categories'));
-        if (!is_array($subCategories)) {
-            return response()->json(['error' => 'Invalid sub_categories format'], 400);
-        }
-        $category->sub_categories = json_encode($subCategories); // Save as JSON
-
-        // Save the updated category
-        $category->save();
-
-        return response()->json(['status' => 'success', 'message' => 'Category updated successfully', 'category' => $category], 200);
-    } catch (\Throwable $th) {
-        return response()->json(['error' => $th->getMessage()], 500);
     }
-}
-
 }

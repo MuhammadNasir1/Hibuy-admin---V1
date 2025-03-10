@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Store;
+use App\Models\product_category;
 use App\Models\Wishlist;
 use App\Models\Seller;
 use App\Models\Products;
@@ -83,6 +84,39 @@ class apiproductController extends Controller
                 'success' => true,
                 'message' => 'Product added to wishlist',
             ], 201);
+        }
+    }
+
+    public function getCategories()
+    {
+        try {
+            // Check if user is authenticated
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
+
+            // Fetch categories and decode JSON sub_categories
+            $categories = product_category::select('id', 'name', 'image', 'sub_categories')
+                ->get()
+                ->map(function ($category) {
+                    $category->sub_categories = json_decode($category->sub_categories, true);
+                    return $category;
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Categories fetched successfully',
+                'data' => $categories,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }
