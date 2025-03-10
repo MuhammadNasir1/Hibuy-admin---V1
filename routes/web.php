@@ -101,9 +101,14 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
     Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
 
+
+    Route::GET('/product/add', [ProductsController::class, 'productswithcategory'])->name('product.add');
+
     // Add Product
 
     Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
+
+    // Route::view('/product/add', 'pages.AddProduct')->name('product.add');
 
     Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
     Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
@@ -112,7 +117,6 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
     Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
     // Route::view('/ProductCategory', 'admin.ProductCategory')->name('addProductCategory');
-    Route::view('/product/add', 'pages.AddProduct')->name('product.add');
     Route::view('/mystore', 'seller.Store')->name('mystore');
     Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
 });
