@@ -13,23 +13,44 @@ use Illuminate\Support\Facades\Auth;
 
 class apiproductController extends Controller
 {
-    public function getProducts()
+    public function getProducts(Request $request)
     {
         try {
-            // Fetch products with category name
-            $products = Products::select(
+            // Get filter values from both GET (query params) and POST (request body)
+            $min_price = $request->input('min_price');
+            $max_price = $request->input('max_price');
+            $subcategory = $request->input('product_subcategory');
+
+            // Fetch products with category name and subcategory (direct from table)
+            $query = Products::select(
                 "product_id",
                 "store_id",
                 "product_name",
                 "product_brand",
                 "product_category",
+                "product_subcategory", // Directly fetching from the table
                 "product_price",
                 "product_discount",
                 "product_discounted_price",
                 "product_images"
             )
-                ->with(['category:id,name']) // Fetch category details
-                ->get();
+                ->with(['category:id,name']); // Fetch category details
+
+            // Apply price range filter if provided
+            if (!empty($min_price)) {
+                $query->where('product_discounted_price', '>=', $min_price);
+            }
+
+            if (!empty($max_price)) {
+                $query->where('product_discounted_price', '<=', $max_price);
+            }
+
+            // Apply product subcategory filter if provided
+            if (!empty($subcategory)) {
+                $query->where('product_subcategory', $subcategory);
+            }
+
+            $products = $query->get();
 
             // Process product images and add category name
             foreach ($products as $product) {
@@ -57,6 +78,8 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
+
 
 
 
