@@ -40,6 +40,7 @@ class apiproductController extends Controller
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
                 unset($product->product_images); 
+                $product->product_rating = 4.5; 
             }
 
             return response()->json(['success' => true, 'products' => $products], 200);
