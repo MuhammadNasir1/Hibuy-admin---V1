@@ -16,11 +16,11 @@ class apiproductController extends Controller
     public function getProducts()
     {
         try {
-            $loggedInUser = Auth::user();
+            // $loggedInUser = Auth::user();
 
-            if (!$loggedInUser) {
-                return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
-            }
+            // if (!$loggedInUser) {
+            //     return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+            // }
 
             // Fetch products where user_id matches the logged-in user
             $products = Products::all();
@@ -91,13 +91,13 @@ class apiproductController extends Controller
     {
         try {
             // Check if user is authenticated
-            $user = Auth::user();
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not authenticated',
-                ], 401);
-            }
+            // $user = Auth::user();
+            // if (!$user) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'User not authenticated',
+            //     ], 401);
+            // }
 
             // Fetch categories and decode JSON sub_categories
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')

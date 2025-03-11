@@ -17,8 +17,8 @@ Route::post('login', [apiAuthController::class, 'login']);
 Route::post('setPassword', [UserController::class, 'setPassword']);
 
 
-Route::GET('getCategories', [apiproductController::class, 'getCategories']);
-Route::GET('getProducts', [apiproductController::class, 'getProducts']);
+Route::get('getCategories', [apiproductController::class, 'getCategories']);
+Route::get('getProducts', [apiproductController::class, 'getProducts']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
