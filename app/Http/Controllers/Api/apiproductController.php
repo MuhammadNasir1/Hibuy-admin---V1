@@ -14,70 +14,74 @@ use Illuminate\Support\Facades\Auth;
 class apiproductController extends Controller
 {
     public function getProducts(Request $request)
-    {
-        try {
-            // Get filter values from both GET (query params) and POST (request body)
-            $min_price = $request->input('min_price');
-            $max_price = $request->input('max_price');
-            $subcategory = $request->input('product_subcategory');
+{
+    try {
+        // Get filter values from both GET (query params) and POST (request body)
+        $min_price = $request->input('min_price');
+        $max_price = $request->input('max_price');
+        $subcategory = $request->input('product_subcategory');
 
-            // Fetch products with category name and subcategory (direct from table)
-            $query = Products::select(
-                "product_id",
-                "store_id",
-                "product_name",
-                "product_brand",
-                "product_category",
-                "product_subcategory", // Directly fetching from the table
-                "product_price",
-                "product_discount",
-                "product_discounted_price",
-                "product_images"
-            )
-                ->with(['category:id,name']); // Fetch category details
+        // Fetch products with category name and subcategory (direct from table)
+        $query = Products::select(
+            "product_id",
+            "store_id",
+            "product_name",
+            "product_brand",
+            "product_category",
+            "product_subcategory", // Directly fetching from the table
+            "product_price",
+            "product_discount",
+            "product_discounted_price",
+            "product_images"
+        )
+            ->with(['category:id,name']); // Fetch category details
 
-            // Apply price range filter if provided
-            if (!empty($min_price)) {
-                $query->where('product_discounted_price', '>=', $min_price);
-            }
-
-            if (!empty($max_price)) {
-                $query->where('product_discounted_price', '<=', $max_price);
-            }
-
-            // Apply product subcategory filter if provided
-            if (!empty($subcategory)) {
-                $query->where('product_subcategory', $subcategory);
-            }
-
-            $products = $query->get();
-
-            // Process product images and add category name
-            foreach ($products as $product) {
-                $product->product_images = json_decode($product->product_images, true);
-                $product->product_image = $product->product_images[0] ?? null;
-                unset($product->product_images);
-
-                // Default product rating
-                $product->product_rating = 4.5;
-
-                // Add category name
-                $product->category_name = $product->category->name ?? null;
-                unset($product->category); // Remove the full category object
-            }
-
-            return response()->json([
-                'success'  => true,
-                'message'  => 'Products Fetched Successfully',
-                'products' => $products
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success'  => false,
-                'message'  => $e->getMessage()
-            ], 500);
+        // Apply price range filter if provided
+        if (!empty($min_price)) {
+            $query->where('product_discounted_price', '>=', $min_price);
         }
+
+        if (!empty($max_price)) {
+            $query->where('product_discounted_price', '<=', $max_price);
+        }
+
+        // Apply product subcategory filter if provided
+        if (!empty($subcategory)) {
+            $query->where('product_subcategory', $subcategory);
+        }
+
+        $products = $query->get();
+
+        // Process product images and add category name
+        foreach ($products as $product) {
+            $product->product_images = json_decode($product->product_images, true);
+            $product->product_image = $product->product_images[0] ?? null;
+            unset($product->product_images);
+
+            // Default product rating
+            $product->product_rating = 4.5;
+
+            // Add category name
+            $product->category_name = $product->category->name ?? null;
+            unset($product->category); // Remove the full category object
+
+            // Add is_discounted flag
+            $product->is_discounted = $product->product_discount > 0 ? true : false;
+        }
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Products Fetched Successfully',
+            'products' => $products
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success'  => false,
+            'message'  => $e->getMessage()
+        ], 500);
     }
+}
+
 
 
 
