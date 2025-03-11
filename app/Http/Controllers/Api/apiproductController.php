@@ -28,8 +28,8 @@ class apiproductController extends Controller
             // Decode JSON fields for better readability
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
-                $product->product_variation = json_decode($product->product_variation, true);
-                $product->product_attributes = json_decode($product->product_attributes, true);
+                // $product->product_variation = json_decode($product->product_variation, true);
+                // $product->product_attributes = json_decode($product->product_attributes, true);
             }
 
             return response()->json(['success' => true, 'products' => $products], 200);
