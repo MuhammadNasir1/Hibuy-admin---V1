@@ -25,4 +25,13 @@ class Products extends Model
         'product_variation',
         'product_status',
     ];
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id', 'store_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(product_category::class, 'product_category', 'id');
+    }
 }

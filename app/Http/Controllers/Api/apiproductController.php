@@ -16,38 +16,135 @@ class apiproductController extends Controller
     public function getProducts()
     {
         try {
-            // $loggedInUser = Auth::user();
+            // Fetch products with category name
+            $products = Products::select(
+                "product_id",
+                "store_id",
+                "product_name",
+                "product_brand",
+                "product_category",
+                "product_price",
+                "product_discount",
+                "product_discounted_price",
+                "product_images"
+            )
+                ->with(['category:id,name']) // Fetch category details
+                ->get();
 
-            // if (!$loggedInUser) {
-            //     return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
-            // }
-
-            // // Fetch products where user_id matches the logged-in user
-            // $products = Products::all();
-
-            // // Decode JSON fields for better readability
-            // foreach ($products as $product) {
-            //     $product->product_images = json_decode($product->product_images, true);
-            //     $product->product_variation = json_decode($product->product_variation, true);
-            //     $product->product_attributes = json_decode($product->product_attributes, true);
-            // }
-
-
-            $products = Products::select("product_id" , "store_id" , "product_name" , "product_brand"  , "product_category" , "product_price" , "product_discount" , "product_discounted_price" , "product_images" )->get();
-
-            // Decode JSON fields for better readability
+            // Process product images and add category name
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
-                unset($product->product_images); 
-                $product->product_rating = 4.5; 
+                unset($product->product_images);
+
+                // Default product rating
+                $product->product_rating = 4.5;
+
+                // Add category name
+                $product->category_name = $product->category->name ?? null;
+                unset($product->category); // Remove the full category object
             }
 
-            return response()->json(['success' => true, 'products' => $products], 200);
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Products Fetched Successfully',
+                'products' => $products
+            ], 200);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success'  => false,
+                'message'  => $e->getMessage()
+            ], 500);
         }
     }
+
+
+
+    public function getProductsDetail(Request $request)
+    {
+        try {
+            // Get product_id from the request
+            $product_id = $request->query('product_id');
+
+            if (!$product_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product ID is required'
+                ], 400);
+            }
+
+            // Fetch product with store and category details
+            $product = Products::select(
+                'product_id',
+                'product_name',
+                'product_description',
+                'product_price',
+                'product_discount',
+                'product_discounted_price',
+                'product_images',
+                'product_variation',
+                'store_id',
+                'product_category', // Category ID
+                'product_subcategory' // Subcategory ID
+            )
+                ->with([
+                    'store:store_id,store_profile_detail,store_info', // Fetch store details
+                    'category:id,name' // Corrected category relation
+                ])
+                ->where('product_id', $product_id)
+                ->first();
+
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found'
+                ], 404);
+            }
+
+            // Decode JSON fields from products
+            $product->product_images = json_decode($product->product_images, true);
+            $product->product_variation = json_decode($product->product_variation, true);
+
+            // Prepare response data
+            $response = [
+                'product_id'               => $product->product_id,
+                'product_name'             => $product->product_name,
+                'product_description'      => $product->product_description,
+                'product_price'            => $product->product_price,
+                'product_discount'         => $product->product_discount,
+                'product_discounted_price' => $product->product_discounted_price,
+                'product_images'           => $product->product_images,
+                'product_variation'        => $product->product_variation,
+                'category_id'              => $product->category->id ?? null,
+                'category_name'            => $product->category->name ?? null
+            ];
+
+            // Handle store details
+            if ($product->store) {
+                $storeProfileDetail = json_decode($product->store->store_profile_detail, true);
+
+                if (!empty($storeProfileDetail)) {
+                    $response['store_profile_detail'] = $storeProfileDetail;
+                } else {
+                    $response['store_info'] = json_decode($product->store->store_info, true);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product Fetched Successfully',
+                'product' => $response
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
 
 
 
