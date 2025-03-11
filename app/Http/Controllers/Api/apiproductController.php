@@ -22,14 +22,24 @@ class apiproductController extends Controller
             //     return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
             // }
 
-            // Fetch products where user_id matches the logged-in user
-            $products = Products::all();
+            // // Fetch products where user_id matches the logged-in user
+            // $products = Products::all();
+
+            // // Decode JSON fields for better readability
+            // foreach ($products as $product) {
+            //     $product->product_images = json_decode($product->product_images, true);
+            //     $product->product_variation = json_decode($product->product_variation, true);
+            //     $product->product_attributes = json_decode($product->product_attributes, true);
+            // }
+
+
+            $products = Products::select("product_id" , "store_id" , "product_name" , "product_brand"  , "product_category" , "product_price" , "product_discount" , "product_discounted_price" , "product_images" )->get();
 
             // Decode JSON fields for better readability
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
-                // $product->product_variation = json_decode($product->product_variation, true);
-                // $product->product_attributes = json_decode($product->product_attributes, true);
+                $product->product_image = $product->product_images[0] ?? null;
+                unset($product->product_images); 
             }
 
             return response()->json(['success' => true, 'products' => $products], 200);
