@@ -139,6 +139,7 @@ class apiproductController extends Controller
                 'product_name'             => $product->product_name,
                 'product_description'      => $product->product_description,
                 'product_price'            => $product->product_price,
+                'product_brand'            => $product->product_brand,
                 'product_discount'         => $product->product_discount,
                 'product_discounted_price' => $product->product_discounted_price,
                 'product_images'           => $product->product_images,
