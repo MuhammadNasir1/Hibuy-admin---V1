@@ -148,6 +148,7 @@ class apiproductController extends Controller
                 'category_name'            => $product->category->name ?? null
             ];
 
+
             // Handle store details
             if ($product->store) {
                 $storeProfileDetail = json_decode($product->store->store_profile_detail, true);
