@@ -100,7 +100,7 @@ class apiproductController extends Controller
                 ], 400);
             }
 
-            // Fetch product with store and category details
+            // Fetch product with store, category, and reviews
             $product = Products::select(
                 'product_id',
                 'product_name',
@@ -117,7 +117,8 @@ class apiproductController extends Controller
             )
                 ->with([
                     'store:store_id,store_profile_detail,store_info', // Fetch store details
-                    'category:id,name' // Corrected category relation
+                    'category:id,name', // Fetch category details
+                    'reviews.user:user_id,user_name' // Fetch reviews along with the user's name
                 ])
                 ->where('product_id', $product_id)
                 ->first();
@@ -145,18 +146,27 @@ class apiproductController extends Controller
                 'product_images'           => $product->product_images,
                 'product_variation'        => $product->product_variation,
                 'category_id'              => $product->category->id ?? null,
-                'category_name'            => $product->category->name ?? null
+                'category_name'            => $product->category->name ?? null,
+                'reviews'                  => [],
+                'review_count'             => $product->reviews->count() // Count total reviews
             ];
 
-            // Handle store details
+            // Attach store details
             if ($product->store) {
                 $storeProfileDetail = json_decode($product->store->store_profile_detail, true);
+                $response['store_profile_detail'] = $storeProfileDetail ?: json_decode($product->store->store_info, true);
+            }
 
-                if (!empty($storeProfileDetail)) {
-                    $response['store_profile_detail'] = $storeProfileDetail;
-                } else {
-                    $response['store_info'] = json_decode($product->store->store_info, true);
-                }
+            // Attach reviews
+            foreach ($product->reviews as $review) {
+                $response['reviews'][] = [
+                    'review_id' => $review->review_id,
+                    'user_id'   => $review->user_id,
+                    'username'  => $review->user->user_name ?? 'Unknown', // Fetch username
+                    'rating'    => $review->rating,
+                    'review'    => $review->review,
+                    'images'    => $review->images
+                ];
             }
 
             return response()->json([
@@ -171,6 +181,8 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
+
 
 
 
