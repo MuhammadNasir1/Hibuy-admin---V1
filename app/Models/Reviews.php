@@ -16,4 +16,9 @@ class Reviews extends Model
     protected $casts = [
         'images' => 'array', // Convert JSON to array automatically
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id'); // Maps user_id in reviews to id in users table
+    }
 }
