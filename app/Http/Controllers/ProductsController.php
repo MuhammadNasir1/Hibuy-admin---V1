@@ -57,7 +57,7 @@ class ProductsController extends Controller
     {
         $request->validate([
             'product_images' => 'required|array',
-            'product_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'product_images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $filePaths = [];
