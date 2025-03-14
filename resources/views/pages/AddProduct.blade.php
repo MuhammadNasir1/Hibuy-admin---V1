@@ -115,10 +115,10 @@
 
         /* Upload Progress Bar */
         /* .dz-progress {
-                                                background: green !important;
-                                                height: 5px !important;
-                                                border-radius: 3px;
-                                            } */
+                                                            background: green !important;
+                                                            height: 5px !important;
+                                                            border-radius: 3px;
+                                                        } */
 
         /* Styling for a Specific Dropzone */
         #my-dropzone {
@@ -369,15 +369,23 @@
                 };
 
                 let optionDisplayHtml = `
-        <div class="option-display p-2 bg-gray-200 rounded mt-2">
-            <strong>${optionName}</strong>
-            <div class="option-values mt-2 flex gap-2">
-                ${values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
-            </div>
-        </div>`;
+    <div class="option-display p-2 bg-gray-200 rounded mt-2">
+        <strong>${optionName}</strong>
+        <div class="option-values mt-2 flex gap-2">
+            ${values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
+        </div>
+    </div>`;
 
                 container.find(".option-display-container").html(optionDisplayHtml);
                 container.find(".input-group, .values-container, .done-btn").hide();
+
+                // Add hidden inputs for option name and values
+                let hiddenInputsHtml = `
+        <input type="hidden" name="options[${optionIndex}][name]" value="${optionName}">
+        ${values.map(value => `<input type="hidden" name="options[${optionIndex}][values][]" value="${value}">`).join('')}
+    `;
+
+                container.append(hiddenInputsHtml);
 
                 generateVariants();
             });
@@ -390,6 +398,8 @@
 
                 let parentValues = options[0].values;
                 let childValues = options[1].values;
+                let parentOptionName = options[0].name; // Parent Option Name
+                let childOptionName = options[1].name; // Child Option Name
 
                 parentValues.forEach((parentValue, parentIndex) => {
                     let childCount = childValues.length;
@@ -402,16 +412,17 @@
         <span class="text-sm text-gray-500">(${childCount} variants)</span>
     </td>
     <td class="py-3 px-4">
-        <input type="hidden" name="variants[${parentIndex}][parentname]" id="parent-name-${parentIndex}" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" value="${parentValue}">
+        <input type="hidden" name="variants[${parentIndex}][parentname]" value="${parentValue}">
+        <input type="text" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}"> <!-- Hidden Parent Option Name -->
 
-        <input type="file" name="variants[${parentIndex}][parentimage]" id="parent-image-${parentIndex}" accept="image/*"
+        <input type="file" name="variants[${parentIndex}][parentimage]" accept="image/*"
             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:bg-blue-600 file:text-white file:px-4 file:py-2 file:border-0 file:rounded-lg file:cursor-pointer file:hover:bg-blue-700 transition">
     </td>
     <td class="py-3 px-4">
-        <input type="number" name="variants[${parentIndex}][parentprice]" id="parent-price-${parentIndex}" class="price-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="Rs 0.00">
+        <input type="number" name="variants[${parentIndex}][parentprice]" class="price-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="Rs 0.00">
     </td>
     <td class="py-3 px-4">
-        <input type="number" name="variants[${parentIndex}][parentstock]" id="parent-stock-${parentIndex}" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="0">
+        <input type="number" name="variants[${parentIndex}][parentstock]" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="0">
     </td>
 </tr>`;
 
@@ -426,9 +437,10 @@
         <span class="text-gray-500">📷</span>
         <span>${childValue}</span>
         <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][name]" value="${childValue}">
+        <input type="text" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}"> <!-- Hidden Child Option Name -->
     </td>
     <td class="py-3 px-4">
-        <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" id="child-image-${parentIndex}-${childIndex}" accept="image/*"
+        <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" accept="image/*"
             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent file:bg-green-600 file:text-white file:px-4 file:py-2 file:border-0 file:rounded-lg file:cursor-pointer file:hover:bg-green-700 transition">
     </td>
     <td class="py-3 px-4">

@@ -13,14 +13,9 @@ use Illuminate\Support\Facades\Auth;
 
 class apiproductController extends Controller
 {
-    public function getProducts(Request $request)
+    public function getProducts(Request $request, $categoryid = null)
     {
         try {
-            // Get filter values from both GET (query params) and POST (request body)
-            $min_price = $request->input('min_price');
-            $max_price = $request->input('max_price');
-            $subcategory = $request->input('product_subcategory');
-
             // Fetch products with category name and subcategory (direct from table)
             $query = Products::select(
                 "product_id",
@@ -36,18 +31,9 @@ class apiproductController extends Controller
             )
                 ->with(['category:id,name']); // Fetch category details
 
-            // Apply price range filter if provided
-            if (!empty($min_price)) {
-                $query->where('product_discounted_price', '>=', $min_price);
-            }
-
-            if (!empty($max_price)) {
-                $query->where('product_discounted_price', '<=', $max_price);
-            }
-
-            // Apply product subcategory filter if provided
-            if (!empty($subcategory)) {
-                $query->where('product_subcategory', $subcategory);
+            // Apply category filter only if $categoryid is not null or empty
+            if (!empty($categoryid)) {
+                $query->where('product_category', $categoryid);
             }
 
             $products = $query->get();
@@ -81,6 +67,7 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
 
 
 
