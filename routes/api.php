@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\Api\apiAuthController;
 use App\Http\Controllers\Api\apiproductController;
+use App\Http\Controllers\Api\apiStoreController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,8 +19,9 @@ Route::post('setPassword', [UserController::class, 'setPassword']);
 
 
 Route::get('getCategories', [apiproductController::class, 'getCategories']);
-Route::match(['get', 'post'], 'getProducts', [apiproductController::class, 'getProducts']);
+Route::match(['get', 'post'], 'getProducts/{categoryid?}', [apiproductController::class, 'getProducts']);
 Route::get('getProductsDetail', [apiproductController::class, 'getProductsDetail']);
+Route::get('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 

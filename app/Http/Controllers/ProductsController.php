@@ -83,7 +83,7 @@ class ProductsController extends Controller
         try {
             // Decode variants JSON if it's a string
             $productVariants = $request->variants ?? [];
-
+            // return $productVariants;
             foreach ($productVariants as $parentIndex => &$parentVariant) {
                 // Handle parent image upload
                 if ($request->hasFile("variants.{$parentIndex}.parentimage")) {
@@ -173,12 +173,14 @@ class ProductsController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3048',
                 'sub_categories' => 'required|string', // It comes as a JSON string
             ]);
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('categories', 'public');
+                $newpath = "storage/" . $imagePath;
             }
+
 
             // Convert JSON string to array
             $subCategories = json_decode($request->input('sub_categories'));
@@ -187,7 +189,7 @@ class ProductsController extends Controller
             }
             $category = new product_category();
             $category->name = $request->input('name');
-            $category->image = $imagePath;
+            $category->image = $newpath;
             $category->sub_categories = json_encode($subCategories); // Save as JSON
             $category->save();
 

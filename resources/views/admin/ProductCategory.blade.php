@@ -20,7 +20,7 @@
                         <tr>
                             <td> {{ $loop->iteration }}</td>
                             <td>
-                                <img class="rounded-full w-11 h-11" src="{{ asset('storage/' . $categorie->image) }}"
+                                <img class="rounded-full w-11 h-11" src="{{ asset('' . $categorie->image) }}"
                                     alt="Jese image">
                             </td>
                             <td>{{ $categorie->name }}</td>
@@ -278,8 +278,9 @@
                     dataType: "json",
                     success: function(response) {
                         if (response.status == "success") {
-                            $("#categoryImage").attr("src", "{{ asset('storage') }}/" + response
+                            $("#categoryImage").attr("src", "{{ asset('') }}" + response
                                 .data.image);
+
                             $("#categoryName").text(response.data.name);
 
                             let subCategories = JSON.parse(response.data.sub_categories);
@@ -317,7 +318,7 @@
                     // Remove dynamically added hidden inputs inside the modal forms
                     modal.find("form").each(function() {
                         $(this).find("input[type='hidden']")
-                    .remove(); // Remove all hidden inputs
+                            .remove(); // Remove all hidden inputs
                         this.reset(); // Reset the form fields
                     });
                 });
