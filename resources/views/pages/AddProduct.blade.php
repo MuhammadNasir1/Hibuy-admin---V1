@@ -115,10 +115,10 @@
 
         /* Upload Progress Bar */
         /* .dz-progress {
-                                                                background: green !important;
-                                                                height: 5px !important;
-                                                                border-radius: 3px;
-                                                            } */
+                                                                    background: green !important;
+                                                                    height: 5px !important;
+                                                                    border-radius: 3px;
+                                                                } */
 
         /* Styling for a Specific Dropzone */
         #my-dropzone {
@@ -394,66 +394,62 @@
                 let tableBody = $("#variantTableBody");
                 tableBody.empty();
 
-                if (options.length < 2) return;
+                if (options.length === 0) return; // No variants to display
 
                 let parentValues = options[0].values;
-                let childValues = options[1].values;
-                let parentOptionName = options[0].name; // Parent Option Name
-                let childOptionName = options[1].name; // Child Option Name
+                let parentOptionName = options[0].name;
+                let childValues = options.length > 1 ? options[1].values : []; // Child only if available
+                let childOptionName = options.length > 1 ? options[1].name : "";
 
                 parentValues.forEach((parentValue, parentIndex) => {
-                    let childCount = childValues.length;
-
                     let parentRow = `
 <tr class="parent-row bg-gray-100 border-b border-gray-300">
     <td class="py-3 px-4 font-semibold text-gray-800 flex items-center space-x-2">
-        <button type="button" class="toggle-child cursor-pointer text-gray-600 hover:text-gray-800 transition" data-target="#child-rows-${parentIndex}">▼</button>
+        ${childValues.length > 0 ? `<button type="button" class="toggle-child cursor-pointer text-gray-600 hover:text-gray-800 transition" data-target="#child-rows-${parentIndex}">▼</button>` : ""}
         <span>${parentValue}</span>
-        <span class="text-sm text-gray-500">(${childCount} variants)</span>
+        ${childValues.length > 0 ? `<span class="text-sm text-gray-500">(${childValues.length} variants)</span>` : ""}
     </td>
     <td class="py-3 px-4">
         <input type="hidden" name="variants[${parentIndex}][parentname]" value="${parentValue}">
-        <input type="hidden" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}"> <!-- Hidden Parent Option Name -->
-
-        <input type="file" name="variants[${parentIndex}][parentimage]" accept="image/*"
-            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:bg-blue-600 file:text-white file:px-4 file:py-2 file:border-0 file:rounded-lg file:cursor-pointer file:hover:bg-blue-700 transition">
+        <input type="hidden" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}">
+        <input type="file" name="variants[${parentIndex}][parentimage]" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white">
     </td>
     <td class="py-3 px-4">
-        <input type="number" name="variants[${parentIndex}][parentprice]" class="price-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="Rs 0.00">
+        <input type="number" id="parent-price-${parentIndex}" name="variants[${parentIndex}][parentprice]" class="price-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="Rs 0.00">
     </td>
     <td class="py-3 px-4">
-        <input type="number" name="variants[${parentIndex}][parentstock]" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="0">
+        <input type="number" id="parent-stock-${parentIndex}" name="variants[${parentIndex}][parentstock]" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
     </td>
 </tr>`;
 
                     tableBody.append(parentRow);
 
-                    let childRowContainer = `<tbody id="child-rows-${parentIndex}" class="hidden">`;
-
-                    childValues.forEach((childValue, childIndex) => {
-                        childRowContainer += `
+                    // If child variants exist, generate child rows
+                    if (childValues.length > 0) {
+                        let childRowContainer = `<tbody id="child-rows-${parentIndex}" class="hidden">`;
+                        childValues.forEach((childValue, childIndex) => {
+                            childRowContainer += `
 <tr class="child-row bg-white border-b border-gray-300">
     <td class="py-3 px-4 pl-12 text-gray-700 flex items-center space-x-2">
-        <span class="text-gray-500">📷</span>
         <span>${childValue}</span>
         <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][name]" value="${childValue}">
-        <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}"> <!-- Hidden Child Option Name -->
+        <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}">
     </td>
     <td class="py-3 px-4">
-        <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" accept="image/*"
-            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent file:bg-green-600 file:text-white file:px-4 file:py-2 file:border-0 file:rounded-lg file:cursor-pointer file:hover:bg-green-700 transition">
+        <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white">
     </td>
     <td class="py-3 px-4">
-        <input type="number" name="variants[${parentIndex}][children][${childIndex}][price]" class="child-price-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="Rs 0.00">
+        <input type="number" name="variants[${parentIndex}][children][${childIndex}][price]" class="child-price-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="Rs 0.00">
     </td>
     <td class="py-3 px-4">
-        <input type="number" name="variants[${parentIndex}][children][${childIndex}][stock]" class="child-stock-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700 shadow-sm focus:ring focus:ring-blue-300 focus:border-blue-500" placeholder="0">
+        <input type="number" name="variants[${parentIndex}][children][${childIndex}][stock]" class="child-stock-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
     </td>
 </tr>`;
-                    });
+                        });
 
-                    childRowContainer += `</tbody>`;
-                    tableBody.append(childRowContainer);
+                        childRowContainer += `</tbody>`;
+                        tableBody.append(childRowContainer);
+                    }
                 });
 
                 // Ensure child row toggle works
@@ -463,23 +459,24 @@
                     $(this).text($(target).hasClass("hidden") ? "▼" : "▲");
                 });
 
-                // Sync parent price with children prices
-                $(".price-input").on("input", function() {
-                    let parentIndex = $(this).attr("name").match(/\d+/)[
-                    0]; // Extract numeric index from name
-                    let parentPrice = $(this).val();
-                    $(`.child-price-${parentIndex}`).val(parentPrice);
-                });
+                // Sync parent price with children prices if children exist
+                if (options.length > 1) {
+                    $(".price-input").on("input", function() {
+                        let parentIndex = $(this).attr("id").split("-").pop();
+                        let parentPrice = $(this).val();
+                        $(`.child-price-${parentIndex}`).val(parentPrice);
+                    });
 
-                // Sync parent stock with children stock
-                $(".stock-input").on("input", function() {
-                    let parentIndex = $(this).attr("name").match(/\d+/)[
-                    0]; // Extract numeric index from name
-                    let parentStock = $(this).val();
-                    $(`.child-stock-${parentIndex}`).val(parentStock);
-                });
-
+                    // Sync parent stock with children stock if children exist
+                    $(".stock-input").on("input", function() {
+                        let parentIndex = $(this).attr("id").split("-").pop();
+                        let parentStock = $(this).val();
+                        $(`.child-stock-${parentIndex}`).val(parentStock);
+                    });
+                }
             }
+
+
 
 
 

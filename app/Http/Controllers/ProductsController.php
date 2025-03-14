@@ -81,27 +81,6 @@ class ProductsController extends Controller
     public function storeProduct(Request $request)
     {
         try {
-            // Decode variants JSON if it's a string
-            $productVariants = $request->variants ?? [];
-            // return $productVariants;
-            foreach ($productVariants as $parentIndex => &$parentVariant) {
-                // Handle parent image upload
-                if ($request->hasFile("variants.{$parentIndex}.parentimage")) {
-                    $parentImage = $request->file("variants.{$parentIndex}.parentimage");
-                    $parentImagePath = $parentImage->store('variants', 'public');
-                    $parentVariant['parentimage'] = "storage/" . $parentImagePath;
-                }
-
-                // Handle child images
-                foreach ($parentVariant['children'] as $childIndex => &$child) {
-                    if ($request->hasFile("variants.{$parentIndex}.children.{$childIndex}.image")) {
-                        $childImage = $request->file("variants.{$parentIndex}.children.{$childIndex}.image");
-                        $childImagePath = $childImage->store('variants', 'public');
-                        $child['image'] = "storage/" . $childImagePath;
-                    }
-                }
-            }
-
             // Retrieve user details from session
             $userDetails = session('user_details');
             if (!$userDetails) {
@@ -120,12 +99,6 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'Store record not found'], 404);
             }
 
-            // Decode JSON string for product images
-            $storedImagePaths = [];
-            if ($request->has('product_images')) {
-                $storedImagePaths = json_decode($request->product_images, true) ?? [];
-            }
-
             // Validate request data
             $validatedData = $request->validate([
                 'title'            => 'required|string|max:255',
@@ -140,6 +113,38 @@ class ProductsController extends Controller
                 'variants'         => 'nullable|array',
                 'product_status'   => 'nullable|integer|in:0,1',
             ]);
+
+            // Decode product images JSON if it exists
+            $storedImagePaths = [];
+            if ($request->has('product_images')) {
+                $storedImagePaths = json_decode($request->product_images, true) ?? [];
+            }
+
+            // Process Variants
+            $productVariants = $request->variants ?? [];
+
+            foreach ($productVariants as $parentIndex => &$parentVariant) {
+                // Handle parent image upload
+                if ($request->hasFile("variants.$parentIndex.parentimage")) {
+                    $parentImage = $request->file("variants.$parentIndex.parentimage");
+                    $parentImagePath = $parentImage->store('variants', 'public');
+                    $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+                }
+
+                // Ensure children key exists
+                if (!isset($parentVariant['children']) || !is_array($parentVariant['children'])) {
+                    $parentVariant['children'] = []; // Ensure it's always an array
+                }
+
+                // Handle child images
+                foreach ($parentVariant['children'] as $childIndex => &$child) {
+                    if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
+                        $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
+                        $childImagePath = $childImage->store('variants', 'public');
+                        $child['image'] = "storage/" . $childImagePath;
+                    }
+                }
+            }
 
             // Store product with JSON encoded variants and image paths
             $productData = [
@@ -162,12 +167,12 @@ class ProductsController extends Controller
             // Insert product data into the database
             $product = Products::create($productData);
 
-            // return response()->json(['success' => true, 'message' => 'Product added successfully'], 200);
             return redirect()->route('products')->with('success', 'Product added successfully');
         } catch (\Exception $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
+
     public function categories(Request $request)
     {
         try {
