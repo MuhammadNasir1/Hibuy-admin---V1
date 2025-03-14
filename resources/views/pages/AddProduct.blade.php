@@ -115,10 +115,10 @@
 
         /* Upload Progress Bar */
         /* .dz-progress {
-                                                            background: green !important;
-                                                            height: 5px !important;
-                                                            border-radius: 3px;
-                                                        } */
+                                                                background: green !important;
+                                                                height: 5px !important;
+                                                                border-radius: 3px;
+                                                            } */
 
         /* Styling for a Specific Dropzone */
         #my-dropzone {
@@ -413,7 +413,7 @@
     </td>
     <td class="py-3 px-4">
         <input type="hidden" name="variants[${parentIndex}][parentname]" value="${parentValue}">
-        <input type="text" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}"> <!-- Hidden Parent Option Name -->
+        <input type="hidden" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}"> <!-- Hidden Parent Option Name -->
 
         <input type="file" name="variants[${parentIndex}][parentimage]" accept="image/*"
             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:bg-blue-600 file:text-white file:px-4 file:py-2 file:border-0 file:rounded-lg file:cursor-pointer file:hover:bg-blue-700 transition">
@@ -437,7 +437,7 @@
         <span class="text-gray-500">📷</span>
         <span>${childValue}</span>
         <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][name]" value="${childValue}">
-        <input type="text" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}"> <!-- Hidden Child Option Name -->
+        <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}"> <!-- Hidden Child Option Name -->
     </td>
     <td class="py-3 px-4">
         <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" accept="image/*"
@@ -465,17 +465,20 @@
 
                 // Sync parent price with children prices
                 $(".price-input").on("input", function() {
-                    let parentIndex = $(this).attr("id").split("-").pop();
+                    let parentIndex = $(this).attr("name").match(/\d+/)[
+                    0]; // Extract numeric index from name
                     let parentPrice = $(this).val();
                     $(`.child-price-${parentIndex}`).val(parentPrice);
                 });
 
                 // Sync parent stock with children stock
                 $(".stock-input").on("input", function() {
-                    let parentIndex = $(this).attr("id").split("-").pop();
+                    let parentIndex = $(this).attr("name").match(/\d+/)[
+                    0]; // Extract numeric index from name
                     let parentStock = $(this).val();
                     $(`.child-stock-${parentIndex}`).val(parentStock);
                 });
+
             }
 
 
