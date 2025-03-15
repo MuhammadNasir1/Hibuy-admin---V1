@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
 
 Route::get('/Login', function () {
@@ -50,9 +51,7 @@ Route::middleware(['custom_auth'])->group(function () {
         return view('admin.KYC');
     })->name('KYC_auth');
 
-    Route::get('/Orders', function () {
-        return view('pages.Orders');
-    })->name('allorders');
+
 
     Route::get('/ReturnOrders', function () {
         return view('pages.ReturnOrders');
@@ -93,6 +92,12 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::get('/Settings', function () {
         return view('pages.Settings');
     })->name('editsettings');
+
+    Route::get('/Orders', [OrderController::class, 'GetOrders'])->name('allorders');
+
+    // Route::get('/Orders', function () {
+    //     return view('pages.Orders');
+    // })->name('allorders');
 
     Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
     Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
