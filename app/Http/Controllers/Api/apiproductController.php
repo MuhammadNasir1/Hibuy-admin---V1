@@ -16,24 +16,39 @@ class apiproductController extends Controller
     public function getProducts(Request $request, $categoryid = null)
     {
         try {
-            // Fetch products with category name and subcategory (direct from table)
+            // Fetch products with category name and subcategory
             $query = Products::select(
                 "product_id",
                 "store_id",
                 "product_name",
                 "product_brand",
                 "product_category",
-                "product_subcategory", // Directly fetching from the table
+                "product_subcategory",
                 "product_price",
                 "product_discount",
                 "product_discounted_price",
                 "product_images"
             )
-                ->with(['category:id,name']); // Fetch category details
+                ->with(['category:id,name']);
 
-            // Apply category filter only if $categoryid is not null or empty
+            // Apply category filter
             if (!empty($categoryid)) {
                 $query->where('product_category', $categoryid);
+            }
+
+            // Apply subcategory filter if provided
+            if ($request->has('product_subcategory') && !empty($request->product_subcategory)) {
+                $query->where('product_subcategory', $request->product_subcategory);
+            }
+
+            // Apply min_price filter if provided
+            if ($request->has('min_price') && !empty($request->min_price)) {
+                $query->where('product_discounted_price', '>=', $request->min_price);
+            }
+
+            // Apply max_price filter if provided
+            if ($request->has('max_price') && !empty($request->max_price)) {
+                $query->where('product_discounted_price', '<=', $request->max_price);
             }
 
             $products = $query->get();
@@ -52,7 +67,7 @@ class apiproductController extends Controller
                 unset($product->category); // Remove the full category object
 
                 // Add is_discounted flag
-                $product->is_discounted = $product->product_discount > 0 ? true : false;
+                $product->is_discounted = $product->product_discount > 0;
             }
 
             return response()->json([
@@ -67,6 +82,7 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
 
 
 
