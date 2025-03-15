@@ -5,9 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\apiAuthController;
-use App\Http\Controllers\Api\apiproductController;
 use App\Http\Controllers\Api\apiStoreController;
+use App\Http\Controllers\Api\apiproductController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -26,6 +27,8 @@ Route::get('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
+
+    Route::post('/placeOrder', [OrderController::class, 'placeOrder']);
 
     Route::get('userdetail', [apiAuthController::class, 'userdetail']);
 
