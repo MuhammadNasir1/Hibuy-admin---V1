@@ -22,6 +22,7 @@ class Order extends Model
         'address',
         'second_phone',
         'status',
+        'order_status',
         'order_date',
     ];
 
