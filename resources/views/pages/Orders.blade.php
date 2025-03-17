@@ -66,8 +66,8 @@
                             </span>
                         </td>
                         <td class="px-4 py-2 text-center">
-                            <button class="viewModalBtn p-2 rounded-md  transition"
-                                data-modal-target="orders-modal" data-modal-toggle="orders-modal">
+                            <button class="viewModalBtn p-2 rounded-md transition" data-modal-target="orders-modal"
+                                data-modal-toggle="orders-modal" data-order-id="{{ $order->order_id }}">
                                 <svg width="24" height="24" viewBox="0 0 37 36" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd"

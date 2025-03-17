@@ -28,6 +28,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
 
+    Route::GET('/GetOrders', [OrderController::class, 'GetOrders']);
+
+    Route::GET('/GetOrderDetail', [OrderController::class, 'GetOrderDetail']);
+
     Route::post('/placeOrder', [OrderController::class, 'placeOrder']);
 
     Route::get('userdetail', [apiAuthController::class, 'userdetail']);
