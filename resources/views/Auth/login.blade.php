@@ -68,7 +68,7 @@
                     },
                     success: function(response) {
                         console.log("Login successful", response);
-                        window.location.href = "../";
+                        window.location.href = "../create-profile";
                     },
                     error: function(jqXHR) {
                         $("#btnSpinner").addClass("hidden");
