@@ -248,11 +248,11 @@ class apiAuthController extends Controller
 
                 // Delete old image if exists
                 if ($customer->customer_image) {
-                    Storage::disk('public')->delete('customers/' . basename($customer->customer_image));
+                    Storage::disk('public')->delete(str_replace('storage/', '', $customer->customer_image));
                 }
 
-                // Store full URL
-                $customer->customer_image = Storage::url($path); // e.g., /storage/customers/123456.jpg
+                // Store the required path format
+                $customer->customer_image = 'storage/' . $path; // e.g., storage/customers/123456.jpg
             }
 
             // Update user details
