@@ -2,31 +2,33 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
 
 Route::get('/Login', function () {
     return view('Auth.login');
 })->name("login");
-Route::get('/signup', function () {
-    return view('Auth.signup');
-})->name("signup");
+// Route::get('/signup', function () {
+//     return view('Auth.signup');
+// })->name("signup");
 
 Route::post('login', [AuthController::class, 'login']);
-
+Route::get('/signup/{role?}', [AuthController::class, 'showSignup'])->name('signup');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 
 Route::middleware(['custom_auth'])->group(function () {
 
-    Route::post('upload-images', [ProductsController::class, 'getFileName'])->name('upload.images');
-
-    Route::post('/submit-product', [ProductsController::class, 'storeProduct'])->name('product.store');
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
+    Route::post('/submit-profile', [UserController::class, 'KYC_Authentication'])->name('KYC_Authentication');
     Route::get('/create-store', function () {
         return view('Auth.CreateStore');
     })->name("CreateStore");
+    Route::post('upload-images', [ProductsController::class, 'getFileName'])->name('upload.images');
+
+    Route::post('/submit-product', [ProductsController::class, 'storeProduct'])->name('product.store');
     Route::get('/create-profile', function () {
         return view('Auth.CreateProfile');
     })->name("CreateProfile");
