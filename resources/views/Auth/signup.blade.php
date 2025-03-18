@@ -6,15 +6,12 @@
         <h2 class="text-4xl font-medium text-center ">Sign Up</h2>
         <p class="mt-3 text-sm font-medium text-center">Fill in your details below and Sign up</p>
 
-        <form id="loginForm">
+        <form id="signupForm">
+            <input type="hidden" name="user_role" value="{{ $role }}">
             @csrf
-            <div class="mt-4 grid md:grid-cols-2 gap-3">
-                <div>
-                    <x-input id="first_name" label="First Name" placeholder="Name Here" name='first_name' type="text"></x-input>
-                </div>
-                <div>
-                    <x-input id="last_name" label="Last Name" placeholder="Name Here" name='last_name' type="text"></x-input>
-                </div>
+            <div class="mt-4">
+                <x-input id="user_name" label="User Name" placeholder="Name Here" name='user_name'
+                type="text"></x-input>
             </div>
             <div class="mt-4">
                 <x-input id="email" label="Email" placeholder="Enter Email" name='user_email' type="email"></x-input>
@@ -38,28 +35,28 @@
                         </svg>
 
                     </div>
-                    <div id="btnText" class="">
-                       <a href="{{ route("CreateStore") }}"> Create Account</a>
+                    <div id="btnText" class="" type="submit"> Create Account
                     </div>
                 </button>
             </div>
         </form>
         <div class="flex justify-center mt-6">
-            <h1 class="">Already Have An Account?<a href="{{ route("login") }}" class="text-primary  font-bold ml-2">Login Now</a></h1>
+            <h1 class="">Already Have An Account?<a href="{{ route('login') }}"
+                    class="text-primary  font-bold ml-2">Login Now</a></h1>
         </div>
-        <h1 class="text-center mt-5 text-sm">By Signing up to HiBuy platform you understand and agree with our <a href="" class="text-primary font-bold ml-2">Terms Of Service And Privacy Policy</a></h1>
+        <h1 class="text-center mt-5 text-sm">By Signing up to HiBuy platform you understand and agree with our <a
+                href="" class="text-primary font-bold ml-2">Terms Of Service And Privacy Policy</a></h1>
 
     </div>
 @endsection
 @section('js')
     <script>
         $(document).ready(function() {
-            // console.log(document.cookie);
-
-            $("#loginForm").submit(function(e) {
+            $("#signupForm").submit(function(e) {
                 e.preventDefault();
                 let formData = $(this).serialize();
-                const url = "/api/login"; // Use a valid API URL here
+                const url = "{{ route('register') }}"; // Ensure this is a valid API URL
+
                 $.ajax({
                     type: "POST",
                     url: url,
@@ -73,8 +70,17 @@
                         $("input").removeClass("border-red-500"); // Remove previous red border
                     },
                     success: function(response) {
-                        console.log("Login successful", response);
-                        window.location.href = "../";
+                        Swal.fire({
+                            icon: "success",
+                            title: "Registration Successful",
+                            text: "You will be redirected shortly.",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(function() {
+                            window.location.href = "../";
+                        }, 2000);
                     },
                     error: function(jqXHR) {
                         $("#btnSpinner").addClass("hidden");
@@ -83,15 +89,20 @@
 
                         let response = JSON.parse(jqXHR.responseText);
                         if (response.errors) {
+                            let errorMessages = "";
+
                             $.each(response.errors, function(key, value) {
-                                let inputField = $(`input[name=${key}]`);
-                                inputField.addClass("border-red-500");
-                                inputField.after(
-                                    `<p class="error-text text-red-500 text-sm mt-1">${value}</p>`
-                                );
+                                errorMessages +=
+                                `• ${value}\n`; // Collect all error messages
+                            });
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Validation Error",
+                                text: errorMessages,
+                                confirmButtonText: "OK"
                             });
                         }
-
                     },
                 });
             });

@@ -125,71 +125,80 @@
                         <div class="text-sm">
                             <h3 class="text-base font-bold text-[#2C2C2C]">Personal Information</h3>
 
-                            <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
-                                <div class="flex flex-col gap-6">
+                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" method="POST">
+                                @csrf
+                                <input type="hidden" name="step" value="1">
+                                <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
+                                    <div class="flex flex-col gap-6">
+                                        <div
+                                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                            <label class="md:w-32">Full Name</label>
+                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                                type="text" placeholder="Enter Here" name="full_name">
+                                        </div>
+                                        <div
+                                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                            <label class="md:w-32">Address</label>
+                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                                type="text" placeholder="Enter Here" name="address">
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden">
+                                            <x-file-uploader name="profile_picture" id="profile_picture" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                        <label class="md:w-32">Full Name</label>
+                                        <label class="md:w-32">Phone No.</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Here">
+                                            type="text" placeholder="Enter Here" name="phone_no">
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                        <label class="md:w-32">Address</label>
+                                        <label class="md:w-32">Email</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Here">
+                                            type="text" placeholder="Enter Here" name="email">
                                     </div>
                                 </div>
-                                <div class="flex justify-center">
-                                    <img class="w-24 h-24 md:w-32 md:h-32 rounded-lg"
-                                        src="{{ asset('asset/media.png') }}" alt="Profile Image">
-                                </div>
-                            </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">Phone No.</label>
+                                <div class="flex flex-col md:flex-row md:items-center  text-sm font-semibold mt-6">
+                                    <label class="md:w-32">CNIC</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter Here">
+                                        type="text" placeholder="Enter Here" name="cnic">
                                 </div>
+
                                 <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">Email</label>
-                                    <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter Here">
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
+                                    <div>
+                                        <h3 class="pb-2">Front Image</h3>
+                                        <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                            <x-file-uploader name="front_imane" id="front_imane" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="pb-2">Back Image</h3>
+                                        <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                            <x-file-uploader name="back_image" id="back_image" />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="flex flex-col md:flex-row md:items-center  text-sm font-semibold mt-6">
-                                <label class="md:w-32">CNIC</label>
-                                <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
-                                    placeholder="Enter Here">
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
-                                <div>
-                                    <h3 class="pb-2">Front Image</h3>
-                                    <img class="w-full rounded-lg border border-gray-300"
-                                        src="{{ asset('asset/media (1).png') }}" alt="Front Image">
+                                <!-- Footer Buttons -->
+                                <div
+                                    class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                                    <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
+                                        Discard
+                                    </button>
+                                    <button type="submit"
+                                        class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
+                                        Next
+                                    </button>
                                 </div>
-                                <div>
-                                    <h3 class="pb-2">Back Image</h3>
-                                    <img class="w-full rounded-lg border border-gray-300"
-                                        src="{{ asset('asset/media (1).png') }}" alt="Back Image">
-                                </div>
-                            </div>
-
-                            <!-- Footer Buttons -->
-                            <div
-                                class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                                <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
-                                    Discard
-                                </button>
-                                <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
-                                    Next
-                                </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
 
@@ -199,125 +208,132 @@
 
                         <div class="text-sm">
                             <h3 class="text-base font-bold text-[#2C2C2C]">Store Information</h3>
+                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" method="POST">
+                                @csrf
+                                <input type="hidden" name="step" value="2">
+                                <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
+                                    <div class="flex flex-col gap-6">
+                                        <div
+                                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                            <label class="md:w-32">Store Name</label>
+                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                                type="text" placeholder="Enter Here" name="store_name">
+                                        </div>
+                                        <div
+                                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                            <label class="md:w-32">Type</label>
+                                            <select name="type" id="type"
+                                                class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
+                                                <option class="text-[#B4B4B4]" value="">Option</option>
+                                            </select>
 
-                            <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
-                                <div class="flex flex-col gap-6">
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden">
+                                            <x-file-uploader name="profile_picture" id="profile_picture" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                        <label class="md:w-32">Store Name</label>
+                                        <label class="md:w-32">Phone No.</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Here">
+                                            type="text" placeholder="Enter Here" name="phone_no">
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                        <label class="md:w-32">Type</label>
-                                        <select name="" id=""
+                                        <label class="md:w-32">Email</label>
+                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            type="text" placeholder="Enter Here" name="email">
+                                    </div>
+                                    <div
+                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                        <label class="md:w-32">Country</label>
+                                        <select name="country" id="country"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
-                                            <option class="text-[#B4B4B4]" value="">Option</option>
-                                        </select>
 
+                                            <option value="">Option</option>
+                                        </select>
+                                    </div>
+                                    <div
+                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                        <label class="md:w-32">Province/ Region</label>
+                                        <select name="province" id="province"
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            type="text" placeholder="Enter Here">
+                                            <option value="">Option</option>
+                                        </select>
+                                    </div>
+
+                                    <div
+                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                        <label class="md:w-32">City</label>
+                                        <select name="city" id="city"
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            type="text" placeholder="Enter Here">
+                                            <option value="">Option</option>
+                                        </select>
+                                    </div>
+                                    <div
+                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                        <label class="md:w-32">ZipCode</label>
+                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            type="text" placeholder="0000" name="zip_code">
                                     </div>
                                 </div>
-                                <div class="flex justify-center">
-                                    <img class="w-24 h-24 md:w-32 md:h-32 rounded-lg"
-                                        src="{{ asset('asset/media.png') }}" alt="Profile Image">
-                                </div>
-                            </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                 <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">Phone No.</label>
+                                    class="flex flex-col md:flex-row md:items-center  text-sm font-semibold mt-6 gap-2 md:gap-0">
+                                    <label class="md:w-32">Address</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter Here">
-                                </div>
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">Email</label>
-                                    <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter Here">
-                                </div>
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">Country</label>
-                                    <select name="" id=""
-                                        class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
-
-                                        <option value="">Option</option>
-                                    </select>
-                                </div>
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">Province/ Region</label>
-                                    <select name="" id=""
-                                        class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
-                                        placeholder="Enter Here">
-                                        <option value="">Option</option>
-                                    </select>
+                                        type="text" name="address" placeholder="Enter Here">
                                 </div>
 
                                 <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">City</label>
-                                    <select name="" id=""
-                                        class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
-                                        placeholder="Enter Here">
-                                        <option value="">Option</option>
-                                    </select>
+                                    class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0  relative">
+                                    <label class="md:w-32">Pin Location</label>
+                                    <div class="relative w-full">
+                                        <input class="rounded-lg w-full p-2 pr-10 border border-gray-300  text-[#B4B4B4]"
+                                            type="text" placeholder="Enter Pin Location" name="pin_location">
+                                        <img class="absolute top-1/2 right-3 -translate-y-1/2 w-5 h-5"
+                                            src="{{ asset('asset/Location.svg') }}" alt="Location Icon">
+                                    </div>
                                 </div>
+
                                 <div
-                                    class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                    <label class="md:w-32">ZipCode</label>
-                                    <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="0000">
+                                    class="flex flex-col md:flex-row md:items-center mt-6 mb-32 md:mb-20 gap-2 md:gap-10 ">
+
+                                    <label class="block font-medium text-gray-700 whitespace-nowrap">Categories</label>
+
+                                    <div class="flex items-center  gap-4 ">
+                                        <input type="text" id="counter-input" name="categories" placeholder="vgvhh"
+                                            class="rounded-lg  p-2 border border-gray-300 text-[#B4B4B4]">
+                                        <button type="button" id="increment-button"
+                                            class="inline-flex items-center justify-center flex-shrink-0 border border-gray-300 rounded-md w-8 h-8 bg-primary">
+                                            <svg class="w-5 h-5 p-1 text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div
-                                class="flex flex-col md:flex-row md:items-center  text-sm font-semibold mt-6 gap-2 md:gap-0">
-                                <label class="md:w-32">Address</label>
-                                <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text">
-                            </div>
-
-                            <div
-                                class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0  relative">
-                                <label class="md:w-32">Pin Location</label>
-                                <div class="relative w-full">
-                                    <input class="rounded-lg w-full p-2 pr-10 border border-gray-300  text-[#B4B4B4]"
-                                        type="text" placeholder="Enter Pin Location">
-                                    <img class="absolute top-1/2 right-3 -translate-y-1/2 w-5 h-5"
-                                        src="{{ asset('asset/Location.svg') }}" alt="Location Icon">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col md:flex-row md:items-center mt-6 mb-32 md:mb-20 gap-2 md:gap-10 ">
-
-                                <label class="block font-medium text-gray-700 whitespace-nowrap">Categories</label>
-
-                                <div class="flex items-center  gap-4 ">
-                                    <input type="text" id="counter-input" placeholder="vgvhh"
-                                        class="rounded-lg  p-2 border border-gray-300 text-[#B4B4B4]">
-                                    <button type="button" id="increment-button"
-                                        class="inline-flex items-center justify-center flex-shrink-0 border border-gray-300 rounded-md w-8 h-8 bg-primary">
-                                        <svg class="w-5 h-5 p-1 text-white" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                            <path stroke="white" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M9 1v16M1 9h16" />
-                                        </svg>
+                                <!-- Footer Buttons -->
+                                <div
+                                    class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                                    <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
+                                        Back
+                                    </button>
+                                    <button type="submit"
+                                        class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
+                                        Next
                                     </button>
                                 </div>
-                            </div>
-
-                            <!-- Footer Buttons -->
-                            <div
-                                class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                                <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
-                                    Back
-                                </button>
-                                <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
-                                    Next
-                                </button>
-                            </div>
+                            </form>
                         </div>
 
                     </div>
@@ -330,13 +346,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4  text-base font-semibold">
                                 <div>
                                     <h3 class="pb-2">Shop / Home Bill</h3>
-                                    <img class="w-full rounded-lg border border-gray-300"
-                                        src="{{ asset('asset/media (1).png') }}" alt="Front Image">
+                                    <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                        <x-file-uploader name="profile_picture" id="profile_picture" />
+                                    </div>
                                 </div>
                                 <div>
                                     <h3 class="pb-2">Shop Video (Optional)</h3>
-                                    <img class="w-full rounded-lg border border-gray-300"
-                                        src="{{ asset('asset/media (1).png') }}" alt="Back Image">
+                                    <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                        <x-file-uploader name="profile_picture" id="profile_picture" />
+                                    </div>
                                 </div>
                             </div>
                             {{-- select oprions --}}
@@ -522,8 +540,9 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-center">
-                                    <img class="w-24 h-24 md:w-32 md:h-32 rounded-lg"
-                                        src="{{ asset('asset/media.png') }}" alt="Profile Image">
+                                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden">
+                                        <x-file-uploader name="profile_picture" id="profile_picture" />
+                                    </div>
                                 </div>
                             </div>
 
