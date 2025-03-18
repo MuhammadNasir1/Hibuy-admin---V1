@@ -14,6 +14,18 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+
+    public function showSignup($role = null)
+    {
+        $allowedRoles = ['freelancer', 'seller'];
+
+        if (!$role || !in_array($role, $allowedRoles)) {
+            return redirect()->route('login');
+        }
+        return view('auth.signup', ['role' => $role]);
+    }
+
+
     public function register(Request $request)
     {
         try {
