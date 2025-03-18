@@ -12,36 +12,6 @@ use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
-    public function editProfile(Request $request)
-    {
-        try {
-            $user  = Auth::user();
-            $customer  = Customer::where('user_id', $user->id)->first();
-            if (!$customer) {
-                return response()->json(['success' => false, 'message' => "Customer Not Found"], 404);
-            }
-            if ($request->hasFile('customer_image')) {
-                $image = $request->file('customer_image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images'), $imageName);
-                $customer->customer_image = $imageName;
-            }
-            $user->user_name = $request->user_name;
-            $user->user_email = $request->user_email;
-            $user->save();
-
-            $customer->customer_phone = $request->customer_phone;
-            $customer->customer_gender = $request->customer_gender;
-            $customer->customer_dob = $request->customer_dob;
-            $customer->update();
-
-
-            return response()->json(['success' => true, 'message' => "Profile Updated Successfully"], 200);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
-        }
-    }
-
 
     public function setPassword(Request $request)
     {

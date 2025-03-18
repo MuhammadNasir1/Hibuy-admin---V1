@@ -5,80 +5,82 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use App\Models\Reviews;
 
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class apiAuthController extends Controller
 {
     public function login(Request $request)
-{
-    try {
-        // Validate request
-        $validatedData = $request->validate([
-            'user_email' => 'required|string|email|max:255',
-            'user_password' => 'required|min:6'
-        ]);
+    {
+        try {
+            // Validate request
+            $validatedData = $request->validate([
+                'user_email' => 'required|string|email|max:255',
+                'user_password' => 'required|min:6'
+            ]);
 
-        // Fetch user where role is 'customer'
-        $user = User::where('user_email', $validatedData['user_email'])
-            ->where('user_role', 'customer') // Allow only customers
-            ->with(['customer']) // Load customer relationship
-            ->first();
+            // Fetch user where role is 'customer'
+            $user = User::where('user_email', $validatedData['user_email'])
+                ->where('user_role', 'customer') // Allow only customers
+                ->with(['customer']) // Load customer relationship
+                ->first();
 
-        // Check if user exists and password is correct
-        if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
+            // Check if user exists and password is correct
+            if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid email or password.',
+                    'errors' => ['user_email' => ['Invalid email or password.']]
+                ], 401);
+            }
+
+            // Generate API token
+            $token = $user->createToken('api-token')->plainTextToken;
+
+            // Prepare user data
+            $userData = [
+                'user_id' => $user->user_id,
+                'user_name' => $user->user_name,
+                'user_email' => $user->user_email,
+                'user_role' => $user->user_role
+            ];
+
+            // Merge customer-specific details
+            if ($user->customer) {
+                $customerData = $user->customer->toArray();
+
+                // Decode the `customer_addresses` JSON string into an array
+                $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
+
+                // Merge with user data
+                $userData = array_merge($userData, $customerData);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Login successful",
+                'access_token' => $token,
+                'user' => $userData
+            ], 200);
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid email or password.',
-                'errors' => ['user_email' => ['Invalid email or password.']]
-            ], 401);
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong. Please try again later.',
+            ], 500);
         }
-
-        // Generate API token
-        $token = $user->createToken('api-token')->plainTextToken;
-
-        // Prepare user data
-        $userData = [
-            'user_id' => $user->user_id,
-            'user_name' => $user->user_name,
-            'user_email' => $user->user_email,
-            'user_role' => $user->user_role
-        ];
-
-        // Merge customer-specific details
-        if ($user->customer) {
-            $customerData = $user->customer->toArray();
-
-            // Decode the `customer_addresses` JSON string into an array
-            $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
-
-            // Merge with user data
-            $userData = array_merge($userData, $customerData);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => "Login successful",
-            'access_token' => $token,
-            'user' => $userData
-        ], 200);
-    } catch (ValidationException $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation error',
-            'errors' => $e->errors()
-        ], 422);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong. Please try again later.',
-        ], 500);
     }
-}
 
 
 
@@ -221,6 +223,236 @@ class apiAuthController extends Controller
                 'message' => 'Something went wrong!',
                 'error'   => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function editProfile(Request $request)
+    {
+        try {
+            $user = Auth::user(); // Fetch user from token
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => "User Not Found"], 404);
+            }
+
+            $customer = Customer::where('user_id', $user->user_id)->first();
+            if (!$customer) {
+                return response()->json(['success' => false, 'message' => "Customer Not Found"], 404);
+            }
+
+            // Check if an image is uploaded
+
+            if ($request->hasFile('customer_image')) {
+                $image = $request->file('customer_image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('customers', $imageName, 'public'); // Store in storage/app/public/customers
+
+                // Delete old image if exists
+                if ($customer->customer_image) {
+                    Storage::disk('public')->delete('customers/' . basename($customer->customer_image));
+                }
+
+                // Store full URL
+                $customer->customer_image = Storage::url($path); // e.g., /storage/customers/123456.jpg
+            }
+
+            // Update user details
+            $user->user_name = $request->user_name;
+            $user->save();
+
+            // Update customer details
+            $customer->customer_phone = $request->customer_phone;
+            $customer->customer_gender = $request->customer_gender;
+            $customer->customer_dob = $request->customer_dob;
+            $customer->update();
+
+            // Update password if provided
+            if ($request->filled('old_password') && $request->filled('new_password') && $request->filled('confirm_password')) {
+                if (!Hash::check($request->old_password, $user->user_password)) {
+                    return response()->json(['success' => false, 'message' => "Old password is incorrect"], 400);
+                }
+
+                if ($request->new_password !== $request->confirm_password) {
+                    return response()->json(['success' => false, 'message' => "New password and confirm password do not match"], 400);
+                }
+
+                // Update password
+                $user->user_password = Hash::make($request->new_password);
+                $user->save();
+            }
+
+            // Prepare user data
+            $userData = [
+                'user_id' => $user->user_id,
+                'user_name' => $user->user_name,
+                'user_email' => $user->user_email,
+                'user_role' => $user->user_role,
+            ];
+
+            // Merge customer-specific details
+            if ($customer) {
+                $customerData = $customer->toArray();
+
+                // Decode the `customer_addresses` JSON string into an array
+                if (!empty($customerData['customer_addresses'])) {
+                    $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
+                }
+
+                // Merge with user data
+                $userData = array_merge($userData, $customerData);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Profile Updated Successfully",
+                'user' => $userData
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function storeAddress(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => "User Not Found"], 404);
+            }
+
+            $customer = Customer::where('user_id', $user->user_id)->first();
+            if (!$customer) {
+                return response()->json(['success' => false, 'message' => "Customer Not Found"], 404);
+            }
+
+            $addresses = json_decode($customer->customer_addresses, true) ?? [];
+            $isUpdate = false;
+
+            if ($request->has('address_id') && !empty($request->address_id)) {
+                // Update existing address
+                foreach ($addresses as &$addr) {
+                    if ($addr['address_id'] === $request->address_id) {
+                        $addr['first_name'] = $request->first_name;
+                        $addr['last_name'] = $request->last_name;
+                        $addr['city'] = $request->city;
+                        $addr['province'] = $request->province;
+                        $addr['area'] = $request->area;
+                        $addr['postal_code'] = $request->postal_code;
+                        $addr['phone_number'] = $request->phone_number;
+                        $addr['second_phone_number'] = $request->second_phone_number;
+                        $addr['address_line'] = $request->address_line;
+                        $addr['is_default'] = $request->is_default ?? false;
+                        $isUpdate = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!$isUpdate) {
+                // Add new address
+                $newAddress = [
+                    'address_id' => uniqid(),
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'city' => $request->city,
+                    'province' => $request->province,
+                    'area' => $request->area,
+                    'postal_code' => $request->postal_code,
+                    'phone_number' => $request->phone_number,
+                    'second_phone_number' => $request->second_phone_number,
+                    'address_line' => $request->address_line,
+                    'is_default' => $request->is_default ?? false,
+                ];
+
+                $addresses[] = $newAddress;
+            }
+
+            // If the current address is set as default, remove default from others
+            if ($request->is_default) {
+                foreach ($addresses as &$addr) {
+                    if ($addr['address_id'] !== ($request->address_id ?? $newAddress['address_id'])) {
+                        $addr['is_default'] = false;
+                    }
+                }
+            }
+
+            $customer->customer_addresses = json_encode($addresses);
+            $customer->save();
+
+            // Prepare user data
+            $userData = [
+                'user_id' => $user->user_id,
+                'user_name' => $user->user_name,
+                'user_email' => $user->user_email,
+                'user_role' => $user->user_role,
+            ];
+
+            // Merge customer-specific details
+            $customerData = $customer->toArray();
+            if (!empty($customerData['customer_addresses'])) {
+                $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
+            }
+
+            $userData = array_merge($userData, $customerData);
+
+            return response()->json([
+                'success' => true,
+                'message' => $isUpdate ? "Address updated successfully" : "Address added successfully",
+                'user' => $userData, // Returns user and customer details
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function deleteAddress(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => "User Not Found"], 404);
+            }
+
+            $customer = Customer::where('user_id', $user->user_id)->first();
+            if (!$customer) {
+                return response()->json(['success' => false, 'message' => "Customer Not Found"], 404);
+            }
+
+            $addresses = json_decode($customer->customer_addresses, true) ?? [];
+            $filteredAddresses = array_filter($addresses, fn($addr) => $addr['address_id'] !== $request->address_id);
+
+            if (count($addresses) === count($filteredAddresses)) {
+                return response()->json(['success' => false, 'message' => "Address not found"], 404);
+            }
+
+            $customer->customer_addresses = json_encode(array_values($filteredAddresses));
+            $customer->save();
+
+            // Prepare user data
+            $userData = [
+                'user_id' => $user->user_id,
+                'user_name' => $user->user_name,
+                'user_email' => $user->user_email,
+                'user_role' => $user->user_role,
+            ];
+
+            // Merge customer-specific details
+            $customerData = $customer->toArray();
+
+            // Decode `customer_addresses` JSON string into an array
+            if (!empty($customerData['customer_addresses'])) {
+                $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
+            }
+
+            // Merge user and customer data
+            $userData = array_merge($userData, $customerData);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Address deleted successfully",
+                'user' => $userData, // Returns user and customer details
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
     }
 }

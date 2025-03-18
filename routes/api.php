@@ -14,15 +14,15 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [apiAuthController::class, 'login']);
-Route::post('setPassword', [UserController::class, 'setPassword']);
+Route::POST('register', [AuthController::class, 'register']);
+Route::POST('login', [apiAuthController::class, 'login']);
+Route::POST('setPassword', [UserController::class, 'setPassword']);
 
 
-Route::get('getCategories', [apiproductController::class, 'getCategories']);
+Route::GET('getCategories', [apiproductController::class, 'getCategories']);
 Route::match(['get', 'post'], 'getProducts/{categoryid?}', [apiproductController::class, 'getProducts']);
-Route::get('getProductsDetail', [apiproductController::class, 'getProductsDetail']);
-Route::get('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
+Route::GET('getProductsDetail', [apiproductController::class, 'getProductsDetail']);
+Route::GET('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
@@ -32,17 +32,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::GET('/GetOrderDetail', [OrderController::class, 'GetOrderDetail']);
 
-    Route::post('/placeOrder', [OrderController::class, 'placeOrder']);
+    Route::POST('/placeOrder', [OrderController::class, 'placeOrder']);
 
-    Route::get('userdetail', [apiAuthController::class, 'userdetail']);
+    Route::POST('editProfile', [apiAuthController::class, 'editProfile']);
+
+    Route::GET('userdetail', [apiAuthController::class, 'userdetail']);
 
     Route::POST('toggleWishlist', [apiproductController::class, 'toggleWishlist']);
 
-    Route::post('editProfile', [UserController::class, 'editProfile']);
+    Route::POST('storeAddress', [apiAuthController::class, 'storeAddress']);
 
-    Route::post('editStoreProfile', [StoreController::class, 'editStoreProfile']);
+    Route::POST('DeleteAddress', [apiAuthController::class, 'DeleteAddress']);
 
-    Route::post('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
+    Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile']);
 
-    Route::post('logout', [apiAuthController::class, 'logout']);
+    Route::POST('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
+
+    Route::POST('logout', [apiAuthController::class, 'logout']);
 });
