@@ -2,7 +2,7 @@ function previewFile(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const previewImg = event.target.closest('.file-upload-label').querySelector('.file-preview');
             previewImg.src = e.target.result;
             previewImg.classList.remove('hidden');
@@ -70,11 +70,8 @@ $(document).ready(function () {
 
     function delDataFun() {
         $(".deleteDataBtn").click(function () {
-            let csrfToken = $('meta[name="csrf-token"]').attr("content");
-            let id = $(this).attr("delId");
-            let dynamicKey = $(this).attr("name");
-            let delData = {};
-            delData[dynamicKey] = id;
+            let delurl = $(this).attr("delurl");
+
             // Show SweetAlert  confirmation dialog
             Swal.fire({
                 title: "Are you sure?",
@@ -88,19 +85,15 @@ $(document).ready(function () {
                 if (result.isConfirmed) {
                     // If confirmed, proceed with AJAX request to delete
                     $.ajax({
-                        type: "POST",
-                        url: $(this).attr("delUrl"),
-                        data: delData,
-                        headers: {
-                            "X-CSRF-TOKEN": csrfToken,
-                        },
+                        type: "GET",
+                        url: delurl,
                         beforeSend: function () {
                             $("#loading").show();
                         },
                         success: function (response) {
-                            $("#loading").hide();
-                            reloadDataTable();
-
+                            // $("#loading").hide();
+                            // reloadDataTable();
+                            window.location.reload();
                             const alert = Swal.fire({
                                 title: "Deleted!",
                                 text: response.message,

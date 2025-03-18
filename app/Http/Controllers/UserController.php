@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Seller;
 use App\Models\Customer;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,36 +13,6 @@ use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
-    public function editProfile(Request $request)
-    {
-        try {
-            $user  = Auth::user();
-            $customer  = Customer::where('user_id', $user->id)->first();
-            if (!$customer) {
-                return response()->json(['success' => false, 'message' => "Customer Not Found"], 404);
-            }
-            if ($request->hasFile('customer_image')) {
-                $image = $request->file('customer_image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images'), $imageName);
-                $customer->customer_image = $imageName;
-            }
-            $user->user_name = $request->user_name;
-            $user->user_email = $request->user_email;
-            $user->save();
-
-            $customer->customer_phone = $request->customer_phone;
-            $customer->customer_gender = $request->customer_gender;
-            $customer->customer_dob = $request->customer_dob;
-            $customer->update();
-
-
-            return response()->json(['success' => true, 'message' => "Profile Updated Successfully"], 200);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
-        }
-    }
-
 
     public function setPassword(Request $request)
     {
@@ -74,19 +45,15 @@ class UserController extends Controller
     public function KYC_Authentication(Request $request)
     {
         try {
-            if (!Auth::check()) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            $user = Auth::user();
+            $user = session('user_details')['user_id'];
 
             // Find the seller record for the authenticated user
-            $seller = Seller::where('user_id', $user->user_id)->first();
+            $seller = Seller::where('user_id', $user)->first();
             if (!$seller) {
                 return response()->json(['error' => 'Seller record not found'], 404);
             }
 
-            // Define mapping of step numbers to database columns
+            // Define step mapping
             $stepMapping = [
                 1 => 'personal_info',
                 2 => 'store_info',
@@ -98,15 +65,11 @@ class UserController extends Controller
             // Validate request input
             $validatedData = $request->validate([
                 'step' => 'required|integer|between:1,5',
-                'data' => 'required|array', // Ensures the data is an array
-                'seller_type' => 'required', // Ensures the data is an array
             ]);
 
             $step = $validatedData['step'];
-            $data = $validatedData['data'];
-            $seller_type = $validatedData['seller_type'];
 
-            // Verify the step exists in the mapping
+            // Verify step exists in mapping
             if (!isset($stepMapping[$step])) {
                 return response()->json(['error' => 'Invalid step'], 400);
             }
@@ -114,19 +77,44 @@ class UserController extends Controller
             // Get the column name based on step
             $column = $stepMapping[$step];
 
-            // Encode data to JSON safely
-            $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE);
+            // Separate text and file data
+            $textData = $request->except(['_token', 'step', 'profile_picture', 'front_image', 'back_image']);
+            $fileData = [];
+
+            // Define custom upload path
+            $uploadPath = public_path('uploads/kyc_files');
+
+            // Ensure the directory exists
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+
+            // Handle file uploads
+            foreach (['profile_picture', 'front_image', 'back_image'] as $fileField) {
+                if ($request->hasFile($fileField)) {
+                    $file = $request->file($fileField);
+                    $fileName = time() . '_' . $fileField . '.' . $file->getClientOriginalExtension();
+                    $file->move($uploadPath, $fileName);
+                    $fileData[$fileField] = 'uploads/kyc_files/' . $fileName; // Store relative path
+                }
+            }
+
+            // Merge text and file data
+            $finalData = array_merge($textData, $fileData);
+
+            // Encode to JSON safely
+            $jsonData = json_encode($finalData, JSON_UNESCAPED_UNICODE);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return response()->json(['error' => 'Invalid JSON data'], 400);
             }
 
-            // Store the JSON data in the corresponding column
+            // Store in DB
             $seller->$column = $jsonData;
-            $seller->seller_type = $seller_type;
             $seller->save();
 
             return response()->json([
-                'success' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully'
+                'success' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully',
+                'data' => $finalData
             ], 200);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);

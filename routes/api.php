@@ -5,32 +5,48 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\apiAuthController;
+use App\Http\Controllers\Api\apiStoreController;
 use App\Http\Controllers\Api\apiproductController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [apiAuthController::class, 'login']);
-Route::post('setPassword', [UserController::class, 'setPassword']);
+Route::POST('register', [AuthController::class, 'register']);
+Route::POST('login', [apiAuthController::class, 'login']);
+Route::POST('setPassword', [UserController::class, 'setPassword']);
 
+
+Route::GET('getCategories', [apiproductController::class, 'getCategories']);
+Route::match(['get', 'post'], 'getProducts/{categoryid?}', [apiproductController::class, 'getProducts']);
+Route::GET('getProductsDetail', [apiproductController::class, 'getProductsDetail']);
+Route::GET('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
 
-    Route::get('userdetail', [apiAuthController::class, 'userdetail']);
+    Route::GET('/GetOrders', [OrderController::class, 'GetOrders']);
+
+    Route::GET('/GetOrderDetail', [OrderController::class, 'GetOrderDetail']);
+
+    Route::POST('/placeOrder', [OrderController::class, 'placeOrder']);
+
+    Route::POST('editProfile', [apiAuthController::class, 'editProfile']);
+
+    Route::GET('userdetail', [apiAuthController::class, 'userdetail']);
 
     Route::POST('toggleWishlist', [apiproductController::class, 'toggleWishlist']);
 
-    Route::post('editProfile', [UserController::class, 'editProfile']);
+    Route::POST('storeAddress', [apiAuthController::class, 'storeAddress']);
 
-    Route::post('editStoreProfile', [StoreController::class, 'editStoreProfile']);
+    Route::POST('DeleteAddress', [apiAuthController::class, 'DeleteAddress']);
 
-    Route::post('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
+    Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile']);
 
-    Route::post('logout', [apiAuthController::class, 'logout']);
+    Route::POST('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
+
+    Route::POST('logout', [apiAuthController::class, 'logout']);
 });

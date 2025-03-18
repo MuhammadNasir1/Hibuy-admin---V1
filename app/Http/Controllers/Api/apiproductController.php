@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Store;
+use App\Models\product_category;
 use App\Models\Wishlist;
 use App\Models\Seller;
 use App\Models\Products;
@@ -12,77 +13,183 @@ use Illuminate\Support\Facades\Auth;
 
 class apiproductController extends Controller
 {
-    public function storeProduct(Request $request)
+    public function getProducts(Request $request, $categoryid = null)
     {
         try {
-            $user = Auth::user();
+            // Fetch products with category name and subcategory
+            $query = Products::select(
+                "product_id",
+                "store_id",
+                "product_name",
+                "product_brand",
+                "product_category",
+                "product_subcategory",
+                "product_price",
+                "product_discount",
+                "product_discounted_price",
+                "product_images"
+            )
+                ->with(['category:id,name']);
 
-            // Find the seller record for the authenticated user
-            $seller = Seller::where('user_id', $user->user_id)->first();
-            if (!$seller) {
-                return response()->json(['error' => 'Seller record not found'], 404);
+            // Apply category filter
+            if (!empty($categoryid)) {
+                $query->where('product_category', $categoryid);
             }
 
-            // Fetch store_id based on seller_id
-            $store = Store::where('seller_id', $seller->seller_id)->first();
-            if (!$store) {
-                return response()->json(['error' => 'Store record not found'], 404);
+            // Apply subcategory filter if provided
+            if ($request->has('product_subcategory') && !empty($request->product_subcategory)) {
+                $query->where('product_subcategory', $request->product_subcategory);
             }
 
-            // Validate request data
-            $validatedData = $request->validate([
-                'product_name'            => 'required|string|max:255',
-                'product_description'     => 'nullable|string',
-                'product_brand'           => 'required|string|max:255',
-                'product_category'        => 'required|string|max:255',
-                'product_stock'           => 'required|integer|min:0',
-                'purchase_price'          => 'required|numeric|min:0',
-                'product_price'           => 'required|numeric|min:0',
-                'product_discount'        => 'nullable|numeric|min:0',
-                'product_discounted_price' => 'nullable|numeric|min:0',
-                'product_images'          => 'nullable|array', // Array of images
-                'product_images.*'        => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-                'product_attributes'      => 'nullable|array',
-                'product_variation'       => 'nullable|array',
-                'product_status'          => 'nullable|integer|in:0,1',
-            ]);
-
-            // Handle image upload
-            $imagePaths = [];
-            if ($request->hasFile('product_images')) {
-                foreach ($request->file('product_images') as $image) {
-                    $path = $image->store('products', 'public'); // Save in storage/app/public/products
-                    $imagePaths[] = "storage/{$path}"; // Store relative path
-                }
+            // Apply min_price filter if provided
+            if ($request->has('min_price') && !empty($request->min_price)) {
+                $query->where('product_discounted_price', '>=', $request->min_price);
             }
 
-            // Prepare data for insertion
-            $productData = [
-                'user_id'                  => $user->user_id,
-                'store_id'                 => $store->store_id,
-                'product_name'             => $validatedData['product_name'],
-                'product_description'      => $validatedData['product_description'] ?? null,
-                'product_brand'            => $validatedData['product_brand'],
-                'product_category'         => $validatedData['product_category'],
-                'product_stock'            => $validatedData['product_stock'],
-                'purchase_price'           => $validatedData['purchase_price'],
-                'product_price'            => $validatedData['product_price'],
-                'product_discount'         => $validatedData['product_discount'] ?? 0,
-                'product_discounted_price' => $validatedData['product_discounted_price'] ?? 0,
-                'product_images'           => json_encode($imagePaths), // Store image paths as JSON
-                'product_attributes'       => json_encode($validatedData['product_attributes'] ?? []),
-                'product_variation'        => json_encode($validatedData['product_variation'] ?? []),
-                'product_status'           => $validatedData['product_status'] ?? 0, // Default to inactive (0)
-            ];
+            // Apply max_price filter if provided
+            if ($request->has('max_price') && !empty($request->max_price)) {
+                $query->where('product_discounted_price', '<=', $request->max_price);
+            }
 
-            // Insert product data into the database
-            $product = Products::create($productData);
+            $products = $query->get();
 
-            return response()->json(['message' => 'Product added successfully', 'product' => $product], 201);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            // Process product images and add category name
+            foreach ($products as $product) {
+                $product->product_images = json_decode($product->product_images, true);
+                $product->product_image = $product->product_images[0] ?? null;
+                unset($product->product_images);
+
+                // Default product rating
+                $product->product_rating = 4.5;
+
+                // Add category name
+                $product->category_name = $product->category->name ?? null;
+                unset($product->category); // Remove the full category object
+
+                // Add is_discounted flag
+                $product->is_discounted = $product->product_discount > 0;
+            }
+
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Products Fetched Successfully',
+                'products' => $products
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success'  => false,
+                'message'  => $e->getMessage()
+            ], 500);
         }
     }
+
+
+
+
+
+
+
+
+    public function getProductsDetail(Request $request)
+    {
+        try {
+            // Get product_id from the request
+            $product_id = $request->query('product_id');
+
+            if (!$product_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product ID is required'
+                ], 400);
+            }
+
+            // Fetch product with store, category, and reviews
+            $product = Products::select(
+                'product_id',
+                'product_name',
+                'product_description',
+                'product_price',
+                'product_brand',
+                'product_discount',
+                'product_discounted_price',
+                'product_images',
+                'product_variation',
+                'store_id',
+                'product_category', // Category ID
+                'product_subcategory' // Subcategory ID
+            )
+                ->with([
+                    'store:store_id,store_profile_detail,store_info', // Fetch store details
+                    'category:id,name', // Fetch category details
+                    'reviews.user:user_id,user_name' // Fetch reviews along with the user's name
+                ])
+                ->where('product_id', $product_id)
+                ->first();
+
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found'
+                ], 404);
+            }
+
+            // Decode JSON fields from products
+            $product->product_images = json_decode($product->product_images, true);
+            $product->product_variation = json_decode($product->product_variation, true);
+
+            // Prepare response data
+            $response = [
+                'product_id'               => $product->product_id,
+                'product_name'             => $product->product_name,
+                'product_description'      => $product->product_description,
+                'product_price'            => $product->product_price,
+                'product_brand'            => $product->product_brand,
+                'product_discount'         => $product->product_discount,
+                'product_discounted_price' => $product->product_discounted_price,
+                'product_images'           => $product->product_images,
+                'product_variation'        => $product->product_variation,
+                'category_id'              => $product->category->id ?? null,
+                'category_name'            => $product->category->name ?? null,
+                'review_count'             => $product->reviews->count(), // Count total reviews
+                'reviews'                  => []
+            ];
+
+            // Attach store details
+            if ($product->store) {
+                $storeProfileDetail = json_decode($product->store->store_profile_detail, true);
+                $response['store_profile_detail'] = $storeProfileDetail ?: json_decode($product->store->store_info, true);
+            }
+
+            // Attach reviews
+            foreach ($product->reviews as $review) {
+                $response['reviews'][] = [
+                    'review_id' => $review->review_id,
+                    'user_id'   => $review->user_id,
+                    'username'  => $review->user->user_name ?? 'Unknown', // Fetch username
+                    'rating'    => $review->rating,
+                    'review'    => $review->review,
+                    'images'    => $review->images
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product Fetched Successfully',
+                'product' => $response
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
+
+
 
 
     public function toggleWishlist(Request $request)
@@ -129,6 +236,39 @@ class apiproductController extends Controller
                 'success' => true,
                 'message' => 'Product added to wishlist',
             ], 201);
+        }
+    }
+
+    public function getCategories()
+    {
+        try {
+            // Check if user is authenticated
+            // $user = Auth::user();
+            // if (!$user) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'User not authenticated',
+            //     ], 401);
+            // }
+
+            // Fetch categories and decode JSON sub_categories
+            $categories = product_category::select('id', 'name', 'image', 'sub_categories')
+                ->get()
+                ->map(function ($category) {
+                    $category->sub_categories = json_decode($category->sub_categories, true);
+                    return $category;
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Categories fetched successfully',
+                'data' => $categories,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

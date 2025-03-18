@@ -1,28 +1,34 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
 
 Route::get('/Login', function () {
     return view('Auth.login');
 })->name("login");
-Route::get('/signup', function () {
-    return view('Auth.signup');
-})->name("signup");
+// Route::get('/signup', function () {
+//     return view('Auth.signup');
+// })->name("signup");
 
 Route::post('login', [AuthController::class, 'login']);
-
+Route::get('/signup/{role?}', [AuthController::class, 'showSignup'])->name('signup');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 
 Route::middleware(['custom_auth'])->group(function () {
 
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
+    Route::post('/submit-profile', [UserController::class, 'KYC_Authentication'])->name('KYC_Authentication');
     Route::get('/create-store', function () {
         return view('Auth.CreateStore');
     })->name("CreateStore");
+    Route::post('upload-images', [ProductsController::class, 'getFileName'])->name('upload.images');
+
+    Route::post('/submit-product', [ProductsController::class, 'storeProduct'])->name('product.store');
     Route::get('/create-profile', function () {
         return view('Auth.CreateProfile');
     })->name("CreateProfile");
@@ -47,9 +53,7 @@ Route::middleware(['custom_auth'])->group(function () {
         return view('admin.KYC');
     })->name('KYC_auth');
 
-    Route::get('/Orders', function () {
-        return view('pages.Orders');
-    })->name('allorders');
+
 
     Route::get('/ReturnOrders', function () {
         return view('pages.ReturnOrders');
@@ -91,11 +95,29 @@ Route::middleware(['custom_auth'])->group(function () {
         return view('pages.Settings');
     })->name('editsettings');
 
+    Route::get('/Orders', [OrderController::class, 'GetOrders'])->name('allorders');
 
+    // Route::get('/Orders', function () {
+    //     return view('pages.Orders');
+    // })->name('allorders');
+
+    Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
+    Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
+    Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
+    Route::get('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategory']);
+    Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
+    Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
+
+
+    Route::GET('/product/add', [ProductsController::class, 'getCategories'])->name('product.add');
+
+    Route::get('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
 
     // Add Product
 
     Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
+
+    // Route::view('/product/add', 'pages.AddProduct')->name('product.add');
 
     Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
     Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
@@ -103,8 +125,7 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
     Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
     Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
-    Route::view('/ProductCategory', 'admin.ProductCategory')->name('addProductCategory');
-    Route::view('/product/add', 'pages.AddProduct')->name('product.add');
+    // Route::view('/ProductCategory', 'admin.ProductCategory')->name('addProductCategory');
     Route::view('/mystore', 'seller.Store')->name('mystore');
     Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
 });

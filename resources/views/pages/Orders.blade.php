@@ -44,48 +44,57 @@
 
         <x-table :headers="$headers">
             <x-slot name="tablebody">
-
-                <tr>
-                    <td>1</td>
-                    <td>5 / 564890</td>
-                    <td>Noman Ahmad</td>
-                    <td>0300-1234567</td>
-                    <td>Kohenoor City</td>
-                    <td>Rs 1850</td>
-                    <td>Jan 2, 2024</td>
-                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Ongoing</span></td>
-                    <td>
-                        <span class='flex gap-4'>
-                            <button class="viewModalBtn"  data-modal-target="orders-modal"
-                            data-modal-toggle="orders-modal">
-                                <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
-                                    xmlns='http://www.w3.org/2000/svg'>
-                                    <path fill-rule='evenodd' clip-rule='evenodd'
-                                        d='M28.0642 18.5C28.0642 18.126 27.8621 17.8812 27.4579 17.3896C25.9788 15.5938 22.7163 12.25 18.9288 12.25C15.1413 12.25 11.8788 15.5938 10.3996 17.3896C9.99542 17.8812 9.79333 18.126 9.79333 18.5C9.79333 18.874 9.99542 19.1187 10.3996 19.6104C11.8788 21.4062 15.1413 24.75 18.9288 24.75C22.7163 24.75 25.9788 21.4062 27.4579 19.6104C27.8621 19.1187 28.0642 18.874 28.0642 18.5ZM18.9288 21.625C19.7576 21.625 20.5524 21.2958 21.1385 20.7097C21.7245 20.1237 22.0538 19.3288 22.0538 18.5C22.0538 17.6712 21.7245 16.8763 21.1385 16.2903C20.5524 15.7042 19.7576 15.375 18.9288 15.375C18.0999 15.375 17.3051 15.7042 16.719 16.2903C16.133 16.8763 15.8038 17.6712 15.8038 18.5C15.8038 19.3288 16.133 20.1237 16.719 20.7097C17.3051 21.2958 18.0999 21.625 18.9288 21.625Z'
-                                        fill='url(#paint0_linear_872_5570)' />
-                                    <circle opacity='0.1' cx='18.4287' cy='18' r='18'
-                                        fill='url(#paint1_linear_872_5570)' />
+                @foreach ($orders as $order)
+                    <tr class="border-b hover:bg-gray-100 transition">
+                        <td class="px-4 py-2 text-center font-medium">{{ $order->order_id }}</td>
+                        <td class="px-4 py-2 text-center">
+                            <span class="text-gray-700 font-semibold">{{ $order->order_id }}</span> /
+                            <span class="text-gray-500">{{ $order->tracking_id }}</span>
+                        </td>
+                        <td class="px-4 py-2">{{ $order->customer_name }}</td>
+                        <td class="px-4 py-2">{{ $order->phone }}</td>
+                        <td class="px-4 py-2">{{ $order->address }}</td>
+                        <td class="px-4 py-2 font-semibold text-green-600">Rs {{ number_format($order->grand_total, 2) }}
+                        </td>
+                        <td class="px-4 py-2">{{ \Carbon\Carbon::parse($order->order_date)->format('d M, Y') }}</td>
+                        <td class="px-4 py-2">
+                            <span
+                                class="px-3 py-1 text-xs font-semibold text-white
+                        {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
+                        rounded-md shadow">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 text-center">
+                            <button class="viewModalBtn p-2 rounded-md transition" data-modal-target="orders-modal"
+                                data-modal-toggle="orders-modal" data-order-id="{{ $order->order_id }}">
+                                <svg width="24" height="24" viewBox="0 0 37 36" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M28.0642 18.5C28.0642 18.126 27.8621 17.8812 27.4579 17.3896C25.9788 15.5938 22.7163 12.25 18.9288 12.25C15.1413 12.25 11.8788 15.5938 10.3996 17.3896C9.99542 17.8812 9.79333 18.126 9.79333 18.5C9.79333 18.874 9.99542 19.1187 10.3996 19.6104C11.8788 21.4062 15.1413 24.75 18.9288 24.75C22.7163 24.75 25.9788 21.4062 27.4579 19.6104C27.8621 19.1187 28.0642 18.874 28.0642 18.5ZM18.9288 21.625C19.7576 21.625 20.5524 21.2958 21.1385 20.7097C21.7245 20.1237 22.0538 19.3288 22.0538 18.5C22.0538 17.6712 21.7245 16.8763 21.1385 16.2903C20.5524 15.7042 19.7576 15.375 18.9288 15.375C18.0999 15.375 17.3051 15.7042 16.719 16.2903C16.133 16.8763 15.8038 17.6712 15.8038 18.5C15.8038 19.3288 16.133 20.1237 16.719 20.7097C17.3051 21.2958 18.0999 21.625 18.9288 21.625Z"
+                                        fill="url(#paint0_linear_872_5570)" />
+                                    <circle opacity="0.1" cx="18.4287" cy="18" r="18"
+                                        fill="url(#paint1_linear_872_5570)" />
                                     <defs>
-                                        <linearGradient id='paint0_linear_872_5570' x1='18.9288' y1='12.25'
-                                            x2='18.9288' y2='24.75' gradientUnits='userSpaceOnUse'>
-                                            <stop stop-color='#FCB376' />
-                                            <stop offset='1' stop-color='#FE8A29' />
+                                        <linearGradient id="paint0_linear_872_5570" x1="18.9288" y1="12.25"
+                                            x2="18.9288" y2="24.75" gradientUnits="userSpaceOnUse">
+                                            <stop stop-color="#FCB376" />
+                                            <stop offset="1" stop-color="#FE8A29" />
                                         </linearGradient>
-                                        <linearGradient id='paint1_linear_872_5570' x1='18.4287' y1='0'
-                                            x2='18.4287' y2='36' gradientUnits='userSpaceOnUse'>
-                                            <stop stop-color='#FCB376' />
-                                            <stop offset='1' stop-color='#FE8A29' />F
+                                        <linearGradient id="paint1_linear_872_5570" x1="18.4287" y1="0"
+                                            x2="18.4287" y2="36" gradientUnits="userSpaceOnUse">
+                                            <stop stop-color="#FCB376" />
+                                            <stop offset="1" stop-color="#FE8A29" />
                                         </linearGradient>
                                     </defs>
                                 </svg>
                             </button>
-                        </span>
-                    </td>
-                </tr>
-
-
+                        </td>
+                    </tr>
+                @endforeach
             </x-slot>
         </x-table>
+
 
 
         <x-modal id="orders-modal">
