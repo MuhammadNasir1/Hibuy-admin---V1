@@ -208,7 +208,8 @@
 
                         <div class="text-sm">
                             <h3 class="text-base font-bold text-[#2C2C2C]">Store Information</h3>
-                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" method="POST">
+                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
+                                method="POST">
                                 @csrf
                                 <input type="hidden" name="step" value="2">
                                 <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
@@ -231,7 +232,7 @@
                                     </div>
                                     <div class="flex justify-center">
                                         <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden">
-                                            <x-file-uploader name="profile_picture" id="profile_picture" />
+                                            <x-file-uploader name="profile_picture_store" id="profile_picture2" />
                                         </div>
                                     </div>
                                 </div>
@@ -293,7 +294,7 @@
                                 </div>
 
                                 <div
-                                    class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0  relative">
+                                    class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 mb-32  gap-2 md:gap-0  relative">
                                     <label class="md:w-32">Pin Location</label>
                                     <div class="relative w-full">
                                         <input class="rounded-lg w-full p-2 pr-10 border border-gray-300  text-[#B4B4B4]"
@@ -303,57 +304,45 @@
                                     </div>
                                 </div>
 
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center mt-6 mb-32 md:mb-20 gap-2 md:gap-10 ">
 
-                                    <label class="block font-medium text-gray-700 whitespace-nowrap">Categories</label>
-
-                                    <div class="flex items-center  gap-4 ">
-                                        <input type="text" id="counter-input" name="categories" placeholder="vgvhh"
-                                            class="rounded-lg  p-2 border border-gray-300 text-[#B4B4B4]">
-                                        <button type="button" id="increment-button"
-                                            class="inline-flex items-center justify-center flex-shrink-0 border border-gray-300 rounded-md w-8 h-8 bg-primary">
-                                            <svg class="w-5 h-5 p-1 text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                                <path stroke="white" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2" d="M9 1v16M1 9h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Footer Buttons -->
-                                <div
-                                    class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                                    <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
-                                        Back
-                                    </button>
-                                    <button type="submit"
-                                        class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
-                                        Next
-                                    </button>
-                                </div>
-                            </form>
                         </div>
 
+                        <!-- Footer Buttons -->
+                        <div
+                            class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
+                                Back
+                            </button>
+                            <button type="submit"
+                                class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
+                                Next
+                            </button>
+                        </div>
+                        </form>
                     </div>
-                    {{-- documen --}}
-                    <div class="hidden relative p-4 rounded-2xl  dark:bg-gray-800" id="document" role="tabpanel"
-                        aria-labelledby="document-tab">
-                        <div class="text-sm">
-                            <h3 class="text-base font-bold text-[#2C2C2C]">Document Verification</h3>
-                            {{-- img section --}}
+
+                </div>
+                {{-- documen --}}
+                <div class="hidden relative p-4 rounded-2xl  dark:bg-gray-800" id="document" role="tabpanel"
+                    aria-labelledby="document-tab">
+                    <div class="text-sm">
+                        <h3 class="text-base font-bold text-[#2C2C2C]">Document Verification</h3>
+                        {{-- img section --}}
+                        <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
+                            method="POST">
+                            @csrf
+                            <input type="hidden" name="step" value="3">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4  text-base font-semibold">
                                 <div>
                                     <h3 class="pb-2">Shop / Home Bill</h3>
                                     <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
-                                        <x-file-uploader name="profile_picture" id="profile_picture" />
+                                        <x-file-uploader name="home_bill" id="home_bill" />
                                     </div>
                                 </div>
                                 <div>
                                     <h3 class="pb-2">Shop Video (Optional)</h3>
                                     <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
-                                        <x-file-uploader name="profile_picture" id="profile_picture" />
+                                        <x-file-uploader name="shop_video" id="shop_video" />
                                     </div>
                                 </div>
                             </div>
@@ -362,7 +351,7 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Country</label>
-                                    <select name="" id=""
+                                    <select name="country" id="country"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
 
                                         <option value="">Option</option>
@@ -371,7 +360,7 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Province/ Region</label>
-                                    <select name="" id=""
+                                    <select name="province" id="province"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
                                         placeholder="Enter Here">
                                         <option value="">Option</option>
@@ -381,7 +370,7 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">City</label>
-                                    <select name="" id=""
+                                    <select name="city" id="city"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
                                         placeholder="Enter Here">
                                         <option value="">Option</option>
@@ -399,28 +388,32 @@
                                     Next
                                 </button>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                    {{-- account --}}
-                    <div class="hidden relative p-4 rounded-lg  dark:bg-gray-800" id="account" role="tabpanel"
-                        aria-labelledby="account-tab">
-                        <div class="text-sm ">
-                            <div class="border-2 p-2 border-[#FFAE4240] rounded-xl">
-                                <div class="flex items-center flex-col md:flex-row gap-2">
-                                    <div><img src="{{ asset('asset/kyc.svg') }}" alt=""></div>
-                                    <div>
-                                        <h3 class="text-sm font-semibold">Reason</h3>
-                                        <p>Lorem Ipsum is basically just dummy text that is latin. It's a content filler for
-                                            when you don't really have content to put in there yet.</p>
-                                    </div>
+                </div>
+                {{-- account --}}
+                <div class="hidden relative p-4 rounded-lg  dark:bg-gray-800" id="account" role="tabpanel"
+                    aria-labelledby="account-tab">
+                    <div class="text-sm ">
+                        <div class="border-2 p-2 border-[#FFAE4240] rounded-xl">
+                            <div class="flex items-center flex-col md:flex-row gap-2">
+                                <div><img src="{{ asset('asset/kyc.svg') }}" alt=""></div>
+                                <div>
+                                    <h3 class="text-sm font-semibold">Reason</h3>
+                                    <p>Lorem Ipsum is basically just dummy text that is latin. It's a content filler for
+                                        when you don't really have content to put in there yet.</p>
                                 </div>
                             </div>
-                            <h3 class="text-base font-bold text-[#2C2C2C] mt-4">Bank Account Verification</h3>
-
+                        </div>
+                        <h3 class="text-base font-bold text-[#2C2C2C] mt-4">Bank Account Verification</h3>
+                        <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
+                            method="POST">
+                            @csrf
+                            <input type="hidden" name="step" value="4">
                             <div
                                 class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-4 text-sm font-semibold">
                                 <label class="md:w-32">Account Type</label>
-                                <select name="" id=""
+                                <select name="account_type" id="account_type"
                                     class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
 
                                     <option value="">Option</option>
@@ -432,7 +425,7 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-sm font-semibold">
                                     <label class="md:w-32">Bank Name</label>
-                                    <select name="" id=""
+                                    <select name="bank_name" id="bank_name"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
 
                                         <option value="">Option</option>
@@ -443,21 +436,21 @@
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Branch Code</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter here">
+                                        type="text" placeholder="Enter here" id="branch_code" name="branch_code">
                                 </div>
 
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Branch Name</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter here">
+                                        type="text" placeholder="Enter here" id="branch_name" name="branch_name">
                                 </div>
 
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Branch Phone</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter here">
+                                        type="text" placeholder="Enter here" id="branch_phone" name="branch_phone">
                                 </div>
 
                             </div>
@@ -466,33 +459,34 @@
                                 class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                 <label class="md:w-32">Account Title</label>
                                 <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
-                                    placeholder="Enter here">
+                                    placeholder="Enter here" id="account_title" name="account_title">
                             </div>
 
                             <div
                                 class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                 <label class="md:w-32">Account No.</label>
                                 <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
-                                    placeholder="Enter here">
+                                    placeholder="Enter here" id="account_no" name="account_no">
                             </div>
 
                             <div
                                 class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                 <label class="md:w-32">IBAN No.</label>
                                 <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" type="text"
-                                    placeholder="Enter here">
+                                    placeholder="Enter here" id="iban_no" name="iban_no">
                             </div>
-
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
                                 <div>
                                     <h3 class="pb-2">Canceled Cheque</h3>
-                                    <img class="w-full rounded-lg border border-gray-300"
-                                        src="{{ asset('asset/media (1).png') }}" alt="Front Image">
+                                    <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                        <x-file-uploader name="canceled_cheque" id="canceled_cheque" />
+                                    </div>
                                 </div>
                                 <div>
                                     <h3 class="pb-2">Verification Letter (Optional)</h3>
-                                    <img class="w-full rounded-lg border border-gray-300"
-                                        src="{{ asset('asset/media (1).png') }}" alt="Back Image">
+                                    <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                        <x-file-uploader name="verification_letter" id="verification_letter" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -506,42 +500,46 @@
                                     Next
                                 </button>
                             </div>
-
-                        </div>
+                        </form>
                     </div>
-                    {{-- business --}}
-                    <div class="hidden relative p-4 rounded-lg  dark:bg-gray-800" id="business" role="tabpanel"
-                        aria-labelledby="business-tab">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            <div>
-                                <h3 class="text-base font-bold text-[#2C2C2C]">Personal Information</h3>
-                                <p>Fill this form if your business registered.</p>
-                            </div>
-
+                </div>
+                {{-- business --}}
+                <div class="hidden relative p-4 rounded-lg  dark:bg-gray-800" id="business" role="tabpanel"
+                    aria-labelledby="business-tab">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <div>
+                            <h3 class="text-base font-bold text-[#2C2C2C]">Personal Information</h3>
+                            <p>Fill this form if your business registered.</p>
+                        </div>
+                        <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
+                            method="POST">
+                            @csrf
+                            <input type="hidden" name="step" value="5">
                             <div class="grid grid-cols-1  md:grid-cols-2 gap-6 mt-4">
                                 <div class="flex flex-col gap-6">
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Business Name</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Here">
+                                            type="text" placeholder="Enter Here" name="business_name"
+                                            id="business_name">
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Owner Name</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Here">
+                                            type="text" placeholder="Enter Here" name="owner_name" id="owner_name">
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Phone No.</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Here">
+                                            type="text" placeholder="Enter Here" name="phone_no" id="phone_no">
                                     </div>
                                 </div>
                                 <div class="flex justify-center">
                                     <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden">
-                                        <x-file-uploader name="profile_picture" id="profile_picture" />
+                                        <x-file-uploader name="personal_profile" id="personal_profile" />
                                     </div>
                                 </div>
                             </div>
@@ -552,21 +550,21 @@
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                     <label class="md:w-32">Reg. No.</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter here">
+                                        type="text" placeholder="Enter here" name="reg_no" id="reg_no">
                                 </div>
 
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                     <label class="md:w-32">Tax. No.</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter here">
+                                        type="text" placeholder="Enter here" name="tax_no" id="tax_no">
                                 </div>
 
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                     <label class="md:w-32">Address</label>
                                     <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
-                                        type="text" placeholder="Enter here">
+                                        type="text" placeholder="Enter here" name="address" id="address">
                                 </div>
 
                                 <div
@@ -574,47 +572,50 @@
                                     <label class="md:w-32">Pin Location</label>
                                     <div class="relative w-full">
                                         <input class="rounded-lg w-full p-2 pr-10 border border-gray-300  text-[#B4B4B4]"
-                                            type="text" placeholder="Enter Pin Location">
+                                            type="text" placeholder="Enter Pin Location" name="pin_location"
+                                            id="pin_location">
                                         <img class="absolute top-1/2 right-3 -translate-y-1/2 w-5 h-5"
                                             src="{{ asset('asset/Location.svg') }}" alt="Location Icon">
                                     </div>
                                 </div>
 
-
                                 <div
                                     class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
                                     <div>
                                         <h3 class="pb-2">Letter Head</h3>
-                                        <img class="w-full rounded-lg border border-gray-300"
-                                            src="{{ asset('asset/media (1).png') }}" alt="Front Image">
+                                        <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                            <x-file-uploader name="letter_head" id="letter_head" />
+                                        </div>
                                     </div>
                                     <div>
                                         <h3 class="pb-2">Stamp</h3>
-                                        <img class="w-full rounded-lg border border-gray-300"
-                                            src="{{ asset('asset/media (1).png') }}" alt="Back Image">
+                                        <div class="w-full rounded-lg border border-gray-300 h-[30vh]">
+                                            <x-file-uploader name="stamp" id="stamp" />
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Footer Buttons -->
-                                <div
-                                    class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                                    <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
-                                        Back
-                                    </button>
-                                    <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
-                                        Submit
-                                    </button>
-                                </div>
-
-
-
                             </div>
-                        </div>
+
+                            <!-- Footer Buttons -->
+                            <div
+                                class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
+                                    Back
+                                </button>
+                                <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+
+
                     </div>
                 </div>
-
             </div>
         </div>
+
+    </div>
+    </div>
 
     </div>
 @endsection

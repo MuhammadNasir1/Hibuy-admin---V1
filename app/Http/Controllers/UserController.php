@@ -90,9 +90,8 @@ class UserController extends Controller
             }
 
             // Handle file uploads
-            foreach (['profile_picture', 'front_image', 'back_image'] as $fileField) {
+            foreach ($request->allFiles() as $fileField => $file) { // Iterate through all uploaded files
                 if ($request->hasFile($fileField)) {
-                    $file = $request->file($fileField);
                     $fileName = time() . '_' . $fileField . '.' . $file->getClientOriginalExtension();
                     $file->move($uploadPath, $fileName);
                     $fileData[$fileField] = 'uploads/kyc_files/' . $fileName; // Store relative path

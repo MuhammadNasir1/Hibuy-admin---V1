@@ -163,7 +163,7 @@ $(document).ready(function () {
 });
 
 $(document).ready(function(){
-    $("#myFormNew").submit(function(e){
+    $(".myFormNew").submit(function(e){
         e.preventDefault(); // Prevent default form submission
 
         let form = $(this);
@@ -176,8 +176,7 @@ $(document).ready(function(){
             data: formData,
             contentType: false, // Important for FormData
             processData: false, // Prevent jQuery from processing data
-            dataType: "json",
-            success: function(response) {
+            dataType: "json",            success: function(response) {
                 if (response.success) {
                     Swal.fire({
                         title: "Success!",
