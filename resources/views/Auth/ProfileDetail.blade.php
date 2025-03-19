@@ -8,7 +8,30 @@
         $bank_info = json_decode($seller->bank_info, true);
         $documents_info = json_decode($seller->documents_info, true);
         $business_info = json_decode($seller->business_info, true);
-        print_r($personal_info);
+        // print_r($personal_info);
+        if (empty($personal_info)) {
+            $activeTab = 'personal';
+        } elseif (empty($store_info)) {
+            $activeTab = 'store';
+        } elseif (empty($documents_info)) {
+            $activeTab = 'document';
+        } elseif (empty($bank_info)) {
+            $activeTab = 'account';
+        } elseif (empty($business_info)) {
+            $activeTab = 'business';
+        } else {
+            // If all tabs have data, default to the first tab
+            $activeTab = 'personal';
+        }
+
+        $tabsStatus = [
+            'personal' => true,
+            'store' => !empty($personal_info),
+            'document' => !empty($personal_info) && !empty($store_info),
+            'account' => !empty($personal_info) && !empty($store_info) && !empty($documents_info),
+            'business' =>
+                !empty($personal_info) && !empty($store_info) && !empty($documents_info) && !empty($bank_info),
+        ];
     @endphp
     <div class="  w-full p-4 md:p-8 mt-5 mb-5 bg-[#000000] bg-opacity-30 text-white rounded-2xl">
         <div class="flex flex-col md:flex-row gap-4">
@@ -95,36 +118,56 @@
             <div class="w-full bg-white  text-[#4E4646] rounded-2xl">
 
                 <div class="mb-4 border-b ">
-                    <ul class="flex flex-wrap justify-around -mb-px text-sm font-medium text-center mt-2 " id="default-tab"
+
+                    <ul class="flex flex-wrap justify-around -mb-px text-sm font-medium text-center mt-2" id="default-tab"
                         data-tabs-toggle="#default-styled-tab-content"
                         data-tabs-active-classes="bg-primary text-white border-primary dark:bg-primary dark:text-white dark:border-primary"
                         data-tabs-inactive-classes="dark:border-transparent text-[#333333] dark:text-gray-400 border-gray-100 dark:border-gray-700 dark:hover:text-gray-300"
                         role="tablist">
+
                         <li class="me-2" role="presentation">
-                            <button class=" px-6 py-2 border-b-2 rounded-t-lg " id="personal-tab"
-                                data-tabs-target="#personal" type="button" role="tab" aria-controls="personal"
-                                aria-selected="false">Personal</button>
+                            <button
+                                class="px-6 py-2 border-b-2 tab-pane rounded-t-lg {{ $activeTab == 'personal' ? 'bg-primary text-white border-primary' : '' }}"
+                                id="personal-tab" data-tabs-target="#personal" type="button" role="tab"
+                                aria-controls="personal"
+                                aria-selected="{{ $activeTab == 'personal' ? 'true' : 'false' }}">Personal</button>
                         </li>
+
                         <li class="me-2" role="presentation">
-                            <button class="inline-block px-6 py-2 border-b-2 rounded-t-lg" id="store-tab"
-                                data-tabs-target="#store" type="button" role="tab" aria-controls="store"
-                                aria-selected="false">My Store</button>
+                            <button
+                                class="inline-block px-6 py-2 border-b-2 rounded-t-lg {{ $activeTab == 'store' ? 'bg-primary text-white border-primary' : '' }}"
+                                id="store-tab" data-tabs-target="#store" type="button" role="tab" aria-controls="store"
+                                aria-selected="{{ $activeTab == 'store' ? 'true' : 'false' }}"
+                                {{ !$tabsStatus['store'] ? 'disabled class="opacity-50 cursor-not-allowed"' : '' }}>My
+                                Store</button>
                         </li>
+
                         <li class="me-2" role="presentation">
-                            <button class="inline-block px-6 py-2 border-b-2 rounded-t-lg" id="document-tab"
-                                data-tabs-target="#document" type="button" role="tab" aria-controls="document"
-                                aria-selected="false">Document</button>
+                            <button
+                                class="inline-block px-6 py-2 tab-pane border-b-2 rounded-t-lg {{ $activeTab == 'document' ? 'bg-primary text-white border-primary' : '' }}"
+                                id="document-tab" data-tabs-target="#document" type="button" role="tab"
+                                aria-controls="document" aria-selected="{{ $activeTab == 'document' ? 'true' : 'false' }}"
+                                {{ !$tabsStatus['document'] ? 'disabled class="opacity-50 cursor-not-allowed"' : '' }}>Document</button>
                         </li>
+
                         <li role="presentation">
-                            <button class="inline-block px-6 py-2 border-b-2 rounded-t-lg " id="account-tab"
-                                data-tabs-target="#account" type="button" role="tab" aria-controls="account"
-                                aria-selected="false">Bank Account</button>
+                            <button
+                                class="inline-block px-6 py-2 tab-pane border-b-2 rounded-t-lg {{ $activeTab == 'account' ? 'bg-primary text-white border-primary' : '' }}"
+                                id="account-tab" data-tabs-target="#account" type="button" role="tab"
+                                aria-controls="account" aria-selected="{{ $activeTab == 'account' ? 'true' : 'false' }}"
+                                {{ !$tabsStatus['account'] ? 'disabled class="opacity-50 cursor-not-allowed"' : '' }}>Bank
+                                Account</button>
                         </li>
+
                         <li role="presentation">
-                            <button class="inline-block px-6 py-2 border-b-2 rounded-t-lg " id="business-tab"
-                                data-tabs-target="#business" type="button" role="tab" aria-controls="business"
-                                aria-selected="false">Business</button>
+                            <button
+                                class="inline-block px-6 py-2 tab-pane border-b-2 rounded-t-lg {{ $activeTab == 'business' ? 'bg-primary text-white border-primary' : '' }}"
+                                id="business-tab" data-tabs-target="#business" type="button" role="tab"
+                                aria-controls="business"
+                                aria-selected="{{ $activeTab == 'business' ? 'true' : 'false' }}"
+                                {{ !$tabsStatus['business'] ? 'disabled class="opacity-50 cursor-not-allowed"' : '' }}>Business</button>
                         </li>
+
                     </ul>
                 </div>
                 <div id="default-tab-content">
@@ -134,18 +177,21 @@
                         <div class="text-sm">
                             <h3 class="text-base font-bold text-[#2C2C2C]">Personal Information</h3>
 
-                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
+                                method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="step" value="1">
                                 <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
                                     <div class="flex flex-col gap-6">
-                                        <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                        <div
+                                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Full Name</label>
                                             <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
                                                 type="text" placeholder="Enter Here" name="full_name"
                                                 value="{{ $personal_info['full_name'] ?? '' }}">
                                         </div>
-                                        <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                        <div
+                                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Address</label>
                                             <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
                                                 type="text" placeholder="Enter Here" name="address"
@@ -153,11 +199,13 @@
                                         </div>
                                     </div>
                                     <div class="flex justify-center">
-                                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
+                                        <div
+                                            class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
                                             @if (!empty($personal_info['profile_picture']))
-                                                <img src="{{ asset($personal_info['profile_picture']) }}" alt="Profile Picture"
-                                                    class="w-full h-full object-cover rounded-full">
-                                                <input type="text" name="profile_picture" value="{{ $personal_info['profile_picture'] }}" hidden>
+                                                <img src="{{ asset($personal_info['profile_picture']) }}"
+                                                    alt="Profile Picture" class="w-full h-full object-cover rounded-full">
+                                                <input type="text" name="profile_picture"
+                                                    value="{{ $personal_info['profile_picture'] }}" hidden>
                                             @endif
                                             <x-file-uploader name="profile_picture" id="profile_picture" />
                                         </div>
@@ -165,13 +213,15 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                                    <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                    <div
+                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Phone No.</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
                                             type="text" placeholder="Enter Here" name="phone_no"
                                             value="{{ $personal_info['phone_no'] ?? '' }}">
                                     </div>
-                                    <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
+                                    <div
+                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Email</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
                                             type="text" placeholder="Enter Here" name="email"
@@ -186,25 +236,30 @@
                                         value="{{ $personal_info['cnic'] ?? '' }}">
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
                                     <div>
                                         <h3 class="pb-2">Front Image</h3>
-                                        <div class="w-full rounded-lg border border-gray-300 h-[30vh] flex items-center justify-center">
+                                        <div
+                                            class="w-full rounded-lg border border-gray-300 h-[30vh] flex items-center justify-center">
                                             @if (!empty($personal_info['front_image']))
                                                 <img src="{{ asset($personal_info['front_image']) }}" alt="Front Image"
                                                     class="h-full object-contain">
-                                                <input type="text" name="front_image" value="{{ $personal_info['front_image'] }}" hidden>
+                                                <input type="text" name="front_image"
+                                                    value="{{ $personal_info['front_image'] }}" hidden>
                                             @endif
                                             <x-file-uploader name="front_image" id="front_image" />
                                         </div>
                                     </div>
                                     <div>
                                         <h3 class="pb-2">Back Image</h3>
-                                        <div class="w-full rounded-lg border border-gray-300 h-[30vh] flex items-center justify-center">
+                                        <div
+                                            class="w-full rounded-lg border border-gray-300 h-[30vh] flex items-center justify-center">
                                             @if (!empty($personal_info['back_image']))
                                                 <img src="{{ asset($personal_info['back_image']) }}" alt="Back Image"
                                                     class="h-full object-contain">
-                                                <input type="text" name="back_image" value="{{ $personal_info['back_image'] }}" hidden>
+                                                <input type="text" name="back_image"
+                                                    value="{{ $personal_info['back_image'] }}" hidden>
                                             @endif
                                             <x-file-uploader name="back_image" id="back_image" />
                                         </div>
@@ -212,11 +267,13 @@
                                 </div>
 
                                 <!-- Footer Buttons -->
-                                <div class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div
+                                    class="absolute bottom-0 left-0 w-full bg-[#D9D9D980] rounded-b-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
                                     <button class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-[#D9D9D980]">
                                         Discard
                                     </button>
-                                    <button type="submit" class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
+                                    <button type="submit"
+                                        class="w-full md:w-auto rounded-3xl shadow-md px-6 py-2 bg-primary text-white">
                                         Next
                                     </button>
                                 </div>

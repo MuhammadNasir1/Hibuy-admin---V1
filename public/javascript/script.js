@@ -162,13 +162,15 @@ $(document).ready(function () {
     });
 });
 
-$(document).ready(function(){
-    $(".myFormNew").submit(function(e){
+$(document).ready(function () {
+    $(".myFormNew").submit(function (e) {
         e.preventDefault(); // Prevent default form submission
 
         let form = $(this);
-        let actionUrl = form.attr('action'); // Get form action URL
+        let actionUrl = form.attr("action"); // Get form action URL
         let formData = new FormData(this); // Properly create FormData object
+        let currentTab = form.closest(".tab-pane"); // Get current active tab
+        let nextTab = currentTab.next(".tab-pane"); // Get next tab
 
         $.ajax({
             url: actionUrl,
@@ -176,14 +178,28 @@ $(document).ready(function(){
             data: formData,
             contentType: false, // Important for FormData
             processData: false, // Prevent jQuery from processing data
-            dataType: "json",            success: function(response) {
+            dataType: "json",
+            success: function (response) {
                 if (response.success) {
                     Swal.fire({
                         title: "Success!",
                         text: response.message,
                         icon: "success"
                     });
+
                     form[0].reset(); // Reset form after success
+
+                    if (nextTab.length > 0) {
+                        // If there is a next tab, enable and switch to it
+                        let nextTabButton = nextTab.find("[data-tabs-target]"); // Get next tab button
+                        nextTabButton.prop("disabled", false).removeAttr("disabled").removeClass("cursor-not-allowed");
+                        nextTabButton.click();
+                    } else {
+                        // If this is the last tab, redirect to new route
+                        setTimeout(function () {
+                            window.location.href = "/"; // Change to your actual route
+                        }, 2000); // Redirect after 2 seconds
+                    }
                 } else {
                     Swal.fire({
                         title: "Error!",
@@ -192,7 +208,7 @@ $(document).ready(function(){
                     });
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 let errorMessage = "An error occurred.";
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
                     errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
@@ -206,4 +222,52 @@ $(document).ready(function(){
         });
     });
 });
+
+
+
+
+// $(document).ready(function(){
+//     $(".myFormNew").submit(function(e){
+//         e.preventDefault(); // Prevent default form submission
+
+//         let form = $(this);
+//         let actionUrl = form.attr('action'); // Get form action URL
+//         let formData = new FormData(this); // Properly create FormData object
+
+//         $.ajax({
+//             url: actionUrl,
+//             type: "POST",
+//             data: formData,
+//             contentType: false, // Important for FormData
+//             processData: false, // Prevent jQuery from processing data
+//             dataType: "json",            success: function(response) {
+//                 if (response.success) {
+//                     Swal.fire({
+//                         title: "Success!",
+//                         text: response.message,
+//                         icon: "success"
+//                     });
+//                     form[0].reset(); // Reset form after success
+//                 } else {
+//                     Swal.fire({
+//                         title: "Error!",
+//                         text: response.message,
+//                         icon: "error"
+//                     });
+//                 }
+//             },
+//             error: function(xhr) {
+//                 let errorMessage = "An error occurred.";
+//                 if (xhr.responseJSON && xhr.responseJSON.errors) {
+//                     errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+//                 }
+//                 Swal.fire({
+//                     title: "Validation Error!",
+//                     text: errorMessage,
+//                     icon: "warning"
+//                 });
+//             }
+//         });
+//     });
+// });
 
