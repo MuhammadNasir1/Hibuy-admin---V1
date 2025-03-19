@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Crypt;
 class UserController extends Controller
 {
 
+    public function profileDetail()
+    {
+        $user = session('user_details')['user_id'];
+        $seller = Seller::Where('user_id', $user)->first();
+        return view('Auth.ProfileDetail', compact('seller'));
+        // return response()->json(['success' => true, 'data' => $seller]);
+    }
+
     public function setPassword(Request $request)
     {
         try {

@@ -23,6 +23,7 @@ Route::middleware(['custom_auth'])->group(function () {
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/submit-profile', [UserController::class, 'KYC_Authentication'])->name('KYC_Authentication');
+    Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
     Route::get('/create-store', function () {
         return view('Auth.CreateStore');
     })->name("CreateStore");
@@ -32,10 +33,6 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::get('/create-profile', function () {
         return view('Auth.CreateProfile');
     })->name("CreateProfile");
-    Route::get('/profile-detail', function () {
-        return view('Auth.ProfileDetail');
-    })->name("ProfileDetail");
-
     // Route::middleware(['custom_auth'])->group(function () {
     Route::get('/', function () {
         return view('pages.dashboard');
