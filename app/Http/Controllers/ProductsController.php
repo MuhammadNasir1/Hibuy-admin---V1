@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\product_category;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use App\Models\product_category;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,6 +37,7 @@ class ProductsController extends Controller
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
+
     public function getSubCategories($category_id)
     {
         try {
@@ -53,6 +55,7 @@ class ProductsController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
     public function getFileName(Request $request)
     {
         $request->validate([
@@ -203,6 +206,7 @@ class ProductsController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+
     public function showcat()
     {
         $categories = product_category::all();
@@ -303,5 +307,45 @@ class ProductsController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+
+    public function showAllProducts()
+    {
+        // Retrieve user details from session
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $loggedInUserId = $userDetails['user_id']; // Get logged-in user_id
+
+        // Fetch products with category name, first image, and user name, filtered by user_id
+        $products = DB::table('products')
+            ->join('categories', 'products.product_category', '=', 'categories.id')
+            ->join('users', 'products.user_id', '=', 'users.user_id') // Join with users table
+            ->select(
+                'products.product_id',
+                'products.user_id',
+                'products.product_name',
+                'categories.name as product_category',
+                'products.product_discounted_price',
+                'products.product_images',
+                'products.product_status',
+                'products.is_boosted',
+                'products.created_at',
+                'products.updated_at',
+                'users.user_name as user_name' // Get user name
+            )
+            ->where('products.user_id', $loggedInUserId) // Filter by logged-in user_id
+            ->get()
+            ->map(function ($product) {
+                // Decode product images JSON and get the first image
+                $images = json_decode($product->product_images, true);
+                $product->first_image = $images[0] ?? null;
+                unset($product->product_images); // Remove the original JSON field
+                return $product;
+            });
+
+        return view('pages.products', compact('products'));
     }
 }
