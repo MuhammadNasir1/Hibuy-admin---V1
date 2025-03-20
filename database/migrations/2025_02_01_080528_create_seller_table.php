@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longText('documents_info')->nullable();
             $table->longText('bank_info')->nullable();
             $table->longText('business_info')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

@@ -190,6 +190,7 @@
                                                 type="text" placeholder="Enter Here" name="full_name"
                                                 value="{{ $personal_info['full_name'] ?? '' }}">
                                         </div>
+                                        <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Address</label>
@@ -303,6 +304,7 @@
                                                 type="text" placeholder="Enter Here" name="store_name"
                                                 value="{{ $store_info['store_name'] ?? '' }}">
                                         </div>
+                                        <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Type</label>
@@ -340,6 +342,7 @@
                                             type="text" placeholder="Enter Here" name="phone_no"
                                             value="{{ $store_info['phone_no'] ?? '' }}">
                                     </div>
+
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Email</label>
@@ -460,7 +463,7 @@
                                             <x-file-uploader name="home_bill" id="home_bill" />
                                         </div>
                                     </div>
-
+                                    <input type="text" name="status" value="pending" hidden>
                                     <!-- Shop Video (Optional) -->
                                     <div>
                                         <h3 class="pb-2">Shop Video (Optional)</h3>
@@ -584,7 +587,7 @@
                                         </option>
                                     </select>
                                 </div>
-
+                                <input type="text" name="status" value="pending" hidden>
                                 <!-- Bank Information -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                                     <div
@@ -725,6 +728,7 @@
                                                 type="text" placeholder="Enter Here" name="owner_name"
                                                 id="owner_name" value="{{ $business_info['owner_name'] ?? '' }}">
                                         </div>
+                                        <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Phone No.</label>
