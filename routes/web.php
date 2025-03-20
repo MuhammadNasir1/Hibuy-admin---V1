@@ -39,7 +39,7 @@ Route::middleware(['custom_auth'])->group(function () {
     })->name('dashboard');
 
     Route::controller(ProductsController::class)->group(function () {
-        Route::get('/products', 'index')->name('products');
+        Route::get('/products', 'showAllProducts')->name('products');
     });
 
     Route::get('/PackagesOffer', function () {
