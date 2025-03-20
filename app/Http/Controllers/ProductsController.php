@@ -345,7 +345,79 @@ class ProductsController extends Controller
                 unset($product->product_images); // Remove the original JSON field
                 return $product;
             });
-
         return view('pages.products', compact('products'));
+    }
+
+
+    public function viewProductDetails($id)
+    {
+        try {
+            // Fetch product without store and reviews details
+            $product = Products::select(
+                'product_id',
+                'product_name',
+                'product_description',
+                'product_price',
+                'product_brand',
+                'product_discount',
+                'product_discounted_price',
+                'product_images',
+                'product_variation',
+                'product_category', // Category ID
+                'product_subcategory' // Subcategory ID
+            )
+                ->where('product_id', $id) // Use $id directly from route
+                ->first();
+
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found'
+                ], 404);
+            }
+
+            // Decode JSON fields
+            $product->product_images = json_decode($product->product_images, true);
+            $product->product_variation = json_decode($product->product_variation, true);
+
+            // Prepare response data
+            $response = [
+                'product_id'               => $product->product_id,
+                'product_name'             => $product->product_name,
+                'product_description'      => $product->product_description,
+                'product_price'            => $product->product_price,
+                'product_brand'            => $product->product_brand,
+                'product_discount'         => $product->product_discount,
+                'product_discounted_price' => $product->product_discounted_price,
+                'product_images'           => $product->product_images,
+                'product_variation'        => $product->product_variation,
+                'category_id'              => $product->product_category,
+                'subcategory_id'           => $product->product_subcategory
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product Fetched Successfully',
+                'product' => $response
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function deleteProduct($id)
+    {
+        $product = Products::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found!'], 404);
+        }
+
+        $product->delete();
+        return response()->json(['message' => 'Product deleted successfully!']);
     }
 }

@@ -71,7 +71,7 @@
                         </td>
                         <td>
                             <span class="flex gap-4">
-                                <button data-id="{{ $product->product_id }}" class="viewModalBtn">
+                                <button viewproducturl="/view-product/{{ $product->product_id }}" class="viewModalBtn">
                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <path fill-rule='evenodd' clip-rule='evenodd'
@@ -102,7 +102,7 @@
                                             fill='#233A85' />
                                     </svg>
                                 </button>
-                                <button class="deleteDataBtn" delId="{{ $product->product_id }}">
+                                <button delurl="/delete-product/{{ $product->product_id }}" class="deleteDataBtn">
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -194,30 +194,30 @@
                                     <div class="space-y-4 ">
                                         <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Title</div>
-                                            <div>1231231</div>
+                                            <div id="product_name"></div>
                                         </div>
 
-                                        <div class="flex items-center gap-8 align-middle">
+                                        {{-- <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Rating</div>
-                                            <div>4.5</div>
-                                        </div>
+                                            <div></div>
+                                        </div> --}}
 
                                         <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Brand</div>
-                                            <div>store</div>
+                                            <div id="brand_name"></div>
                                         </div>
 
                                         <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Stock</div>
-                                            <div>1234</div>
+                                            <div id="product_stock"></div>
                                         </div>
 
                                         <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Discount %</div>
-                                            <div>31%</div>
+                                            <div id="product_discount"></div>
                                         </div>
 
-                                        <div class="flex items-center gap-8 align-middle">
+                                        {{-- <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Color Family</div>
                                             <div class="flex flex-wrap gap-2">
                                                 <span
@@ -243,64 +243,45 @@
                                                 <span
                                                     class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">15kg</span>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
 
                                     <div class="space-y-4">
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Orders</div>
-                                            <div>56</div>
-                                        </div>
 
                                         <div class="flex items-center gap-8 align-middle">
                                             <div class="text-sm text-gray-500">Category</div>
-                                            <div>1231231</div>
+                                            <div id="product_category">1231231</div>
                                         </div>
 
                                         <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Old Price</div>
-                                            <div>$78</div>
+                                            <div class="text-sm text-gray-500">Product Price</div>
+                                            <div id="product_price"></div>
                                         </div>
 
                                         <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Price</div>
-                                            <div>$34</div>
+                                            <div class="text-sm text-gray-500">Discounted Price</div>
+                                            <div id="product_discounted_price"></div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="flex justify-center gap-8 mt-4 space-y-2">
                                     <div class="text-sm text-gray-500">Description</div>
-                                    <div>
-                                        <p class="text-sm">
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. In, iure minus error
-                                            doloribus saepe natus.
-                                        </p>
-                                        <p class="text-sm font-medium">Lorem ipsum dolor sit amet</p>
-                                        <p class="text-sm">
-                                            consectetur adipisicing elit. In, iure minus error doloribus saepe natus. Lorem
-                                            ipsum dolor sit amet consectetur adipisicing elit. In, iure minus error
-                                            doloribus
-                                            saepe natus. Lorem ipsum dolor sit amet consectetur adipisicing elit. In, iure
-                                            minus
-                                            error doloribus saepe natus.
-                                        </p>
-                                    </div>
+                                    <div id="product_description"></div>
                                 </div>
                                 <form class="max-w-sm mx-auto">
-
-                                </form>
-                                <div class="flex items-center mt-5 mb-4">
-                                    <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
-                                    <div>
-                                        <select id="countries"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option selected>Select the Status</option>
-                                            <option value="US">approved</option>
-                                            <option value="CA">Pending</option>
-                                        </select>
+                                    <div class="flex items-center mt-5 mb-4">
+                                        <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
+                                        <div>
+                                            <select id="countries"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                <option selected>Select the Status</option>
+                                                <option value="US">approved</option>
+                                                <option value="CA">Pending</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                             <!-- Buttons -->
                             <div class="mt-6 bg-gray-300 rounded-b-xl">
@@ -330,40 +311,41 @@
     <script>
         $(document).ready(function() {
             $(".viewModalBtn").on("click", function() {
-                // var modalId = $(this).data("modal-target"); // Get modal ID
-                var productId = $(this).data("id"); // Assuming you add product ID dynamically
-                // alert(productId);
-                // Open the modal
-                $("#modal-btn").click();
+                let viewproducturl = $(this).attr(
+                    "viewproducturl"); // Get the URL from the button attribute
+
+                if (!viewproducturl) {
+                    alert("Invalid product URL!");
+                    return;
+                }
+
+                // alert(viewproducturl); // Debugging alert
+
+                $("#modal-btn").click(); // Trigger modal open
 
                 // Run AJAX to fetch product details
                 $.ajax({
-                    url: "/get-product-details", // Your API route
+                    url: viewproducturl, // Use the full URL
                     type: "GET",
-                    data: {
-                        product_id: productId
-                    },
                     success: function(response) {
                         if (response.success) {
-                            $("#productName").text(response.data.product_name);
-                            $("#productCategory").text(response.data.product_category);
-                            $("#productPrice").text(response.data.product_price);
-                            $("#productDescription").text(response.data.product_description);
+                            console.log(response.product); // Debugging: Log product details
 
-                            // Handle image display
-                            if (response.data.product_images) {
-                                let images = JSON.parse(response.data.product_images);
-                                $("#productImage").attr("src", images[0] || "default.jpg");
-                            }
+                            // You can populate modal fields here
+                            $("#productName").text(response.product.product_name);
+                            $("#productDescription").text(response.product.product_description);
+                            $("#productPrice").text(response.product.product_price);
+                            // Add more fields as needed
                         } else {
                             alert("Product not found!");
                         }
                     },
                     error: function() {
-                        // alert("Error fetching product details.");
+                        alert("Error fetching product details.");
                     }
                 });
             });
+
 
             // Close modal when clicking outside
             $(".modal").on("click", function(event) {
