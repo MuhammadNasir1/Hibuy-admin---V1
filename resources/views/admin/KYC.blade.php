@@ -7,58 +7,53 @@
             <h2 class="text-2xl font-medium  ">KYC List</h1>
         </div>
         @php
-            $headers = [
-                'ID',
-                'Image',
-                'Name',
-                'Business Type',
-                'Submission Date',
-                'Steps Approved',
-                'Status',
-                'Action',
-            ];
+            $headers = ['ID', 'Image', 'Name', 'Type', 'Submission Date', 'Steps Approved', 'Status', 'Action'];
         @endphp
 
         <x-table :headers="$headers">
             <x-slot name="tablebody">
+                @foreach ($sellers as $data)
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}" alt="Jese image">
+                        </td>
+                        <td>{{ $data->user_name }}</td>
+                        <td>{{ $data->user_role }}</td>
+                        <td>{{ $data->submission_date }}</td>
+                        <td>{{ $data->steps_progress }}</td>
 
-                <tr>
-                    <td>1</td>
-                    <td>
-                        <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}" alt="Jese image">
-                    </td>
-                    <td>Noman Ahmad</td>
-                    <td>Business</td>
-                    <td>Jan 2, 2024</td>
-                    <td>4/5</td>
-                    <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span></td>
-                    <td>
-                        <span class='flex gap-4'>
-                            <button class="viewModalBtn"  data-modal-target="KYC-modal" data-modal-toggle="KYC-modal">
-                                <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
-                                    xmlns='http://www.w3.org/2000/svg'>
-                                    <path fill-rule='evenodd' clip-rule='evenodd'
-                                        d='M28.0642 18.5C28.0642 18.126 27.8621 17.8812 27.4579 17.3896C25.9788 15.5938 22.7163 12.25 18.9288 12.25C15.1413 12.25 11.8788 15.5938 10.3996 17.3896C9.99542 17.8812 9.79333 18.126 9.79333 18.5C9.79333 18.874 9.99542 19.1187 10.3996 19.6104C11.8788 21.4062 15.1413 24.75 18.9288 24.75C22.7163 24.75 25.9788 21.4062 27.4579 19.6104C27.8621 19.1187 28.0642 18.874 28.0642 18.5ZM18.9288 21.625C19.7576 21.625 20.5524 21.2958 21.1385 20.7097C21.7245 20.1237 22.0538 19.3288 22.0538 18.5C22.0538 17.6712 21.7245 16.8763 21.1385 16.2903C20.5524 15.7042 19.7576 15.375 18.9288 15.375C18.0999 15.375 17.3051 15.7042 16.719 16.2903C16.133 16.8763 15.8038 17.6712 15.8038 18.5C15.8038 19.3288 16.133 20.1237 16.719 20.7097C17.3051 21.2958 18.0999 21.625 18.9288 21.625Z'
-                                        fill='url(#paint0_linear_872_5570)' />
-                                    <circle opacity='0.1' cx='18.4287' cy='18' r='18'
-                                        fill='url(#paint1_linear_872_5570)' />
-                                    <defs>
-                                        <linearGradient id='paint0_linear_872_5570' x1='18.9288' y1='12.25'
-                                            x2='18.9288' y2='24.75' gradientUnits='userSpaceOnUse'>
-                                            <stop stop-color='#FCB376' />
-                                            <stop offset='1' stop-color='#FE8A29' />
-                                        </linearGradient>
-                                        <linearGradient id='paint1_linear_872_5570' x1='18.4287' y1='0'
-                                            x2='18.4287' y2='36' gradientUnits='userSpaceOnUse'>
-                                            <stop stop-color='#FCB376' />
-                                            <stop offset='1' stop-color='#FE8A29' />F
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                            </button>
-                        </span>
-                    </td>
-                </tr>
+                        <td><span
+                                class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">{{ $data->status }}</span>
+                        </td>
+                        <td>
+                            <span class='flex gap-4'>
+                                <button class="viewModalBtn" data-modal-target="KYC-modal" data-modal-toggle="KYC-modal">
+                                    <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
+                                        xmlns='http://www.w3.org/2000/svg'>
+                                        <path fill-rule='evenodd' clip-rule='evenodd'
+                                            d='M28.0642 18.5C28.0642 18.126 27.8621 17.8812 27.4579 17.3896C25.9788 15.5938 22.7163 12.25 18.9288 12.25C15.1413 12.25 11.8788 15.5938 10.3996 17.3896C9.99542 17.8812 9.79333 18.126 9.79333 18.5C9.79333 18.874 9.99542 19.1187 10.3996 19.6104C11.8788 21.4062 15.1413 24.75 18.9288 24.75C22.7163 24.75 25.9788 21.4062 27.4579 19.6104C27.8621 19.1187 28.0642 18.874 28.0642 18.5ZM18.9288 21.625C19.7576 21.625 20.5524 21.2958 21.1385 20.7097C21.7245 20.1237 22.0538 19.3288 22.0538 18.5C22.0538 17.6712 21.7245 16.8763 21.1385 16.2903C20.5524 15.7042 19.7576 15.375 18.9288 15.375C18.0999 15.375 17.3051 15.7042 16.719 16.2903C16.133 16.8763 15.8038 17.6712 15.8038 18.5C15.8038 19.3288 16.133 20.1237 16.719 20.7097C17.3051 21.2958 18.0999 21.625 18.9288 21.625Z'
+                                            fill='url(#paint0_linear_872_5570)' />
+                                        <circle opacity='0.1' cx='18.4287' cy='18' r='18'
+                                            fill='url(#paint1_linear_872_5570)' />
+                                        <defs>
+                                            <linearGradient id='paint0_linear_872_5570' x1='18.9288' y1='12.25'
+                                                x2='18.9288' y2='24.75' gradientUnits='userSpaceOnUse'>
+                                                <stop stop-color='#FCB376' />
+                                                <stop offset='1' stop-color='#FE8A29' />
+                                            </linearGradient>
+                                            <linearGradient id='paint1_linear_872_5570' x1='18.4287' y1='0'
+                                                x2='18.4287' y2='36' gradientUnits='userSpaceOnUse'>
+                                                <stop stop-color='#FCB376' />
+                                                <stop offset='1' stop-color='#FE8A29' />F
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </button>
+                            </span>
+                        </td>
+                    </tr>
+                @endforeach
 
 
             </x-slot>

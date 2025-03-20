@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\KYCController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
@@ -38,17 +39,21 @@ Route::middleware(['custom_auth'])->group(function () {
         return view('pages.dashboard');
     })->name('dashboard');
 
-    Route::controller(ProductsController::class)->group(function () {
-        Route::get('/products', 'showAllProducts')->name('products');
+    Route::controller(KYCController::class)->group(function () {
+        Route::get('/KYC', 'kycData')->name('KYC_auth');
     });
+    Route::controller(ProductsController::class)->group(function () {
+        Route::GET('/products', 'showAllProducts')->name('products');
+        Route::GET('/delete-product/{id}', 'deleteProduct');
+        Route::GET('/view-product/{id}', 'viewProductDetails');});
 
     Route::get('/PackagesOffer', function () {
         return view('pages.PackagesOffer');
     })->name('PackagesOffer');
 
-    Route::get('/KYC', function () {
-        return view('admin.KYC');
-    })->name('KYC_auth');
+    // Route::get('/KYC', function () {
+    //     return view('admin.KYC');
+    // })->name('KYC_auth');
 
 
 
