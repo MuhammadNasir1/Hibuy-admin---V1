@@ -41,6 +41,7 @@ Route::middleware(['custom_auth'])->group(function () {
 
     Route::controller(KYCController::class)->group(function () {
         Route::get('/KYC', 'kycData')->name('KYC_auth');
+        Route::get('/KYC-data/{id}', 'kycDataSelect')->name('kycDataSelect');
     });
     Route::controller(ProductsController::class)->group(function () {
         Route::GET('/products', 'showAllProducts')->name('products');

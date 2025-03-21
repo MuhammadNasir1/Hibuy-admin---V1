@@ -357,17 +357,19 @@
                                         <label class="block mb-1 text-sm font-bold text-gray-700"> Cancelled Cheque</label>
                                         <div
                                             class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
-                                            <img id="bank_cheque_image" src=""
-                                                alt="" class="h-full object-cover">
+                                            <img id="bank_cheque_image" src="" alt=""
+                                                class="h-full object-cover">
 
                                         </div>
                                     </div>
                                     <!-- Back Image -->
                                     <div>
-                                        <label class="block mb-1 text-sm font-bold text-gray-700"> Verification Letter</label>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700"> Verification
+                                            Letter</label>
                                         <div
                                             class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
-                                            <img src="" alt="" class="h-full object-cover" id="bank_letter_image">
+                                            <img src="" alt="" class="h-full object-cover"
+                                                id="bank_letter_image">
                                         </div>
                                     </div>
                                 </div>
@@ -418,7 +420,8 @@
                                     <div class="flex justify-center mb-6">
                                         <div
                                             class="relative flex items-center justify-center w-24 h-24 bg-gray-200 rounded-full cursor-pointer overflow-hidden">
-                                            <img id="buisness_profile_picture" class="h-full object-cover" src="{{ asset('asset/Vector (1).svg') }}" alt="">
+                                            <img id="buisness_profile_picture" class="h-full object-cover"
+                                                src="{{ asset('asset/Vector (1).svg') }}" alt="">
                                         </div>
                                     </div>
 
@@ -446,39 +449,40 @@
                                         <label class="block mb-1 text-sm font-bold text-gray-700">Letter Head</label>
                                         <div
                                             class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                                            <img src="{{ asset('asset/Vector (1).svg') }}" alt="" id="buisness_letter_head" class="h-full object-cover">
+                                            <img src="{{ asset('asset/Vector (1).svg') }}" alt=""
+                                                id="buisness_letter_head" class="h-full object-cover">
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block mb-1 text-sm font-bold text-gray-700">Stamp</label>
                                         <div
-                                        class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                                        <img src="{{ asset('asset/Vector (1).svg') }}" alt="" id="buisness_stamp" class="h-full object-cover">
-                                    </div>
+                                            class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                                            <img src="{{ asset('asset/Vector (1).svg') }}" alt=""
+                                                id="buisness_stamp" class="h-full object-cover">
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Action Buttons -->
                                 <div class="flex justify-end gap-2 mb-6">
                                     <button class="px-4 py-2 border rounded-full hover:bg-gray-50">Reject</button>
                                     <button
                                         class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600">Approve</button>
                                 </div>
                             </div>
+
+                            <!-- Action Buttons -->
                         </div>
                     </div>
-                    <div class="mt-6 bg-gray-300 rounded-b-xl">
-                        <div class="flex items-center justify-between p-2">
-                            <button type="button"
-                                class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </x-slot>
-        </x-modal>
+    </div>
+    <div class="mt-6 bg-gray-300 rounded-b-xl">
+        <div class="flex items-center justify-between p-2">
+            <button type="button" class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
+                Close
+            </button>
+        </div>
+    </div>
+    </form>
+    </x-slot>
+    </x-modal>
     </div>
 
 
