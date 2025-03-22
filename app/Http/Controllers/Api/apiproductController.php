@@ -169,7 +169,7 @@ class apiproductController extends Controller
                     'rating'    => $review->rating,
                     'review'    => $review->review,
                     'images'    => $review->images,
-                    'review_date' => $review->created_at->format('d F, Y')
+                    'review_date'    => $review->created_at
                 ];
             }
 
