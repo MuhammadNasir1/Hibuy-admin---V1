@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
+use App\Models\Store;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Products;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -162,7 +163,8 @@ class OrderController extends Controller
             if (!$order) {
                 return response()->json(['success' => false, 'message' => 'Order not found'], 404);
             }
-
+            // Ensure second_phone is null if empty
+            $order->second_phone = !empty($order->second_phone) ? $order->second_phone : null;
             // Decode order items
             $orderItems = json_decode($order->order_items, true);
             $productIds = [];
@@ -179,9 +181,8 @@ class OrderController extends Controller
             // Fetch product details
             $products = Products::select(
                 'product_id',
+                'store_id',
                 'product_name',
-                'product_brand',
-                'product_price',
                 'product_images',
                 'product_discounted_price'
             )
@@ -189,7 +190,15 @@ class OrderController extends Controller
                 ->get()
                 ->keyBy('product_id'); // Store products as an associative array
 
-            // Merge product details into order items dynamically
+            // Fetch store details
+            $storeIds = $products->pluck('store_id')->unique()->toArray();
+
+            $stores = Store::select('store_id', 'store_info', 'store_profile_detail')
+                ->whereIn('store_id', $storeIds)
+                ->get()
+                ->keyBy('store_id'); // Store stores as an associative array
+
+            // Merge product and store details into order items dynamically
             if (is_array($orderItems)) {
                 foreach ($orderItems as &$item) {
                     if (isset($products[$item['product_id']])) {
@@ -213,9 +222,24 @@ class OrderController extends Controller
                         $item['childrenOptionName'] = isset($variantKeys[1]) ? $variantKeys[1] : null;
                         $item['selectedChildrenOption'] = isset($variantKeys[1]) ? $item[$variantKeys[1]] : null;
 
+                        // Get store details and extract store_name from JSON
+                        $storeName = null;
+                        if (isset($stores[$product['store_id']])) {
+                            $store = $stores[$product['store_id']];
 
-                        // Merge product details
-                        $item = array_merge($item);
+                            // Try getting store_name from store_profile_detail
+                            $storeDetails = json_decode($store->store_profile_detail, true);
+                            if (!empty($storeDetails) && isset($storeDetails['store_name'])) {
+                                $storeName = $storeDetails['store_name'];
+                            } else {
+                                // If store_profile_detail is empty, fallback to store_info
+                                $storeInfo = json_decode($store->store_info, true);
+                                $storeName = isset($storeInfo['store_name']) ? $storeInfo['store_name'] : null;
+                            }
+                        }
+
+                        // Merge store name and product details into order item
+                        $item = array_merge($item, $product, ['store_name' => $storeName]);
                     }
                 }
                 $order->order_items = $orderItems;
