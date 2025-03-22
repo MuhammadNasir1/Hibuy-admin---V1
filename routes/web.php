@@ -115,9 +115,10 @@ Route::middleware(['custom_auth'])->group(function () {
 
 
     Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
+
     Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
 
-    Route::view('/mystore', 'seller.Store')->name('mystore');
+    // Route::view('/mystore', 'seller.Store')->name('mystore');
 
     Route::GET('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
 
