@@ -1,6 +1,6 @@
 <div id="{{ $id }}" tabindex="-1" aria-hidden="true"
     class="hidden fixed inset-0 z-50 flex justify-center items-center w-full bg-gray-800 bg-opacity-50">
-    <div class="relative p-4 w-full {{ $modal_width }} max-h-[90vh] overflow-y-auto">
+    <div class="relative p-4 w-full {{ $modal_width }} max-h-[90vh] ">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow-sm">
             <!-- Modal header -->

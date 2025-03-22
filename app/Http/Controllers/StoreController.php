@@ -101,4 +101,35 @@ class StoreController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+
+    public function GetStoreInfo($user_id)
+    {
+        // Find the seller record for the authenticated user
+        $seller = Seller::where('user_id', $user_id)->first();
+        if (!$seller) {
+            return response()->json(['error' => 'Seller record not found'], 404);
+        }
+
+        // Check if the store entry exists for the user and seller
+        $store = Store::where('user_id', $user_id)
+            ->where('seller_id', $seller->seller_id)
+            ->first();
+
+        if ($store) {
+            // Check if store_profile_detail is not empty or null
+            if (!empty($store->store_profile_detail)) {
+                return response()->json([
+                    'store_profile_detail' => json_decode($store->store_profile_detail, true)
+                ], 200);
+            } else {
+                return response()->json([
+                    'store_info' => json_decode($store->store_info, true)
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                'store_info' => json_decode($seller->store_info, true)
+            ], 200);
+        }
+    }
 }
