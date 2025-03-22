@@ -33,6 +33,7 @@ Route::middleware(['custom_auth'])->group(function () {
         })->name("CreateProfile");
     });
 
+
     Route::middleware([CheckSellerKyc::class])->group(function () {
 
         Route::post('/submit-profile', [UserController::class, 'KYC_Authentication'])->name('KYC_Authentication');
