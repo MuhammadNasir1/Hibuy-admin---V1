@@ -25,13 +25,12 @@
         }
 
         $tabsStatus = [
-            'personal' => true,
-            'store' => !empty($personal_info),
-            'document' => !empty($personal_info) && !empty($store_info),
-            'account' => !empty($personal_info) && !empty($store_info) && !empty($documents_info),
-            'business' =>
-                !empty($personal_info) && !empty($store_info) && !empty($documents_info) && !empty($bank_info),
-        ];
+        'personal' => !empty($personal_info),
+        'store' => !empty($personal_info) && !empty($store_info),
+        'document' => !empty($personal_info) && !empty($store_info) && !empty($documents_info),
+        'account' => !empty($personal_info) && !empty($store_info) && !empty($documents_info) && !empty($bank_info),
+        'business' => !empty($personal_info) && !empty($store_info) && !empty($documents_info) && !empty($bank_info) && !empty($business_info),
+    ];
     @endphp
     <div class="  w-full p-4 md:p-8 mt-5 mb-5 bg-[#000000] bg-opacity-30 text-white rounded-2xl">
         <div class="flex flex-col md:flex-row gap-4">
@@ -44,7 +43,7 @@
                         <!-- Step 1 -->
                         <div class="flex items-center gap-4">
                             <div class="flex flex-col items-center">
-                                <img src="{{ asset('asset/status (1).svg') }}" class="h-10 md:h-full" alt="Step 1">
+                                <img src="{{ $statusImages['personal_info'] }}" class="h-10 md:h-full" alt="Step 1">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
                             </div>
                             <div>
@@ -57,7 +56,7 @@
                         <div class="flex items-center gap-4">
                             <div class="flex flex-col items-center">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
-                                <img src="{{ asset('asset/status.svg') }}" class="h-10 md:h-full" alt="Step 2">
+                                <img src="{{ $statusImages['store_info'] }}" class="h-10 md:h-full" alt="Step 2">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
                             </div>
                             <div>
@@ -70,11 +69,11 @@
                         <div class="flex items-center gap-4">
                             <div class="flex flex-col items-center">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
-                                <img src="{{ asset('asset/status.svg') }}"class="h-10 md:h-full" alt="Step 3">
+                                <img src="{{ $statusImages['documents_info'] }}"class="h-10 md:h-full" alt="Step 3">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
                             </div>
                             <div>
-                                <p class="text-sm lg:text-base font-semibold">Address Verification</p>
+                                <p class="text-sm lg:text-base font-semibold">Document Verification</p>
                                 <p class="text-gray-400 text-sm">text</p>
                             </div>
                         </div>
@@ -83,7 +82,7 @@
                         <div class="flex items-center gap-4">
                             <div class="flex flex-col items-center">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
-                                <img src="{{ asset('asset/status.svg') }}" class="h-10 md:h-full" alt="Step 4">
+                                <img src="{{ $statusImages['bank_info'] }}" class="h-10 md:h-full" alt="Step 4">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
                             </div>
                             <div>
@@ -96,7 +95,7 @@
                         <div class="flex items-center gap-4">
                             <div class="flex flex-col items-center">
                                 <img src="{{ asset('asset/line.svg') }}" class="" alt="Line">
-                                <img src="{{ asset('asset/status.svg') }}" class="h-10 md:h-full" alt="Step 5">
+                                <img src="{{ $statusImages['business_info'] }}" class="h-10 md:h-full" alt="Step 5">
                             </div>
                             <div>
                                 <p class="text-sm lg:text-base font-semibold">Business Verification</p>
@@ -479,7 +478,23 @@
                                                         value="{{ $documents_info['shop_video'] }}" hidden>
                                                 </video>
                                             @endif
-                                            <x-file-uploader name="shop_video" id="shop_video" />
+                                            <div class="relative flex items-center justify-center w-full h-full">
+                                                <label
+                                                    class="flex flex-col items-center justify-center w-full h-full bg-gray-300 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer file-upload-label">
+                                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 file-upload-content">
+                                                        <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M27.2551 9.98342C26.3185 4.55652 22.1455 0.482422 17.1323 0.482422C13.1521 0.482422 9.69525 3.06216 7.9737 6.83739C3.82821 7.34075 0.605469 11.3519 0.605469 16.2125C0.605469 21.4192 4.31024 25.6506 8.86891 25.6506H26.773C30.5742 25.6506 33.6592 22.1271 33.6592 17.7856C33.6592 13.6328 30.8359 10.2666 27.2551 9.98342ZM19.8868 14.6395V20.9316H14.3779V14.6395H10.2461L17.1323 6.77447L24.0185 14.6395H19.8868Z" fill="#4B91E1"/>
+                                                            </svg>
+
+                                                        <p class="mb-2 text-sm text-customblue dark:text-gray-400"><span class="font-semibold">upload</span>
+                                                        </p>
+                                                    </div>
+                                                    <input type="file" class="hidden file-input" name="shop_video" id="shop_video" accept="video/*"
+                                                        onchange="previewFile(event)" />
+                                                    <img class="absolute top-0 left-0 hidden object-contain w-full h-full rounded-lg file-preview bg-customOrangeDark" />
+                                                </label>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

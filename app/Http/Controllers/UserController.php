@@ -18,7 +18,31 @@ class UserController extends Controller
     {
         $user = session('user_details')['user_id'];
         $seller = Seller::Where('user_id', $user)->first();
-        return view('Auth.ProfileDetail', compact('seller'));
+
+        $statusImages = [
+            'personal_info' => asset('asset/kyc-pending.png'),
+            'store_info' => asset('asset/kyc-pending.png'),
+            'documents_info' => asset('asset/kyc-pending.png'),
+            'bank_info' => asset('asset/kyc-pending.png'),
+            'business_info' => asset('asset/kyc-pending.png'),
+        ];
+
+        $imageMap = [
+            'pending' => asset('asset/kyc-pending.png'),
+            'approved' => asset('asset/kyc-approve.png'),
+            'rejected' => asset('asset/kyc-reject.png'),
+        ];
+
+        $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+        foreach ($jsonColumns as $column) {
+            if (!empty($seller->$column)) {
+                $jsonData = json_decode($seller->$column, true);
+                if (!empty($jsonData['status']) && isset($imageMap[$jsonData['status']])) {
+                    $statusImages[$column] = $imageMap[$jsonData['status']];
+                }
+            }
+        }
+        return view('Auth.ProfileDetail', compact('seller', 'statusImages'));
         // return response()->json(['success' => true, 'data' => $seller]);
     }
 
@@ -90,7 +114,7 @@ class UserController extends Controller
             $fileData = [];
 
             // Define custom upload path
-            $uploadPath = public_path('uploads/kyc_files');
+            $uploadPath = public_path('storage/kyc_files');
 
             // Ensure the directory exists
             if (!file_exists($uploadPath)) {

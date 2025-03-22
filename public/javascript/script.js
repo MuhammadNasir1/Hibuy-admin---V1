@@ -166,34 +166,19 @@ $(document).ready(function () {
 
 $(document).ready(function () {
     $(".myFormNew").submit(function (e) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();
 
         let form = $(this);
-        let actionUrl = form.attr("action"); // Get form action URL
-        let formData = new FormData(this); // Properly create FormData object
-        let currentTabButton = form
-            .closest(".tab-content")
-            .prev()
-            .find("button[aria-selected='true']"); // Find active tab button
-        let nextTabListItem = currentTabButton
-            .parent()
-            .nextAll()
-            .filter(function () {
-                return (
-                    $(this).find("button").length > 0 &&
-                    !$(this).find("button").prop("disabled")
-                );
-            })
-            .first(); // Find the next enabled tab
-
-        let nextTabButton = nextTabListItem.find("button");
+        let actionUrl = form.attr("action");
+        let formData = new FormData(this);
+        let currentTabButton = $("#default-tab button[aria-selected='true']");
 
         $.ajax({
             url: actionUrl,
             type: "POST",
             data: formData,
-            contentType: false, // Important for FormData
-            processData: false, // Prevent jQuery from processing data
+            contentType: false,
+            processData: false,
             dataType: "json",
             success: function (response) {
                 if (response.success) {
@@ -201,26 +186,15 @@ $(document).ready(function () {
                         title: "Success!",
                         text: response.message,
                         icon: "success",
-                    });
-
-                    form[0].reset(); // Reset form after success
-                    alert(nextTabButton.length);
-                    if (nextTabButton.length > 0) {
-                        // Enable and move to next tab
-                        nextTabButton.prop("disabled", false); // Remove disabled property
-                        nextTabButton.removeAttr("disabled"); // Ensure attribute is removed
-                        nextTabButton.removeClass("cursor-not-allowed"); // Remove any styling that prevents clicking
-
-                        // Move to next tab
-                        nextTabButton.click();
-                    } else {
-                        // Last tab is filled, so check if all are complete before redirecting
-                        if ("{{ $tabsStatus['business'] }}" === "1") {
-                            setTimeout(function () {
-                                window.location.href = "/your-new-route"; // Replace with actual route
-                            }, 2000);
+                        timer: 1500,
+                        showConfirmButton: false,
+                    }).then(() => {
+                        if (currentTabButton.attr("id") === "business-tab") {
+                            window.location.href = "/Kyc-profile";
+                        } else {
+                            location.reload();
                         }
-                    }
+                    });
                 } else {
                     Swal.fire({
                         title: "Error!",
@@ -232,9 +206,7 @@ $(document).ready(function () {
             error: function (xhr) {
                 let errorMessage = "An error occurred.";
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).join(
-                        "\n"
-                    );
+                    errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
                 }
                 Swal.fire({
                     title: "Validation Error!",
@@ -245,6 +217,8 @@ $(document).ready(function () {
         });
     });
 });
+
+
 
 // $(document).ready(function(){
 //     $(".myFormNew").submit(function(e){
