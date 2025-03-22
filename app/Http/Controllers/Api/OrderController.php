@@ -189,7 +189,7 @@ class OrderController extends Controller
                 ->get()
                 ->keyBy('product_id'); // Store products as an associative array
 
-            // Merge product details into order items
+            // Merge product details into order items dynamically
             if (is_array($orderItems)) {
                 foreach ($orderItems as &$item) {
                     if (isset($products[$item['product_id']])) {
@@ -197,12 +197,25 @@ class OrderController extends Controller
 
                         // Decode JSON and get the first image path
                         $images = json_decode($product['product_images'], true);
-                        $product['product_image'] = isset($images[0]) ? $images[0] : null; // Store first image separately
+                        $product['product_image'] = isset($images[0]) ? $images[0] : null;
 
                         // Remove full product_images JSON (optional)
                         unset($product['product_images']);
 
-                        $item = array_merge($item, $product);
+                        // Extract dynamic variant keys (excluding default ones)
+                        $defaultKeys = ['product_id', 'quantity', 'price']; // Default order item fields
+                        $variantKeys = array_values(array_diff(array_keys($item), $defaultKeys)); // Convert to indexed array
+
+                        // Assign dynamic variants
+                        $item['parentOptionName'] = isset($variantKeys[0]) ? $variantKeys[0] : null;
+                        $item['selectedParentOption'] = isset($variantKeys[0]) ? $item[$variantKeys[0]] : null;
+
+                        $item['childrenOptionName'] = isset($variantKeys[1]) ? $variantKeys[1] : null;
+                        $item['selectedChildrenOption'] = isset($variantKeys[1]) ? $item[$variantKeys[1]] : null;
+
+
+                        // Merge product details
+                        $item = array_merge($item);
                     }
                 }
                 $order->order_items = $orderItems;
