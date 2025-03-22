@@ -47,4 +47,109 @@ class KYCController extends Controller
 
         return view('admin.KYC', compact('sellers'));
     }
+
+
+    public function kycDataSelect($id)
+    {
+        // Fetch all sellers
+        $sellers = Seller::join('users', 'seller.user_id', '=', 'users.user_id')
+            ->select('seller.*', 'users.*')
+            ->get()
+            ->map(function ($seller) {
+                $seller->submission_date = Carbon::parse($seller->updated_at)->format('Y-m-d');
+                return $seller;
+            });
+
+        // Check pending/approved counts
+        foreach ($sellers as $seller) {
+            $jsonFields = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+
+            $pendingCount = 0;
+            $approvedCount = 0;
+            $totalSteps = count($jsonFields);
+
+            foreach ($jsonFields as $field) {
+                if (!empty($seller->$field)) {
+                    $data = json_decode($seller->$field, true);
+                    if (isset($data['status'])) {
+                        if ($data['status'] == 'pending') {
+                            $pendingCount++;
+                        } elseif ($data['status'] == 'approved') {
+                            $approvedCount++;
+                        }
+                    }
+                }
+            }
+
+            $seller->steps_progress = "$approvedCount/$totalSteps";
+        }
+
+        // Fetch selected seller
+        $selectedSeller = Seller::join('users', 'seller.user_id', '=', 'users.user_id')
+            ->select('seller.*', 'users.*')
+            ->where('seller_id', $id)
+            ->first();
+
+        if ($selectedSeller) {
+            // Decode JSON fields
+            $selectedSeller->current_seller = $selectedSeller->seller_id;
+            $selectedSeller->personal_info = json_decode($selectedSeller->personal_info, true);
+            $selectedSeller->store_info = json_decode($selectedSeller->store_info, true);
+            $selectedSeller->documents_info = json_decode($selectedSeller->documents_info, true);
+            $selectedSeller->bank_info = json_decode($selectedSeller->bank_info, true);
+            $selectedSeller->business_info = json_decode($selectedSeller->business_info, true);
+        }
+
+        return response()->json([
+            'sellers' => $sellers,
+            'selectedSeller' => $selectedSeller
+        ]);
+    }
+
+    function approveKyc(Request $request)
+    {
+        try {
+            $seller_id = $request->seller_id;
+            $step = $request->step;
+
+            $seller = Seller::find($seller_id);
+
+            if (!$seller) {
+                return response()->json(['message' => 'Seller not found'], 404);
+            }
+
+            $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+            $allStepsApproved = true;
+            $isUpdated = false;
+
+            foreach ($jsonColumns as $column) {
+                if (!empty($seller->$column)) {
+                    $jsonData = json_decode($seller->$column, true);
+
+                    if (isset($jsonData['step']) && $jsonData['step'] == $step) {
+                        $jsonData['status'] = 'approved';
+                        $seller->$column = json_encode($jsonData);
+                        $isUpdated = true;
+                    }
+
+                    if (isset($jsonData['status']) && $jsonData['status'] != 'approved') {
+                        $allStepsApproved = false;
+                    }
+                }
+            }
+
+            if ($allStepsApproved) {
+                $seller->status = 'approved';
+            }
+
+            if ($isUpdated) {
+                $seller->save();
+                return response()->json(['message' => 'KYC Approved successfully']);
+            }
+
+            return response()->json(['message' => 'No matching step found'], 400);
+        } catch (\Exception $e) {
+            return response()->json(["message" => $e->getMessage()]);
+        }
+    }
 }

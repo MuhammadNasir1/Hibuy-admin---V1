@@ -127,7 +127,7 @@
 
                         <li class="me-2" role="presentation">
                             <button
-                                class="px-6 py-2 border-b-2 tab-pane rounded-t-lg {{ $activeTab == 'personal' ? 'bg-primary text-white border-primary' : '' }}"
+                                class="px-6 py-2 border-b-2 rounded-t-lg {{ $activeTab == 'personal' ? 'bg-primary text-white border-primary' : '' }}"
                                 id="personal-tab" data-tabs-target="#personal" type="button" role="tab"
                                 aria-controls="personal"
                                 aria-selected="{{ $activeTab == 'personal' ? 'true' : 'false' }}">Personal</button>
@@ -144,7 +144,7 @@
 
                         <li class="me-2" role="presentation">
                             <button
-                                class="inline-block px-6 py-2 tab-pane border-b-2 rounded-t-lg {{ $activeTab == 'document' ? 'bg-primary text-white border-primary' : '' }}"
+                                class="inline-block px-6 py-2  border-b-2 rounded-t-lg {{ $activeTab == 'document' ? 'bg-primary text-white border-primary' : '' }}"
                                 id="document-tab" data-tabs-target="#document" type="button" role="tab"
                                 aria-controls="document" aria-selected="{{ $activeTab == 'document' ? 'true' : 'false' }}"
                                 {{ !$tabsStatus['document'] ? 'disabled class="opacity-50 cursor-not-allowed"' : '' }}>Document</button>
@@ -152,7 +152,7 @@
 
                         <li role="presentation">
                             <button
-                                class="inline-block px-6 py-2 tab-pane border-b-2 rounded-t-lg {{ $activeTab == 'account' ? 'bg-primary text-white border-primary' : '' }}"
+                                class="inline-block px-6 py-2  border-b-2 rounded-t-lg {{ $activeTab == 'account' ? 'bg-primary text-white border-primary' : '' }}"
                                 id="account-tab" data-tabs-target="#account" type="button" role="tab"
                                 aria-controls="account" aria-selected="{{ $activeTab == 'account' ? 'true' : 'false' }}"
                                 {{ !$tabsStatus['account'] ? 'disabled class="opacity-50 cursor-not-allowed"' : '' }}>Bank
@@ -161,7 +161,7 @@
 
                         <li role="presentation">
                             <button
-                                class="inline-block px-6 py-2 tab-pane border-b-2 rounded-t-lg {{ $activeTab == 'business' ? 'bg-primary text-white border-primary' : '' }}"
+                                class="inline-block px-6 py-2  border-b-2 rounded-t-lg {{ $activeTab == 'business' ? 'bg-primary text-white border-primary' : '' }}"
                                 id="business-tab" data-tabs-target="#business" type="button" role="tab"
                                 aria-controls="business"
                                 aria-selected="{{ $activeTab == 'business' ? 'true' : 'false' }}"
@@ -180,7 +180,6 @@
                             <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="step" value="1">
                                 <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
                                     <div class="flex flex-col gap-6">
                                         <div
@@ -190,6 +189,7 @@
                                                 type="text" placeholder="Enter Here" name="full_name"
                                                 value="{{ $personal_info['full_name'] ?? '' }}">
                                         </div>
+                                        <input type="hidden" name="step" value="1">
                                         <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
@@ -293,7 +293,6 @@
                             <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
                                 method="POST">
                                 @csrf
-                                <input type="hidden" name="step" value="2">
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                     <div class="flex flex-col gap-6">
@@ -304,6 +303,7 @@
                                                 type="text" placeholder="Enter Here" name="store_name"
                                                 value="{{ $store_info['store_name'] ?? '' }}">
                                         </div>
+                                        <input type="hidden" name="step" value="2">
                                         <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
@@ -446,7 +446,6 @@
                             <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="step" value="3">
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 text-base font-semibold">
                                     <!-- Shop / Home Bill -->
@@ -463,6 +462,7 @@
                                             <x-file-uploader name="home_bill" id="home_bill" />
                                         </div>
                                     </div>
+                                    <input type="hidden" name="step" value="3">
                                     <input type="text" name="status" value="pending" hidden>
                                     <!-- Shop Video (Optional) -->
                                     <div>
@@ -570,7 +570,6 @@
                             <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
                                 method="POST">
                                 @csrf
-                                <input type="hidden" name="step" value="4">
 
                                 <!-- Account Type -->
                                 <div
@@ -587,6 +586,7 @@
                                         </option>
                                     </select>
                                 </div>
+                                <input type="hidden" name="step" value="4">
                                 <input type="text" name="status" value="pending" hidden>
                                 <!-- Bank Information -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -711,7 +711,6 @@
                             <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
                                 method="POST">
                                 @csrf
-                                <input type="hidden" name="step" value="5">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                     <div class="flex flex-col gap-6">
                                         <div
@@ -728,6 +727,7 @@
                                                 type="text" placeholder="Enter Here" name="owner_name"
                                                 id="owner_name" value="{{ $business_info['owner_name'] ?? '' }}">
                                         </div>
+                                        <input type="hidden" name="step" value="5">
                                         <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">

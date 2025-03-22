@@ -86,7 +86,7 @@ class UserController extends Controller
             $column = $stepMapping[$step];
 
             // Separate text and file data
-            $textData = $request->except(['_token', 'step', 'profile_picture', 'front_image', 'back_image']);
+            $textData = $request->except(['_token']);
             $fileData = [];
 
             // Define custom upload path
