@@ -141,7 +141,8 @@
                                     <div class="flex justify-end gap-2 mb-6">
                                         <button class="px-4 py-2 border rounded-full hover:bg-gray-50">Reject</button>
                                         <button
-                                            class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600">Approve</button>
+                                            class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
+                                            onclick="approveKyc(this.value, 1)">Approve</button>
                                     </div>
 
                                     <!-- Reason Input -->
@@ -225,7 +226,8 @@
                                 <div class="flex justify-end gap-2 mb-6 mt-5">
                                     <button class="px-4 py-2 border rounded-full hover:bg-gray-50">Reject</button>
                                     <button
-                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600">Approve</button>
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
+                                        value="" onclick="approveKyc(this.value, 2)">Approve</button>
                                 </div>
                             </div>
                         </div>
@@ -295,7 +297,8 @@
                                 <div class="flex justify-end gap-2 mb-6">
                                     <button class="px-4 py-2 border rounded-full hover:bg-gray-50">Reject</button>
                                     <button
-                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600">Approve</button>
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
+                                        onclick="approveKyc(this.value, 3)">Approve</button>
                                 </div>
                             </div>
                         </div>
@@ -378,7 +381,8 @@
                                 <div class="flex justify-end gap-2 mb-6">
                                     <button class="px-4 py-2 border rounded-full hover:bg-gray-50">Reject</button>
                                     <button
-                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600">Approve</button>
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
+                                        onclick="approveKyc(this.value, 4)">Approve</button>
                                 </div>
                             </div>
                         </div>
@@ -465,7 +469,8 @@
                                 <div class="flex justify-end gap-2 mb-6">
                                     <button class="px-4 py-2 border rounded-full hover:bg-gray-50">Reject</button>
                                     <button
-                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600">Approve</button>
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
+                                        onclick="approveKyc(this.value, 5)">Approve</button>
                                 </div>
                             </div>
 
@@ -510,6 +515,8 @@
                         console.log(response);
                         let personal_info = response.selectedSeller.personal_info;
                         console.log(personal_info.full_name);
+
+
 
                         $('#full_name').text(' ' + personal_info.full_name);
                         $('#email').text(' ' + personal_info.email);
@@ -568,7 +575,7 @@
                         $('#bank_cheque_image').attr("src", bank_info.canceled_cheque);
                         $('#bank_letter_image').attr("src", bank_info.verification_letter);
 
-
+                        $(".approve-button").val(response.selectedSeller.seller_id);
 
                     },
                     error: function(xhr, status, error) {
@@ -614,6 +621,26 @@
             fileImg.addClass('hidden');
 
         })
+
+        function approveKyc(sellerId, step) {
+            $.ajax({
+                url: "/approve-kyc",
+                type: "POST",
+                data: {
+                    seller_id: sellerId,
+                    step: step
+                },
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+                },
+                success: function(response) {
+                    Swal.fire("Success!", response.message, "success");
+                },
+                error: function(xhr) {
+                    Swal.fire("Error!", xhr.responseJSON.message, "error");
+                }
+            });
+        }
 
 
         // Listen for the custom form submission response event

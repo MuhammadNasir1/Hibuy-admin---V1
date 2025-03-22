@@ -92,6 +92,7 @@ class KYCController extends Controller
 
         if ($selectedSeller) {
             // Decode JSON fields
+            $selectedSeller->current_seller = $selectedSeller->seller_id;
             $selectedSeller->personal_info = json_decode($selectedSeller->personal_info, true);
             $selectedSeller->store_info = json_decode($selectedSeller->store_info, true);
             $selectedSeller->documents_info = json_decode($selectedSeller->documents_info, true);
@@ -105,4 +106,50 @@ class KYCController extends Controller
         ]);
     }
 
+    function approveKyc(Request $request)
+    {
+        try {
+            $seller_id = $request->seller_id;
+            $step = $request->step;
+
+            $seller = Seller::find($seller_id);
+
+            if (!$seller) {
+                return response()->json(['message' => 'Seller not found'], 404);
+            }
+
+            $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+            $allStepsApproved = true;
+            $isUpdated = false;
+
+            foreach ($jsonColumns as $column) {
+                if (!empty($seller->$column)) {
+                    $jsonData = json_decode($seller->$column, true);
+
+                    if (isset($jsonData['step']) && $jsonData['step'] == $step) {
+                        $jsonData['status'] = 'approved';
+                        $seller->$column = json_encode($jsonData);
+                        $isUpdated = true;
+                    }
+
+                    if (isset($jsonData['status']) && $jsonData['status'] != 'approved') {
+                        $allStepsApproved = false;
+                    }
+                }
+            }
+
+            if ($allStepsApproved) {
+                $seller->status = 'approved';
+            }
+
+            if ($isUpdated) {
+                $seller->save();
+                return response()->json(['message' => 'KYC Approved successfully']);
+            }
+
+            return response()->json(['message' => 'No matching step found'], 400);
+        } catch (\Exception $e) {
+            return response()->json(["message" => $e->getMessage()]);
+        }
+    }
 }

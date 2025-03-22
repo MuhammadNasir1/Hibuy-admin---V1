@@ -70,9 +70,11 @@ class AuthController extends Controller
         $user = User::where('user_email', $validatedData['user_email'])
             ->whereIn('user_role', ['seller', 'freelancer', 'admin'])
             ->first();
+            $kyc_status = Seller::Where('user_id' , $user->user_id)->first();
 
         // Check if user exists and password is correct
         if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid email or password.',
@@ -90,11 +92,12 @@ class AuthController extends Controller
                 'user_role' => $user->user_role
             ]
         ]);
-
+        $role  = $user->user_role;
         // Return success response
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
+            'seller_status' => @$kyc_status->status,
             'user' => [
                 'id' => $user->user_id,
                 'name' => $user->user_name,

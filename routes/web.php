@@ -6,13 +6,11 @@ use App\Http\Controllers\KYCController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\StoreController;
 
 Route::get('/Login', function () {
     return view('Auth.login');
 })->name("login");
-// Route::get('/signup', function () {
-//     return view('Auth.signup');
-// })->name("signup");
 
 Route::post('login', [AuthController::class, 'login']);
 Route::get('/signup/{role?}', [AuthController::class, 'showSignup'])->name('signup');
@@ -34,29 +32,38 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::get('/create-profile', function () {
         return view('Auth.CreateProfile');
     })->name("CreateProfile");
-    // Route::middleware(['custom_auth'])->group(function () {
     Route::get('/', function () {
         return view('pages.dashboard');
     })->name('dashboard');
 
+    // KYC ROUTES
     Route::controller(KYCController::class)->group(function () {
         Route::get('/KYC', 'kycData')->name('KYC_auth');
         Route::get('/KYC-data/{id}', 'kycDataSelect')->name('kycDataSelect');
+        Route::post('/approve-kyc', 'approveKyc')->name('approveKyc');
     });
+
+    //Product Routes
     Route::controller(ProductsController::class)->group(function () {
         Route::GET('/products', 'showAllProducts')->name('products');
         Route::GET('/delete-product/{id}', 'deleteProduct');
-        Route::GET('/view-product/{id}', 'viewProductDetails');});
+        Route::GET('/view-product/{id}', 'viewProductDetails');
+        Route::POST('/update-product-status', 'updateStatus');
+    });
+
+    // Order Group
+    Route::controller(OrderController::class)->group(function () {
+        Route::GET('/Orders', 'GetOrders')->name('allorders');
+        Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
+    });
+
+
+    Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile']);
+    Route::GET('view-store/{userId}', [StoreController::class, 'GetStoreInfo']);
 
     Route::get('/PackagesOffer', function () {
         return view('pages.PackagesOffer');
     })->name('PackagesOffer');
-
-    // Route::get('/KYC', function () {
-    //     return view('admin.KYC');
-    // })->name('KYC_auth');
-
-
 
     Route::get('/ReturnOrders', function () {
         return view('pages.ReturnOrders');
@@ -98,12 +105,6 @@ Route::middleware(['custom_auth'])->group(function () {
         return view('pages.Settings');
     })->name('editsettings');
 
-    Route::get('/Orders', [OrderController::class, 'GetOrders'])->name('allorders');
-
-    // Route::get('/Orders', function () {
-    //     return view('pages.Orders');
-    // })->name('allorders');
-
     Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
     Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
     Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
@@ -112,23 +113,16 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
 
 
-    Route::GET('/product/add', [ProductsController::class, 'getCategories'])->name('product.add');
-
-    Route::get('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
-
-    // Add Product
+    Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
+    Route::GET('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
 
     Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
-
-    // Route::view('/product/add', 'pages.AddProduct')->name('product.add');
-
     Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
     Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
     Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
     Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
     Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
     Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
-    // Route::view('/ProductCategory', 'admin.ProductCategory')->name('addProductCategory');
     Route::view('/mystore', 'seller.Store')->name('mystore');
     Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
 });
