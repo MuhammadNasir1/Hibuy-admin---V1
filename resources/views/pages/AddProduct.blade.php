@@ -115,10 +115,10 @@
 
         /* Upload Progress Bar */
         /* .dz-progress {
-                                                                    background: green !important;
-                                                                    height: 5px !important;
-                                                                    border-radius: 3px;
-                                                                } */
+                                                                                            background: green !important;
+                                                                                            height: 5px !important;
+                                                                                            border-radius: 3px;
+                                                                                        } */
 
         /* Styling for a Specific Dropzone */
         #my-dropzone {
@@ -136,28 +136,32 @@
                         <label for="images" class="block text-sm font-medium text-gray-700">Upload Product Images</label>
                         <div id="dropzone" class="dropzone p-0" style="min-height: auto !important;"></div>
                         <!-- Dropzone container -->
-                        <input type="hidden" name="product_images" id="product_images"> <!-- Hidden input for file name -->
-                        {{-- <div id="product-images-dropzone" class="dropzone mt-2"></div> --}}
+                        <input  type="hidden" name="product_images" id="product_images">
+                        <input value="{{ $products ? $products->product_id : '' }}" type="hidden" name="product_edit_id" id="product_edit_id">
                     </div>
                     <div class=" mt-5">
-                        <x-input type="text" label="Title" placeholder="Title Here" id="title" name="title" />
+                        <x-input value="{{ $products ? $products->product_name : '' }}" type="text" label="Title"
+                            placeholder="Title Here" id="title" name="title" />
                     </div>
                     <div class=" mt-5">
                         <x-textarea type="text" label="Description" placeholder="Description Here" required
-                            id="description" name="description" />
+                            id="description" name="description" :value="$products->product_description ?? ''" />
                     </div>
                     <div class="mt-5 grid lg:grid-cols-4 md:grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                            <x-input type="text" label="Brand / Company" placeholder="Brand / Company" id="company"
-                                name="company" />
+                            <x-input value="{{ $products ? $products->product_brand : '' }}" type="text"
+                                label="Brand / Company" placeholder="Brand / Company" id="company" name="company" />
                         </div>
                         <div>
                             <x-select type="text" label="Category" placeholder="Category Here" id="category"
                                 name="category">
                                 <x-slot name="options">
-                                    <option disabled selected>Select Category</option>
+                                    <option disabled>Select Category</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}"
+                                            {{ isset($products->product_category) && $products->product_category == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
                                     @endforeach
                                 </x-slot>
                             </x-select>
@@ -168,24 +172,28 @@
                                 name="sub_category">
                                 <x-slot name="options">
                                     <option disabled selected>Select Sub Category</option>
+                                    @if (isset($products->product_subcategory))
+                                        <option selected value="{{ $products->product_subcategory }}">{{ $products->product_subcategory }}
+                                        </option>
+                                    @endif
                                 </x-slot>
                             </x-select>
                         </div>
                         <div>
-                            <x-input type="number" label="Purchase Price" placeholder="Price Here" id="purchase_price"
-                                name="purchase_price" />
+                            <x-input value="{{ $products ? $products->purchase_price : '' }}" type="number" label="Purchase Price" placeholder="Price Here"
+                                id="purchase_price" name="purchase_price" />
                         </div>
                         <div>
-                            <x-input type="number" label="Product Price" placeholder="Price Here" id="product_price"
-                                name="product_price" />
+                            <x-input value="{{ $products ? $products->product_price : '' }}" type="number" label="Product Price" placeholder="Price Here"
+                                id="product_price" name="product_price" />
                         </div>
                         <div>
-                            <x-input type="number" label="Discount (%)" placeholder="Discount Here" id="discount"
-                                name="discount" />
+                            <x-input value="{{ $products ? $products->product_discount : '' }}" type="number" label="Discount (%)" placeholder="Discount Here"
+                                id="discount" name="discount" />
                         </div>
                         <div>
-                            <x-input type="number" label="Discounted Price" placeholder="Discounted Price Here"
-                                id="discounted_price" name="discounted_price" />
+                            <x-input value="{{ $products ? $products->product_discounted_price : '' }}" type="number" label="Discounted Price"
+                                placeholder="Discounted Price Here" id="discounted_price" name="discounted_price" />
                         </div>
                     </div>
                     {{-- Next Section --}}
@@ -224,56 +232,6 @@
             </form>
         </div>
     </div>
-
-    {{-- <x-modal id="productattribute-modal">
-        <x-slot name="title">Add Attribute</x-slot>
-        <x-slot name="modal_width">max-w-4xl</x-slot>
-        <x-slot name="body">
-            <form id="attribute-form">
-                @csrf
-                <div class="md:py-5 space-y-4">
-                    <div class="px-5">
-                        <!-- Labels -->
-                        <div>
-                            <label class="text-gray-700 font-semibold">Attribute</label>
-                            <span></span>
-                            <input type="text" name="attribute"
-                                class=" border border-gray-300 text-gray-900 my-3  text-sm rounded-md focus:ring-primary focus:border-primary block w-full p-2.5"
-                                placeholder="Enter attribute">
-                        </div>
-
-                        <label class="text-gray-700 font-semibold">Values</label>
-                        <div id="values-container" class="flex flex-wrap mt-3 gap-2 items-center">
-                            <div class="flex items-center gap-2 default-value">
-                                <input type="text" name="values[]"
-                                    class="border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-primary focus:border-primary block p-2.5 w-26 values-input"
-                                    placeholder="Enter value">
-                                <button type="button" class="bg-red-500 text-white px-3 py-2 rounded-md remove-value">
-                                    -
-                                </button>
-                            </div>
-                            <button type="button" id="add-value-btn" class="bg-blue-500 text-white px-3 py-2 rounded-md">
-                                +
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="mt-6 bg-gray-300 rounded-b-lg">
-                    <div class="flex items-center justify-between p-2">
-                        <div></div>
-                        <button type="button" class="px-6 py-2 text-white bg-primary rounded-3xl">
-                            Submit
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </x-slot>
-    </x-modal> --}}
-
 
 @endsection
 

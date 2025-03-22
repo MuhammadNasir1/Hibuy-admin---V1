@@ -71,7 +71,7 @@
                         </td>
                         <td>
                             <span class="flex gap-4">
-                                <button data-id="{{ $product->product_id }}" class="viewModalBtn">
+                                <button viewproducturl="/view-product/{{ $product->product_id }}" class="viewModalBtn">
                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <path fill-rule='evenodd' clip-rule='evenodd'
@@ -93,7 +93,7 @@
                                         </defs>
                                     </svg>
                                 </button>
-                                <button class="updateDataBtn">
+                                <a href="{{ route('product.add', $product->product_id) }}" class="updateDataBtn">
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#233A85' />
@@ -101,8 +101,8 @@
                                             d='M16.1637 23.6188L22.3141 15.665C22.6484 15.2361 22.7673 14.7402 22.6558 14.2353C22.5593 13.7763 22.277 13.3399 21.8536 13.0088L20.8211 12.1886C19.9223 11.4737 18.8081 11.549 18.1693 12.3692L17.4784 13.2654C17.3893 13.3775 17.4116 13.543 17.523 13.6333C17.523 13.6333 19.2686 15.0329 19.3058 15.063C19.4246 15.1759 19.5137 15.3264 19.536 15.507C19.5732 15.8607 19.328 16.1918 18.9641 16.2369C18.7932 16.2595 18.6298 16.2068 18.511 16.109L16.6762 14.6492C16.5871 14.5822 16.4534 14.5965 16.3791 14.6868L12.0188 20.3304C11.7365 20.6841 11.64 21.1431 11.7365 21.5871L12.2936 24.0025C12.3233 24.1304 12.4348 24.2207 12.5685 24.2207L15.0197 24.1906C15.4654 24.1831 15.8814 23.9799 16.1637 23.6188Z'
                                             fill='#233A85' />
                                     </svg>
-                                </button>
-                                <button class="deleteDataBtn" delId="{{ $product->product_id }}">
+                                </a>
+                                <button delurl="/delete-product/{{ $product->product_id }}" class="deleteDataBtn">
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -125,196 +125,116 @@
             <x-slot name="body">
                 <div class="">
                     <div class="">
-                        <form>
-                            @csrf
-                            <div class="md:p-5">
-                                <div class="flex items-start gap-4">
-                                    <!-- Main Image Upload -->
-                                    <div class="w-1/3">
-                                        <div
-                                            class="flex items-center justify-center h-48 bg-gray-300 border-2 border-gray-300 rounded-sm">
-                                            <label class="font-medium text-blue-600 cursor-pointer">
-                                                <div class="flex justify-center align-middle">
-                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
-                                                </div>
-                                                <span class="block">Upload</span>
-                                                <input type="file" class="hidden">
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <!-- Sub Images and Video Upload -->
-                                    <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
-                                        <div
-                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
-                                            <label class="font-medium text-blue-600 cursor-pointer">
-                                                <div class="flex justify-center align-middle">
-                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
-                                                </div>
-                                                <span class="block">Upload</span>
-                                                <input type="file" class="hidden">
-                                            </label>
-                                        </div>
-                                        <div
-                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
-                                            <label class="font-medium text-blue-600 cursor-pointer">
-                                                <input type="file" class="hidden">
-                                                <div class="flex justify-center align-middle">
-                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
-                                                </div>
-                                                <span class="block">Upload</span>
-                                            </label>
-                                        </div>
-                                        <div
-                                            class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
-                                            <label class="font-medium text-blue-600 cursor-pointer">
-                                                <div class="flex justify-center align-middle">
-                                                    <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
-                                                </div>
-                                                <span class="block">Upload</span>
-                                                <input type="file" class="hidden">
-                                            </label>
-                                        </div>
-                                        <div class="">
-                                            <div
-                                                class="flex items-center justify-center h-24 bg-gray-300 border-2 border-gray-300 rounded-sm">
-                                                <label class="font-medium text-blue-600 cursor-pointer">
-                                                    <div class="flex justify-center align-middle">
-                                                        <img src="{{ asset('asset/Vector (1).svg') }}" alt="">
-                                                    </div>
-                                                    <span class="block">Video</span>
-                                                    <input type="file" class="hidden">
-                                                </label>
-                                            </div>
-                                        </div>
+                        <div class="md:p-5">
+                            <div class="flex items-start gap-4">
+                                <!-- Main Image -->
+                                <div class="w-1/3">
+                                    <div class="h-48 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="main-image" src="" alt="Main Product Image"
+                                            class="w-full h-full object-cover">
                                     </div>
                                 </div>
+                                <!-- Sub Images -->
+                                <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-1" src="" alt="Sub Image 1"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-2" src="" alt="Sub Image 2"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-3" src="" alt="Sub Image 3"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-4" src="" alt="Sub Image 4"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                            </div>
 
+                            <!-- Modal Content -->
+                            <div class="p-6 bg-white rounded-lg shadow-lg">
                                 <!-- Title -->
-                                <div class="grid grid-cols-2 mt-6 gap-y-4">
-                                    <div class="space-y-4 ">
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Title</div>
-                                            <div>1231231</div>
-                                        </div>
-
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Rating</div>
-                                            <div>4.5</div>
-                                        </div>
-
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Brand</div>
-                                            <div>store</div>
-                                        </div>
-
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Stock</div>
-                                            <div>1234</div>
-                                        </div>
-
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Discount %</div>
-                                            <div>31%</div>
-                                        </div>
-
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Color Family</div>
-                                            <div class="flex flex-wrap gap-2">
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">c1</span>
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">c2</span>
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">red</span>
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">green</span>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                    <div class="space-y-5">
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Title</div>
+                                            <div id="product_name" class="text-base font-semibold text-gray-800">
                                             </div>
                                         </div>
 
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Weight</div>
-                                            <div class="flex flex-wrap gap-2">
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">1.4kg</span>
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">4.5kg</span>
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">10kg</span>
-                                                <span
-                                                    class="px-3 py-1 text-sm border-2 border-gray-100 rounded-full">15kg</span>
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Brand</div>
+                                            <div id="brand_name" class="text-base text-gray-700"></div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Discount %</div>
+                                            <div id="product_discount" class="text-base text-green-600 font-medium">
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="space-y-4">
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Orders</div>
-                                            <div>56</div>
+                                    <div class="space-y-5">
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Category</div>
+                                            <div id="product_category" class="text-base text-gray-700"></div>
                                         </div>
 
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Category</div>
-                                            <div>1231231</div>
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Product Price</div>
+                                            <div id="product_price" class="text-base text-gray-700 ">
+                                            </div>
                                         </div>
 
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Old Price</div>
-                                            <div>$78</div>
-                                        </div>
-
-                                        <div class="flex items-center gap-8 align-middle">
-                                            <div class="text-sm text-gray-500">Price</div>
-                                            <div>$34</div>
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Discounted Price</div>
+                                            <div id="product_discounted_price"
+                                                class="text-base font-semibold text-blue-600"></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="flex justify-center gap-8 mt-4 space-y-2">
-                                    <div class="text-sm text-gray-500">Description</div>
-                                    <div>
-                                        <p class="text-sm">
-                                            Lorem ipsum dolor sit amet consectetur adipisicing elit. In, iure minus error
-                                            doloribus saepe natus.
-                                        </p>
-                                        <p class="text-sm font-medium">Lorem ipsum dolor sit amet</p>
-                                        <p class="text-sm">
-                                            consectetur adipisicing elit. In, iure minus error doloribus saepe natus. Lorem
-                                            ipsum dolor sit amet consectetur adipisicing elit. In, iure minus error
-                                            doloribus
-                                            saepe natus. Lorem ipsum dolor sit amet consectetur adipisicing elit. In, iure
-                                            minus
-                                            error doloribus saepe natus.
-                                        </p>
+                                <!-- Variations -->
+                                <div class="mt-6">
+                                    <div id="product_variations"\>
+                                        <!-- Variations will be dynamically inserted here -->
                                     </div>
                                 </div>
-                                <form class="max-w-sm mx-auto">
 
-                                </form>
+                                <!-- Description -->
+                                <div class="mt-6">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="text-sm font-medium text-gray-600">Description</div>
+                                        <div id="product_description"
+                                            class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <form id="statusForm" class="max-w-sm">
+                                @csrf
                                 <div class="flex items-center mt-5 mb-4">
                                     <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
                                     <div>
-                                        <select id="countries"
+                                        <input type="hidden" id="edit_status_id" name="edit_status_id">
+                                        <select id="product_status" name="product_status"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option selected>Select the Status</option>
-                                            <option value="US">approved</option>
-                                            <option value="CA">Pending</option>
+                                            <option value="" selected>Select</option>
+                                            <option value="1">Approved</option>
+                                            <option value="0">Pending</option>
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- Buttons -->
-                            <div class="mt-6 bg-gray-300 rounded-b-xl">
-                                <div class="flex items-center justify-between p-2">
-                                    <button type="button"
-                                        class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
-                                        Close
-                                    </button>
-                                    {{-- <button type="submit" class="px-6 py-2 text-white bg-blue-600 rounded-lg">
-                                        Add
-                                    </button> --}}
-                                </div>
-                            </div>
-                        </form>
+                                <button type="submit" id="submitStatus"
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Submit
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </x-slot>
@@ -330,40 +250,117 @@
     <script>
         $(document).ready(function() {
             $(".viewModalBtn").on("click", function() {
-                // var modalId = $(this).data("modal-target"); // Get modal ID
-                var productId = $(this).data("id"); // Assuming you add product ID dynamically
-                // alert(productId);
-                // Open the modal
-                $("#modal-btn").click();
+                let viewproducturl = $(this).attr(
+                    "viewproducturl"); // Get the URL from the button attribute
+
+                if (!viewproducturl) {
+                    alert("Invalid product URL!");
+                    return;
+                }
+
+                $("#modal-btn").click(); // Trigger modal open
 
                 // Run AJAX to fetch product details
                 $.ajax({
-                    url: "/get-product-details", // Your API route
+                    url: viewproducturl,
                     type: "GET",
-                    data: {
-                        product_id: productId
-                    },
                     success: function(response) {
                         if (response.success) {
-                            $("#productName").text(response.data.product_name);
-                            $("#productCategory").text(response.data.product_category);
-                            $("#productPrice").text(response.data.product_price);
-                            $("#productDescription").text(response.data.product_description);
+                            // Populate basic product details
+                            $("#product_name").text(response.product.product_name);
+                            $("#brand_name").text(response.product.product_brand);
+                            $("#product_discount").text(response.product.product_discount);
+                            $("#product_category").text(response.product.category_name);
+                            $("#product_price").text(response.product.product_price);
+                            $("#product_discounted_price").text(response.product
+                                .product_discounted_price);
+                            $("#product_description").text(response.product
+                                .product_description);
+                            $("#edit_status_id").val(response.product.product_id);
+                            $("#product_status").val(response.product.product_status
+                                .toString()).change();
 
-                            // Handle image display
-                            if (response.data.product_images) {
-                                let images = JSON.parse(response.data.product_images);
-                                $("#productImage").attr("src", images[0] || "default.jpg");
+
+                            // Group parent variations by parent_option_name
+                            const variationsGrouped = {};
+                            response.product.product_variation.forEach(variation => {
+                                const optionName = variation.parent_option_name;
+                                if (!variationsGrouped[optionName]) {
+                                    variationsGrouped[optionName] = [];
+                                }
+                                variationsGrouped[optionName].push(variation);
+                            });
+
+                            // Generate variations HTML
+                            let variationsHtml = '';
+                            for (const optionName in variationsGrouped) {
+                                variationsHtml += `
+                        <div class="flex items-center gap-6 mb-4">
+                            <div class="w-32 text-sm font-medium text-gray-600">${optionName}</div>
+                            <div class="flex flex-wrap gap-3">
+                    `;
+                                variationsGrouped[optionName].forEach(variation => {
+                                    variationsHtml += `
+                            <span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-gray-200 transition">
+                                ${variation.parentname}
+                            </span>
+                        `;
+                                });
+                                variationsHtml += `
+                            </div>
+                        </div>
+                    `;
                             }
+
+                            // Group and display children if they exist
+                            const children = response.product.product_variation[0]?.children;
+                            if (children && children.length > 0) {
+                                const childOptionName = children[0]?.child_option_name ||
+                                    "Options";
+                                variationsHtml += `
+                        <div class="flex items-center gap-6 mb-4">
+                            <div class="w-32 text-sm font-medium text-gray-600">${childOptionName}</div>
+                            <div class="flex flex-wrap gap-3">
+                    `;
+                                children.forEach(child => {
+                                    variationsHtml += `
+                            <span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-gray-200 transition">
+                                ${child.name}
+                            </span>
+                        `;
+                                });
+                                variationsHtml += `
+                            </div>
+                        </div>
+                    `;
+                            }
+
+                            // Insert variations HTML
+                            $("#product_variations").html(variationsHtml);
+
+                            // Populate images (first 5 from product_images)
+                            const images = response.product.product_images;
+                            if (images && images.length > 0) {
+                                // Main image (first image)
+                                $("#main-image").attr("src", images[0]);
+
+                                // Sub images (next 4 images)
+                                $("#sub-image-1").attr("src", images[1] || "");
+                                $("#sub-image-2").attr("src", images[2] || "");
+                                $("#sub-image-3").attr("src", images[3] || "");
+                                $("#sub-image-4").attr("src", images[4] || "");
+                            }
+
                         } else {
                             alert("Product not found!");
                         }
                     },
                     error: function() {
-                        // alert("Error fetching product details.");
+                        alert("Error fetching product details.");
                     }
                 });
             });
+
 
             // Close modal when clicking outside
             $(".modal").on("click", function(event) {
@@ -376,6 +373,73 @@
             $(".close-modal").on("click", function() {
                 $(".modal").hide();
             });
+
+            $("#statusForm").submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let productStatus = $("#product_status").val(); // Get selected status
+                let productId = $("#edit_status_id").val(); // Get product ID
+
+                if (productId === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Missing Product ID",
+                        text: "Product ID is required to update status!",
+                    });
+                    return;
+                }
+
+                // Show SweetAlert confirmation
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to update the product status?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Proceed with AJAX request
+                        $.ajax({
+                            url: "/update-product-status", // Your API endpoint
+                            type: "POST",
+                            data: {
+                                _token: $('input[name="_token"]').val(), // CSRF Token
+                                product_id: productId,
+                                product_status: productStatus
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Updated!",
+                                        text: "Product status has been updated successfully.",
+                                    }).then(() => {
+                                        location
+                                            .reload(); // Reload page after alert is dismissed
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Failed!",
+                                        text: "Failed to update product status.",
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error!",
+                                    text: "An error occurred while updating status.",
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
         });
     </script>
 @endsection
