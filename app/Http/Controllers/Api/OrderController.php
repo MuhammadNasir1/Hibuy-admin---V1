@@ -109,6 +109,7 @@ class OrderController extends Controller
                 'order_date'
             )
                 ->where('user_id', $loggedInUser->user_id)
+                ->orderBy('order_id', 'desc')
                 ->get();
 
             return response()->json([

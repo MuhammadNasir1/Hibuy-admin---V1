@@ -319,7 +319,7 @@
 
                 @if (session('user_details.user_role') == 'seller')
                     <li class="">
-                        <a href="{{ route('mystore') }}"
+                        <a href="{{ route('getStoreDetails') }}"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="w-5 h-5 fill-white transition duration-25  group-hover:fill-primary "
