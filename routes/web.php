@@ -110,10 +110,15 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
     Route::get('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategory']);
     Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
+
     Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
 
 
     Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
+    Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
+
+    Route::view('/mystore', 'seller.Store')->name('mystore');
+
     Route::GET('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
 
     Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
@@ -123,6 +128,5 @@ Route::middleware(['custom_auth'])->group(function () {
     Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
     Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
     Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
-    Route::view('/mystore', 'seller.Store')->name('mystore');
     Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
 });
