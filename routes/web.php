@@ -137,4 +137,53 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::view('/mystore', 'seller.Store')->name('mystore');
         Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
     });
+    Route::get('/CreditRequest', function () {
+        return view('pages.CreditRequest');
+    })->name('credit_request');
+
+    Route::get('/HibuyProduct', function () {
+        return view('admin.HibuyProduct');
+    })->name('hibuy_product');
+
+    Route::get('/Promotions', function () {
+        return view('admin.Promotions');
+    })->name('promotion_list');
+
+    Route::get('/Queries', function () {
+        return view('pages.Queries');
+    })->name('queries');
+
+    Route::get('/Notifications', function () {
+        return view('pages.Notifications');
+    })->name('notifications');
+
+    Route::get('/Settings', function () {
+        return view('pages.Settings');
+    })->name('editsettings');
+
+    Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
+    Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
+    Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
+    Route::get('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategory']);
+    Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
+
+    Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
+
+
+    Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
+
+    Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
+
+    // Route::view('/mystore', 'seller.Store')->name('mystore');
+
+    Route::GET('/get-subcategories/{category_id}', [ProductsController::class, 'getSubCategories']);
+
+    Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
+    Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
+    Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
+    Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
+    Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
+    Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
+    Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
+    Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
 });

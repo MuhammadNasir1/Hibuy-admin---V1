@@ -44,8 +44,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('DeleteAddress', [apiAuthController::class, 'DeleteAddress']);
 
-    Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile']);
-
     Route::POST('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
 
     Route::POST('logout', [apiAuthController::class, 'logout']);

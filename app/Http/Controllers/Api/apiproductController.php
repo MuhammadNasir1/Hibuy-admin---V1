@@ -168,7 +168,8 @@ class apiproductController extends Controller
                     'username'  => $review->user->user_name ?? 'Unknown', // Fetch username
                     'rating'    => $review->rating,
                     'review'    => $review->review,
-                    'images'    => $review->images
+                    'images'    => $review->images,
+                    'review_date'    => $review->created_at
                 ];
             }
 
