@@ -62,10 +62,16 @@ class StoreController extends Controller
     public function editStoreProfile(Request $request)
     {
         try {
-            $user = Auth::user();
+            return $$request->all();
+            $userDetails = session('user_details');
+            if (!$userDetails) {
+                return redirect()->back()->with('error', 'User not authenticated');
+            }
+
+            $user_id = $userDetails['user_id'];
 
             // Find the seller record for the authenticated user
-            $seller = Seller::where('user_id', $user->user_id)->first();
+            $seller = Seller::where('user_id', $user_id)->first();
             if (!$seller) {
                 return response()->json(['error' => 'Seller record not found'], 404);
             }
@@ -77,7 +83,7 @@ class StoreController extends Controller
             }
 
             // Check if the store entry exists for the user and seller
-            $store = Store::where('user_id', $user->user_id)
+            $store = Store::where('user_id', $user_id)
                 ->where('seller_id', $seller->seller_id)
                 ->first();
 
@@ -132,7 +138,7 @@ class StoreController extends Controller
                 $message = 'Store profile updated successfully';
             } else {
                 $store = new Store();
-                $store->user_id = $user->user_id;
+                $store->user_id = $user_id;
                 $store->seller_id = $seller->seller_id;
                 $store->store_info = json_encode($storeData, JSON_UNESCAPED_UNICODE);
                 $store->store_profile_detail = json_encode($storeProfileDetail, JSON_UNESCAPED_UNICODE);
@@ -154,7 +160,7 @@ class StoreController extends Controller
 
     public function GetStoreInfo($user_id)
     {
-        // Find the seller record for the authenticated user
+        // Find the seller record for the given user_id
         $seller = Seller::where('user_id', $user_id)->first();
         if (!$seller) {
             return response()->json(['error' => 'Seller record not found'], 404);
@@ -165,21 +171,29 @@ class StoreController extends Controller
             ->where('seller_id', $seller->seller_id)
             ->first();
 
+        // Determine store data and include appropriate IDs
         if ($store) {
-            // Check if store_profile_detail is not empty or null
-            if (!empty($store->store_profile_detail)) {
-                return response()->json([
-                    'store_profile_detail' => json_decode($store->store_profile_detail, true)
-                ], 200);
-            } else {
-                return response()->json([
-                    'store_info' => json_decode($store->store_info, true)
-                ], 200);
-            }
+            $storeData = !empty($store->store_profile_detail)
+                ? json_decode($store->store_profile_detail, true)
+                : json_decode($store->store_info, true);
+
+            // Add store-specific details
+            $storeData['store_id'] = $store->store_id;
+            $storeData['user_id'] = $store->user_id;
+            $storeData['product_count'] = Products::where('store_id', $store->store_id)->count();
         } else {
-            return response()->json([
-                'store_info' => json_decode($seller->store_info, true)
-            ], 200);
+            $storeData = json_decode($seller->store_info, true);
+
+            // Add seller-specific details
+            $storeData['seller_id'] = $seller->seller_id;
+            $storeData['user_id'] = $seller->user_id;
+            $storeData['product_count'] = 0;
         }
+
+        // Return JSON response
+        return response()->json([
+            'success' => true,
+            'data' => $storeData
+        ], 200);
     }
 }
