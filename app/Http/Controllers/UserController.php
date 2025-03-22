@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Crypt;
 class UserController extends Controller
 {
 
+    public function profileDetail()
+    {
+        $user = session('user_details')['user_id'];
+        $seller = Seller::Where('user_id', $user)->first();
+        return view('Auth.ProfileDetail', compact('seller'));
+        // return response()->json(['success' => true, 'data' => $seller]);
+    }
+
     public function setPassword(Request $request)
     {
         try {
@@ -78,7 +86,7 @@ class UserController extends Controller
             $column = $stepMapping[$step];
 
             // Separate text and file data
-            $textData = $request->except(['_token', 'step', 'profile_picture', 'front_image', 'back_image']);
+            $textData = $request->except(['_token']);
             $fileData = [];
 
             // Define custom upload path
@@ -90,9 +98,8 @@ class UserController extends Controller
             }
 
             // Handle file uploads
-            foreach (['profile_picture', 'front_image', 'back_image'] as $fileField) {
+            foreach ($request->allFiles() as $fileField => $file) { // Iterate through all uploaded files
                 if ($request->hasFile($fileField)) {
-                    $file = $request->file($fileField);
                     $fileName = time() . '_' . $fileField . '.' . $file->getClientOriginalExtension();
                     $file->move($uploadPath, $fileName);
                     $fileData[$fileField] = 'uploads/kyc_files/' . $fileName; // Store relative path

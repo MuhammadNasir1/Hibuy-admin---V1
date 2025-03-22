@@ -146,8 +146,13 @@ class OrderController extends Controller
                     'order_id',
                     'tracking_id',
                     'order_items',
+                    'total',
+                    'delivery_fee',
                     'grand_total',
                     'customer_name',
+                    'address',
+                    'phone',
+                    'second_phone',
                     'status',
                     'order_status',
                     'order_date'

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\product_category;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use App\Models\product_category;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,23 +20,32 @@ class ProductsController extends Controller
         return view('pages.products');
     }
 
-    public function getCategories()
+    public function getProductwithCategories($editid = null)
     {
         try {
             // Fetch all categories from the database
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')->get();
 
+            // Initialize products variable
+            $products = null;
+
+            // Fetch product only if editid is provided
+            if ($editid !== null) {
+                $products = Products::find($editid);
+            }
+
             // Decode JSON fields if sub_categories are stored as JSON
             foreach ($categories as $category) {
                 $category->sub_categories = json_decode($category->sub_categories, true);
             }
-
+            // return $products;
             // Return to the Blade view with compacted data
-            return view('pages.AddProduct', compact('categories'));
+            return view('pages.AddProduct', compact('categories', 'products'));
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
+
     public function getSubCategories($category_id)
     {
         try {
@@ -53,6 +63,7 @@ class ProductsController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
     public function getFileName(Request $request)
     {
         $request->validate([
@@ -110,68 +121,103 @@ class ProductsController extends Controller
                 'product_price'    => 'required|numeric|min:0',
                 'discount'         => 'nullable|numeric|min:0',
                 'discounted_price' => 'nullable|numeric|min:0',
-                'variants'         => 'nullable|array',
+                // 'variants'         => 'nullable|array',
                 'product_status'   => 'nullable|integer|in:0,1',
+                'product_edit_id'  => 'nullable|integer', // Add this field for update condition
             ]);
 
-            // Decode product images JSON if it exists
-            $storedImagePaths = [];
-            if ($request->has('product_images')) {
-                $storedImagePaths = json_decode($request->product_images, true) ?? [];
-            }
 
-            // Process Variants
-            $productVariants = $request->variants ?? [];
 
-            foreach ($productVariants as $parentIndex => &$parentVariant) {
-                // Handle parent image upload
-                if ($request->hasFile("variants.$parentIndex.parentimage")) {
-                    $parentImage = $request->file("variants.$parentIndex.parentimage");
-                    $parentImagePath = $parentImage->store('variants', 'public');
-                    $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+            // Check if updating an existing product
+            if ($request->filled('product_edit_id')) {
+                // Fetch the product that needs to be updated
+                $product = Products::where('product_id', $request->product_edit_id)
+                    ->where('user_id', $userDetails['user_id'])
+                    ->first();
+                // return $request->product_edit_id;
+                if (!$product) {
+                    return response()->json(['error' => 'Product not found or unauthorized'], 404);
                 }
 
-                // Ensure children key exists
-                if (!isset($parentVariant['children']) || !is_array($parentVariant['children'])) {
-                    $parentVariant['children'] = []; // Ensure it's always an array
+                // Prepare update data (excluding specified fields)
+                $updateData = [
+                    'user_id'                  => $userDetails['user_id'],
+                    'store_id'                 => $store->store_id,
+                    'product_name'             => $validatedData['title'],
+                    'product_description'      => $validatedData['description'] ?? null,
+                    'product_brand'            => $validatedData['company'],
+                    'product_category'         => $validatedData['category'],
+                    'product_subcategory'      => $validatedData['sub_category'],
+                    'purchase_price'           => $validatedData['purchase_price'],
+                    'product_price'            => $validatedData['product_price'],
+                    'product_discount'         => $validatedData['discount'] ?? 0,
+                    'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
+                ];
+
+                // Update the product
+                $product->update($updateData);
+
+                return redirect()->route('products')->with('success', 'Product updated successfully');
+            } else {
+                // Decode product images JSON if it exists
+                $storedImagePaths = [];
+                if ($request->has('product_images')) {
+                    $storedImagePaths = json_decode($request->product_images, true) ?? [];
                 }
 
-                // Handle child images
-                foreach ($parentVariant['children'] as $childIndex => &$child) {
-                    if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
-                        $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
-                        $childImagePath = $childImage->store('variants', 'public');
-                        $child['image'] = "storage/" . $childImagePath;
+                // Process Variants
+                $productVariants = $request->variants ?? [];
+
+                foreach ($productVariants as $parentIndex => &$parentVariant) {
+                    // Handle parent image upload
+                    if ($request->hasFile("variants.$parentIndex.parentimage")) {
+                        $parentImage = $request->file("variants.$parentIndex.parentimage");
+                        $parentImagePath = $parentImage->store('variants', 'public');
+                        $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+                    }
+
+                    // Ensure children key exists
+                    if (!isset($parentVariant['children']) || !is_array($parentVariant['children'])) {
+                        $parentVariant['children'] = []; // Ensure it's always an array
+                    }
+
+                    // Handle child images
+                    foreach ($parentVariant['children'] as $childIndex => &$child) {
+                        if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
+                            $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
+                            $childImagePath = $childImage->store('variants', 'public');
+                            $child['image'] = "storage/" . $childImagePath;
+                        }
                     }
                 }
+                // Insert new product (including all fields)
+                $productData = [
+                    'user_id'                  => $userDetails['user_id'],
+                    'store_id'                 => $store->store_id,
+                    'product_name'             => $validatedData['title'],
+                    'product_description'      => $validatedData['description'] ?? null,
+                    'product_brand'            => $validatedData['company'],
+                    'product_category'         => $validatedData['category'],
+                    'product_subcategory'      => $validatedData['sub_category'],
+                    'purchase_price'           => $validatedData['purchase_price'],
+                    'product_price'            => $validatedData['product_price'],
+                    'product_discount'         => $validatedData['discount'] ?? 0,
+                    'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
+                    'product_images'           => json_encode($storedImagePaths),
+                    'product_variation'        => json_encode($productVariants),
+                    'product_status'           => $validatedData['product_status'] ?? 0,
+                ];
+
+                Products::create($productData);
+
+                return redirect()->route('products')->with('success', 'Product added successfully');
             }
-
-            // Store product with JSON encoded variants and image paths
-            $productData = [
-                'user_id'                  => $userDetails['user_id'],
-                'store_id'                 => $store->store_id,
-                'product_name'             => $validatedData['title'],
-                'product_description'      => $validatedData['description'] ?? null,
-                'product_brand'            => $validatedData['company'],
-                'product_category'         => $validatedData['category'],
-                'product_subcategory'      => $validatedData['sub_category'],
-                'purchase_price'           => $validatedData['purchase_price'],
-                'product_price'            => $validatedData['product_price'],
-                'product_discount'         => $validatedData['discount'] ?? 0,
-                'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
-                'product_images'           => json_encode($storedImagePaths),
-                'product_variation'        => json_encode($productVariants),
-                'product_status'           => $validatedData['product_status'] ?? 0,
-            ];
-
-            // Insert product data into the database
-            $product = Products::create($productData);
-
-            return redirect()->route('products')->with('success', 'Product added successfully');
         } catch (\Exception $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
+
+
 
     public function categories(Request $request)
     {
@@ -181,6 +227,7 @@ class ProductsController extends Controller
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3048',
                 'sub_categories' => 'required|string', // It comes as a JSON string
             ]);
+
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('categories', 'public');
                 $newpath = "storage/" . $imagePath;
@@ -203,6 +250,7 @@ class ProductsController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+
     public function showcat()
     {
         $categories = product_category::all();
@@ -303,5 +351,152 @@ class ProductsController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+
+    public function showAllProducts()
+    {
+        // Retrieve user details from session
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $loggedInUserId = $userDetails['user_id']; // Get logged-in user_id
+
+        // Fetch products with category name, first image, and user name, filtered by user_id
+        $products = DB::table('products')
+            ->join('categories', 'products.product_category', '=', 'categories.id')
+            ->join('users', 'products.user_id', '=', 'users.user_id') // Join with users table
+            ->select(
+                'products.product_id',
+                'products.user_id',
+                'products.product_name',
+                'categories.name as product_category',
+                'products.product_discounted_price',
+                'products.product_images',
+                'products.product_status',
+                'products.is_boosted',
+                'products.created_at',
+                'products.updated_at',
+                'users.user_name as user_name' // Get user name
+            )
+            ->where('products.user_id', $loggedInUserId) // Filter by logged-in user_id
+            ->get()
+            ->map(function ($product) {
+                // Decode product images JSON and get the first image
+                $images = json_decode($product->product_images, true);
+                $product->first_image = $images[0] ?? null;
+                unset($product->product_images); // Remove the original JSON field
+                return $product;
+            });
+        return view('pages.products', compact('products'));
+    }
+
+
+    public function viewProductDetails($id)
+    {
+        try {
+            $userDetails = session('user_details');
+            if (!$userDetails) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+            // Fetch product without store and reviews details
+            $product = Products::select(
+                'product_id',
+                'product_name',
+                'product_description',
+                'product_price',
+                'product_brand',
+                'product_discount',
+                'product_discounted_price',
+                'product_images',
+                'product_variation',
+                'product_status',
+                'product_category', // Category ID
+                'product_subcategory' // Subcategory ID
+            )
+                ->with([
+                    'category:id,name'
+                ])
+                ->where('product_id', $id)
+                ->first();
+
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found'
+                ], 404);
+            }
+
+            // Decode JSON fields
+            $product->product_images = json_decode($product->product_images, true);
+            $product->product_variation = json_decode($product->product_variation, true);
+
+            // Prepare response data
+            $response = [
+                'product_id'               => $product->product_id,
+                'product_name'             => $product->product_name,
+                'product_description'      => $product->product_description,
+                'product_price'            => $product->product_price,
+                'product_brand'            => $product->product_brand,
+                'product_discount'         => $product->product_discount,
+                'product_discounted_price' => $product->product_discounted_price,
+                'product_images'           => $product->product_images,
+                'product_variation'        => $product->product_variation,
+                'category_name'            => $product->category->name ?? null, // Get category name
+                'subcategory'              => $product->product_subcategory,
+                'product_status'           => $product->product_status
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product Fetched Successfully',
+                'product' => $response
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $request->validate([
+            'product_id' => 'required|exists:products,product_id',
+            'product_status' => 'required|in:0,1'
+        ]);
+
+        $product = Products::find($request->product_id);
+        if ($product) {
+            $product->product_status = $request->product_status;
+            $product->save();
+            return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Product not found.']);
+    }
+
+    public function deleteProduct($id)
+    {
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $product = Products::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found!'], 404);
+        }
+
+        $product->delete();
+        return response()->json(['message' => 'Product deleted successfully!']);
     }
 }

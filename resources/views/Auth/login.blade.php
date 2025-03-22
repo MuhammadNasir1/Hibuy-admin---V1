@@ -9,10 +9,10 @@
         <form id="loginForm">
             @csrf
             <div class="mt-4">
-                <x-input id="email" label="Email" placeholder="Enter Email" name='user_email' type="email"></x-input>
+                <x-input id="email" value="" label="Email" placeholder="Enter Email" name='user_email' type="email"></x-input>
             </div>
             <div class="relative mt-6">
-                <x-input id="mediaTitle" label="Password" placeholder="Enter Password" name='user_password'
+                <x-input id="mediaTitle" value="" label="Password" placeholder="Enter Password" name='user_password'
                     type="password"></x-input>
             </div>
             <div class="mt-6">
@@ -67,8 +67,13 @@
                         $("input").removeClass("border-red-500"); // Remove previous red border
                     },
                     success: function(response) {
-                        console.log("Login successful", response);
-                        window.location.href = "../create-profile";
+                        // console.log("Login successful", response);
+                        // alert(response.seller_status)
+                        if(response.user.user_role == 'admin' || response.seller_status == 'approved'){
+                            window.location.href = "../";
+                        }else{
+                            window.location.href = "../create-profile";
+                        }
                     },
                     error: function(jqXHR) {
                         $("#btnSpinner").addClass("hidden");

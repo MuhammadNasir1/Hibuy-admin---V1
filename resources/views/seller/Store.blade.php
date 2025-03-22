@@ -5,8 +5,16 @@
     <div class="w-full pt-10 pb-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium ">My Store</h2>
-            <button id="viewModalBtn" data-modal-target="edit-profile-modal" data-modal-toggle="edit-profile-modal"
-                class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Edit Profile</button>
+            @php
+                $userDetails = session('user_details');
+                $userId = $userDetails['user_id'];
+            @endphp
+            <button id="viewModalBtn" viewstoreurl="/view-store/{{ $userId }}"
+                class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
+                Edit Profile
+            </button>
+            <button class="hidden" id="modal-btn" data-modal-target="edit-profile-modal" data-modal-toggle="edit-profile-modal">
+            </button>
         </div>
 
         <div
@@ -85,8 +93,8 @@
                                 {{-- Store form --}}
 
                                 <div class="px-6 mt-5">
-                                    <x-input type="text" label="Store Name" placeholder="Name Here" id="store_name"
-                                        name="store_name" />
+                                    <x-input value="" type="text" label="Store Name" placeholder="Name Here"
+                                        id="store_name" name="store_name" />
                                 </div>
                                 <div class="px-6 mt-5">
                                     <label class="block mb-2 text-sm font-medium text-customBlack ">Tags</label>
@@ -106,8 +114,7 @@
 
                                 <div class="px-6 mt-5 ">
                                     <label class="block text-gray-700  font-medium text-sm mb-2">Banner</label>
-                                    <x-file-uploader type="text" label="Banner" id="Banner"
-                                        name="Banner" />
+                                    <x-file-uploader type="text" label="Banner" id="Banner" name="Banner" />
                                 </div>
 
                                 <div class="px-6 mt-5">
@@ -142,51 +149,73 @@
 @endsection
 
 @section('js')
-<script>
-    $(document).ready(function () {
-        $("#add-tag-btn").click(function () {
-            addTag();
-        });
+    <script>
+        $(document).ready(function() {
+            $("#viewModalBtn").on("click", function() {
+                let viewstoreurl = $(this).attr("viewstoreurl"); // Get order details URL
+                alert(viewstoreurl);
+                if (!viewstoreurl) {
+                    alert("Invalid order URL!");
+                    return;
+                }
+                $("#modal-btn").click(); // Open modal
 
-        $("#tag-input").keypress(function (e) {
-            if (e.which === 13) { // Enter key pressed
-                e.preventDefault(); // Prevent form submission
+                // Run AJAX to fetch order details
+                $.ajax({
+                    url: viewstoreurl,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {},
+                    error: function() {
+                        alert("Failed to fetch order details. Please try again.");
+                    },
+                });
+            });
+        });
+        $(document).ready(function() {
+            $("#add-tag-btn").click(function() {
                 addTag();
-            }
-        });
+            });
 
-        function addTag() {
-            let tagText = $("#tag-input").val().trim();
-            if (tagText !== "" && !isDuplicateTag(tagText)) {
-                let tag = `
+            $("#tag-input").keypress(function(e) {
+                if (e.which === 13) { // Enter key pressed
+                    e.preventDefault(); // Prevent form submission
+                    addTag();
+                }
+            });
+
+            function addTag() {
+                let tagText = $("#tag-input").val().trim();
+                if (tagText !== "" && !isDuplicateTag(tagText)) {
+                    let tag = `
                     <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
                         <span>${tagText}</span>
                         <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
                     </div>
                 `;
-                $("#tag-container").append(tag).removeClass("hidden"); // Show container
-                $("#tag-input").val("").focus(); // Clear input & refocus
+                    $("#tag-container").append(tag).removeClass("hidden"); // Show container
+                    $("#tag-input").val("").focus(); // Clear input & refocus
+                }
             }
-        }
 
-        function isDuplicateTag(tagText) {
-            let isDuplicate = false;
-            $("#tag-container span").each(function () {
-                if ($(this).text().trim() === tagText) {
-                    isDuplicate = true;
+            function isDuplicateTag(tagText) {
+                let isDuplicate = false;
+                $("#tag-container span").each(function() {
+                    if ($(this).text().trim() === tagText) {
+                        isDuplicate = true;
+                    }
+                });
+                return isDuplicate;
+            }
+
+            $(document).on("click", ".remove-tag", function() {
+                $(this).parent().remove();
+                if ($("#tag-container").children().length === 0) {
+                    $("#tag-container").addClass("hidden"); // Hide container when empty
                 }
             });
-            return isDuplicate;
-        }
-
-        $(document).on("click", ".remove-tag", function () {
-            $(this).parent().remove();
-            if ($("#tag-container").children().length === 0) {
-                $("#tag-container").addClass("hidden"); // Hide container when empty
-            }
         });
-    });
-</script>
+    </script>
     <script>
         $(document).ready(function() {
             $("#store_name").on("input", function() {
