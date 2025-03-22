@@ -152,4 +152,41 @@ class KYCController extends Controller
             return response()->json(["message" => $e->getMessage()]);
         }
     }
+
+    public function kycView()
+    {
+        $user = session('user_details')['user_id'];
+        $seller = Seller::where('user_id', $user)->first();
+
+        $statusImages = [
+            'personal_info' => asset('asset/kyc-pending.png'),
+            'store_info' => asset('asset/kyc-pending.png'),
+            'documents_info' => asset('asset/kyc-pending.png'),
+            'bank_info' => asset('asset/kyc-pending.png'),
+            'business_info' => asset('asset/kyc-pending.png'),
+        ];
+
+        $imageMap = [
+            'pending' => asset('asset/kyc-pending.png'),
+            'approved' => asset('asset/kyc-approve.png'),
+            'rejected' => asset('asset/kyc-reject.png'),
+        ];
+
+        $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+        foreach ($jsonColumns as $column) {
+            if (!empty($seller->$column)) {
+                $jsonData = json_decode($seller->$column, true);
+                if (!empty($jsonData['status']) && isset($imageMap[$jsonData['status']])) {
+                    $statusImages[$column] = $imageMap[$jsonData['status']];
+                }
+            }
+        }
+        // Status check
+        $kycStatus = $seller->status ?? 'pending'; // Default 'pending' if null
+
+        // Button disable/enable logic
+        $isDisabled = $kycStatus === 'pending';
+        $imageSrc = $kycStatus === 'approved' ? asset('asset/kyc status (1).png') : asset('asset/kyc status.png');
+        return view('Auth.ApproveKyc', compact('statusImages', 'kycStatus', 'isDisabled', 'imageSrc'));
+    }
 }
