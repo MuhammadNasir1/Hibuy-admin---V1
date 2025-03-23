@@ -69,7 +69,7 @@ Route::middleware(['custom_auth'])->group(function () {
         });
 
 
-        Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile']);
+        Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile'])->name('editStoreProfile');
         Route::GET('view-store/{userId}', [StoreController::class, 'GetStoreInfo']);
 
         Route::get('/PackagesOffer', function () {
@@ -134,7 +134,8 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
         Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
         Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
-        Route::view('/mystore', 'seller.Store')->name('mystore');
+        // Route::view('/mystore', 'seller.Store')->name('mystore');
+        Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
         Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
     });
 });
