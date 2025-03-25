@@ -166,19 +166,19 @@ $(document).ready(function () {
 
 $(document).ready(function () {
     $(".myFormNew").submit(function (e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default form submission
 
         let form = $(this);
-        let actionUrl = form.attr("action");
-        let formData = new FormData(this);
-        let currentTabButton = $("#default-tab button[aria-selected='true']");
+        let actionUrl = form.attr("action"); // Get form action URL
+        let formData = new FormData(this); // Properly create FormData object
+        let currentTabButton = $("#default-tab button[aria-selected='true']"); // Find active tab button
 
         $.ajax({
             url: actionUrl,
             type: "POST",
             data: formData,
-            contentType: false,
-            processData: false,
+            contentType: false, // Important for FormData
+            processData: false, // Prevent jQuery from processing data
             dataType: "json",
             success: function (response) {
                 if (response.success) {
@@ -186,12 +186,14 @@ $(document).ready(function () {
                         title: "Success!",
                         text: response.message,
                         icon: "success",
-                        timer: 1500,
+                        timer: 1500, // Auto close after 1.5 sec
                         showConfirmButton: false,
                     }).then(() => {
                         if (currentTabButton.attr("id") === "business-tab") {
-                            window.location.href = "/Kyc-profile";
+                            // Agar last tab ka form hai to redirect
+                            window.location.href = "/Kyc-profile"; // Replace with actual route
                         } else {
+                            // Baqi kisi bhi tab pe ho to page reload
                             location.reload();
                         }
                     });
@@ -217,6 +219,60 @@ $(document).ready(function () {
         });
     });
 });
+
+// $(document).ready(function () {
+//     $(".myFormNew").submit(function (e) {
+//         e.preventDefault();
+
+//         let form = $(this);
+//         let actionUrl = form.attr("action");
+//         let formData = new FormData(this);
+//         let currentTabButton = $("#default-tab button[aria-selected='true']");
+
+//         $.ajax({
+//             url: '/submit-profile',
+//             type: "POST",
+//             data: formData,
+//             contentType: false,
+//             processData: false,
+//             dataType: "json",
+//             success: function (response) {
+//                 // if (response.success) {
+//                 //     Swal.fire({
+//                 //         title: "Success!",
+//                 //         text: response.message,
+//                 //         icon: "success",
+//                 //         timer: 1500,
+//                 //         showConfirmButton: false,
+//                 //     }).then(() => {
+//                 //         if (currentTabButton.attr("id") === "business-tab") {
+//                 //             window.location.href = "/Kyc-profile";
+//                 //         } else {
+//                 //             location.reload();
+//                 //         }
+//                 //     });
+//                 // } else {
+//                 //     Swal.fire({
+//                 //         title: "Error!",
+//                 //         text: response.message,
+//                 //         icon: "error",
+//                 //     });
+//                 // }
+//             },
+//             error: function (xhr) {
+//                 let errorMessage = "An error occurred.";
+//                 if (xhr.responseJSON && xhr.responseJSON.errors) {
+//                     errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+//                 }
+//                 Swal.fire({
+//                     title: "Validation Error!",
+//                     text: errorMessage,
+//                     icon: "warning",
+//                 });
+//             },
+//         });
+//     });
+// });
 
 
 
