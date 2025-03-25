@@ -334,10 +334,6 @@ class apiAuthController extends Controller
                     if ($addr['address_id'] === $request->address_id) {
                         $addr['first_name'] = $request->first_name;
                         $addr['last_name'] = $request->last_name;
-                        $addr['city'] = $request->city;
-                        $addr['province'] = $request->province;
-                        $addr['area'] = $request->area;
-                        $addr['postal_code'] = $request->postal_code;
                         $addr['phone_number'] = $request->phone_number;
                         $addr['second_phone_number'] = $request->second_phone_number;
                         $addr['address_line'] = $request->address_line;
@@ -354,10 +350,6 @@ class apiAuthController extends Controller
                     'address_id' => uniqid(),
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
-                    'city' => $request->city,
-                    'province' => $request->province,
-                    'area' => $request->area,
-                    'postal_code' => $request->postal_code,
                     'phone_number' => $request->phone_number,
                     'second_phone_number' => $request->second_phone_number,
                     'address_line' => $request->address_line,
@@ -375,6 +367,11 @@ class apiAuthController extends Controller
                     }
                 }
             }
+
+            // Sort addresses to ensure the default one comes first
+            usort($addresses, function ($a, $b) {
+                return $b['is_default'] <=> $a['is_default'];
+            });
 
             $customer->customer_addresses = json_encode($addresses);
             $customer->save();
@@ -398,12 +395,13 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $isUpdate ? "Address updated successfully" : "Address added successfully",
-                'user' => $userData, // Returns user and customer details
+                'user' => $userData, // Returns user and customer details with default address first
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
     }
+
 
     public function deleteAddress(Request $request)
     {
@@ -419,13 +417,32 @@ class apiAuthController extends Controller
             }
 
             $addresses = json_decode($customer->customer_addresses, true) ?? [];
-            $filteredAddresses = array_filter($addresses, fn($addr) => $addr['address_id'] !== $request->address_id);
+            $deletedAddress = null;
+
+            // Identify if the deleted address was the default one
+            foreach ($addresses as $addr) {
+                if ($addr['address_id'] === $request->address_id) {
+                    $deletedAddress = $addr;
+                    break;
+                }
+            }
+
+            // Remove the address
+            $filteredAddresses = array_values(array_filter($addresses, fn($addr) => $addr['address_id'] !== $request->address_id));
 
             if (count($addresses) === count($filteredAddresses)) {
                 return response()->json(['success' => false, 'message' => "Address not found"], 404);
             }
 
-            $customer->customer_addresses = json_encode(array_values($filteredAddresses));
+            // If the deleted address was the default one, make another address default
+            if ($deletedAddress && $deletedAddress['is_default'] && !empty($filteredAddresses)) {
+                $filteredAddresses[0]['is_default'] = true;
+            }
+
+            // Sort addresses to ensure the default one comes first
+            usort($filteredAddresses, fn($a, $b) => $b['is_default'] <=> $a['is_default']);
+
+            $customer->customer_addresses = json_encode($filteredAddresses);
             $customer->save();
 
             // Prepare user data
@@ -450,12 +467,13 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Address deleted successfully",
-                'user' => $userData, // Returns user and customer details
+                'user' => $userData, // Returns user and customer details with updated addresses
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
     }
+
 
 
     public function addQuery(Request $request)
