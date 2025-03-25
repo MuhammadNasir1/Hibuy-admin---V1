@@ -499,4 +499,12 @@ class ProductsController extends Controller
         $product->delete();
         return response()->json(['message' => 'Product deleted successfully!']);
     }
+
+    public function getOtherSellerProduct()
+    {
+        $user = session('user_details')['user_id'];
+        $products = Products::Where('user_id', '!=', $user)->get();
+
+        return $products;
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Reviews;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Query;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -453,6 +454,34 @@ class apiAuthController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+
+    public function addQuery(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            $request->validate([
+                'subject' => 'required',
+                'message' => 'required',
+                'status' => 'required',
+            ]);
+
+            $query = new Query();
+
+            $query->user_id = $user->user_id;
+            $query->email = $user->email;
+            $query->subject = $request->subject;
+            $query->message = $request->message;
+            $query->status = $request->status;
+
+            $query->save();
+
+            return response()->json(['sucess' => true, 'message' => 'Query Added Successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['sucess' => false, 'message' => $e->getMessage()]);
         }
     }
 }

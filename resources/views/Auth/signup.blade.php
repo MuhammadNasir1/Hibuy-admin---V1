@@ -10,14 +10,14 @@
             <input type="hidden" name="user_role" value="{{ $role }}">
             @csrf
             <div class="mt-4">
-                <x-input id="user_name" label="User Name" placeholder="Name Here" name='user_name'
+                <x-input id="user_name"  value="" label="User Name" placeholder="Name Here" name='user_name'
                 type="text"></x-input>
             </div>
             <div class="mt-4">
-                <x-input id="email" label="Email" placeholder="Enter Email" name='user_email' type="email"></x-input>
+                <x-input id="email" label="Email" value="" placeholder="Enter Email" name='user_email' type="email"></x-input>
             </div>
             <div class="relative mt-6">
-                <x-input id="mediaTitle" label="Password" placeholder="Enter Password" name='user_password'
+                <x-input id="mediaTitle" label="Password"  value="" placeholder="Enter Password" name='user_password'
                     type="password"></x-input>
             </div>
             <div class="mt-6">

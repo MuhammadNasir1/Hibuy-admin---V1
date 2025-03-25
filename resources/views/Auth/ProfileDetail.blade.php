@@ -176,9 +176,10 @@
                         <div class="text-sm">
                             <h3 class="text-base font-bold text-[#2C2C2C]">Personal Information</h3>
 
-                            <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
+                            <form action="{{ route('KYC_Authentication') }}" class="myFormNew"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
+                                <input type="hidden" name="step" value="1">
                                 <div class="grid grid-cols-1 items-center md:grid-cols-2 gap-6 mt-4">
                                     <div class="flex flex-col gap-6">
                                         <div
@@ -188,7 +189,6 @@
                                                 type="text" placeholder="Enter Here" name="full_name"
                                                 value="{{ $personal_info['full_name'] ?? '' }}">
                                         </div>
-                                        <input type="hidden" name="step" value="1">
                                         <input type="text" name="status" value="pending" hidden>
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">

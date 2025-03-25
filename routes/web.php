@@ -31,12 +31,12 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::get('/create-profile', function () {
             return view('Auth.CreateProfile');
         })->name("CreateProfile");
+        Route::post('/submit-profile', [UserController::class, 'KYC_Authentication'])->name('KYC_Authentication');
     });
 
 
     Route::middleware([CheckSellerKyc::class])->group(function () {
 
-        Route::post('/submit-profile', [UserController::class, 'KYC_Authentication'])->name('KYC_Authentication');
         Route::get('/create-store', function () {
             return view('Auth.CreateStore');
         })->name("CreateStore");
@@ -52,6 +52,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/products', 'showAllProducts')->name('products');
             Route::GET('/delete-product/{id}', 'deleteProduct');
             Route::GET('/view-product/{id}', 'viewProductDetails');
+            Route::GET('/other-seller-product', 'getOtherSellerProduct')->name('other-seller-product');
             Route::POST('/update-product-status', 'updateStatus');
         });
 
@@ -136,6 +137,5 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
         // Route::view('/mystore', 'seller.Store')->name('mystore');
         Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
-        Route::view('/other-seller-product', 'seller.OtherSeller')->name('other-seller-product');
     });
 });
