@@ -5,9 +5,10 @@
     <div class="w-full pt-10 pb-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium "></h2>
-            <button id="viewModalBtn" viewstoreurl="/view-store/{{ $storeData['user_id'] }}"
+            <button id="viewModalBtn"
+                viewstoreurl="{{ isset($storeData['store_id']) || !empty($storeData['store_id']) ? '/view-store/' . $storeData['store_id'] :'/view-store/' . $storeData['seller_id'] }}"
                 class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
-                Edit Profile
+                {{!empty($storeData['store_id']) ? 'Edit Profile':'Cretae Profile'}}
             </button>
             <button class="hidden" id="modal-btn" data-modal-target="edit-profile-modal" data-modal-toggle="edit-profile-modal">
             </button>
@@ -16,10 +17,12 @@
         <div
             class="h-[200px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
             <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center gap-5">
-                <img src="storage/{{ $storeData['store_image'] ?? asset('asset/pic.jpg') }}"
+                <img src="{{ !empty($storeData['store_image']) ? asset( $storeData['store_image']) : asset('asset/pic.jpg') }}"
                     class="ms-5 h-[80px] w-[80px] rounded-full" alt="">
                 <div>
-                    <h3 class="text-lg font-semibold ">{{ $storeData['store_name'] }}</h3>
+                    <h3 class="text-lg font-semibold">
+                        {{ isset($storeData['store_name']) && !empty($storeData['store_name']) ? $storeData['store_name'] : 'Your Store Name' }}
+                    </h3>
                     <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
                         <span>
                             <svg class="h-[15px] fill-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -33,7 +36,7 @@
         </div>
 
         <div class="mt-5 mx-6 shadow-xl rounded-xl min-h-[100px]">
-            <img src="{{ asset($storeData['store_banner'] ? 'storage/' . $storeData['store_banner'] : 'asset/banner.png') }}"
+            <img src="{{ asset(@$storeData['store_banner'] ?  @$storeData['store_banner'] : 'asset/banner.png') }}"
                 alt="Banner Image" class="w-full object-cover rounded-xl">
         </div>
 
@@ -45,7 +48,7 @@
             @foreach ($defaultImages as $index => $defaultImage)
                 @php
                     $imagePath = isset($storeData['store_posts'][$index]['image'])
-                        ? 'storage/' . $storeData['store_posts'][$index]['image']
+                        ? $storeData['store_posts'][$index]['image']
                         : $defaultImage;
                 @endphp
                 <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl mt-5 shadow-xl"
@@ -100,6 +103,7 @@
                                     <input type="text" id="tag-input"
                                         class="border border-gray-300 text-gray-900 text-sm rounded-l-md focus:ring-primary focus:border-primary block w-full p-2.5"
                                         placeholder="Enter a tag...">
+                                    <input type="hidden" id="tags-hidden" name="tags">
                                     <button type="button" id="add-tag-btn"
                                         class="px-3 py-1 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">
                                         +
@@ -118,8 +122,8 @@
                             <div class="px-6 mt-5">
                                 <label class="block text-gray-700 font-medium text-sm mb-2">Posts</label>
                                 <div class="flex gap-5">
-                                    <x-file-uploader name="profile_picture" id="profile_picture" />
-                                    <x-file-uploader name="profile_picture" id="profile_picture" />
+                                    <x-file-uploader name="store_posts[]" id="store_posts" />
+                                    <x-file-uploader name="store_posts[]" id="store_posts" />
                                 </div>
                                 <div class="" id="store_posts_container">
                                     <!-- Dynamic post images will be inserted here -->
@@ -171,13 +175,13 @@
 
                             // Store Image (Profile Picture)
                             let profileImagePath = response.data.store_image ?
-                                "storage/" + response.data.store_image :
+                                 response.data.store_image :
                                 "{{ asset('asset/pic.jpg') }}";
                             $("#profile_picture_preview").attr("src", profileImagePath);
 
                             // Store Banner (Full Width)
                             let bannerPath = response.data.store_banner ?
-                                "storage/" + response.data.store_banner :
+                                 response.data.store_banner :
                                 "";
                             $("#preview-banner").html( // Using `.html()` to replace content
                                 `<img src="${bannerPath}" class="my-3 w-full h-[200px] object-cover rounded-lg" alt="Store Banner">`
@@ -211,7 +215,7 @@
                                     `<div class="flex gap-3 my-3">`; // Flex wrap for responsive layout
 
                                 response.data.store_posts.forEach(post => {
-                                    let postImagePath = "storage/" + post.image;
+                                    let postImagePath =  post.image;
                                     postHtml += `
             <div class="w-1/2">
                 <img src="${postImagePath}" class="w-full h-[120px] object-cover rounded-lg" alt="Post Image">
@@ -250,12 +254,15 @@
                     contentType: false, // Prevent jQuery from setting content type
                     beforeSend: function() {
                         $("#submit_store").text("Submitting...").prop("disabled",
-                        true); // Disable button
+                            true); // Disable button
                     },
                     success: function(response) {
+                        console.log(response); // Check response in console
                         if (response.success) {
                             alert("Store saved successfully!");
-                            location.reload(); // Reload page or redirect
+                            console.log("Request Data:", response
+                                .request_data); // Log request data
+                            // location.reload(); // Reload page or redirect
                         } else {
                             alert("Error: " + response.message);
                         }
@@ -271,12 +278,14 @@
                     },
                     complete: function() {
                         $("#submit_store").text("Submit").prop("disabled",
-                        false); // Re-enable button
+                            false); // Re-enable button
                     }
                 });
             });
         });
         $(document).ready(function() {
+            let tagsArray = []; // Array to store tags
+
             $("#add-tag-btn").click(function() {
                 addTag();
             });
@@ -291,29 +300,34 @@
             function addTag() {
                 let tagText = $("#tag-input").val().trim();
                 if (tagText !== "" && !isDuplicateTag(tagText)) {
+                    tagsArray.push(tagText); // Add tag to array
+                    updateTagsHiddenInput(); // Update hidden input
+
                     let tag = `
-                    <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
-                        <span>${tagText}</span>
-                        <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag">&times;</button>
-                    </div>
-                `;
+                <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
+                    <span>${tagText}</span>
+                    <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag" data-tag="${tagText}">&times;</button>
+                </div>
+            `;
                     $("#tag-container").append(tag).removeClass("hidden"); // Show container
                     $("#tag-input").val("").focus(); // Clear input & refocus
                 }
             }
 
             function isDuplicateTag(tagText) {
-                let isDuplicate = false;
-                $("#tag-container span").each(function() {
-                    if ($(this).text().trim() === tagText) {
-                        isDuplicate = true;
-                    }
-                });
-                return isDuplicate;
+                return tagsArray.includes(tagText);
+            }
+
+            function updateTagsHiddenInput() {
+                $("#tags-hidden").val(tagsArray.join(",")); // Convert array to comma-separated string
             }
 
             $(document).on("click", ".remove-tag", function() {
+                let tagText = $(this).data("tag");
+                tagsArray = tagsArray.filter(tag => tag !== tagText); // Remove tag from array
+                updateTagsHiddenInput(); // Update hidden input
                 $(this).parent().remove();
+
                 if ($("#tag-container").children().length === 0) {
                     $("#tag-container").addClass("hidden"); // Hide container when empty
                 }
