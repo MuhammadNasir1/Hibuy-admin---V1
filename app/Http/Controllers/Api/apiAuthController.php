@@ -472,7 +472,7 @@ class apiAuthController extends Controller
             $query = new Query();
 
             $query->user_id = $user->user_id;
-            $query->email = $user->email;
+            $query->email = $user->user_email;
             $query->subject = $request->subject;
             $query->message = $request->message;
             $query->status = $request->status;
