@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Seller;
 use App\Models\Customer;
+use App\Models\Products;
+use App\Models\Store;
+use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,7 +129,7 @@ class UserController extends Controller
                 if ($request->hasFile($fileField)) {
                     $fileName = time() . '_' . $fileField . '.' . $file->getClientOriginalExtension();
                     $file->move($uploadPath, $fileName);
-                    $fileData[$fileField] = 'uploads/kyc_files/' . $fileName; // Store relative path
+                    $fileData[$fileField] = 'storage/kyc_files/' . $fileName; // Store relative path
                 }
             }
 
@@ -150,5 +153,90 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+
+
+    public function sellerManagement()
+    {
+        $userDetails = session('user_details');
+        $user_id = $userDetails['user_id'] ?? null;
+        $role = $userDetails['user_role'] ?? null;
+
+        if ($role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+
+        $sellers = Seller::with('user')
+            ->whereHas('user', function ($query) {
+                $query->where('user_role', 'seller');
+            })
+            ->get()
+            ->map(function ($query) {
+                $query->submission_date = Carbon::parse($query->updated_at)->format('d F, Y');
+                return $query;
+            });
+
+        return view('admin.SellerManagement', compact('sellers'));
+    }
+
+    public function freelancerManagement()
+    {
+        $userDetails = session('user_details');
+        $user_id = $userDetails['user_id'] ?? null;
+        $role = $userDetails['user_role'] ?? null;
+
+        if ($role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+
+        $sellers = Seller::with('user')
+            ->whereHas('user', function ($query) {
+                $query->where('user_role', 'freelancer');
+            })
+            ->get()
+            ->map(function ($query) {
+                $query->submission_date = Carbon::parse($query->updated_at)->format('d F, Y');
+                return $query;
+            });
+
+        return view('admin.FreelancersManagement', compact('sellers'));
+    }
+
+    public function getSellerData(string $id)
+    {
+        $user_id = base64_decode($id);
+
+        $seller = Seller::where('user_id', $user_id)->first();
+        if (!$seller) {
+            return response()->json(['error' => 'Seller record not found'], 404);
+        }
+
+        $store = Store::where('seller_id', $seller->seller_id)
+            ->with('users') // Fetch related user data
+            ->first();
+
+        if ($store) {
+            $storeData = !empty($store->store_profile_detail)
+                ? json_decode($store->store_profile_detail, true)
+                : json_decode($store->store_info, true);
+
+            $storeData['store_id'] = $store->store_id;
+            $storeData['user_id'] = $store->user_id;
+            $storeData['product_count'] = Products::where('store_id', $store->store_id)->count();
+            $storeData['user'] = $store->users; // Include user data
+        } else {
+            $storeData = json_decode($seller->store_info, true);
+
+            $storeData['seller_id'] = $seller->seller_id;
+            $storeData['user_id'] = $seller->user_id;
+            $storeData['product_count'] = 0;
+            $storeData['user'] = User::find($seller->user_id); // Fetch user data directly if no store
+        }
+
+        // Personal Info JSON se personal_profile_picture nikalna
+        $personalInfo = json_decode($seller->personal_info, true);
+        $storeData['profile_picture'] = $personalInfo['profile_picture'] ?? null;
+
+        return view('admin.FreelancerProfile', compact('storeData'));
     }
 }

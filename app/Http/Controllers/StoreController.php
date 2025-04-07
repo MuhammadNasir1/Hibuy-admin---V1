@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
+use App\Models\Query;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -201,5 +203,37 @@ class StoreController extends Controller
             'success' => true,
             'data' => $storeData
         ], 200);
+    }
+
+    public function getQuery()
+    {
+        $user = session('user_details')['user_id'];
+        $queries = Query::where('user_id', $user)->get()->map(function ($query) {
+            $query->submission_date = Carbon::parse($query->updated_at)->format('d F, Y');
+            return $query;
+        });
+
+        return view('pages.Queries', compact('queries'));
+    }
+
+    public function updateQuery(Request $request, string $id)
+    {
+        try {
+
+            $request->validate([
+                'status' => 'required',
+                'response' => 'required',
+            ]);
+
+            $get_query = Query::where('query_id', $id)->first();
+
+            $get_query->status = $request->status;
+            $get_query->response = $request->response;
+            $get_query->save();
+
+            return response()->json(['success' => true, 'message' => 'Query Updated Successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
+        }
     }
 }
