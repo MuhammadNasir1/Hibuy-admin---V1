@@ -361,12 +361,13 @@ class ProductsController extends Controller
             return response()->json(['error' => 'User not authenticated'], 401);
         }
 
-        $loggedInUserId = $userDetails['user_id']; // Get logged-in user_id
+        $loggedInUserId = $userDetails['user_id'];
+        $loggedInUserRole = $userDetails['user_role']; // Get user role
 
-        // Fetch products with category name, first image, and user name, filtered by user_id
-        $products = DB::table('products')
+        // Base query
+        $query = DB::table('products')
             ->join('categories', 'products.product_category', '=', 'categories.id')
-            ->join('users', 'products.user_id', '=', 'users.user_id') // Join with users table
+            ->join('users', 'products.user_id', '=', 'users.user_id')
             ->select(
                 'products.product_id',
                 'products.user_id',
@@ -378,19 +379,25 @@ class ProductsController extends Controller
                 'products.is_boosted',
                 'products.created_at',
                 'products.updated_at',
-                'users.user_name as user_name' // Get user name
-            )
-            ->where('products.user_id', $loggedInUserId) // Filter by logged-in user_id
-            ->get()
-            ->map(function ($product) {
-                // Decode product images JSON and get the first image
-                $images = json_decode($product->product_images, true);
-                $product->first_image = $images[0] ?? null;
-                unset($product->product_images); // Remove the original JSON field
-                return $product;
-            });
+                'users.user_name as user_name'
+            );
+
+        // If not admin, filter by logged-in user_id
+        if ($loggedInUserRole !== 'admin') {
+            $query->where('products.user_id', $loggedInUserId);
+        }
+
+        // Fetch products and format image
+        $products = $query->get()->map(function ($product) {
+            $images = json_decode($product->product_images, true);
+            $product->first_image = $images[0] ?? null;
+            unset($product->product_images);
+            return $product;
+        });
+
         return view('pages.products', compact('products'));
     }
+
 
 
     public function viewProductDetails($id)
