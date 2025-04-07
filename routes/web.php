@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\apiStoreController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KYCController;
@@ -72,7 +73,12 @@ Route::middleware(['custom_auth'])->group(function () {
 
         Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile'])->name('editStoreProfile');
         Route::GET('view-store/{userId}', [StoreController::class, 'GetStoreInfo']);
+        Route::GET('/Queries', [StoreController::class, 'getQuery'])->name("queries");
+        Route::POST('/query-data/{id}', [StoreController::class, 'updateQuery'])->name("query.update");
 
+        Route::GET('/SellerManagement', [UserController::class, 'sellerManagement'])->name("manage_seller");
+        Route::GET('/FreelancersManagement', [UserController::class, 'freelancerManagement'])->name("manage_freelancer");
+        Route::GET('/FreelancerProfile/{id}', [UserController::class, 'getSellerData'])->name("FreelancerProfile");
         Route::get('/PackagesOffer', function () {
             return view('pages.PackagesOffer');
         })->name('PackagesOffer');
@@ -81,17 +87,9 @@ Route::middleware(['custom_auth'])->group(function () {
             return view('pages.ReturnOrders');
         })->name('return_orders');
 
-        Route::get('/SellerManagement', function () {
-            return view('admin.SellerManagement');
-        })->name('manage_seller');
-
         Route::get('/BuyersManagement', function () {
             return view('admin.BuyersManagement');
         })->name('manage_buyer');
-
-        Route::get('/FreelancersManagement', function () {
-            return view('admin.FreelancersManagement');
-        })->name('manage_freelancer');
 
         Route::get('/CreditRequest', function () {
             return view('pages.CreditRequest');
@@ -105,9 +103,6 @@ Route::middleware(['custom_auth'])->group(function () {
             return view('admin.Promotions');
         })->name('promotion_list');
 
-        Route::get('/Queries', function () {
-            return view('pages.Queries');
-        })->name('queries');
 
         Route::get('/Notifications', function () {
             return view('pages.Notifications');
@@ -132,7 +127,6 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
         Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
         Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
-        Route::view('/FreelancerProfile', 'admin.FreelancerProfile')->name('FreelancerProfile');
         Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
         Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
         // Route::view('/mystore', 'seller.Store')->name('mystore');

@@ -9,7 +9,8 @@
         <form id="loginForm">
             @csrf
             <div class="mt-4">
-                <x-input id="email" value="" label="Email" placeholder="Enter Email" name='user_email' type="email"></x-input>
+                <x-input id="email" value="" label="Email" placeholder="Enter Email" name='user_email'
+                    type="email"></x-input>
             </div>
             <div class="relative mt-6">
                 <x-input id="mediaTitle" value="" label="Password" placeholder="Enter Password" name='user_password'
@@ -48,8 +49,6 @@
 @section('js')
     <script>
         $(document).ready(function() {
-            // console.log(document.cookie);
-
             $("#loginForm").submit(function(e) {
                 e.preventDefault();
                 let formData = $(this).serialize();
@@ -67,13 +66,24 @@
                         $("input").removeClass("border-red-500"); // Remove previous red border
                     },
                     success: function(response) {
-                        // console.log("Login successful", response);
-                        // alert(response.seller_status)
-                        if(response.user.user_role == 'admin' || response.seller_status == 'approved'){
-                            window.location.href = "../";
-                        }else{
-                            window.location.href = "../create-profile";
-                        }
+                        $("#btnSpinner").addClass("hidden");
+                        $("#btnText").removeClass("hidden");
+                        $("#submitBtn").attr("disabled", false);
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Login Successful",
+                            text: "Redirecting...",
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            if (response.user.user_role == 'admin' || response
+                                .seller_status == 'approved') {
+                                window.location.href = "../";
+                            } else {
+                                window.location.href = "../create-profile";
+                            }
+                        });
                     },
                     error: function(jqXHR) {
                         $("#btnSpinner").addClass("hidden");
@@ -89,9 +99,21 @@
                                     `<p class="error-text text-red-500 text-sm mt-1">${value}</p>`
                                 );
                             });
-                        }
 
-                    },
+                            Swal.fire({
+                                icon: "error",
+                                title: "Validation Error",
+                                text: "Please fix the highlighted fields."
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Login Failed",
+                                text: response.message ||
+                                    "Something went wrong. Please try again!"
+                            });
+                        }
+                    }
                 });
             });
 
