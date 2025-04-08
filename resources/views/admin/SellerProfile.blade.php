@@ -11,14 +11,15 @@
                 <div class="h-[80%] w-[95%] rounded-xl flex items-center justify-between">
                     <!-- Seller Information -->
                     <div class="flex items-center gap-5">
-                        <img src="{{ asset('asset/pic.jpg') }}" class="h-[80px] w-[80px] rounded-full" alt="">
+                        <img src="{{ !empty($storeData['personal_info']['profile_picture']) ? asset($storeData['personal_info']['profile_picture']) : asset('asset/pic.jpg') }}"
+                            class="h-[80px] w-[80px] rounded-full" alt="">
                         <div>
-                            <h3 class="text-lg font-semibold">Awais Ansari</h3>
+                            <h3 class="text-lg font-semibold">{{ $storeData['personal_info']['full_name'] }}</h3>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
-                                +92 300 1234567
+                                {{ $storeData['personal_info']['phone_no'] }}
                             </p>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
-                                email@gmail.com
+                                {{ $storeData['personal_info']['email'] }}
                             </p>
                         </div>
                     </div>
