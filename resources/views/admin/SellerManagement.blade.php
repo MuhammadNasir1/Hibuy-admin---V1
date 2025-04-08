@@ -7,31 +7,25 @@
             <h2 class="text-2xl font-medium ">Sellers List</h1>
         </div>
         @php
-            $headers = [
-                'Sr.',
-                'Seller Id',
-                'Seller name',
-                'Joined Date',
-                'Status',
-                'Action',
-            ];
+            $headers = ['Sr.', 'Seller Id', 'Seller name', 'Joined Date', 'Status', 'Action'];
         @endphp
 
         <x-table :headers="$headers">
             <x-slot name="tablebody">
 
                 @foreach ($sellers as $seller)
-                    <tr  style="text-transform: capitalize">
+                    <tr style="text-transform: capitalize">
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $seller->seller_id }}</td>
-                        <td>{{ $seller->user->user_name  }}</td>
+                        <td>{{ $seller->user->user_name }}</td>
                         <td>{{ $seller->submission_date }}</td>
-                        <td><span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">{{  $seller->status }}</span>
+                        <td><span
+                                class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">{{ $seller->status }}</span>
                         </td>
                         <td>
                             <span class='flex gap-4'>
-
-                                <a id="addmanagesellerBtn" class="viewModalBtn" href="{{ route('SellerProfile') }}">
+                                <a id="addmanagesellerBtn" class="viewModalBtn"
+                                    href="{{ route('SellerProfile', $seller->seller_id) }}">
                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <path fill-rule='evenodd' clip-rule='evenodd'
