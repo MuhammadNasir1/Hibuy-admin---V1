@@ -83,13 +83,6 @@ class apiproductController extends Controller
         }
     }
 
-
-
-
-
-
-
-
     public function getProductsDetail(Request $request)
     {
         try {
@@ -186,13 +179,6 @@ class apiproductController extends Controller
         }
     }
 
-
-
-
-
-
-
-
     public function toggleWishlist(Request $request)
     {
         // Check if user is authenticated
@@ -243,16 +229,6 @@ class apiproductController extends Controller
     public function getCategories()
     {
         try {
-            // Check if user is authenticated
-            // $user = Auth::user();
-            // if (!$user) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'User not authenticated',
-            //     ], 401);
-            // }
-
-            // Fetch categories and decode JSON sub_categories
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')
                 ->get()
                 ->map(function ($category) {
@@ -269,6 +245,81 @@ class apiproductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function searchProducts(Request $request)
+    {
+        try {
+            $query = $request->query('query');
+            $categoryId = $request->query('category_id'); // optional category filter
+
+            if (!$query) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Search query is required.'
+                ], 400);
+            }
+
+            $products = Products::select(
+                'product_id',
+                'product_name',
+                'product_description',
+                'product_brand',
+                'product_category',
+                'product_subcategory',
+                'store_id',
+                'product_price',
+                'product_discount',
+                'product_discounted_price',
+                'product_images'
+            )
+                ->with(['category:id,name']) // eager load category
+                ->where(function ($q) use ($query) {
+                    $q->where('product_name', 'LIKE', "%{$query}%")
+                        ->orWhere('product_description', 'LIKE', "%{$query}%")
+                        ->orWhere('product_brand', 'LIKE', "%{$query}%")
+                        ->orWhere('product_subcategory', 'LIKE', "%{$query}%")
+                        ->orWhereHas('category', function ($catQuery) use ($query) {
+                            $catQuery->where('name', 'LIKE', "%{$query}%");
+                        });
+                });
+
+            // Apply category filter if category_id is provided
+            if (!empty($categoryId)) {
+                $products->where('product_category', $categoryId);
+            }
+
+            $result = $products->limit(20)->get();
+
+            // Post-process each product
+            foreach ($result as $product) {
+                // Decode and extract image
+                $product->product_images = json_decode($product->product_images, true);
+                $product->product_image = $product->product_images[0] ?? null;
+                unset($product->product_images);
+
+                // Default rating
+                $product->product_rating = 4.5;
+
+                // Category name
+                $product->category_name = $product->category->name ?? null;
+                unset($product->category);
+
+                // Discount flag
+                $product->is_discounted = $product->product_discount > 0;
+            }
+
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Search results fetched successfully',
+                'products' => $result
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
             ], 500);
         }
     }

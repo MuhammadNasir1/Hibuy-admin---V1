@@ -23,6 +23,8 @@ Route::GET('getCategories', [apiproductController::class, 'getCategories']);
 Route::match(['get', 'post'], 'getProducts/{categoryid?}', [apiproductController::class, 'getProducts']);
 Route::GET('getProductsDetail', [apiproductController::class, 'getProductsDetail']);
 Route::GET('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
+Route::GET('getStoreList', [apiStoreController::class, 'getStoreList']);
+Route::GET('searchProducts', [apiproductController::class, 'searchProducts']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 

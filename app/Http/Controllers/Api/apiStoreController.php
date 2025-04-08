@@ -89,4 +89,42 @@ class apiStoreController extends Controller
     }
 
 
+    public function getStoreList(Request $request)
+    {
+        try {
+            // Fetch 6 stores
+            $stores = Store::select('store_id', 'store_profile_detail')
+                ->limit(6)
+                ->get();
+
+            if ($stores->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No stores found'
+                ], 404);
+            }
+
+            // Process each store and extract required info
+            $storeList = $stores->map(function ($store) {
+                $profileDetail = json_decode($store->store_profile_detail, true);
+
+                return [
+                    'store_id'    => $store->store_id,
+                    'store_name'  => $profileDetail['store_name'] ?? null,
+                    'store_image' => $profileDetail['store_image'] ?? null,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Store List fetched successfully',
+                'stores'  => $storeList,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
