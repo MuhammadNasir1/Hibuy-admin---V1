@@ -7,6 +7,7 @@ use App\Http\Controllers\KYCController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SellerController;
 use App\Http\Controllers\StoreController;
 use App\Http\Middleware\CheckSellerKyc;
 use App\Http\Middleware\CheckSellerKycApproved;
@@ -118,6 +119,7 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::get('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategory']);
         Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
         Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
+        Route::GET('/SellerProfile/{sellerId}', [SellerController::class, 'getSellerDetail'])->name('SellerProfile');
 
 
         Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
@@ -127,9 +129,7 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
         Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
         Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
-        Route::view('/SellerProfile', 'admin.SellerProfile')->name('SellerProfile');
         Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
-        // Route::view('/mystore', 'seller.Store')->name('mystore');
         Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
     });
 });
