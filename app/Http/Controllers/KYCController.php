@@ -106,7 +106,7 @@ class KYCController extends Controller
         ]);
     }
 
-    function approveKyc(Request $request)
+    public function approveKyc(Request $request)
     {
         try {
             $seller_id = $request->seller_id;
@@ -128,6 +128,11 @@ class KYCController extends Controller
 
                     if (isset($jsonData['step']) && $jsonData['step'] == $step) {
                         $jsonData['status'] = 'approved';
+
+                        if (isset($jsonData['reason'])) {
+                            $jsonData['reason'] = '';
+                        }
+
                         $seller->$column = json_encode($jsonData);
                         $isUpdated = true;
                     }
@@ -149,9 +154,69 @@ class KYCController extends Controller
 
             return response()->json(['message' => 'No matching step found'], 400);
         } catch (\Exception $e) {
-            return response()->json(["message" => $e->getMessage()]);
+            return response()->json([
+                "message" => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+
+    public function rejectKyc(Request $request)
+    {
+        try {
+            $seller_id = $request->seller_id;
+            $step = $request->step;
+            $reason = $request->reason;
+
+            $seller = Seller::find($seller_id);
+
+            if (!$seller) {
+                return response()->json(['message' => 'Seller not found'], 404);
+            }
+
+            $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+            $allStepsRejected = true;
+            $isUpdated = false;
+
+            foreach ($jsonColumns as $column) {
+                if (!empty($seller->$column)) {
+                    $jsonData = json_decode($seller->$column, true);
+
+                    if (isset($jsonData['step']) && $jsonData['step'] == $step) {
+                        $jsonData['status'] = 'rejected';
+                        $jsonData['reason'] = $reason;
+                        $seller->$column = json_encode($jsonData);
+                        $isUpdated = true;
+                    }
+
+                    if (!isset($jsonData['status']) || $jsonData['status'] != 'rejected') {
+                        $allStepsRejected = false;
+                    }
+                }
+            }
+
+            if ($allStepsRejected) {
+                $seller->status = 'rejected';
+            }
+
+            if ($isUpdated) {
+                $seller->save();
+                return response()->json(['message' => 'KYC Rejected successfully']);
+            }
+
+            return response()->json(['message' => 'No matching step found'], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => 'Something went wrong',
+                "error" => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
+
 
     public function kycView()
     {
