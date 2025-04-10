@@ -115,10 +115,10 @@
 
         /* Upload Progress Bar */
         /* .dz-progress {
-                                                                                                                                background: green !important;
-                                                                                                                                height: 5px !important;
-                                                                                                                                border-radius: 3px;
-                                                                                                                            } */
+                                                                                                                                    background: green !important;
+                                                                                                                                    height: 5px !important;
+                                                                                                                                    border-radius: 3px;
+                                                                                                                                } */
 
         /* Styling for a Specific Dropzone */
         #my-dropzone {
@@ -290,10 +290,10 @@
                                 <label>Option values</label>
                                 <div class="values-container">
                                     ${option.values.map(value => `
-                                            <div class="value-item flex items-center mb-2">
-                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                            </div>`).join('')}
+                                                <div class="value-item flex items-center mb-2">
+                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                </div>`).join('')}
                                     <div class="value-item flex items-center mb-2">
                                         <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                     </div>
@@ -398,6 +398,16 @@
                     container.find(".edit-container").removeClass("hidden");
                     container.find(".edit-btn").text("Done").removeClass("bg-blue-600").addClass(
                         "bg-gray-800");
+
+                    // Ensure the last empty field has a remove button if it’s not the only field
+                    let valuesContainer = container.find(".values-container");
+                    let valueItems = valuesContainer.find(".value-item");
+                    let lastValueItem = valueItems.last();
+                    if (valueItems.length > 1 && !lastValueItem.find(".remove-value-btn").length) {
+                        lastValueItem.append(`
+                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                `);
+                    }
                 } else {
                     // Switch to display mode and save changes
                     let optionName = container.find(".option-name").val().trim();
@@ -419,23 +429,37 @@
                     // Update hidden inputs
                     container.find("input[type=hidden]").remove();
                     container.append(`
-                    <input type="hidden" name="options[${optionIndex}][name]" value="${optionName}">
-                    ${values.map(value => `<input type="hidden" name="options[${optionIndex}][values][]" value="${value}">`).join('')}
-                `);
+                <input type="hidden" name="options[${optionIndex}][name]" value="${optionName}">
+                ${values.map(value => `<input type="hidden" name="options[${optionIndex}][values][]" value="${value}">`).join('')}
+            `);
 
                     // Update display
                     let optionDisplayHtml = `
-                    <div class="option-display p-2 bg-gray-200 rounded mt-2">
-                        <strong>${optionName}</strong>
-                        <div class="option-values mt-2 flex gap-2">
-                            ${values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
-                        </div>
-                    </div>`;
+                <div class="option-display p-2 bg-gray-200 rounded mt-2">
+                    <strong>${optionName}</strong>
+                    <div class="option-values mt-2 flex gap-2">
+                        ${values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
+                    </div>
+                </div>`;
                     container.find(".option-display-container").html(optionDisplayHtml).removeClass(
                         "hidden");
                     container.find(".edit-container").addClass("hidden");
                     container.find(".edit-btn").text("Edit").removeClass("bg-gray-800").addClass(
                         "bg-blue-600");
+
+                    // Update edit-container for next edit
+                    container.find(".edit-container .values-container").html(`
+                ${values.map(value => `
+                        <div class="value-item flex items-center mb-2">
+                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                        </div>`).join('')}
+                <div class="value-item flex items-center mb-2">
+                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
+                    ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
+                </div>
+            `);
+                    container.find(".edit-container .option-name").val(optionName);
 
                     // Regenerate variants
                     generateVariants(productVariation.length > 0);
@@ -496,7 +520,7 @@
                     let parentPrice = variantData?.parentprice || "";
                     let parentStock = variantData?.parentstock || "";
                     let parentImage = variantData?.parentimage ? `${baseUrl}${variantData.parentimage}` :
-                    "";
+                        "";
 
                     let parentRow = `
                     <tr class="parent-row bg-gray-100 border-b border-gray-300" data-parent-index="${parentIndex}">
