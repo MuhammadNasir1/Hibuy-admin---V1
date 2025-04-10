@@ -582,13 +582,11 @@
     <div class="p-4 sm:ml-[300px]">
         <nav class="bg-white border-gray-200 ">
             <div class="w-full flex flex-wrap items-center justify-between mx-auto px-4">
-                <h3 class="font-bold text-3xl">
+                <h3 class="font-semibold text-2xl">
                     @yield('nav-title', 'No title')
-                    {{ session('user_details.user_role') }}
-
                 </h3>
                 <div class="flex items-center md:order-2 space-x-3 md:space-x-5 rtl:space-x-reverse">
-
+                    <p  style="text-transform: capitalize">{{ session('user_details.user_role') }}</p>
                     <div>
                         <a href="">
                             <svg width="23" height="22" viewBox="0 0 26 25" fill="none"
@@ -616,6 +614,7 @@
                             class="absolute block w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900">
                         </div>
                     </button>
+
 
                     <!-- Dropdown menu -->
                     <div id="dropdownNotification"

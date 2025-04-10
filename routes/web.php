@@ -63,6 +63,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::get('/KYC', 'kycData')->name('KYC_auth');
             Route::get('/KYC-data/{id}', 'kycDataSelect')->name('kycDataSelect');
             Route::post('/approve-kyc', 'approveKyc')->name('approveKyc');
+            Route::post('/reject-kyc', 'rejectKyc')->name('rejectKyc');
         });
 
         // Order Group
@@ -79,7 +80,10 @@ Route::middleware(['custom_auth'])->group(function () {
 
         Route::GET('/SellerManagement', [UserController::class, 'sellerManagement'])->name("manage_seller");
         Route::GET('/FreelancersManagement', [UserController::class, 'freelancerManagement'])->name("manage_freelancer");
-        Route::GET('/FreelancerProfile/{id}', [UserController::class, 'getSellerData'])->name("FreelancerProfile");
+        Route::GET('/FreelancerProfile/{id}', [SellerController::class, 'getSellerDetail'])->name("FreelancerProfile");
+        Route::GET('/BuyersManagement', [UserController::class, 'getBuyerData'])->name("manage_buyer");
+        Route::GET('/BuyerProfile/{id}', [UserController::class, 'getBuyerDetails'])->name("BuyerProfile");
+
         Route::get('/PackagesOffer', function () {
             return view('pages.PackagesOffer');
         })->name('PackagesOffer');
@@ -88,9 +92,9 @@ Route::middleware(['custom_auth'])->group(function () {
             return view('pages.ReturnOrders');
         })->name('return_orders');
 
-        Route::get('/BuyersManagement', function () {
-            return view('admin.BuyersManagement');
-        })->name('manage_buyer');
+        // Route::get('/BuyersManagement', function () {
+        //     return view('admin.BuyersManagement');
+        // })->name('manage_buyer');
 
         Route::get('/CreditRequest', function () {
             return view('pages.CreditRequest');
@@ -129,7 +133,7 @@ Route::middleware(['custom_auth'])->group(function () {
         Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
         Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
         Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
-        Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
+        // Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
         Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
     });
 });

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -168,7 +169,8 @@ class UserController extends Controller
 
         $sellers = Seller::with('user')
             ->whereHas('user', function ($query) {
-                $query->where('user_role', 'seller');
+                $query->where('user_role', 'seller')
+                    ->where('status', "approved");
             })
             ->get()
             ->map(function ($query) {
@@ -191,14 +193,15 @@ class UserController extends Controller
 
         $sellers = Seller::with('user')
             ->whereHas('user', function ($query) {
-                $query->where('user_role', 'freelancer');
+                $query->where('user_role', 'freelancer')
+                    ->where('status', "approved");
             })
             ->get()
             ->map(function ($query) {
                 $query->submission_date = Carbon::parse($query->updated_at)->format('d F, Y');
                 return $query;
             });
-
+        //  return $sellers;
         return view('admin.FreelancersManagement', compact('sellers'));
     }
 
@@ -238,5 +241,75 @@ class UserController extends Controller
         $storeData['profile_picture'] = $personalInfo['profile_picture'] ?? null;
 
         return view('admin.FreelancerProfile', compact('storeData'));
+    }
+
+    public function getBuyerData()
+    {
+        $buyers = Customer::with('user')
+            ->whereHas('user', function ($query) {
+                $query->where('user_role', 'customer');
+            })
+            ->get();
+
+        $userIds = $buyers->pluck('user_id')->filter()->unique()->map(function ($id) {
+            return (int) $id;
+        })->toArray();
+
+        $orders = DB::table('orders')
+            ->whereIn('user_id', $userIds)
+            ->select('user_id', 'total')
+            ->get()
+            ->groupBy('user_id', function ($order) {
+                return  $order->user_id;
+            });
+
+        $buyers = $buyers->map(function ($buyer) use ($orders) {
+
+            $userOrders = $orders->get((int) $buyer->user_id, collect());
+
+            $customerData = $buyer->toArray();
+
+            $customerData['order_count'] = $userOrders->count();
+            $customerData['total_spend'] = $userOrders->sum('total') ?? 0;
+
+
+            if ($buyer->user) {
+                $customerData['user']['joined_date'] = $buyer->user->created_at->format('d F, Y');
+            }
+
+            return $customerData;
+        });
+
+
+        // return response()->json($buyers);
+        return view('admin.BuyersManagement', compact('buyers'));
+    }
+
+    public function getBuyerDetails(string $id)
+    {
+        $user_id = base64_decode($id);
+
+        $buyer = Customer::where('user_id', $user_id)
+            ->with('user')
+            ->first();
+
+        if (!$buyer) {
+            return response()->json(['error' => 'Buyer record not found'], 404);
+        }
+
+        $orders = DB::table('orders')
+            ->where('user_id', $user_id)
+            ->select('order_id', 'total', 'created_at')
+            ->get();
+
+        $queries = DB::table('queries')
+            ->where('user_id', $user_id)
+            ->get();
+
+        $buyer->orders = $orders;
+        $buyer->queries = $queries;
+
+        // return $buyer;
+        return view('admin.BuyerProfile', compact('buyer'));
     }
 }
