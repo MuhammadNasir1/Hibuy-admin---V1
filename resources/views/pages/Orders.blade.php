@@ -13,14 +13,14 @@
                         <a href="#" class="inline-block px-4 py-1 text-white bg-primary rounded-3xl active"
                             aria-current="page">All</a>
                     </li>
-                    <li class="me-2">
+                    {{-- <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Seller</a>
                     </li>
                     <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Freelancer</a>
-                    </li>
+                    </li> --}}
                     <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Wholesale</a>

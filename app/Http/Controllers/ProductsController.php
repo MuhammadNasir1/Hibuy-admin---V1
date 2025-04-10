@@ -110,6 +110,16 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'Store record not found'], 404);
             }
 
+            $productId = $request->product_edit_id;
+
+            $product = Products::where('product_id', $productId)
+                ->where('user_id', $userDetails['user_id'])
+                ->first();
+
+            if (!$product) {
+                return response()->json(['error' => 'Product not found or unauthorized'], 404);
+            }
+
             // Validate request data
             $validatedData = $request->validate([
                 'title'            => 'required|string|max:255',
@@ -121,7 +131,7 @@ class ProductsController extends Controller
                 'product_price'    => 'required|numeric|min:0',
                 'discount'         => 'nullable|numeric|min:0',
                 'discounted_price' => 'nullable|numeric|min:0',
-                // 'variants'         => 'nullable|array',
+                'variants'         => 'nullable|array',
                 'product_status'   => 'nullable|integer|in:0,1',
                 'product_edit_id'  => 'nullable|integer', // Add this field for update condition
             ]);
@@ -130,6 +140,56 @@ class ProductsController extends Controller
 
             // Check if updating an existing product
             if ($request->filled('product_edit_id')) {
+                // Process Variants
+                $productVariants = $request->variants ?? [];
+                $existingVariants = json_decode($product->product_variation, true) ?? [];
+
+                foreach ($productVariants as $parentIndex => &$parentVariant) {
+                    $existingParent = $existingVariants[$parentIndex] ?? [];
+
+                    // Process parent image
+                    if ($request->hasFile("variants.$parentIndex.parentimage")) {
+                        $parentImage = $request->file("variants.$parentIndex.parentimage");
+                        $parentImagePath = $parentImage->store('variants', 'public');
+                        $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+                    } else {
+                        $parentVariant['parentimage'] = $existingParent['parentimage'] ?? null;
+                    }
+
+                    // Merge any missing parent fields from existing
+                    foreach ($existingParent as $key => $value) {
+                        if (!isset($parentVariant[$key]) && $key !== 'children') {
+                            $parentVariant[$key] = $value;
+                        }
+                    }
+
+                    // Ensure children array
+                    $parentVariant['children'] = $parentVariant['children'] ?? [];
+                    $existingChildren = $existingParent['children'] ?? [];
+
+                    foreach ($parentVariant['children'] as $childIndex => &$child) {
+                        $existingChild = $existingChildren[$childIndex] ?? [];
+
+                        // Handle child image
+                        if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
+                            $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
+                            $childImagePath = $childImage->store('variants', 'public');
+                            $child['image'] = "storage/" . $childImagePath;
+                        } else {
+                            $child['image'] = $existingChild['image'] ?? null;
+                        }
+
+                        // Merge any missing child fields
+                        foreach ($existingChild as $key => $value) {
+                            if (!isset($child[$key]) && $key !== 'image') {
+                                $child[$key] = $value;
+                            }
+                        }
+                    }
+                }
+
+
+                // return $productVariants;
                 // Fetch the product that needs to be updated
                 $product = Products::where('product_id', $request->product_edit_id)
                     ->where('user_id', $userDetails['user_id'])
@@ -153,7 +213,10 @@ class ProductsController extends Controller
                     'product_discount'         => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
                 ];
-
+                // Conditionally update product_variation
+                if (!empty($productVariants)) {
+                    $updateData['product_variation'] = json_encode($productVariants);
+                }
                 // Update the product
                 $product->update($updateData);
 
@@ -190,6 +253,7 @@ class ProductsController extends Controller
                         }
                     }
                 }
+                return $productVariants;
                 // Insert new product (including all fields)
                 $productData = [
                     'user_id'                  => $userDetails['user_id'],
@@ -512,6 +576,6 @@ class ProductsController extends Controller
         $user = session('user_details')['user_id'];
         $products = Products::Where('user_id', '!=', $user)->get();
 
-        return $products;
+        return view('seller.OtherSeller', compact('products'));
     }
 }
