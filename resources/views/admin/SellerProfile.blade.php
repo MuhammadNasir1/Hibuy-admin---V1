@@ -40,17 +40,30 @@
                 class="h-[150px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
                 <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center justify-between px-5">
                     <div class="flex items-center gap-5">
-                        <img src="{{ asset('asset/pic.jpg') }}" class="h-[80px] w-[80px] rounded-full" alt="">
+
+                        <img src=" {{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : asset('asset/pic.jpg') }}" class="h-[80px] w-[80px] rounded-full" alt="">
                         <div>
-                            <h3 class="text-lg font-semibold">Seller Information</h3>
-                            <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
-                                <span>
+                            <h3 class="text-lg font-semibold">{{ $storeData['store_name'] }}</h3>
+                            <p class="text-sm text-gray-500 flex items-center gap-2 flex-wrap pt-1">
+                                <span class="flex items-cente">
                                     <svg class="h-[15px] fill-gray-500" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 512 512">
                                         <path
                                             d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6l0 242.9c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4L0 134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1 0-188L288 246.6l0 188z" />
                                     </svg>
-                                </span>105 Product Listed
+                                </span>
+
+                                {{-- @foreach ($storeData['store_tags'] as $tag)
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ $tag }}</span>
+                            @endforeach --}}
+                            @if (!empty($storeData['store_tags']) && is_array($storeData['store_tags']))
+                                @foreach ($storeData['store_tags'] as $tag)
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ $tag }}</span>
+                                @endforeach
+                            @else
+                                <span>No tags available</span>
+                            @endif
+
                             </p>
                         </div>
                     </div>
@@ -63,16 +76,15 @@
 
 
         <div class="mt-5 mx-6 shadow-xl rounded-xl min-h-[100px]">
-            <img src="{{ asset('asset/banner.png') }}" alt="Banner Image" class="w-full  object-cover rounded-xl">
+            <img src="{{ !empty($storeData['store_banner']) ? asset($storeData['store_banner']) : asset('asset/banner.png') }}" alt="Banner Image" class="w-full  object-cover rounded-xl">
         </div>
 
         <div class="flex justify-center px-6 gap-5 ">
+            @foreach ($storeData['store_posts'] as $post)
             <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl  mt-5 shadow-xl"
-                style="background-image: url('{{ asset('asset/post-1.png') }}'); background-size: cover; background-position: center;">
+                style="background-image: url('{{ !empty($post['image']) ? asset($post['image']) : asset('asset/post-1.png') }}'); background-size: cover; background-position: center;">
             </div>
-            <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl mt-5 shadow-xl"
-                style="background-image: url('{{ asset('asset/post-2.png') }}'); background-size: cover; background-position: center;">
-            </div>
+            @endforeach
         </div>
 
 
@@ -101,7 +113,7 @@
                         'Discount %',
                         'Price',
                         'Boosted',
-                        'Orders',
+                        // 'Orders',
                         'Rating',
                         'Status',
                         'Action',
@@ -111,25 +123,38 @@
                 <x-table :headers="$headers">
                     <x-slot name="tablebody">
 
+                        @foreach ($storeData['products'] as $product)
                         <tr>
-                            <td>1</td>
+                            <td>{{ $loop->iteration }}</td>
+
                             <td>
-                                <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}"
+                                <img class="rounded-full w-11 h-11" src=" {{ !empty($product['product_image']) ? asset($product['product_image']) : asset('asset/Ellipse 2.png') }}"
                                     alt="Jese image">
                             </td>
-                            <td>Product Title</td>
-                            <td>Clothes</td>
-                            <td>24%</td>
-                            <td>RS150</td>
-                            <td><span class="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded">Boosted</span>
-                            <td>500</td>
-                            <td>4</td>
-                            <td><span
-                                    class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
+                            <td>{{ $product['product_name'] }}</td>
+                            <td>{{ $product['category_name'] }}</td>
+                            <td>{{ $product['product_discount'] }}</td>
+                            <td>{{ $product['product_price'] }}</td>
+                            <td>
+                                @if($product['is_boosted'] == 1)
+                                <span class="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded">Boosted</span>
+                            @else
+                                <span class="px-2 py-1 text-xs font-semibold text-white bg-gray-800 rounded">Regular</span>
+                            @endif
+                            </td>
+                            {{-- <td>500</td> --}}
+                            <td>{{ $product['product_rating'] }}</td>
+                            <td>
+                                @if($product['product_status'] == 1)
+                                <span class=" px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
+                            @else
+                                <span class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded">Not Approved</span>
+
+                            @endif
                             </td>
                             <td>
                                 <span class='flex gap-4'>
-                                    <button class="updateDataBtn">
+                                    {{-- <button class="updateDataBtn">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                             xmlns='http://www.w3.org/2000/svg'>
                                             <circle opacity='0.1' cx='18' cy='18' r='18' fill='#233A85' />
@@ -137,8 +162,8 @@
                                                 d='M16.1637 23.6188L22.3141 15.665C22.6484 15.2361 22.7673 14.7402 22.6558 14.2353C22.5593 13.7763 22.277 13.3399 21.8536 13.0088L20.8211 12.1886C19.9223 11.4737 18.8081 11.549 18.1693 12.3692L17.4784 13.2654C17.3893 13.3775 17.4116 13.543 17.523 13.6333C17.523 13.6333 19.2686 15.0329 19.3058 15.063C19.4246 15.1759 19.5137 15.3264 19.536 15.507C19.5732 15.8607 19.328 16.1918 18.9641 16.2369C18.7932 16.2595 18.6298 16.2068 18.511 16.109L16.6762 14.6492C16.5871 14.5822 16.4534 14.5965 16.3791 14.6868L12.0188 20.3304C11.7365 20.6841 11.64 21.1431 11.7365 21.5871L12.2936 24.0025C12.3233 24.1304 12.4348 24.2207 12.5685 24.2207L15.0197 24.1906C15.4654 24.1831 15.8814 23.9799 16.1637 23.6188ZM19.5958 22.8672H23.5929C23.9829 22.8672 24.3 23.1885 24.3 23.5835C24.3 23.9794 23.9829 24.2999 23.5929 24.2999H19.5958C19.2059 24.2999 18.8887 23.9794 18.8887 23.5835C18.8887 23.1885 19.2059 22.8672 19.5958 22.8672Z'
                                                 fill='#233A85' />
                                         </svg>
-                                    </button>
-                                    <button class="deleteDataBtn" delId="" delUrl="" name="media_id">
+                                    </button> --}}
+                                    {{-- <button class="deleteDataBtn" delId="" delUrl="" name="media_id">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                             xmlns='http://www.w3.org/2000/svg'>
                                             <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -146,7 +171,7 @@
                                                 d='M23.4905 13.7423C23.7356 13.7423 23.9396 13.9458 23.9396 14.2047V14.4441C23.9396 14.6967 23.7356 14.9065 23.4905 14.9065H13.0493C12.8036 14.9065 12.5996 14.6967 12.5996 14.4441V14.2047C12.5996 13.9458 12.8036 13.7423 13.0493 13.7423H14.8862C15.2594 13.7423 15.5841 13.4771 15.6681 13.1028L15.7642 12.6732C15.9137 12.0879 16.4058 11.6992 16.9688 11.6992H19.5704C20.1273 11.6992 20.6249 12.0879 20.7688 12.6423L20.8718 13.1022C20.9551 13.4771 21.2798 13.7423 21.6536 13.7423H23.4905ZM22.557 22.4932C22.7487 20.7059 23.0845 16.4598 23.0845 16.4169C23.0968 16.2871 23.0545 16.1643 22.9705 16.0654C22.8805 15.9728 22.7665 15.918 22.6409 15.918H13.9025C13.7762 15.918 13.6562 15.9728 13.5728 16.0654C13.4883 16.1643 13.4466 16.2871 13.4527 16.4169C13.4539 16.4248 13.4659 16.5744 13.4861 16.8244C13.5755 17.9353 13.8248 21.0292 13.9858 22.4932C14.0998 23.5718 14.8074 24.2496 15.8325 24.2742C16.6235 24.2925 17.4384 24.2988 18.2717 24.2988C19.0566 24.2988 19.8537 24.2925 20.6692 24.2742C21.7298 24.2559 22.4369 23.59 22.557 22.4932Z'
                                                 fill='#D11A2A' />
                                         </svg>
-                                    </button>
+                                    </button> --}}
 
                                     <button class="viewModalBtn" id="viewModalBtn" data-modal-target="view-product-modal"
                                         data-modal-toggle="view-product-modal">
@@ -174,6 +199,7 @@
                                 </span>
                             </td>
                         </tr>
+                        @endforeach
                     </x-slot>
                 </x-table>
             </div>
