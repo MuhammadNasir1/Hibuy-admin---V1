@@ -497,7 +497,7 @@
                 @endif
 
                 <li class="">
-                    <a href="{{ route('notifications') }}"
+                    <a href="{{ session('user_details.user_role') == 'admin' ? route('notifications') : route('allNotifications') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -586,7 +586,7 @@
                     @yield('nav-title', 'No title')
                 </h3>
                 <div class="flex items-center md:order-2 space-x-3 md:space-x-5 rtl:space-x-reverse">
-                    <p  style="text-transform: capitalize">{{ session('user_details.user_role') }}</p>
+                    <p style="text-transform: capitalize">{{ session('user_details.user_role') }}</p>
                     <div>
                         <a href="">
                             <svg width="23" height="22" viewBox="0 0 26 25" fill="none"
@@ -616,6 +616,10 @@
                     </button>
 
 
+
+
+
+
                     <!-- Dropdown menu -->
                     <div id="dropdownNotification"
                         class="z-20 hidden w-full max-w-sm bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-800 dark:divide-gray-700"
@@ -624,31 +628,44 @@
                             class="block px-4 py-2 font-medium text-center text-white  rounded-t-lg bg-primary dark:bg-gray-800 dark:text-white">
                             Notifications
                         </div>
-                        <div class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <div class="shrink-0">
-                                    <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}"
-                                        alt="Jese image">
-                                    <div
-                                        class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
-                                        <svg class="w-2 h-2 text-white" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
-                                            <path
-                                                d="M1 18h16a1 1 0 0 0 1-1v-6h-4.439a.99.99 0 0 0-.908.6 3.978 3.978 0 0 1-7.306 0 .99.99 0 0 0-.908-.6H0v6a1 1 0 0 0 1 1Z" />
-                                            <path
-                                                d="M4.439 9a2.99 2.99 0 0 1 2.742 1.8 1.977 1.977 0 0 0 3.638 0A2.99 2.99 0 0 1 13.561 9H17.8L15.977.783A1 1 0 0 0 15 0H3a1 1 0 0 0-.977.783L.2 9h4.239Z" />
-                                        </svg>
-                                    </div>
+                        @if (session('notifications'))
+                            @foreach (session('notifications') as $notification)
+                                <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                                    <a href="{{ route('allNotifications') }}" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <div class="shrink-0">
+                                            <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}"
+                                                alt="Jese image">
+                                            <div
+                                                class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
+                                                <svg class="w-2 h-2 text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                    viewBox="0 0 18 18">
+                                                    <path
+                                                        d="M1 18h16a1 1 0 0 0 1-1v-6h-4.439a.99.99 0 0 0-.908.6 3.978 3.978 0 0 1-7.306 0 .99.99 0 0 0-.908-.6H0v6a1 1 0 0 0 1 1Z" />
+                                                    <path
+                                                        d="M4.439 9a2.99 2.99 0 0 1 2.742 1.8 1.977 1.977 0 0 0 3.638 0A2.99 2.99 0 0 1 13.561 9H17.8L15.977.783A1 1 0 0 0 15 0H3a1 1 0 0 0-.977.783L.2 9h4.239Z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div>
+
+                                            <div class="w-full ps-3">
+                                                <div class="text-gray-500 text-sm  dark:text-gray-400">
+                                                    <span class="m-0 p-0 font-semibold">{{ $notification->title ?? 'No title' }}</span> <br>
+                                                    "{{ $notification->description ?? 'No message' }}"
+                                                </div>
+                                                <div class="text-xs text-blue-600 dark:text-blue-500">{{ $notification->created_at ?? 'Few Moments Ago' }}
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                    </a>
                                 </div>
-                                <div class="w-full ps-3">
-                                    <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">New message from <span
-                                            class="font-semibold text-gray-900 dark:text-white">Jese Leos</span>: "Hey,
-                                        what's up? All set for the presentation?"</div>
-                                    <div class="text-xs text-blue-600 dark:text-blue-500">a few moments ago</div>
-                                </div>
-                            </a>
-                        </div>
-                        <a href="#"
+                            @endforeach
+                        @endif
+                        <a href="{{ route('allNotifications') }}"
                             class="block py-2 text-sm font-medium text-center text-white rounded-b-lg  bg-primary">
                             <div class="inline-flex items-center ">
                                 <svg class="w-4 h-4 me-2 text-white" aria-hidden="true"

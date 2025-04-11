@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id('notification_id');
             $table->string('sent_by');
-            $table->string('received _by');
+            $table->string('received_by')->nullable();
             $table->string('title');
             $table->string('description');
             $table->string('type');
-            $table->string('audience');
+            $table->string('audience')->nullable();
             $table->string('notification_status')->default('unread');
             $table->timestamps();
         });
