@@ -113,13 +113,6 @@
             text-decoration: underline;
         }
 
-        /* Upload Progress Bar */
-        /* .dz-progress {
-                                                                                                                                    background: green !important;
-                                                                                                                                    height: 5px !important;
-                                                                                                                                    border-radius: 3px;
-                                                                                                                                } */
-
         /* Styling for a Specific Dropzone */
         #my-dropzone {
             border: 3px dotted blue;
@@ -269,44 +262,43 @@
                     });
                 }
 
-                // Render option boxes with Edit and Delete buttons
                 options.forEach((option, index) => {
                     let optionHtml = `
-                    <div class="variant-box border rounded-lg bg-gray-100 mr-4 p-4" data-option-index="${index}">
-                        <div class="option-display-container mt-4">
-                            <div class="option-display p-2 bg-gray-200 rounded mt-2">
-                                <strong>${option.name}</strong>
-                                <div class="option-values mt-2 flex gap-2">
-                                    ${option.values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
+                <div class="variant-box border rounded-lg bg-gray-100 mr-4 p-4" data-option-index="${index}">
+                    <div class="option-display-container mt-4">
+                        <div class="option-display p-2 bg-gray-200 rounded mt-2">
+                            <strong>${option.name}</strong>
+                            <div class="option-values mt-2 flex gap-2">
+                                ${option.values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="edit-container hidden">
+                        <div class="input-group mb-2">
+                            <label>Option name</label>
+                            <input type="text" class="option-name bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${option.name}">
+                        </div>
+                        <div class="input-group">
+                            <label>Option values</label>
+                            <div class="values-container">
+                                ${option.values.map(value => `
+                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                    </div>`).join('')}
+                                <div class="value-item flex items-center mb-2">
+                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
                             </div>
                         </div>
-                        <div class="edit-container hidden">
-                            <div class="input-group mb-2">
-                                <label>Option name</label>
-                                <input type="text" class="option-name bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${option.name}">
-                            </div>
-                            <div class="input-group">
-                                <label>Option values</label>
-                                <div class="values-container">
-                                    ${option.values.map(value => `
-                                                <div class="value-item flex items-center mb-2">
-                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                </div>`).join('')}
-                                    <div class="value-item flex items-center mb-2">
-                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-4">
-                            <button class="delete-btn bg-red-700 text-white px-4 py-2 rounded">Delete</button>
-                            <button type="button" class="edit-btn bg-blue-600 text-white px-4 py-2 rounded">Edit</button>
-                        </div>
-                        <input type="hidden" name="options[${index}][name]" value="${option.name}">
-                        ${option.values.map(value => `<input type="hidden" name="options[${index}][values][]" value="${value}">`).join('')}
-                    </div>`;
+                    </div>
+                    <div class="flex justify-between mt-4">
+                        <button class="delete-btn bg-red-700 text-white px-4 py-2 rounded">Delete</button>
+                        <button type="button" class="edit-btn bg-blue-600 text-white px-4 py-2 rounded">Edit</button>
+                    </div>
+                    <input type="hidden" name="options[${index}][name]" value="${option.name}">
+                    ${option.values.map(value => `<input type="hidden" name="options[${index}][values][]" value="${value}">`).join('')}
+                </div>`;
                     $("#options-container").append(optionHtml);
                 });
 
@@ -326,7 +318,9 @@
                 });
 
                 let optionHtml = `
-                <div class="variant-box border rounded-lg bg-gray-100 mr-4 p-4" data-option-index="${optionIndex}">
+            <div class="variant-box border rounded-lg bg-gray-100 mr-4 p-4" data-option-index="${optionIndex}">
+                <div class="option-display-container mt-4 hidden"></div>
+                <div class="edit-container">
                     <div class="input-group mb-2">
                         <label>Option name</label>
                         <input type="text" class="option-name bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Name">
@@ -339,12 +333,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-between mt-4">
-                        <button class="delete-btn bg-red-700 text-white px-4 py-2 rounded">Delete</button>
-                        <button type="button" class="done-btn bg-gray-800 text-white px-4 py-2 rounded">Done</button>
-                    </div>
-                    <div class="option-display-container mt-4"></div>
-                </div>`;
+                </div>
+                <div class="flex justify-between mt-4">
+                    <button class="delete-btn bg-red-700 text-white px-4 py-2 rounded">Delete</button>
+                    <button type="button" class="done-btn bg-gray-800 text-white px-4 py-2 rounded">Done</button>
+                    <button type="button" class="edit-btn bg-blue-600 text-white px-4 py-2 rounded hidden">Edit</button>
+                </div>
+            </div>`;
                 $("#options-container").append(optionHtml);
             });
 
@@ -354,10 +349,10 @@
 
                 if (lastInput.val().trim() !== "") {
                     let valueHtml = `
-                    <div class="value-item flex items-center mb-2">
-                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
-                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                    </div>`;
+                <div class="value-item flex items-center mb-2">
+                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
+                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                </div>`;
                     valuesContainer.append(valueHtml);
                 }
             });
@@ -398,6 +393,8 @@
                     container.find(".edit-container").removeClass("hidden");
                     container.find(".edit-btn").text("Done").removeClass("bg-blue-600").addClass(
                         "bg-gray-800");
+                    container.find(".delete-btn").removeClass("hidden");
+                    container.find(".done-btn").addClass("hidden");
 
                     // Ensure the last empty field has a remove button if it’s not the only field
                     let valuesContainer = container.find(".values-container");
@@ -446,14 +443,16 @@
                     container.find(".edit-container").addClass("hidden");
                     container.find(".edit-btn").text("Edit").removeClass("bg-gray-800").addClass(
                         "bg-blue-600");
+                    container.find(".done-btn").addClass("hidden");
+                    container.find(".delete-btn").removeClass("hidden");
 
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                        <div class="value-item flex items-center mb-2">
-                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                        </div>`).join('')}
+                                                                    <div class="value-item flex items-center mb-2">
+                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                    </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -485,20 +484,36 @@
                 };
 
                 let optionDisplayHtml = `
-                <div class="option-display p-2 bg-gray-200 rounded mt-2">
-                    <strong>${optionName}</strong>
-                    <div class="option-values mt-2 flex gap-2">
-                        ${values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
-                    </div>
-                </div>`;
-                container.find(".option-display-container").html(optionDisplayHtml);
-                container.find(".input-group, .values-container, .done-btn").hide();
+            <div class="option-display p-2 bg-gray-200 rounded mt-2">
+                <strong>${optionName}</strong>
+                <div class="option-values mt-2 flex gap-2">
+                    ${values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
+                </div>
+            </div>`;
+                container.find(".option-display-container").html(optionDisplayHtml).removeClass("hidden");
+                container.find(".edit-container").addClass("hidden");
+                container.find(".done-btn").addClass("hidden");
+                container.find(".edit-btn").removeClass("hidden");
 
                 let hiddenInputsHtml = `
-                <input type="hidden" name="options[${optionIndex}][name]" value="${optionName}">
-                ${values.map(value => `<input type="hidden" name="options[${optionIndex}][values][]" value="${value}">`).join('')}
-            `;
+            <input type="hidden" name="options[${optionIndex}][name]" value="${optionName}">
+            ${values.map(value => `<input type="hidden" name="options[${optionIndex}][values][]" value="${value}">`).join('')}
+        `;
                 container.append(hiddenInputsHtml);
+
+                // Update edit-container for next edit
+                container.find(".edit-container .values-container").html(`
+            ${values.map(value => `
+                                                                <div class="value-item flex items-center mb-2">
+                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                </div>`).join('')}
+            <div class="value-item flex items-center mb-2">
+                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
+                ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
+            </div>
+        `);
+                container.find(".edit-container .option-name").val(optionName);
 
                 generateVariants();
             });
@@ -523,25 +538,25 @@
                         "";
 
                     let parentRow = `
-                    <tr class="parent-row bg-gray-100 border-b border-gray-300" data-parent-index="${parentIndex}">
-                        <td class="py-3 px-4">
-                            <input type="hidden" name="variants[${parentIndex}][parentname]" value="${parentValue}">
-                            <input type="hidden" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}">
-                            <input type="file" name="variants[${parentIndex}][parentimage]" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white image-upload">
-                            ${parentImage ? `<div class="image-preview mt-2"><img src="${parentImage}" class="w-16 h-16 object-cover rounded"></div>` : ""}
-                        </td>
-                        <td class="py-3 px-4 font-semibold text-gray-800 flex items-center space-x-2">
-                            ${childValues.length > 0 ? `<button type="button" class="toggle-child cursor-pointer text-gray-600 hover:text-gray-800 transition" data-target="#child-rows-${parentIndex}">▼</button>` : ""}
-                            <span>${parentValue}</span>
-                            ${childValues.length > 0 ? `<span class="text-sm text-gray-500">(${childValues.length} variants)</span>` : ""}
-                        </td>
-                        <td class="py-3 px-4">
-                            <input type="number" id="parent-price-${parentIndex}" name="variants[${parentIndex}][parentprice]" value="${parentPrice}" class="price-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="Rs 0.00">
-                        </td>
-                        <td class="py-3 px-4">
-                            <input type="number" id="parent-stock-${parentIndex}" name="variants[${parentIndex}][parentstock]" value="${parentStock}" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
-                        </td>
-                    </tr>`;
+                <tr class="parent-row bg-gray-100 border-b border-gray-300" data-parent-index="${parentIndex}">
+                    <td class="py-3 px-4">
+                        <input type="hidden" name="variants[${parentIndex}][parentname]" value="${parentValue}">
+                        <input type="hidden" name="variants[${parentIndex}][parent_option_name]" value="${parentOptionName}">
+                        <input type="file" name="variants[${parentIndex}][parentimage]" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white image-upload">
+                        ${parentImage ? `<div class="image-preview mt-2"><img src="${parentImage}" class="w-16 h-16 object-cover rounded"></div>` : ""}
+                    </td>
+                    <td class="py-3 px-4 font-semibold text-gray-800 flex items-center space-x-2">
+                        ${childValues.length > 0 ? `<button type="button" class="toggle-child cursor-pointer text-gray-600 hover:text-gray-800 transition" data-target="#child-rows-${parentIndex}">▼</button>` : ""}
+                        <span>${parentValue}</span>
+                        ${childValues.length > 0 ? `<span class="text-sm text-gray-500">(${childValues.length} variants)</span>` : ""}
+                    </td>
+                    <td class="py-3 px-4">
+                        <input type="number" id="parent-price-${parentIndex}" name="variants[${parentIndex}][parentprice]" value="${parentPrice}" class="price-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="Rs 0.00">
+                    </td>
+                    <td class="py-3 px-4">
+                        <input type="number" id="parent-stock-${parentIndex}" name="variants[${parentIndex}][parentstock]" value="${parentStock}" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
+                    </td>
+                </tr>`;
                     tableBody.append(parentRow);
 
                     if (childValues.length > 0) {
@@ -554,23 +569,23 @@
                             let childImage = childData.image ? `${baseUrl}${childData.image}` : "";
 
                             childRowContainer += `
-                            <tr class="child-row bg-white border-b border-gray-300" data-parent-index="${parentIndex}" data-child-index="${childIndex}">
-                                <td class="py-3 px-4">
-                                    <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][name]" value="${childValue}">
-                                    <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}">
-                                    <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white image-upload">
-                                    ${childImage ? `<div class="image-preview mt-2"><img src="${childImage}" class="w-16 h-16 object-cover rounded"></div>` : ""}
-                                </td>
-                                <td class="py-3 px-4 pl-12 text-gray-700 flex items-center space-x-2">
-                                    <span>${childValue}</span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <input type="number" name="variants[${parentIndex}][children][${childIndex}][price]" value="${childPrice}" class="child-price-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="Rs 0.00">
-                                </td>
-                                <td class="py-3 px-4">
-                                    <input type="number" name="variants[${parentIndex}][children][${childIndex}][stock]" value="${childStock}" class="child-stock-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
-                                </td>
-                            </tr>`;
+                        <tr class="child-row bg-white border-b border-gray-300" data-parent-index="${parentIndex}" data-child-index="${childIndex}">
+                            <td class="py-3 px-4">
+                                <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][name]" value="${childValue}">
+                                <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][child_option_name]" value="${childOptionName}">
+                                <input type="file" name="variants[${parentIndex}][children][${childIndex}][image]" accept="image/*" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white image-upload">
+                                ${childImage ? `<div class="image-preview mt-2"><img src="${childImage}" class="w-16 h-16 object-cover rounded"></div>` : ""}
+                            </td>
+                            <td class="py-3 px-4 pl-12 text-gray-700 flex items-center space-x-2">
+                                <span>${childValue}</span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <input type="number" name="variants[${parentIndex}][children][${childIndex}][price]" value="${childPrice}" class="child-price-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="Rs 0.00">
+                            </td>
+                            <td class="py-3 px-4">
+                                <input type="number" name="variants[${parentIndex}][children][${childIndex}][stock]" value="${childStock}" class="child-stock-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
+                            </td>
+                        </tr>`;
                         });
                         childRowContainer += `</tbody>`;
                         tableBody.append(childRowContainer);
@@ -617,16 +632,14 @@
                 initializeVariants();
             }
         });
-
-
-
-
-
-
-
-
-
-
+    </script>
+    @if ($products && $products->product_images)
+        <script>
+            // Pass the existing images to JavaScript
+            window.existingImages = @json(json_decode($products->product_images, true));
+        </script>
+    @endif
+    <script>
         $(document).ready(function() {
             $('#category').on('change', function() {
                 let categoryId = $(this).val();
@@ -673,9 +686,10 @@
             });
         });
 
+
         // dropzone code
         Dropzone.autoDiscover = false;
-        var filenames = []; // Array to store filenames
+        var filenames = []; // Array to store file paths
         var myDropzone = new Dropzone("#dropzone", {
             url: "{{ route('upload.images') }}", // Your Laravel route
             paramName: "product_images[]", // Ensure it's an array for multiple files
@@ -691,19 +705,53 @@
 
             init: function() {
                 var submitButton = document.getElementById("add_product_btn");
+                var dropzoneInstance = this;
 
-                // Disable button before upload
-                // submitButton.disabled = true;
+                // Populate existing images from the database
+                if (window.existingImages && Array.isArray(window.existingImages)) {
+                    window.existingImages.forEach(function(imagePath) {
+                        // Extract the filename from the path for display
+                        var filename = imagePath.split('/').pop(); // e.g., "1744197333_blue.jpeg"
 
-                this.on("addedfile", function() {
+                        // Create a mock file object
+                        var mockFile = {
+                            name: filename, // Use filename for display
+                            size: 12345, // Dummy size (adjust if you store actual sizes)
+                            accepted: true,
+                            status: Dropzone.SUCCESS
+                        };
+
+                        // Emit the "addedfile" event to display the file in Dropzone
+                        dropzoneInstance.emit("addedfile", mockFile);
+
+                        // Set the thumbnail using the full image path
+                        dropzoneInstance.emit("thumbnail", mockFile, "{{ url('/') }}/" +
+                            imagePath);
+
+                        // Mark the file as successfully uploaded
+                        dropzoneInstance.emit("complete", mockFile);
+
+                        // Add the full path to the filenames array
+                        filenames.push(imagePath);
+                    });
+
+                    // Update the hidden input with the existing images
+                    document.getElementById("product_images").value = JSON.stringify(filenames);
+
+                    // Enable submit button if there are files
+                    submitButton.disabled = filenames.length === 0;
+                }
+
+                // Handle new file uploads
+                this.on("addedfile", function(file) {
                     submitButton.disabled = true; // Disable when file is added
                 });
 
                 this.on("success", function(file, response) {
                     if (Array.isArray(response)) {
-                        filenames = filenames.concat(response); // Merge response array properly
+                        filenames = filenames.concat(response); // Merge response array
                     } else {
-                        filenames.push(response);
+                        filenames.push(response); // Add single filename
                     }
 
                     document.getElementById("product_images").value = JSON.stringify(filenames);
@@ -711,8 +759,12 @@
                 });
 
                 this.on("removedfile", function(file) {
-                    // Remove filename from array when file is removed
-                    filenames = filenames.filter(name => name !== file.name);
+                    // Remove the corresponding path from filenames
+                    // Match based on filename or full path
+                    var pathToRemove = filenames.find(path => path.endsWith(file.name));
+                    if (pathToRemove) {
+                        filenames = filenames.filter(path => path !== pathToRemove);
+                    }
 
                     // Update hidden input
                     document.getElementById("product_images").value = JSON.stringify(filenames);
@@ -721,8 +773,9 @@
                     submitButton.disabled = filenames.length === 0;
                 });
 
-                this.on("error", function() {
+                this.on("error", function(file, errorMessage) {
                     submitButton.disabled = true; // Keep disabled on error
+                    console.error("Upload error:", errorMessage);
                 });
             }
         });

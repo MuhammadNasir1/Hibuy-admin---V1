@@ -92,6 +92,7 @@ class ProductsController extends Controller
     public function storeProduct(Request $request)
     {
         try {
+            // return $request;
             // Retrieve user details from session
             $userDetails = session('user_details');
             if (!$userDetails) {
@@ -112,13 +113,7 @@ class ProductsController extends Controller
 
             $productId = $request->product_edit_id;
 
-            $product = Products::where('product_id', $productId)
-                ->where('user_id', $userDetails['user_id'])
-                ->first();
 
-            if (!$product) {
-                return response()->json(['error' => 'Product not found or unauthorized'], 404);
-            }
 
             // Validate request data
             $validatedData = $request->validate([
@@ -141,6 +136,13 @@ class ProductsController extends Controller
             // Check if updating an existing product
             if ($request->filled('product_edit_id')) {
                 // Process Variants
+                $product = Products::where('product_id', $productId)
+                    ->where('user_id', $userDetails['user_id'])
+                    ->first();
+
+                if (!$product) {
+                    return response()->json(['error' => 'Product not found or unauthorized'], 404);
+                }
                 $productVariants = $request->variants ?? [];
                 $existingVariants = json_decode($product->product_variation, true) ?? [];
 
@@ -188,6 +190,10 @@ class ProductsController extends Controller
                     }
                 }
 
+                $storedImagePaths = [];
+                if ($request->has('product_images')) {
+                    $storedImagePaths = json_decode($request->product_images, true) ?? [];
+                }
 
                 // return $productVariants;
                 // Fetch the product that needs to be updated
@@ -216,6 +222,10 @@ class ProductsController extends Controller
                 // Conditionally update product_variation
                 if (!empty($productVariants)) {
                     $updateData['product_variation'] = json_encode($productVariants);
+                }
+
+                if (!empty($storedImagePaths)) {
+                    $updateData['product_images'] = json_encode($storedImagePaths);
                 }
                 // Update the product
                 $product->update($updateData);
@@ -253,7 +263,7 @@ class ProductsController extends Controller
                         }
                     }
                 }
-                return $productVariants;
+                // return $productVariants;
                 // Insert new product (including all fields)
                 $productData = [
                     'user_id'                  => $userDetails['user_id'],
