@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Store;
-use App\Models\Products;
 use App\Models\Seller;
+use App\Models\Courier;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -115,6 +116,8 @@ class OrderController extends Controller
                 'grand_total'   => $grandTotal + (float) $order->delivery_fee,
                 'order_items'   => array_values($mergedOrderItems),
             ];
+            // Step 7: Fetch all couriers for dropdown
+            $response['couriers'] = Courier::select('courier_id', 'courier_name')->get();
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
