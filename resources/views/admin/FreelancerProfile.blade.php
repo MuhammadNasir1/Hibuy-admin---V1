@@ -11,8 +11,18 @@
                 <div class="h-[80%] w-[95%] rounded-xl flex items-center justify-between">
                     <!-- Freelancers Information -->
                     <div class="flex items-center gap-5">
-                        <img src="{{ !empty($storeData['personal_info']['profile_picture']) ? asset($storeData['personal_info']['profile_picture']) : asset('asset/pic.jpg') }}"
-                            class="h-[80px] w-[80px] rounded-full" alt="">
+                        @php
+                            $profilePath = $storeData['personal_info']['profile_picture'] ?? '';
+                            $defaultProfile = asset('asset/pic.jpg');
+
+                            $profileImage =
+                                !empty($profilePath) && file_exists(public_path($profilePath))
+                                    ? asset($profilePath)
+                                    : $defaultProfile;
+                        @endphp
+
+                        <img src="{{ $profileImage }}" class="h-[80px] w-[80px] rounded-full" alt="">
+
                         <div>
                             <h3 class="text-lg font-semibold">{{ $storeData['personal_info']['full_name'] }} </h3>
                             {{-- <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
@@ -40,7 +50,18 @@
                 class="h-[150px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
                 <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center justify-between px-5">
                     <div class="flex items-center gap-5">
-                        <img src=" {{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : asset('asset/pic.jpg') }}" class="h-[80px] w-[80px] rounded-full" alt="">
+                        @php
+                            $storeImagePath = $storeData['store_image'] ?? '';
+                            $defaultStoreImage = asset('asset/pic.jpg');
+
+                            $storeImage =
+                                !empty($storeImagePath) && file_exists(public_path($storeImagePath))
+                                    ? asset($storeImagePath)
+                                    : $defaultStoreImage;
+                        @endphp
+
+                        <img src="{{ $storeImage }}" class="h-[80px] w-[80px] rounded-full" alt="">
+
                         <div>
                             <h3 class="text-lg font-semibold">{{ $storeData['store_name'] }}</h3>
                             {{-- <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
@@ -61,11 +82,12 @@
                                     </svg>
                                 </span>
                                 @if (!empty($storeData['store_tags']) && is_array($storeData['store_tags']))
-                                @foreach ($storeData['store_tags'] as $tag)
-                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ $tag }}</span>
-                                @endforeach
+                                    @foreach ($storeData['store_tags'] as $tag)
+                                        <span
+                                            class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ $tag }}</span>
+                                    @endforeach
                                 @else
-                                <span>No tags available</span>
+                                    <span>No tags available</span>
                                 @endif
                             </p>
                         </div>
@@ -83,15 +105,33 @@
             </h3>
         </div>
         <div class="mt-3 mx-6 shadow-xl rounded-xl min-h-[100px]">
-            <img src="{{ !empty($storeData['store_banner']) ? asset($storeData['store_banner']) : asset('asset/banner.png') }}" alt="Banner Image" class="w-full  object-cover rounded-xl">
+            @php
+                $bannerPath = $storeData['store_banner'] ?? '';
+                $defaultBanner = asset('asset/banner.png');
+
+                $bannerImage =
+                    !empty($bannerPath) && file_exists(public_path($bannerPath)) ? asset($bannerPath) : $defaultBanner;
+            @endphp
+
+            <img src="{{ $bannerImage }}" alt="Banner Image" class="w-full object-cover rounded-xl">
 
         </div>
 
         <div class="flex justify-center px-6 gap-5 ">
             @foreach ($storeData['store_posts'] as $post)
-            <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl  mt-5 shadow-xl"
-                style="background-image: url('{{ !empty($post['image']) ? asset($post['image']) : asset('asset/post-1.png') }}'); background-size: cover; background-position: center;">
-            </div>
+                @php
+                    $postImagePath = $post['image'] ?? '';
+                    $defaultImage = asset('asset/post-1.png');
+
+                    $bgImage =
+                        !empty($postImagePath) && file_exists(public_path($postImagePath))
+                            ? asset($postImagePath)
+                            : $defaultImage;
+                @endphp
+
+                <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl mt-5 shadow-xl"
+                    style="background-image: url('{{ $bgImage }}'); background-size: cover; background-position: center;">
+                </div>
             @endforeach
         </div>
 
@@ -131,36 +171,47 @@
                 <x-table :headers="$headers">
                     <x-slot name="tablebody">
                         @foreach ($storeData['products'] as $product)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
-                                <img class="rounded-full w-11 h-11" src=" {{ !empty($product['product_image']) ? asset($product['product_image']) : asset('asset/Ellipse 2.png') }}"
-                                    alt="Jese image">
-                            </td>
-                            <td>{{ $product['product_name'] }}</td>
-                            <td>{{ $product['category_name'] }}</td>
-                            <td>{{ $product['product_discount'] }}</td>
-                            <td>{{ $product['product_price'] }}</td>
-                            <td>
-                                @if($product['is_boosted'] == 1)
-                                <span class="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded">Boosted</span>
-                            @else
-                                <span class="px-2 py-1 text-xs font-semibold text-white bg-gray-800 rounded">Regular</span>
-                            @endif
-                            </td>
-                            {{-- <td>500</td> --}}
-                            <td>{{ $product['product_rating'] }}</td>
-                            <td>
-                                @if($product['product_status'] == 1)
-                                <span class=" px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
-                            @else
-                                <span class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded">Not Approved</span>
-
-                            @endif
-                            </td>
-                            <td>
-                                <span class='flex gap-4'>
-                                    {{-- <button class="updateDataBtn">
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @php
+                                        $imagePath = $product['product_image'];
+                                        $defaultImage = asset('asset/Ellipse 2.png');
+                                        $finalImage =
+                                            !empty($imagePath) && file_exists(public_path($imagePath))
+                                                ? asset($imagePath)
+                                                : $defaultImage;
+                                    @endphp
+                                    <img class="rounded-full w-11 h-11" src="{{ $finalImage }}" alt="Product image">
+                                </td>
+                                <td>{{ $product['product_name'] }}</td>
+                                <td>{{ $product['category_name'] }}</td>
+                                <td>{{ $product['product_discount'] }} %</td>
+                                <td class="whitespace-nowrap">Rs {{ $product['product_price'] }}</td>
+                                <td>
+                                    @if ($product['is_boosted'] == 1)
+                                        <span
+                                            class="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded">Boosted</span>
+                                    @else
+                                        <span
+                                            class="px-2 py-1 text-xs font-semibold text-white bg-gray-800 rounded">Regular</span>
+                                    @endif
+                                </td>
+                                {{-- <td>500</td> --}}
+                                <td>{{ $product['product_rating'] }}</td>
+                                <td>
+                                    @if ($product['product_status'] == 1)
+                                        <span
+                                            class=" px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
+                                    @else
+                                        <span
+                                            class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded">Not
+                                            Approved</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class='flex gap-4'>
+                                        {{-- <button class="updateDataBtn">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                             xmlns='http://www.w3.org/2000/svg'>
                                             <circle opacity='0.1' cx='18' cy='18' r='18' fill='#233A85' />
@@ -169,7 +220,7 @@
                                                 fill='#233A85' />
                                         </svg>
                                     </button> --}}
-                                    {{-- <button class="deleteDataBtn" delId="" delUrl="" name="media_id">
+                                        {{-- <button class="deleteDataBtn" delId="" delUrl="" name="media_id">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                             xmlns='http://www.w3.org/2000/svg'>
                                             <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -179,32 +230,34 @@
                                         </svg>
                                     </button> --}}
 
-                                    <button class="viewModalBtn" id="viewModalBtn" data-modal-target="view-product-modal"
-                                        data-modal-toggle="view-product-modal">
-                                        <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
-                                            xmlns='http://www.w3.org/2000/svg'>
-                                            <path fill-rule='evenodd' clip-rule='evenodd'
-                                                d='M28.0642 18.5C28.0642 18.126 27.8621 17.8812 27.4579 17.3896C25.9788 15.5938 22.7163 12.25 18.9288 12.25C15.1413 12.25 11.8788 15.5938 10.3996 17.3896C9.99542 17.8812 9.79333 18.126 9.79333 18.5C9.79333 18.874 9.99542 19.1187 10.3996 19.6104C11.8788 21.4062 15.1413 24.75 18.9288 24.75C22.7163 24.75 25.9788 21.4062 27.4579 19.6104C27.8621 19.1187 28.0642 18.874 28.0642 18.5ZM18.9288 21.625C19.7576 21.625 20.5524 21.2958 21.1385 20.7097C21.7245 20.1237 22.0538 19.3288 22.0538 18.5C22.0538 17.6712 21.7245 16.8763 21.1385 16.2903C20.5524 15.7042 19.7576 15.375 18.9288 15.375C18.0999 15.375 17.3051 15.7042 16.719 16.2903C16.133 16.8763 15.8038 17.6712 15.8038 18.5C15.8038 19.3288 16.133 20.1237 16.719 20.7097C17.3051 21.2958 18.0999 21.625 18.9288 21.625Z'
-                                                fill='url(#paint0_linear_872_5570)' />
-                                            <circle opacity='0.1' cx='18.4287' cy='18' r='18'
-                                                fill='url(#paint1_linear_872_5570)' />
-                                            <defs>
-                                                <linearGradient id='paint0_linear_872_5570' x1='18.9288' y1='12.25'
-                                                    x2='18.9288' y2='24.75' gradientUnits='userSpaceOnUse'>
-                                                    <stop stop-color='#FCB376' />
-                                                    <stop offset='1' stop-color='#FE8A29' />
-                                                </linearGradient>
-                                                <linearGradient id='paint1_linear_872_5570' x1='18.4287' y1='0'
-                                                    x2='18.4287' y2='36' gradientUnits='userSpaceOnUse'>
-                                                    <stop stop-color='#FCB376' />
-                                                    <stop offset='1' stop-color='#FE8A29' />F
-                                                </linearGradient>
-                                            </defs>
-                                        </svg>
-                                    </button>
-                                </span>
-                            </td>
-                        </tr>
+                                        <button class="viewModalBtn" id="viewModalBtn"
+                                            data-modal-target="view-product-modal" data-modal-toggle="view-product-modal">
+                                            <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
+                                                xmlns='http://www.w3.org/2000/svg'>
+                                                <path fill-rule='evenodd' clip-rule='evenodd'
+                                                    d='M28.0642 18.5C28.0642 18.126 27.8621 17.8812 27.4579 17.3896C25.9788 15.5938 22.7163 12.25 18.9288 12.25C15.1413 12.25 11.8788 15.5938 10.3996 17.3896C9.99542 17.8812 9.79333 18.126 9.79333 18.5C9.79333 18.874 9.99542 19.1187 10.3996 19.6104C11.8788 21.4062 15.1413 24.75 18.9288 24.75C22.7163 24.75 25.9788 21.4062 27.4579 19.6104C27.8621 19.1187 28.0642 18.874 28.0642 18.5ZM18.9288 21.625C19.7576 21.625 20.5524 21.2958 21.1385 20.7097C21.7245 20.1237 22.0538 19.3288 22.0538 18.5C22.0538 17.6712 21.7245 16.8763 21.1385 16.2903C20.5524 15.7042 19.7576 15.375 18.9288 15.375C18.0999 15.375 17.3051 15.7042 16.719 16.2903C16.133 16.8763 15.8038 17.6712 15.8038 18.5C15.8038 19.3288 16.133 20.1237 16.719 20.7097C17.3051 21.2958 18.0999 21.625 18.9288 21.625Z'
+                                                    fill='url(#paint0_linear_872_5570)' />
+                                                <circle opacity='0.1' cx='18.4287' cy='18' r='18'
+                                                    fill='url(#paint1_linear_872_5570)' />
+                                                <defs>
+                                                    <linearGradient id='paint0_linear_872_5570' x1='18.9288'
+                                                        y1='12.25' x2='18.9288' y2='24.75'
+                                                        gradientUnits='userSpaceOnUse'>
+                                                        <stop stop-color='#FCB376' />
+                                                        <stop offset='1' stop-color='#FE8A29' />
+                                                    </linearGradient>
+                                                    <linearGradient id='paint1_linear_872_5570' x1='18.4287'
+                                                        y1='0' x2='18.4287' y2='36'
+                                                        gradientUnits='userSpaceOnUse'>
+                                                        <stop stop-color='#FCB376' />
+                                                        <stop offset='1' stop-color='#FE8A29' />F
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </td>
+                            </tr>
                         @endforeach
                     </x-slot>
                 </x-table>
