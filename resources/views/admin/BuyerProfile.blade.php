@@ -11,7 +11,17 @@
                 <div class="h-[80%] w-[95%] rounded-xl flex items-center justify-between">
                     <!-- Seller Information -->
                     <div class="flex items-center gap-5">
-                        <img src="{{ asset($buyer->customer_image) }}" class="h-[80px] w-[80px] rounded-full" alt="">
+                        @php
+                            $imagePath = $buyer->customer_image;
+                            $defaultImage = asset('asset/Ellipse 2.png');
+                            $finalImage =
+                                !empty($imagePath) && file_exists(public_path($imagePath))
+                                    ? asset($imagePath)
+                                    : $defaultImage;
+                        @endphp
+
+                        <img class="h-[80px] w-[80px] rounded-full" src="{{ $finalImage }}" alt="Customer image">
+
                         <div>
                             <h3 class="text-lg font-semibold">{{ $buyer->user->user_name }}</h3>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
@@ -178,7 +188,7 @@
                                 {{ ucfirst($query->status) }}
                             </span>
                             <span
-                                class="text-xs text-gray-500 mt-1">{{ \Carbon\Carbon::parse($query->created_at)->format('d M, Y') }}</span>
+                                class="whitespace-nowrap text-xs text-gray-500 mt-1">{{ \Carbon\Carbon::parse($query->created_at)->format('d M, Y') }}</span>
                         </div>
                     </div>
                 @endforeach

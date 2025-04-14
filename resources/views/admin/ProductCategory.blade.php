@@ -20,8 +20,17 @@
                         <tr>
                             <td> {{ $loop->iteration }}</td>
                             <td>
-                                <img class="rounded-full w-11 h-11" src="{{ asset('' . $categorie->image) }}"
-                                    alt="Jese image">
+                                {{-- <img class="rounded-full w-11 h-11" src="{{ asset('' . $categorie->image) }}" alt="Jese image"> --}}
+                                @php
+                                    $imagePath = $categorie->image;
+                                    $defaultImage = asset('asset/Ellipse 2.png');
+                                    $finalImage =
+                                        !empty($imagePath) && file_exists(public_path($imagePath))
+                                            ? asset($imagePath)
+                                            : $defaultImage;
+                                @endphp
+                                <img class="rounded-full w-11 h-11" src="{{ $finalImage }}" alt="Product image">
+
                             </td>
                             <td>{{ $categorie->name }}</td>
                             <td>{{ $categorie->subcategory_count }}</td>
@@ -87,7 +96,8 @@
             <x-slot name="title">Product Category</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                <form action="" method="POST" id="categoryForm" enctype="multipart/form-data">
+                <form action="{{ route('productCategory') }}" class="categoryForm" method="POST" id="categoryForm"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="md:py-5">
                         <!-- Image Upload -->
@@ -110,8 +120,8 @@
                                 <input type="text" id="tag-input-field"
                                     class="border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-primary focus:border-primary block p-2.5 w-full"
                                     placeholder="Enter a tag and press Enter">
-                                <input type="hidden" name="sub_categories" id="tag-inputs">
                             </div>
+                                <input type="hidden" name="sub_categories" id="tag-inputs">
                             {{-- <button type="button" id="add-tag-btn"
                                 class="px-3 py-1 text-white bg-blue-500 rounded-r-md hover:bg-blue-600">
                                 +
@@ -210,6 +220,7 @@
                 success: function(response) {
                     console.log("AJAX Response:", response);
 
+
                     if (response.status === 'success') {
                         $('#productcategory-modal').attr("aria-hidden", "true");
                         $('#name').val(response.data.name);
@@ -237,12 +248,13 @@
 
                         tags = subCategories.slice();
                         $("#tag-inputs").val("");
-
+                        // $("#tag-container").empty();
                         $.each(subCategories, function(index, tag) {
                             createTagElement(tag);
                         });
 
                         updateHiddenInput();
+
                     } else {
                         alert('Data not found!');
                     }
@@ -303,10 +315,68 @@
                     }
                 });
             });
-            $("#addModalBtn").on("click", function() {
-                $("#submit").text("Submit");
-                $("#categoryForm").attr("action", "/ProductCategory");
+            // $("#addModalBtn").on("click", function() {
+            //     $("#submit").text("Submit");
+            //     $("#categoryForm").attr("action", "/ProductCategory");
+
+            // });
+            $(document).ready(function() {
+                $(".categoryForm").on("submit", function(e) {
+                    e.preventDefault();
+
+                    let formData = new FormData(this);
+
+                    $.ajax({
+                        url: $(this).attr("action"),
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success",
+                                    text: response.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                // Optionally, close the modal
+                                $("#productcategory-modal").addClass("hidden");
+
+                                // Reset the form
+                                $("#categoryForm")[0].reset();
+                                $("#tag-container").empty();
+                                tags = [];
+                                updateHiddenInput();
+
+                                // Optionally reload the table or part of the page
+                                setTimeout(() => location.reload(), 2000);
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: response.message ||
+                                        "Something went wrong"
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let message = "An error occurred.";
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: message
+                            });
+                        }
+                    });
+                });
             });
+
             $(document).ready(function() {
                 // When any close button inside a modal is clicked
                 $("[data-modal-hide]").click(function() {
