@@ -286,7 +286,9 @@
                             selectBox.value = response.selected_courier_id;
                         }
                         // Populate order details
-                        $("#order-status").text(response.status);
+                        $('#tracking_number').val(response.tracking_number);
+                        $('#order_status').val(response.order_status).change();
+                        $("#order-status").text(response.order_status);
                         $("#edit_orderstatus_id").val(response.order_id);
                         $("#customer-name").text(response.customer_name);
                         $("#tracking-id").text(response.tracking_id);
@@ -342,6 +344,7 @@
                     type: 'POST',
                     data: formData,
                     success: function(response) {
+                        console.log(response);
                         alert(response.message); // You can use toast or modal instead
                     },
                     error: function(xhr) {

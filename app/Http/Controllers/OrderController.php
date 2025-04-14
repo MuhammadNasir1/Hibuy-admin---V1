@@ -37,6 +37,8 @@ class OrderController extends Controller
                 'address',
                 'status',
                 'order_status',
+                'courier_id',
+                'tracking_number',
                 'order_date'
             ])
                 ->where('order_id', $Order_id)
@@ -115,6 +117,8 @@ class OrderController extends Controller
                 'delivery_fee'  => $order->delivery_fee,
                 'grand_total'   => $grandTotal + (float) $order->delivery_fee,
                 'order_items'   => array_values($mergedOrderItems),
+                'selected_courier_id' => $order->courier_id ?? null,
+                'tracking_number' => $order->tracking_number ?? null,
             ];
             // Step 7: Fetch all couriers for dropdown
             $response['couriers'] = Courier::select('courier_id', 'courier_name')->get();
@@ -232,5 +236,25 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+
+    public function updateOrderStatus(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,order_id',
+            'order_status' => 'required|string',
+            'courier_id' => 'nullable|exists:couriers,courier_id',
+            'tracking_number' => 'nullable|string|max:255',
+        ]);
+
+        $order = Order::find($request->order_id);
+        $order->order_status = $request->order_status;
+        $order->courier_id = $request->courier_id;
+        $order->tracking_number = $request->filled('tracking_number') ? $request->tracking_number : '';
+        // return $order->order_status;
+        $order->update();
+
+        return response()->json(['message' => 'Order updated successfully']);
     }
 }
