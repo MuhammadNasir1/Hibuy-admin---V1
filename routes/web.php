@@ -55,6 +55,7 @@ Route::middleware(['custom_auth'])->group(function () {
             //Product Routes
             Route::controller(ProductsController::class)->group(function () {
                 Route::GET('/products', 'showAllProducts')->name('products');
+                Route::GET('/HibuyProduct', 'showHibuyProducts')->name('hibuy_product');
                 Route::GET('/delete-product/{id}', 'deleteProduct');
                 Route::GET('/view-product/{id}', 'viewProductDetails');
                 Route::GET('/other-seller-product', 'getOtherSellerProduct')->name('other-seller-product');
@@ -106,9 +107,6 @@ Route::middleware(['custom_auth'])->group(function () {
                 return view('pages.CreditRequest');
             })->name('credit_request');
 
-            Route::get('/HibuyProduct', function () {
-                return view('admin.HibuyProduct');
-            })->name('hibuy_product');
 
             Route::get('/Promotions', function () {
                 return view('admin.Promotions');

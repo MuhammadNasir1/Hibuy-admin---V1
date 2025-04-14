@@ -99,16 +99,25 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            // Find the seller record for the authenticated user
-            $seller = Seller::where('user_id', $userDetails['user_id'])->first();
-            if (!$seller) {
-                return response()->json(['error' => 'Seller record not found'], 404);
-            }
+            if ($userDetails['user_role'] !== 'admin') {
+                // Find the seller record for the authenticated user
+                $seller = Seller::where('user_id', $userDetails['user_id'])->first();
+                if (!$seller) {
+                    return response()->json(['error' => 'Seller record not found'], 404);
+                }
 
-            // Fetch store_id based on seller_id
-            $store = Store::where('seller_id', $seller->seller_id)->first();
-            if (!$store) {
-                return response()->json(['error' => 'Store record not found'], 404);
+                // Fetch store_id based on seller_id
+                $store = Store::where('seller_id', $seller->seller_id)->first();
+                if (!$store) {
+                    return response()->json(['error' => 'Store record not found'], 404);
+                }
+            } else {
+                $seller_id = '0';
+                $store_id = '0';
+                $store = (object)[
+                    'store_id' => $store_id,
+                    'seller_id' => $seller_id,
+                ];
             }
 
             $productId = $request->product_edit_id;
@@ -319,9 +328,9 @@ class ProductsController extends Controller
             $category->sub_categories = json_encode($subCategories); // Save as JSON
             $category->save();
 
-            return response()->json(['message' => 'Category added successfully', 'category' => $category], 201);
+            return response()->json(['success' => true, 'message' => 'Category added successfully', 'category' => $category], 201);
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
 
@@ -393,7 +402,7 @@ class ProductsController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'sub_categories' => 'required|string', // JSON string of subcategories
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             // Find the category by ID
@@ -402,13 +411,18 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'Category not found'], 404);
             }
 
-            // Update category details
+            // Update category name
             $category->name = $request->input('name');
 
-            // Handle new image upload
+            // Handle image upload
             if ($request->hasFile('image')) {
+                // Optional: Delete old image
+                if ($category->image && Storage::exists(str_replace("storage/", "", $category->image))) {
+                    Storage::delete(str_replace("storage/", "", $category->image));
+                }
+
                 $imagePath = $request->file('image')->store('categories', 'public');
-                $category->image = $imagePath; // Update image only if a new one is uploaded
+                $category->image = "storage/" . $imagePath; // Ensure it's prefixed properly
             }
 
             // Convert subcategories JSON string to an array and save it
@@ -418,12 +432,19 @@ class ProductsController extends Controller
             }
             $category->sub_categories = json_encode($subCategories); // Save as JSON
 
-            // Save the updated category
+            // Save updated category
             $category->save();
 
-            return response()->json(['status' => 'success', 'message' => 'Category updated successfully', 'category' => $category], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Category updated successfully',
+                'category' => $category
+            ], 200);
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
 
@@ -438,10 +459,15 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role']; // Get user role
 
+        if ($loggedInUserRole == 'admin') {
+            $p_id = $loggedInUserId;
+        }
+
         // Base query
         $query = DB::table('products')
             ->join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
+            ->where('products.user_id', '!=', $p_id)
             ->select(
                 'products.product_id',
                 'products.user_id',
@@ -456,6 +482,7 @@ class ProductsController extends Controller
                 'users.user_name as user_name'
             );
 
+
         // If not admin, filter by logged-in user_id
         if ($loggedInUserRole !== 'admin') {
             $query->where('products.user_id', $loggedInUserId);
@@ -469,7 +496,59 @@ class ProductsController extends Controller
             return $product;
         });
 
+
         return view('pages.products', compact('products'));
+    }
+    public function showHibuyProducts()
+    {
+        // Retrieve user details from session
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $loggedInUserId = $userDetails['user_id'];
+        $loggedInUserRole = $userDetails['user_role']; // Get user role
+
+        if ($loggedInUserRole == 'admin') {
+            $p_id = $loggedInUserId;
+        }
+
+        // Base query
+        $query = DB::table('products')
+            ->join('categories', 'products.product_category', '=', 'categories.id')
+            ->join('users', 'products.user_id', '=', 'users.user_id')
+            ->where('products.user_id', '=', $p_id)
+            ->select(
+                'products.product_id',
+                'products.user_id',
+                'products.product_name',
+                'categories.name as product_category',
+                'products.product_discounted_price',
+                'products.product_images',
+                'products.product_status',
+                'products.is_boosted',
+                'products.created_at',
+                'products.updated_at',
+                'users.user_name as user_name'
+            );
+
+
+        // If not admin, filter by logged-in user_id
+        if ($loggedInUserRole !== 'admin') {
+            $query->where('products.user_id', $loggedInUserId);
+        }
+
+        // Fetch products and format image
+        $products = $query->get()->map(function ($product) {
+            $images = json_decode($product->product_images, true);
+            $product->first_image = $images[0] ?? null;
+            unset($product->product_images);
+            return $product;
+        });
+
+
+        return view('admin.HibuyProduct', compact('products'));
     }
 
 

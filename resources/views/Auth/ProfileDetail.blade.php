@@ -330,8 +330,7 @@
                                             <div
                                                 class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
                                                 <img src="{{ asset($store_info['profile_picture_store']) }}"
-                                                    alt="Profile Picture"
-                                                    class="w-full h-full object-cover rounded-full">
+                                                    alt="Profile Picture" class="w-full h-full object-cover rounded-full">
                                                 <input type="text" name="profile_picture_store"
                                                     value="{{ $store_info['profile_picture_store'] }}" hidden>
                                             </div>
@@ -470,8 +469,7 @@
                                 <!-- Shop / Home Bill -->
                                 <div>
                                     <h3 class="pb-2">Shop / Home Bill</h3>
-                                    <div
-                                        class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
+                                    <div class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
                                         @if (!empty($documents_info['home_bill']))
                                             <img src="{{ asset($documents_info['home_bill']) }}" alt="Home Bill"
                                                 class="h-full object-cover mr-3">
@@ -486,8 +484,7 @@
                                 <!-- Shop Video (Optional) -->
                                 <div>
                                     <h3 class="pb-2">Shop Video (Optional)</h3>
-                                    <div
-                                        class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
+                                    <div class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
                                         @if (!empty($documents_info['shop_video']))
                                             <video controls class="h-[150px] mr-3">
                                                 <source src="{{ asset($documents_info['shop_video']) }}" class="w-50"
@@ -528,50 +525,210 @@
                             {{-- Select Options --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mb-32 md:mb-20">
                                 <!-- Country -->
+
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Country</label>
                                     <select name="country" id="country"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
-                                        <option value="">Select Country</option>
-                                        <option value="USA"
-                                            {{ isset($documents_info['country']) && $documents_info['country'] == 'USA' ? 'selected' : '' }}>
-                                            USA</option>
-                                        <option value="Canada"
-                                            {{ isset($documents_info['country']) && $documents_info['country'] == 'Canada' ? 'selected' : '' }}>
-                                            Canada</option>
+                                        <option value="USA" selected> Pakistan</option>
                                     </select>
                                 </div>
 
                                 <!-- Province/ Region -->
+                                @php
+                                    $province = [
+                                        'Punjab',
+                                        'Sindh',
+                                        'Khyber Pakhtunkhwa',
+                                        'Balochistan',
+                                        'Islamabad',
+                                        'Gilgit-Baltistan',
+                                        'Azad Jammu and Kashmir',
+                                    ];
+                                @endphp
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">Province/ Region</label>
                                     <select name="province" id="province"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
                                         <option value="">Select Province</option>
-                                        <option value="Ontario"
-                                            {{ isset($documents_info['province']) && $documents_info['province'] == 'Ontario' ? 'selected' : '' }}>
-                                            Ontario</option>
-                                        <option value="Quebec"
-                                            {{ isset($documents_info['province']) && $documents_info['province'] == 'Quebec' ? 'selected' : '' }}>
-                                            Quebec</option>
+                                        {{--    {{ isset($documents_info['province']) && $documents_info['province'] == 'Ontario' ? 'selected' : '' }} --}}
+
+                                        @foreach ($province as $item)
+                                            <option value="{{ $item }}"
+                                                {{ isset($documents_info['province']) && $documents_info['province'] == $item ? 'selected' : '' }}>
+                                                {{ $item }}</option>
+                                        @endforeach
+
                                     </select>
                                 </div>
 
                                 <!-- City -->
+                                @php
+                                    $cities = [
+                                        'Abbottabad',
+                                        'Ahmedpur East',
+                                        'Ahmadpur Sial',
+                                        'Alipur',
+                                        'Arifwala',
+                                        'Attock',
+                                        'Badin',
+                                        'Bagh',
+                                        'Bahawalnagar',
+                                        'Bahawalpur',
+                                        'Bannu',
+                                        'Barkhan',
+                                        'Batkhela',
+                                        'Bhakkar',
+                                        'Bhalwal',
+                                        'Bhakkar',
+                                        'Bhera',
+                                        'Bhimber',
+                                        'Burewala',
+                                        'Chakwal',
+                                        'Charsadda',
+                                        'Chichawatni',
+                                        'Chiniot',
+                                        'Chishtian',
+                                        'Chitral',
+                                        'Dadu',
+                                        'Daska',
+                                        'Dera Bugti',
+                                        'Dera Ghazi Khan',
+                                        'Dera Ismail Khan',
+                                        'Dhaular',
+                                        'Digri',
+                                        'Dina',
+                                        'Dir',
+                                        'Dipalpur',
+                                        'Faisalabad',
+                                        'Fateh Jang',
+                                        'Ghotki',
+                                        'Gilgit',
+                                        'Gojra',
+                                        'Gujar Khan',
+                                        'Gujranwala',
+                                        'Gujrat',
+                                        'Gwadar',
+                                        'Hafizabad',
+                                        'Hangu',
+                                        'Haripur',
+                                        'Harnai',
+                                        'Hyderabad',
+                                        'Islamabad',
+                                        'Jacobabad',
+                                        'Jaffarabad',
+                                        'Jalalpur Jattan',
+                                        'Jamshoro',
+                                        'Jampur',
+                                        'Jaranwala',
+                                        'Jatoi',
+                                        'Jauharabad',
+                                        'Jhang',
+                                        'Jhelum',
+                                        'Kabirwala',
+                                        'Kahror Pakka',
+                                        'Kalat',
+                                        'Kamalia',
+                                        'Kamoke',
+                                        'Kandhkot',
+                                        'Karachi',
+                                        'Karak',
+                                        'Kasur',
+                                        'Khairpur',
+                                        'Khanewal',
+                                        'Khanpur',
+                                        'Khushab',
+                                        'Khuzdar',
+                                        'Kohat',
+                                        'Kot Addu',
+                                        'Kotli',
+                                        'Lahore',
+                                        'Lakki Marwat',
+                                        'Lalamusa',
+                                        'Larkana',
+                                        'Lasbela',
+                                        'Leiah',
+                                        'Lodhran',
+                                        'Loralai',
+                                        'Malakand',
+                                        'Mandi Bahauddin',
+                                        'Mansehra',
+                                        'Mardan',
+                                        'Mastung',
+                                        'Matiari',
+                                        'Mian Channu',
+                                        'Mianwali',
+                                        'Mingora',
+                                        'Mirpur',
+                                        'Mirpur Khas',
+                                        'Multan',
+                                        'Muridke',
+                                        'Murree',
+                                        'Muzaffargarh',
+                                        'Muzaffarabad',
+                                        'Nankana Sahib',
+                                        'Narowal',
+                                        'Naushahro Feroze',
+                                        'Nawabshah',
+                                        'Nowshera',
+                                        'Okara',
+                                        'Pakpattan',
+                                        'Panjgur',
+                                        'Pattoki',
+                                        'Peshawar',
+                                        'Quetta',
+                                        'Rahim Yar Khan',
+                                        'Rajanpur',
+                                        'Rawalpindi',
+                                        'Sadiqabad',
+                                        'Sahiwal',
+                                        'Sanghar',
+                                        'Sangla Hill',
+                                        'Sargodha',
+                                        'Shahdadkot',
+                                        'Shahkot',
+                                        'Shahpur',
+                                        'Shakargarh',
+                                        'Sheikhupura',
+                                        'Shikarpur',
+                                        'Sialkot',
+                                        'Sibi',
+                                        'Sukkur',
+                                        'Swabi',
+                                        'Swat',
+                                        'Tando Adam',
+                                        'Tando Allahyar',
+                                        'Tando Muhammad Khan',
+                                        'Tank',
+                                        'Taxila',
+                                        'Thatta',
+                                        'Toba Tek Singh',
+                                        'Turbat',
+                                        'Umerkot',
+                                        'Upper Dir',
+                                        'Vehari',
+                                        'Wah Cantt',
+                                        'Wazirabad',
+                                        'Zhob',
+                                        'Ziarat',
+                                    ];
+
+                                @endphp
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                     <label class="md:w-32">City</label>
                                     <select name="city" id="city"
                                         class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]">
-                                        <option value="">Select City</option>
-                                        <option value="Toronto"
-                                            {{ isset($documents_info['city']) && $documents_info['city'] == 'Toronto' ? 'selected' : '' }}>
-                                            Toronto</option>
-                                        <option value="Vancouver"
-                                            {{ isset($documents_info['city']) && $documents_info['city'] == 'Vancouver' ? 'selected' : '' }}>
-                                            Vancouver</option>
+                                        <option value="" disabled selected>Select City</option>
+                                        {{--   {{ isset($documents_info['city']) && $documents_info['city'] == 'Toronto' ? 'selected' : '' }} --}}
+                                        @foreach ($cities as $item)
+                                            <option value="{{ $item }}"
+                                                {{ isset($documents_info['city']) && $documents_info['city'] == $item ? 'selected' : '' }}>
+                                                {{ $item }}</option>
+                                        @endforeach
+
                                     </select>
                                 </div>
                             </div>
@@ -700,8 +857,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
                                 <div>
                                     <h3 class="pb-2">Canceled Cheque</h3>
-                                    <div
-                                        class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
+                                    <div class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
                                         @if (!empty($bank_info['canceled_cheque']))
                                             <img src="{{ asset($bank_info['canceled_cheque']) }}" alt="Canceled Cheque"
                                                 class="h-full object-contain mr-3">
@@ -713,8 +869,7 @@
                                 </div>
                                 <div>
                                     <h3 class="pb-2">Verification Letter (Optional)</h3>
-                                    <div
-                                        class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
+                                    <div class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
                                         @if (!empty($bank_info['verification_letter']))
                                             <img src="{{ asset($bank_info['verification_letter']) }}"
                                                 alt="Verification Letter" class="h-full object-contain mr-3">
@@ -745,7 +900,7 @@
                     aria-labelledby="business-tab">
                     <div class="text-sm text-gray-500 dark:text-gray-400">
                         <div>
-                            <h3 class="text-base font-bold text-[#2C2C2C]">Business  Information</h3>
+                            <h3 class="text-base font-bold text-[#2C2C2C]">Business Information</h3>
                             <p>Fill this form if your business registered.</p>
                         </div>
                         <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
@@ -783,8 +938,7 @@
                                             <div
                                                 class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
                                                 <img src="{{ asset($business_info['personal_profile']) }}"
-                                                    alt="Profile Picture"
-                                                    class="w-full h-full object-cover rounded-full">
+                                                    alt="Profile Picture" class="w-full h-full object-cover rounded-full">
                                                 <input type="text" name="personal_profile"
                                                     value="{{ $business_info['personal_profile'] }}" hidden>
                                             </div>
@@ -844,8 +998,7 @@
                                     class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold">
                                     <div>
                                         <h3 class="pb-2">Letter Head</h3>
-                                        <div
-                                            class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
+                                        <div class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
                                             @if (!empty($business_info['letter_head']))
                                                 <img src="{{ asset($business_info['letter_head']) }}" alt="Letter Head"
                                                     class="h-full object-contain mr-3">
@@ -857,8 +1010,7 @@
                                     </div>
                                     <div>
                                         <h3 class="pb-2">Stamp</h3>
-                                        <div
-                                            class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
+                                        <div class="w-full rounded-lg  h-[30vh] flex items-center justify-center">
                                             @if (!empty($business_info['stamp']))
                                                 <img src="{{ asset($business_info['stamp']) }}" alt="Stamp"
                                                     class="h-full object-contain mr-3">

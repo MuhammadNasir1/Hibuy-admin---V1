@@ -78,5 +78,9 @@
                 </a>
             </div>
         </div>
+
+        <div class="mt-3 flex justify-end pr-3">
+            <a href="{{ route('logout') }}">Logout</a>
+        </div>
     </div>
 @endsection
