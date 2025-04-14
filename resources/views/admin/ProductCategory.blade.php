@@ -120,6 +120,9 @@
                                 <input type="text" id="tag-input-field"
                                     class="border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-primary focus:border-primary block p-2.5 w-full"
                                     placeholder="Enter a tag and press Enter">
+                                    <div class="flex flex-wrap gap-2 p-2 border rounded-md" id="view-tag-container">
+
+                                    </div>
                             </div>
                                 <input type="hidden" name="sub_categories" id="tag-inputs">
                             {{-- <button type="button" id="add-tag-btn"
@@ -196,7 +199,7 @@
                 });
 
             tagElement.append(removeButton);
-            $("#tag-container").append(tagElement);
+            $("#view-tag-container").append(tagElement);
         }
 
         function updateHiddenInput() {
@@ -248,7 +251,7 @@
 
                         tags = subCategories.slice();
                         $("#tag-inputs").val("");
-                        // $("#tag-container").empty();
+                        $("#view-tag-container").empty();
                         $.each(subCategories, function(index, tag) {
                             createTagElement(tag);
                         });
@@ -290,8 +293,17 @@
                     dataType: "json",
                     success: function(response) {
                         if (response.status == "success") {
-                            $("#categoryImage").attr("src", "{{ asset('') }}" + response
-                                .data.image);
+                            // $("#categoryImage").attr("src", "{{ asset('') }}" + response
+                            //     .data.image);
+                            let imageUrl = response.data.image ? "{{ asset('storage') }}/" + response.data.image : "{{ asset('asset/Ellipse 2.png') }}";
+
+$("#categoryImage")
+    .attr("src", imageUrl)
+    .on("error", function() {
+        $(this).attr("src", "{{ asset('asset/Ellipse 2.png') }}");
+    });
+
+
 
                             $("#categoryName").text(response.data.name);
 
@@ -347,7 +359,7 @@
 
                                 // Reset the form
                                 $("#categoryForm")[0].reset();
-                                $("#tag-container").empty();
+                                $("#view-tag-container").empty();
                                 tags = [];
                                 updateHiddenInput();
 
