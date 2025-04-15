@@ -98,42 +98,67 @@
                 </div>
             </div>
         </div>
-
-        <div>
-            <h3 class="mx-6 mt-5 text-2xl font-semibold">
-                Banners
-            </h3>
-        </div>
-        <div class="mt-3 mx-6 shadow-xl rounded-xl min-h-[100px]">
-            @php
-                $bannerPath = $storeData['store_banner'] ?? '';
-                $defaultBanner = asset('asset/banner.png');
-
-                $bannerImage =
-                    !empty($bannerPath) && file_exists(public_path($bannerPath)) ? asset($bannerPath) : $defaultBanner;
-            @endphp
-
-            <img src="{{ $bannerImage }}" alt="Banner Image" class="w-full object-cover rounded-xl">
-
-        </div>
-
-        <div class="flex justify-center px-6 gap-5 ">
-            @foreach ($storeData['store_posts'] as $post)
-                @php
-                    $postImagePath = $post['image'] ?? '';
-                    $defaultImage = asset('asset/post-1.png');
-
-                    $bgImage =
-                        !empty($postImagePath) && file_exists(public_path($postImagePath))
-                            ? asset($postImagePath)
-                            : $defaultImage;
-                @endphp
-
-                <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl mt-5 shadow-xl"
-                    style="background-image: url('{{ $bgImage }}'); background-size: cover; background-position: center;">
+        {{-- Check if store data exists and has required elements --}}
+        @if (isset($storeData) && is_array($storeData))
+            {{-- Banner Section --}}
+            @if (!empty($storeData['store_banner']))
+                <div>
+                    <h3 class="mx-6 mt-5 text-2xl font-semibold">
+                        Banners
+                    </h3>
                 </div>
-            @endforeach
-        </div>
+                <div class="mt-3 mx-6 shadow-xl rounded-xl min-h-[100px]">
+                    @php
+                        $bannerPath = $storeData['store_banner'] ?? '';
+                        $defaultBanner = asset('asset/banner.png');
+                        $bannerImage =
+                            !empty($bannerPath) && file_exists(public_path($bannerPath))
+                                ? asset($bannerPath)
+                                : $defaultBanner;
+                    @endphp
+
+                    <img src="{{ $bannerImage }}" alt="Banner Image" class="w-full object-cover rounded-xl">
+                </div>
+            @endif
+
+            {{-- Posts Section --}}
+            @if (!empty($storeData['store_posts']) && is_array($storeData['store_posts']))
+                <div class="flex justify-center px-6 gap-5">
+                    @foreach ($storeData['store_posts'] as $post)
+                        @php
+                            $postImagePath = $post['image'] ?? '';
+                            $defaultImage = asset('asset/post-1.png');
+                            $bgImage =
+                                !empty($postImagePath) && file_exists(public_path($postImagePath))
+                                    ? asset($postImagePath)
+                                    : $defaultImage;
+                        @endphp
+
+                        <div class="lg:h-[370px] h-[200px] lg:w-[370px] w-[200px] rounded-xl mt-5 shadow-xl"
+                            style="background-image: url('{{ $bgImage }}'); background-size: cover; background-position: center;">
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            {{-- Empty State --}}
+            @if (empty($storeData['store_banner']) && empty($storeData['store_posts']))
+                <div class="text-center py-10">
+                    <p class="text-gray-500">Store not fully set up yet.</p>
+
+                </div>
+            @endif
+        @else
+            {{-- No Store Data Found --}}
+            <div class="text-center py-10">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">No Store Found</h3>
+                <p class="mt-1 text-gray-500">Need to create a store first to access this section.</p>
+            </div>
+        @endif
 
 
 
@@ -189,25 +214,19 @@
                                 <td>{{ $product['product_discount'] }} %</td>
                                 <td class="whitespace-nowrap">Rs {{ $product['product_price'] }}</td>
                                 <td>
-                                    @if ($product['is_boosted'] == 1)
-                                        <span
-                                            class="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded">Boosted</span>
-                                    @else
-                                        <span
-                                            class="px-2 py-1 text-xs font-semibold text-white bg-gray-800 rounded">Regular</span>
-                                    @endif
+                                    <span
+                                        class="px-2 py-1 text-xs font-semibold text-white  rounded  {{ $product->is_boosted == 0 ? 'bg-gray-800' : 'bg-blue-500' }}">
+                                        {{ $product->is_boosted == 0 ? 'Regular' : 'Boosted' }}</span>
+
                                 </td>
                                 {{-- <td>500</td> --}}
                                 <td>{{ $product['product_rating'] }}</td>
                                 <td>
-                                    @if ($product['product_status'] == 1)
-                                        <span
-                                            class=" px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
-                                    @else
-                                        <span
-                                            class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded">Not
-                                            Approved</span>
-                                    @endif
+                                    <span
+                                        class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded
+                                    {{ $product->product_status == 0 ? 'bg-red-500' : 'bg-green-500' }}">
+                                        {{ $product->product_status == 0 ? 'Not Active' : 'Active' }}
+                                    </span>
                                 </td>
                                 <td>
                                     <span class='flex gap-4'>
@@ -231,6 +250,7 @@
                                     </button> --}}
 
                                         <button class="viewModalBtn" id="viewModalBtn"
+                                            viewproducturl="/view-product/{{ $product->product_id }}"
                                             data-modal-target="view-product-modal" data-modal-toggle="view-product-modal">
                                             <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                                 xmlns='http://www.w3.org/2000/svg'>
@@ -267,4 +287,232 @@
 
     </div>
 
+    {{-- view modal --}}
+
+    <x-modal id="view-product-modal">
+        <x-slot name="title">Details </x-slot>
+        <x-slot name="modal_width">max-w-4xl</x-slot>
+        <x-slot name="body">
+            <div class="">
+                <div class="">
+                    <div class="md:p-5">
+                        <div class="flex items-start gap-4">
+                            <!-- Main Image -->
+                            <div class="w-1/3">
+                                <div class="h-48 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                    <img id="main-image" src="" alt="Main Product Image"
+                                        class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                            <!-- Sub Images -->
+                            <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                                <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                    <img id="sub-image-1" src="" alt="Sub Image 1"
+                                        class="w-full h-full object-cover">
+                                </div>
+                                <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                    <img id="sub-image-2" src="" alt="Sub Image 2"
+                                        class="w-full h-full object-cover">
+                                </div>
+                                <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                    <img id="sub-image-3" src="" alt="Sub Image 3"
+                                        class="w-full h-full object-cover">
+                                </div>
+                                <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                    <img id="sub-image-4" src="" alt="Sub Image 4"
+                                        class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Content -->
+                        <div class="p-6 bg-white rounded-lg shadow-lg">
+                            <!-- Title -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                <div class="space-y-5">
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-32 text-sm font-medium text-gray-600">Title</div>
+                                        <div id="product_name" class="text-base font-semibold text-gray-800">
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-32 text-sm font-medium text-gray-600">Brand</div>
+                                        <div id="brand_name" class="text-base text-gray-700"></div>
+                                    </div>
+
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-32 text-sm font-medium text-gray-600">Discount %</div>
+                                        <div id="product_discount" class="text-base text-green-600 font-medium">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-5">
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-32 text-sm font-medium text-gray-600">Category</div>
+                                        <div id="product_category" class="text-base text-gray-700"></div>
+                                    </div>
+
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-32 text-sm font-medium text-gray-600">Product Price</div>
+                                        <div id="product_price" class="text-base text-gray-700 ">
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-32 text-sm font-medium text-gray-600">Discounted Price</div>
+                                        <div id="product_discounted_price" class="text-base font-semibold text-blue-600">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Variations -->
+                            <div class="mt-6">
+                                <div id="product_variations"\>
+                                    <!-- Variations will be dynamically inserted here -->
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mt-6">
+                                <div class="flex flex-col gap-2">
+                                    <div class="text-sm font-medium text-gray-600">Description</div>
+                                    <div id="product_description"
+                                        class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </x-slot>
+    </x-modal>
+@endsection
+
+@section('js')
+    <script>
+        $(document).ready(function() {
+            $(".viewModalBtn").on("click", function() {
+                let viewproducturl = $(this).attr(
+                    "viewproducturl"); // Get the URL from the button attribute
+
+                if (!viewproducturl) {
+                    alert("Invalid product URL!");
+                    return;
+                }
+
+                $("#modal-btn").click(); // Trigger modal open
+
+                // Run AJAX to fetch product details
+                $.ajax({
+                    url: viewproducturl,
+                    type: "GET",
+                    success: function(response) {
+                        if (response.success) {
+                            // Populate basic product details
+                            $("#product_name").text(response.product.product_name);
+                            $("#brand_name").text(response.product.product_brand);
+                            $("#product_discount").text(response.product.product_discount + " %");
+                            $("#product_category").text(response.product.category_name );
+                            $("#product_price").text("Rs " + response.product.product_price);
+                            $("#product_discounted_price").text("Rs " + response.product
+                                .product_discounted_price);
+                            $("#product_description").text(response.product
+                                .product_description);
+                            // Group parent variations by parent_option_name
+                            const variationsGrouped = {};
+                            response.product.product_variation.forEach(variation => {
+                                const optionName = variation.parent_option_name;
+                                if (!variationsGrouped[optionName]) {
+                                    variationsGrouped[optionName] = [];
+                                }
+                                variationsGrouped[optionName].push(variation);
+                            });
+
+                            // Generate variations HTML
+                            let variationsHtml = '';
+                            for (const optionName in variationsGrouped) {
+                                variationsHtml += `
+                        <div class="flex items-center gap-6 mb-4">
+                            <div class="w-32 text-sm font-medium text-gray-600">${optionName}</div>
+                            <div class="flex flex-wrap gap-3">
+                    `;
+                                variationsGrouped[optionName].forEach(variation => {
+                                    variationsHtml += `
+                            <span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-gray-200 transition">
+                                ${variation.parentname}
+                            </span>
+                        `;
+                                });
+                                variationsHtml += `
+                            </div>
+                        </div>
+                    `;
+                            }
+
+                            // Group and display children if they exist
+                            const children = response.product.product_variation[0]?.children;
+                            if (children && children.length > 0) {
+                                const childOptionName = children[0]?.child_option_name ||
+                                    "Options";
+                                variationsHtml += `
+                        <div class="flex items-center gap-6 mb-4">
+                            <div class="w-32 text-sm font-medium text-gray-600">${childOptionName}</div>
+                            <div class="flex flex-wrap gap-3">
+                    `;
+                                children.forEach(child => {
+                                    variationsHtml += `
+                            <span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-gray-200 transition">
+                                ${child.name}
+                            </span>
+                        `;
+                                });
+                                variationsHtml += `
+                            </div>
+                        </div>
+                    `;
+                            }
+
+                            // Insert variations HTML
+                            $("#product_variations").html(variationsHtml);
+
+                            // Populate images (first 5 from product_images)
+                            const imageBaseUrl =
+                                "{{ asset('') }}"; // Laravel helper gives base path, e.g., "/"
+
+                            // Main image
+                            $("#main-image").attr("src", imageBaseUrl + response.product
+                                .product_images[0]);
+
+                            // Sub images
+                            $("#sub-image-1").attr("src", response.product.product_images[1] ?
+                                imageBaseUrl + response.product.product_images[1] : "");
+                            $("#sub-image-2").attr("src", response.product.product_images[2] ?
+                                imageBaseUrl + response.product.product_images[2] : "");
+                            $("#sub-image-3").attr("src", response.product.product_images[3] ?
+                                imageBaseUrl + response.product.product_images[3] : "");
+                            $("#sub-image-4").attr("src", response.product.product_images[4] ?
+                                imageBaseUrl + response.product.product_images[4] : "");
+
+                            // Optional: fallback if an image fails to load
+                            $("img").on("error", function() {
+                                $(this).attr("src",
+                                    "{{ asset('asset/Ellipse 2.png') }}");
+                            });
+
+                        } else {
+                            alert("Product not found!");
+                        }
+                    },
+                    error: function() {
+                        alert("Error fetching product details.");
+                    }
+                });
+            });
+
+        })
+    </script>
 @endsection

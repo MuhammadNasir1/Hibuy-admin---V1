@@ -127,6 +127,8 @@
                                         <td>
                                             <span class='flex gap-4'>
                                                 <button class="viewModalBtn" id="viewModalBtn"
+                                                    data-modal-target="orders-modal" data-modal-toggle="orders-modal"
+                                                    vieworderurl="/view-order/{{ $order->order_id }}"
                                                     data-modal-target="view-product-modal"
                                                     data-modal-toggle="view-product-modal">
                                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
@@ -196,5 +198,194 @@
             </div>
         </div>
     </div>
+
+    <x-modal id="orders-modal">
+        <x-slot name="title">Order Detail</x-slot>
+        <x-slot name="modal_width">max-w-4xl</x-slot>
+
+        <x-slot name="body">
+            <div class="p-6 space-y-4">
+
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
+                        <tbody>
+                            <tr>
+                                <td class="p-3 font-semibold">Status:</td>
+                                <td class="p-3"><span id="order-status" class="font-bold text-orange-600"></span>
+                                </td>
+                                <td class="p-3 font-semibold">Customer:</td>
+                                <td class="p-3" id="customer-name"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Track ID:</td>
+                                <td class="p-3" id="tracking-id"></td>
+                                <td class="p-3 font-semibold">Address:</td>
+                                <td class="p-3" id="customer-address"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Date:</td>
+                                <td class="p-3" id="order-date"></td>
+                                <td class="p-3 font-semibold">Number:</td>
+                                <td class="p-3" id="customer-phone"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Items:</td>
+                                <td class="p-3" id="total-items"></td>
+                                <td class="p-3 font-semibold">Total:</td>
+                                <td class="p-3" id="order-total"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">Delivery Fee:</td>
+                                <td class="p-3" id="delivery-fee"></td>
+                                <td class="p-3 font-semibold">Grand Total:</td>
+                                <td class="p-3 font-bold text-green-600" id="grand-total"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Order Items Table -->
+                <div class="mb-3 pt-2">
+                    <button id="dropdownButton"
+                        class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
+                        <span>Details</span>
+                        <svg id="dropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div id="dropdownContent" class="mt-2 hidden">
+                        <div class="overflow-x-auto">
+                            <div class="p-4 mt-2 rounded-lg shadow bg-gray-50">
+                                <h3 class="font-bold text-gray-700">Items Details</h3>
+                                <table class="w-full mt-2 text-sm text-gray-700 border">
+                                    <thead>
+                                        <tr class="bg-gray-200">
+                                            <th class="p-3 text-left">Image</th>
+                                            <th class="p-3 text-left">Product</th>
+                                            <th class="p-3 text-center">Qty</th>
+                                            <th class="p-3 text-center">U.Price</th>
+                                            <th class="p-3 text-center">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="order-items-body"></tbody>
+                                </table>
+
+                                <!-- Total Calculation -->
+                                <div class="mt-4 text-sm text-gray-700">
+                                    <div class="flex justify-between"><span>Total Bill:</span> <span
+                                            id="total-bill"></span></div>
+                                    <div class="flex justify-between"><span>Delivery fee:</span> <span
+                                            id="fee"></span></div>
+                                    <div class="flex justify-between text-red-500">
+                                        <span>Discount:</span> <span id="discount">-0</span>
+                                    </div>
+                                    <div class="flex justify-between mt-2 text-lg font-bold">
+                                        <span>Total Amount:</span> <span id="final-total"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </x-slot>
+    </x-modal>
+@endsection
+
+@section('js')
+    <script>
+        $(document).ready(function() {
+            $(".viewModalBtn").on("click", function() {
+                let vieworderurl = $(this).attr("vieworderurl");
+
+                if (!vieworderurl) {
+                    alert("Invalid order URL!");
+                    return;
+                }
+
+                // Open modal
+                $("#modal-btn").click();
+
+                // Run AJAX to fetch order details
+                $.ajax({
+                    url: vieworderurl,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        console.log("AJAX Response:", response);
+
+                        if (response.error) {
+                            alert(response.error);
+                            return;
+                        }
+
+                        // Safeguard for missing elements
+                        if (!document.getElementById("order-items-body")) {
+                            console.error("#order-items-body not found in DOM!");
+                            return;
+                        }
+
+                        // Populate order details
+                        $('#tracking_number').val(response.tracking_number || '');
+                        $('#order_status').val(response.order_status || '').change();
+                        $("#order-status").text(response.order_status || '');
+                        $("#edit_orderstatus_id").val(response.order_id || '');
+                        $("#customer-name").text(response.customer_name || '');
+                        $("#tracking-id").text(response.tracking_id || '');
+                        $("#customer-address").text(response.address || '');
+                        $("#order-date").text(response.order_date || '');
+                        $("#customer-phone").text(response.phone || '');
+                        $("#total-items").text(response.order_items?.length || 0);
+                        $("#order-total").text("Rs " + (response.total || 0));
+                        $("#delivery-fee").text("Rs " + (response.delivery_fee || 0));
+                        $("#grand-total").text("Rs " + (response.grand_total || 0));
+
+                        // Billing details
+                        $("#total-bill").text("Rs " + (response.total || 0));
+                        $("#fee").text("Rs " + (response.delivery_fee || 0));
+                        $("#final-total").text("Rs " + (response.grand_total || 0));
+
+
+
+                        // Order items
+                        let itemsHtml = "";
+                        const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
+                        response.order_items?.forEach((item) => {
+                            itemsHtml += `
+                            <tr class="border-b">
+                                <td class="p-3">
+                                    <img src="${item.product_image || fallbackImage}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
+                                </td>
+                                <td class="p-3">${item.product_name}</td>
+                                <td class="p-3 text-center">${item.quantity}</td>
+                                <td class="p-3 text-center">Rs ${item.price}</td>
+                                <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
+                            </tr>`;
+                        });
+
+                        $("#order-items-body").html(itemsHtml);
+                    },
+                    error: function(xhr) {
+                        alert("Failed to fetch order details. Please try again.");
+                        console.error("AJAX Error:", xhr.responseText);
+                    }
+                });
+            });
+
+            // Dropdown toggle
+            const dropdownButton = document.getElementById('dropdownButton');
+            const dropdownContent = document.getElementById('dropdownContent');
+            const dropdownArrow = document.getElementById('dropdownArrow');
+
+            if (dropdownButton && dropdownContent && dropdownArrow) {
+                dropdownButton.addEventListener('click', () => {
+                    dropdownContent.classList.toggle('hidden');
+                    dropdownArrow.classList.toggle('rotate-180');
+                });
+            }
+        });
+    </script>
 
 @endsection

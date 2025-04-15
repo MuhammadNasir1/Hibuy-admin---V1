@@ -123,7 +123,12 @@ class SellerController extends Controller
                 $storeData['personal_info'] = $personalInfoFiltered;
                 $storeData['seller'] = $seller;
 
-                return view('admin.SellerProfile', compact('storeData'));
+                // return view('admin.SellerProfile', compact('storeData'));
+                if ($seller->user?->user_role === 'seller') {
+                    return view('admin.SellerProfile', compact('storeData'));
+                } else {
+                    return view('admin.FreelancerProfile', compact('storeData'));
+                }
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

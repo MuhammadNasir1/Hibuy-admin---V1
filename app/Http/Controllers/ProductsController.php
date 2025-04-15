@@ -467,7 +467,6 @@ class ProductsController extends Controller
         $query = DB::table('products')
             ->join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
-            ->where('products.user_id', '!=', $p_id)
             ->select(
                 'products.product_id',
                 'products.user_id',
@@ -486,6 +485,8 @@ class ProductsController extends Controller
         // If not admin, filter by logged-in user_id
         if ($loggedInUserRole !== 'admin') {
             $query->where('products.user_id', $loggedInUserId);
+        }else{
+            $query->where('products.user_id','!=', $p_id);
         }
 
         // Fetch products and format image
