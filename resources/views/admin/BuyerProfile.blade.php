@@ -7,11 +7,12 @@
             <h3 class="mx-6 mt-5 text-2xl font-semibold">
                 Buyer Details
             </h3>
-            <div class="h-[150px] border rounded-xl mx-6  mt-3 flex justify-center items-center">
-                <div class="h-[80%] w-[95%] rounded-xl flex items-center justify-between">
+            <div class="h-auto border rounded-xl mx-6  mt-3 flex justify-center items-center">
+                <div class="h-[80%] w-[95%] rounded-xl flex flex-col md:flex-row items-center justify-between py-2 gap-2">
                     <!-- Seller Information -->
-                    <div class="flex items-center gap-5">
-                        @php
+                    <div class="flex flex-col md:flex-row items-center gap-2 md:gap-5">
+                        <div>
+                            @php
                             $imagePath = $buyer->customer_image;
                             $defaultImage = asset('asset/Ellipse 2.png');
                             $finalImage =
@@ -22,6 +23,7 @@
 
                         <img class="h-[80px] w-[80px] rounded-full" src="{{ $finalImage }}" alt="Customer image">
 
+                        </div>
                         <div>
                             <h3 class="text-lg font-semibold">{{ $buyer->user->user_name }}</h3>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
@@ -85,7 +87,7 @@
         </div>
 
 
-        <div class="grid grid-cols-3 gap-4 p-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-5">
             <div class="col-span-2">
                 <div id="accordion-collapse" data-accordion="collapse">
                     <h2 id="accordion-collapse-heading-1" class="border-b">

@@ -32,9 +32,9 @@
                                 <img class="rounded-full w-11 h-11" src="{{ $finalImage }}" alt="Product image">
 
                             </td>
-                            <td>{{ $categorie->name }}</td>
+                            <td class="capitalize">{{ $categorie->name }}</td>
                             <td>{{ $categorie->subcategory_count }}</td>
-                            <td>4</td>
+                            <td>{{ $categorie->product_count }}</td>
                             <td><span
                                     class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
                             </td>
@@ -108,7 +108,7 @@
                         </div>
 
                         <!-- Category Name -->
-                        <div class="px-6 mt-5">
+                        <div class="px-6 mt-10">
                             <x-input type="text" label="Category Name" placeholder="Your name..." value=""
                                 id="name" name="name" />
                         </div>
@@ -120,11 +120,11 @@
                                 <input type="text" id="tag-input-field"
                                     class="border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-primary focus:border-primary block p-2.5 w-full"
                                     placeholder="Enter a tag and press Enter">
-                                    <div class="flex flex-wrap gap-2 p-2 border rounded-md" id="view-tag-container">
+                                <div class="flex flex-wrap gap-2 p-2 border rounded-md" id="view-tag-container">
 
-                                    </div>
+                                </div>
                             </div>
-                                <input type="hidden" name="sub_categories" id="tag-inputs">
+                            <input type="hidden" name="sub_categories" id="tag-inputs">
                             {{-- <button type="button" id="add-tag-btn"
                                 class="px-3 py-1 text-white bg-blue-500 rounded-r-md hover:bg-blue-600">
                                 +
@@ -150,25 +150,24 @@
             <x-slot name="title">View Product Category</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                <div class="grid grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow-md md:py-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow-md md:py-5">
                     <!-- Category Image -->
                     <div class="w-full">
                         <label class="block mb-2 text-lg font-semibold text-gray-700">Category Image</label>
-                        <img id="categoryImage"
-                            class="object-cover w-full h-40 border border-gray-300 rounded-lg shadow-md" src=""
-                            alt="Category Image">
+                        <img id="categoryImage" class="object-cover w-full  border border-gray-300 rounded-lg shadow-md"
+                            src="" alt="Category Image">
                     </div>
 
                     <!-- Category Name -->
                     <div class="w-full">
                         <label class="block mb-2 text-lg font-semibold text-gray-700">Category Name</label>
-                        <div id="categoryName" class="text-xl font-bold text-gray-900"></div>
+                        <div id="categoryName" class="text-xl font-bold text-gray-900 capitalize"></div>
                     </div>
 
                     <!-- Sub Categories -->
                     <div class="w-full">
                         <label class="block mb-2 text-lg font-semibold text-gray-700">Sub Categories</label>
-                        <ul id="categorySubCategories" class="p-3 bg-gray-100 rounded-lg shadow-sm"></ul>
+                        <ul id="categorySubCategories" class="p-3 bg-gray-100 rounded-lg shadow-sm capitalize"></ul>
                     </div>
                 </div>
 
@@ -295,13 +294,16 @@
                         if (response.status == "success") {
                             // $("#categoryImage").attr("src", "{{ asset('') }}" + response
                             //     .data.image);
-                            let imageUrl = response.data.image ? "{{ asset('storage') }}/" + response.data.image : "{{ asset('asset/Ellipse 2.png') }}";
+                            let imageUrl = response.data.image ?
+                                "{{ asset('') }}" + response.data.image :
+                                "{{ asset('asset/Ellipse 2.png') }}";
+                            $("#categoryImage")
+                                .attr("src", imageUrl)
+                                .on("error", function() {
+                                    $(this).attr("src",
+                                        "{{ asset('asset/Ellipse 2.png') }}");
+                                });
 
-$("#categoryImage")
-    .attr("src", imageUrl)
-    .on("error", function() {
-        $(this).attr("src", "{{ asset('asset/Ellipse 2.png') }}");
-    });
 
 
 

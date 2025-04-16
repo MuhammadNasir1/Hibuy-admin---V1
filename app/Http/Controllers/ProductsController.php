@@ -238,8 +238,12 @@ class ProductsController extends Controller
                 }
                 // Update the product
                 $product->update($updateData);
-
-                return redirect()->route('products')->with('success', 'Product updated successfully');
+                if ($userDetails['user_role'] == 'admin') {
+                    return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
+                } else {
+                    return redirect()->route('products')->with('success', 'Product updated successfully');
+                }
+                // return redirect()->route('products')->with('success', 'Product updated successfully');
             } else {
                 // Decode product images JSON if it exists
                 $storedImagePaths = [];
@@ -292,8 +296,13 @@ class ProductsController extends Controller
                 ];
 
                 Products::create($productData);
-
-                return redirect()->route('products')->with('success', 'Product added successfully');
+                // return $userDetails;
+                if ($userDetails['user_role'] == 'admin') {
+                    return redirect()->route('hibuy_product')->with('success', 'Product added successfully');
+                } else {
+                    return redirect()->route('products')->with('success', 'Product added successfully');
+                }
+                // return redirect()->route('products')->with('success', 'Product added successfully');
             }
         } catch (\Exception $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
@@ -336,15 +345,24 @@ class ProductsController extends Controller
 
     public function showcat()
     {
-        $categories = product_category::all();
-
+        // $categories = product_category::all();
+        $categories = DB::table('categories')
+        ->leftJoin('products', 'categories.id', '=', 'products.product_category')
+        ->select('categories.*', 'products.product_category')
+        ->distinct()
+        ->get();
         // Loop through each category and count subcategories
         foreach ($categories as $category) {
             $category->subcategory_count = is_array(json_decode($category->sub_categories, true))
                 ? count(json_decode($category->sub_categories, true))
                 : 0;
         }
-
+        foreach ($categories as $category) {
+            $category->product_count = DB::table('products')
+                ->where('product_category', $category->id)
+                ->count();
+        }
+        // return  $categories;
         return view('admin.ProductCategory', compact('categories'));
     }
 
@@ -465,7 +483,7 @@ class ProductsController extends Controller
 
         // Base query
         $query = DB::table('products')
-            ->join('categories', 'products.product_category', '=', 'categories.id')
+            ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
             ->select(
                 'products.product_id',

@@ -41,14 +41,14 @@
                     <td>{{ $product->user_name }}</td>
                     <td>
                         <span
-                            class="px-2 py-1 text-xs font-semibold text-white rounded
+                            class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded
                             {{ $product->is_boosted == 0 ? 'bg-red-500' : 'bg-green-500' }}">
                             {{ $product->is_boosted == 0 ? 'Not Boosted' : 'Active' }}
                         </span>
                     </td>
                     <td>
                         <span
-                            class="px-2 py-1 text-xs font-semibold text-white rounded
+                            class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded
                             {{ $product->product_status == 0 ? 'bg-red-500' : 'bg-green-500' }}">
                             {{ $product->product_status == 0 ? 'Not Active' : 'Active' }}
                         </span>
@@ -112,4 +112,31 @@
     </div>
 
 
+@endsection
+@section('js')
+    <script>
+        $(document).ready(function() {
+
+            // SweetAlert success (flash message)
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: @js(session('success')),
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            @endif
+
+            // SweetAlert error (flash message)
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: @js(session('error')),
+                    confirmButtonColor: '#d33'
+                });
+            @endif
+        });
+    </script>
 @endsection

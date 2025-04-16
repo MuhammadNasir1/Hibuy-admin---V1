@@ -7,22 +7,24 @@
             <h3 class="mx-6 mt-3 text-2xl font-semibold">
                 Seller Information
             </h3>
-            <div class="h-[150px] border rounded-xl mx-6 mt-3 flex justify-center items-center">
-                <div class="h-[80%] w-[95%] rounded-xl flex items-center justify-between">
+            <div class="h-auto border rounded-xl mx-6 mt-3 flex justify-center items-center">
+                <div class="h-[80%] w-[95%] rounded-xl flex flex-col md:flex-row items-center justify-between py-2 gap-2">
                     <!-- Seller Information -->
-                    <div class="flex items-center gap-5">
+                    <div class="flex flex-col md:flex-row items-center gap-2 md:gap-5">
+                       <div>
                         @php
-                            $profilePic = $storeData['personal_info']['profile_picture'] ?? '';
-                            $defaultPic = asset('asset/pic.jpg');
+                        $profilePic = $storeData['personal_info']['profile_picture'] ?? '';
+                        $defaultPic = asset('asset/pic.jpg');
 
-                            $finalPic =
-                                !empty($profilePic) && file_exists(public_path($profilePic))
-                                    ? asset($profilePic)
-                                    : $defaultPic;
-                        @endphp
+                        $finalPic =
+                            !empty($profilePic) && file_exists(public_path($profilePic))
+                                ? asset($profilePic)
+                                : $defaultPic;
+                    @endphp
 
-                        <img src="{{ $finalPic }}" class="h-[80px] w-[80px] rounded-full" alt="">
+                    <img src="{{ $finalPic }}" class="h-[80px] w-[80px] rounded-full" alt="">
 
+                       </div>
                         <div>
                             <h3 class="text-lg font-semibold">{{ $storeData['personal_info']['full_name'] }}</h3>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
@@ -47,10 +49,11 @@
                 Store Information
             </h3>
             <div
-                class="h-[150px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
-                <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center justify-between px-5">
-                    <div class="flex items-center gap-5">
-                        @php
+                class="h-auto shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
+                <div class="h-[80%] w-[95%] bg-white rounded-xl flex flex-col md:flex-row items-center justify-between gap-2 px-5 py-2 m-5">
+                    <div class="flex flex-col md:flex-row items-center gap-5">
+                        <div>
+                            @php
                             $storeImagePath = $storeData['store_image'] ?? '';
                             $defaultImage = asset('asset/pic.jpg');
 
@@ -62,9 +65,10 @@
 
                         <img src="{{ $storeImage }}" class="h-[80px] w-[80px] rounded-full" alt="">
 
-                        <div>
+                        </div>
+                        <div class="flex flex-col  items-center md:items-start">
                             <h3 class="text-lg font-semibold">{{ $storeData['store_name'] }}</h3>
-                            <p class="text-sm text-gray-500 flex items-center gap-2 flex-wrap pt-1">
+                            <p class="text-sm text-gray-500 flex  items-center gap-2 flex-wrap pt-1">
                                 <span class="flex items-cente">
                                     <svg class="h-[15px] fill-gray-500" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 512 512">

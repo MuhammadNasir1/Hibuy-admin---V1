@@ -5,29 +5,31 @@
     <div class="w-full pt-10 pb-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div>
             <h3 class="mx-6 mt-3 text-2xl font-semibold">
-                Freelancers Information
+                Freelancer Information
             </h3>
-            <div class="h-[150px] border rounded-xl mx-6 mt-3 flex justify-center items-center">
-                <div class="h-[80%] w-[95%] rounded-xl flex items-center justify-between">
-                    <!-- Freelancers Information -->
-                    <div class="flex items-center gap-5">
+            <div class="h-auto border rounded-xl mx-6 mt-3 flex justify-center items-center">
+                <div class="h-[80%] w-[95%] rounded-xl flex flex-col md:flex-row items-center justify-between py-2 gap-2">
+                    <!-- Seller Information -->
+                    <div class="flex flex-col md:flex-row items-center gap-2 md:gap-5">
+                       <div>
                         @php
-                            $profilePath = $storeData['personal_info']['profile_picture'] ?? '';
-                            $defaultProfile = asset('asset/pic.jpg');
+                        $profilePic = $storeData['personal_info']['profile_picture'] ?? '';
+                        $defaultPic = asset('asset/pic.jpg');
 
-                            $profileImage =
-                                !empty($profilePath) && file_exists(public_path($profilePath))
-                                    ? asset($profilePath)
-                                    : $defaultProfile;
-                        @endphp
+                        $finalPic =
+                            !empty($profilePic) && file_exists(public_path($profilePic))
+                                ? asset($profilePic)
+                                : $defaultPic;
+                    @endphp
 
-                        <img src="{{ $profileImage }}" class="h-[80px] w-[80px] rounded-full" alt="">
+                    <img src="{{ $finalPic }}" class="h-[80px] w-[80px] rounded-full" alt="">
 
+                       </div>
                         <div>
-                            <h3 class="text-lg font-semibold">{{ $storeData['personal_info']['full_name'] }} </h3>
-                            {{-- <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
+                            <h3 class="text-lg font-semibold">{{ $storeData['personal_info']['full_name'] }}</h3>
+                            <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
                                 {{ $storeData['personal_info']['phone_no'] }}
-                            </p> --}}
+                            </p>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
                                 {{ $storeData['personal_info']['email'] }}
                             </p>
@@ -47,40 +49,37 @@
                 Store Information
             </h3>
             <div
-                class="h-[150px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
-                <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center justify-between px-5">
-                    <div class="flex items-center gap-5">
-                        @php
+                class="h-auto shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
+                <div class="h-[80%] w-[95%] bg-white rounded-xl flex flex-col md:flex-row items-center justify-between gap-2 px-5 py-2 m-5">
+                    <div class="flex flex-col md:flex-row items-center gap-5">
+                        <div>
+                            @php
                             $storeImagePath = $storeData['store_image'] ?? '';
-                            $defaultStoreImage = asset('asset/pic.jpg');
+                            $defaultImage = asset('asset/pic.jpg');
 
                             $storeImage =
                                 !empty($storeImagePath) && file_exists(public_path($storeImagePath))
                                     ? asset($storeImagePath)
-                                    : $defaultStoreImage;
+                                    : $defaultImage;
                         @endphp
 
                         <img src="{{ $storeImage }}" class="h-[80px] w-[80px] rounded-full" alt="">
 
-                        <div>
+                        </div>
+                        <div class="flex flex-col  items-center md:items-start">
                             <h3 class="text-lg font-semibold">{{ $storeData['store_name'] }}</h3>
-                            {{-- <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
-                                <span>
-                                    <svg class="h-[15px] fill-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 512 512">
-                                        <path
-                                            d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6l0 242.9c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4L0 134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1 0-188L288 246.6l0 188z" />
-                                    </svg>
-                                </span>70% positive seller rating
-                            </p> --}}
-                            <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
-                                <span>
+                            <p class="text-sm text-gray-500 flex  items-center gap-2 flex-wrap pt-1">
+                                <span class="flex items-cente">
                                     <svg class="h-[15px] fill-gray-500" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 512 512">
                                         <path
                                             d="M234.5 5.7c13.9-5 29.1-5 43.1 0l192 68.6C495 83.4 512 107.5 512 134.6l0 242.9c0 27-17 51.2-42.5 60.3l-192 68.6c-13.9 5-29.1 5-43.1 0l-192-68.6C17 428.6 0 404.5 0 377.4L0 134.6c0-27 17-51.2 42.5-60.3l192-68.6zM256 66L82.3 128 256 190l173.7-62L256 66zm32 368.6l160-57.1 0-188L288 246.6l0 188z" />
                                     </svg>
                                 </span>
+
+                                {{-- @foreach ($storeData['store_tags'] as $tag)
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ $tag }}</span>
+                            @endforeach --}}
                                 @if (!empty($storeData['store_tags']) && is_array($storeData['store_tags']))
                                     @foreach ($storeData['store_tags'] as $tag)
                                         <span
@@ -89,6 +88,7 @@
                                 @else
                                     <span>No tags available</span>
                                 @endif
+
                             </p>
                         </div>
                     </div>
