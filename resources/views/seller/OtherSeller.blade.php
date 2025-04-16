@@ -3,6 +3,7 @@
 @section('nav-title', 'Products')
 
 @section('content')
+
     <style>
         select:not([size]) {
             background-image: url("data:image/svg+xml,%3csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3e %3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3e %3c/svg%3e");
@@ -100,27 +101,37 @@
 
 
         <div id="productContainer" class="grid grid-cols-4 gap-5 px-5 mt-5">
-            <div class="product border p-5 rounded-xl flex-column" data-name="airpods pro wireless earbuds bluetooth 5.0">
-                <img src="{{ asset('asset/product.png') }}" alt="product"
-                    class="product-img w-full object-contain rounded-xl">
-                <div class="flex-1 mt-3 product-info">
-                    <p class="text-gray-600">Tech</p>
-                    <h1 class="font-bold title">Airpods Pro Wireless Earbuds Bluetooth 5.0</h1>
-                    <div class="flex justify-between rating mt-2">
-                        <p class="text-gray-500">By TechDad</p>
-                        <div class="flex items-center">
-                            <img src="{{ asset('asset/emojione_star.png') }}" class="h-[20px]" alt="">
-                            <p class="text-gray-500 ml-1">(4.0)</p>
+            @foreach ($products as $product)
+                @php
+                    $images = json_decode($product->product_images, true);
+                    $mainImage = isset($images[0]) ? str_replace('\/', '/', $images[0]) : 'asset/product.png';
+                @endphp
+
+                <div class="product border p-5 rounded-xl flex-column" data-name="{{ strtolower($product->product_name) }}">
+                    <img src="{{ asset($mainImage) }}" alt="product"
+                        class="product-img w-full object-contain rounded-xl h-[200px]">
+                    <div class="flex-1 mt-3 product-info">
+                        <p class="text-gray-600">{{ $product->product_brand }}</p>
+                        <h1 class="font-bold title line-clamp-2">{{ $product->product_name }}</h1>
+
+                        <div class="flex justify-between rating mt-2">
+                            <p class="text-gray-500">By Store #{{ $product->store_id }}</p>
+                            <div class="flex items-center">
+                                <img src="{{ asset('asset/emojione_star.png') }}" class="h-[20px]" alt="">
+                                <p class="text-gray-500 ml-1">(4.0)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-2 items-center buy-btn-container">
+                            <p class="text-green-600 font-bold">Rs{{ number_format($product->product_discounted_price) }}
+                            </p>
+                            <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
                         </div>
                     </div>
-                    <div class="flex justify-between mt-2 items-center buy-btn-container">
-                        <p class="text-green-600 font-bold">$28.85</p>
-                        <button class="px-6 py-2 text-sm text-white bg-primary rounded-xl">Buy</button>
-                    </div>
                 </div>
-            </div>
-
+            @endforeach
         </div>
+
 
     </div>
 
@@ -146,7 +157,7 @@
 
             $("#rowView").click(function() {
                 $("#productContainer").removeClass("grid grid-cols-4 gap-5").addClass(
-                "flex flex-col gap-5");
+                    "flex flex-col gap-5");
                 $(".product-img").removeClass("w-full").addClass("h-[210px]");
                 $(".product ").removeClass("flex-column").addClass("flex gap-5 items-center");
                 $(".rating ").removeClass("justify-between flex").addClass("flex-column");
@@ -156,11 +167,11 @@
             });
         });
 
-        $(document).ready(function () {
-            $("#search").on("keyup", function () {
+        $(document).ready(function() {
+            $("#search").on("keyup", function() {
                 let searchText = $(this).val().toLowerCase();
 
-                $(".product").each(function () {
+                $(".product").each(function() {
                     let productName = $(this).attr("data-name").toLowerCase();
                     if (productName.includes(searchText)) {
                         $(this).show();

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -31,6 +32,9 @@ class DatabaseSeeder extends Seeder
             'user_email' => 'freelancer@gmail.com',
             'user_password' => Hash::make('12345678'),
             'user_role' => 'freelancer',
+        ]);
+        $this->call([
+            CourierSeeder::class, // Add this line
         ]);
     }
 }

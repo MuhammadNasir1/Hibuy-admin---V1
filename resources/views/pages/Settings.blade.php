@@ -287,17 +287,17 @@
                             <!-- Overlay (Optional for better readability) -->
                             {{-- <div class="absolute inset-0 bg-black bg-opacity-50"></div> --}}
                             <!-- Centered Form -->
-                            <div class="absolute inset-0 flex justify-evenly items-center justify-center">
+                            <div class="absolute inset-0 flex flex-col md:flex-row justify-evenly items-center ">
                                 <div>
-                                    <h3 class="text-3xl font-bold text-customBlack">
+                                    <h3 class="text-md md:text-3xl font-bold text-customBlack">
                                         Refer Friends.<br>
                                         Get 100 Credits
                                     </h3>
                                 </div>
-                                <div>
-                                    <form class="bg-primary bg-opacity-20 p-6 rounded-lg shadow-lg w-96">
+                                <div class="bg-primary bg-opacity-20 p-6 rounded-lg shadow-lg m-2">
+                                    <form>
                                         <div class="mb-4">
-                                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
+                                            <h2 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
                                                 ID</h2>
                                             <div class="flex">
                                                 <input type="text" id="referral-id" value="ABC12345"
@@ -319,7 +319,7 @@
                                         </div>
 
                                         <div class="mb-4">
-                                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
+                                            <h2 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
                                                 Link</h2>
                                             <div class="flex">
                                                 <input type="text" id="referral-link"
@@ -341,7 +341,7 @@
                                             </div>
                                         </div>
                                         <button type="button"
-                                            class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Invite
+                                            class="w-full text-sm md:text-md bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Invite
                                             Friends</button>
                                     </form>
                                 </div>
@@ -349,7 +349,7 @@
                         </div>
                     </div>
                     <div class="bg-none">
-                        <h3 class="text-3xl font-bold text-customBlack">
+                        <h3 class="text-md md:text-3xl font-bold text-customBlack">
                             My Referals (5)
                         </h3>
                         @php

@@ -13,14 +13,14 @@
                         <a href="#" class="inline-block px-4 py-1 text-white bg-primary rounded-3xl active"
                             aria-current="page">All</a>
                     </li>
-                    <li class="me-2">
+                    {{-- <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Seller</a>
                     </li>
                     <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Freelancer</a>
-                    </li>
+                    </li> --}}
                     <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Wholesale</a>
@@ -104,6 +104,53 @@
             <x-slot name="body">
                 <div class="p-6 space-y-4">
                     <!-- Customer Details -->
+                    <form id="statusForm" class="w-full">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end">
+                            {{-- Order Status --}}
+                            <div>
+                                <label for="order_status" class="block mb-1 text-sm font-normal text-gray-600">Order
+                                    Status</label>
+                                <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
+                                <select id="order_status" name="order_status"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                    <option value="" selected>Select Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                    <option value="returned">Returned</option>
+                                </select>
+                            </div>
+
+                            {{-- Courier Selection --}}
+                            <div>
+                                <label for="courier_id" class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
+                                <select id="courier_id" name="courier_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                    <option value="" selected>Select Courier</option>
+                                </select>
+                            </div>
+
+                            {{-- Tracking Number --}}
+                            <div>
+                                <label for="tracking_number" class="block mb-1 text-sm font-normal text-gray-600">Tracking
+                                    No.</label>
+                                <input type="text" id="tracking_number" name="tracking_number"
+                                    placeholder="Enter tracking number"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                            </div>
+
+                            {{-- Submit Button --}}
+                            <div class="flex justify-end">
+                                <button type="submit" id="submitStatus"
+                                    class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
                             <tbody>
@@ -218,9 +265,31 @@
                             alert(response.error);
                             return;
                         }
+                        // Assuming your API response is saved in a variable called response
+                        const couriers = response
+                            .couriers; // Array of { courier_id, courier_name }
+                        const selectBox = document.getElementById('courier_id');
 
+                        // Clear existing options (optional)
+                        selectBox.innerHTML = '<option value="">Select Courier</option>';
+
+                        // Loop through couriers and append options
+                        couriers.forEach(courier => {
+                            const option = document.createElement('option');
+                            option.value = courier.courier_id;
+                            option.textContent = courier.courier_name;
+                            selectBox.appendChild(option);
+                        });
+
+                        // Optional: Set selected courier if editing an existing order
+                        if (response.selected_courier_id) {
+                            selectBox.value = response.selected_courier_id;
+                        }
                         // Populate order details
-                        $("#order-status").text(response.status);
+                        $('#tracking_number').val(response.tracking_number);
+                        $('#order_status').val(response.order_status).change();
+                        $("#order-status").text(response.order_status);
+                        $("#edit_orderstatus_id").val(response.order_id);
                         $("#customer-name").text(response.customer_name);
                         $("#tracking-id").text(response.tracking_id);
                         $("#customer-address").text(response.address);
@@ -256,6 +325,35 @@
                     },
                 });
             });
+
+
+            // JS (place in a script tag or external JS file)
+            $('#statusForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let formData = {
+                    _token: $('input[name="_token"]').val(),
+                    order_status: $('#order_status').val(),
+                    courier_id: $('#courier_id').val(),
+                    tracking_number: $('#tracking_number').val(),
+                    order_id: $('#edit_orderstatus_id').val() // hidden input carrying order_id
+                };
+
+                $.ajax({
+                    url: '{{ route('orders.update.status') }}',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        console.log(response);
+                        alert(response.message); // You can use toast or modal instead
+                    },
+                    error: function(xhr) {
+                        alert('Something went wrong.');
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+
         });
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownContent = document.getElementById('dropdownContent');

@@ -208,7 +208,9 @@ $(document).ready(function () {
             error: function (xhr) {
                 let errorMessage = "An error occurred.";
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
+                    errorMessage = Object.values(xhr.responseJSON.errors).join(
+                        "\n"
+                    );
                 }
                 Swal.fire({
                     title: "Validation Error!",
@@ -274,49 +276,51 @@ $(document).ready(function () {
 //     });
 // });
 
+$(document).ready(function () {
+    $(".submitForm").submit(function (e) {
+        e.preventDefault(); // Prevent default form submission
 
+        let form = $(this);
+        let actionUrl = form.attr("action"); // Get form action URL
+        let formData = new FormData(this); // Properly create FormData object
 
-// $(document).ready(function(){
-//     $(".myFormNew").submit(function(e){
-//         e.preventDefault(); // Prevent default form submission
-
-//         let form = $(this);
-//         let actionUrl = form.attr('action'); // Get form action URL
-//         let formData = new FormData(this); // Properly create FormData object
-
-//         $.ajax({
-//             url: actionUrl,
-//             type: "POST",
-//             data: formData,
-//             contentType: false, // Important for FormData
-//             processData: false, // Prevent jQuery from processing data
-//             dataType: "json",            success: function(response) {
-//                 if (response.success) {
-//                     Swal.fire({
-//                         title: "Success!",
-//                         text: response.message,
-//                         icon: "success"
-//                     });
-//                     form[0].reset(); // Reset form after success
-//                 } else {
-//                     Swal.fire({
-//                         title: "Error!",
-//                         text: response.message,
-//                         icon: "error"
-//                     });
-//                 }
-//             },
-//             error: function(xhr) {
-//                 let errorMessage = "An error occurred.";
-//                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-//                     errorMessage = Object.values(xhr.responseJSON.errors).join("\n");
-//                 }
-//                 Swal.fire({
-//                     title: "Validation Error!",
-//                     text: errorMessage,
-//                     icon: "warning"
-//                 });
-//             }
-//         });
-//     });
-// });
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            data: formData,
+            contentType: false, // Important for FormData
+            processData: false, // Prevent jQuery from processing data
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: response.message,
+                        icon: "success",
+                    });
+                    form[0].reset(); // Reset form after success
+                    location.reload(); // Reload the page
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: response.message,
+                        icon: "error",
+                    });
+                }
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred.";
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).join(
+                        "\n"
+                    );
+                }
+                Swal.fire({
+                    title: "Validation Error!",
+                    text: errorMessage,
+                    icon: "warning",
+                });
+            },
+        });
+    });
+});

@@ -13,13 +13,13 @@ class SellerController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'user_id' =>  'required|exists:users,user_id',
+                'user_id' => 'required|exists:users,user_id',
                 'info_type' => 'required|string',
                 'data' => 'required|json',
             ]);
             // $newData = $validatedData['info_type'];
 
-            $seller = Seller::where('user_id', $validatedData['user_id'])->first();
+            $seller = Seller::where('user_id', $validatedData['user_id'] )->first();
             if (!$seller) {
                 return response()->json(['success' => false, 'message' => "Seller Not Found"], 404);
             }
@@ -47,8 +47,10 @@ class SellerController extends Controller
 
             $user_id = $userDetails['user_id'];
 
-            // Always get seller info
-            $seller = Seller::select('seller_id', 'store_info', 'personal_info')
+            // Always get seller info with user
+            $seller = Seller::with('user')
+                ->select('seller_id', 'store_info', 'personal_info', 'user_id') // include user_id here!
+
                 ->where('seller_id', $sellerId)
                 ->first();
 
@@ -59,10 +61,11 @@ class SellerController extends Controller
             // Decode and filter personal info
             $personalInfo = json_decode($seller->personal_info, true);
             $personalInfoFiltered = [
-                'full_name'       => $personalInfo['full_name'] ?? null,
+                'full_name' => $personalInfo['full_name'] ?? null,
                 'profile_picture' => $personalInfo['profile_picture'] ?? null,
-                'phone_no'        => $personalInfo['phone_no'] ?? null,
-                'email'           => $personalInfo['email'] ?? null,
+                'phone_no' => $personalInfo['phone_no'] ?? null,
+                'email' => $personalInfo['email'] ?? null,
+
             ];
 
             // If store exists
@@ -83,7 +86,11 @@ class SellerController extends Controller
                     "product_price",
                     "product_discount",
                     "product_discounted_price",
-                    "product_images"
+
+                    "product_images",
+                    "is_boosted",
+                    "product_status"
+
                 )
                     ->where('store_id', $store->store_id)
                     ->with(['category:id,name'])
@@ -100,21 +107,38 @@ class SellerController extends Controller
 
                     $product->is_discounted = $product->product_discount > 0;
                 }
-
+                // Final response
                 $storeData['products'] = $products;
                 $storeData['personal_info'] = $personalInfoFiltered;
-// return $storeData;
-                return view('admin.SellerProfile', compact('storeData'));
+                $storeData['seller'] = $seller;
+
+                // return $storeData;
+                if ($seller->user?->user_role === 'seller') {
+                    return view('admin.SellerProfile', compact('storeData'));
+                } else {
+                    return view('admin.FreelancerProfile', compact('storeData'));
+                }
+                // return view('admin.SellerProfile', compact('storeData'));
+
             } else {
                 // Fallback if store doesn't exist
                 $storeData = json_decode($seller->store_info, true);
                 $storeData['products'] = [];
                 $storeData['personal_info'] = $personalInfoFiltered;
 
-                return view('admin.SellerProfile', compact('storeData'));
+                $storeData['seller'] = $seller;
+
+                // return view('admin.SellerProfile', compact('storeData'));
+                if ($seller->user?->user_role === 'seller') {
+                    return view('admin.SellerProfile', compact('storeData'));
+                } else {
+                    return view('admin.FreelancerProfile', compact('storeData'));
+                }
+
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 }

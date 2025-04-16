@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('customer_id');
             $table->integer('user_id');
             $table->string('customer_image')->nullable();
-            $table->integer('customer_phone')->nullable();
+            $table->string('customer_phone')->nullable();
             $table->string('customer_gender')->nullable();
             $table->date('customer_dob')->nullable();
             $table->longText('payment_method')->nullable();

@@ -92,23 +92,37 @@ class ProductsController extends Controller
     public function storeProduct(Request $request)
     {
         try {
+            // return $request;
             // Retrieve user details from session
             $userDetails = session('user_details');
             if (!$userDetails) {
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            // Find the seller record for the authenticated user
-            $seller = Seller::where('user_id', $userDetails['user_id'])->first();
-            if (!$seller) {
-                return response()->json(['error' => 'Seller record not found'], 404);
+            if ($userDetails['user_role'] !== 'admin') {
+                // Find the seller record for the authenticated user
+                $seller = Seller::where('user_id', $userDetails['user_id'])->first();
+                if (!$seller) {
+                    return response()->json(['error' => 'Seller record not found'], 404);
+                }
+
+                // Fetch store_id based on seller_id
+                $store = Store::where('seller_id', $seller->seller_id)->first();
+                if (!$store) {
+                    return response()->json(['error' => 'Store record not found'], 404);
+                }
+            } else {
+                $seller_id = '0';
+                $store_id = '0';
+                $store = (object)[
+                    'store_id' => $store_id,
+                    'seller_id' => $seller_id,
+                ];
             }
 
-            // Fetch store_id based on seller_id
-            $store = Store::where('seller_id', $seller->seller_id)->first();
-            if (!$store) {
-                return response()->json(['error' => 'Store record not found'], 404);
-            }
+            $productId = $request->product_edit_id;
+
+
 
             // Validate request data
             $validatedData = $request->validate([
@@ -121,7 +135,7 @@ class ProductsController extends Controller
                 'product_price'    => 'required|numeric|min:0',
                 'discount'         => 'nullable|numeric|min:0',
                 'discounted_price' => 'nullable|numeric|min:0',
-                // 'variants'         => 'nullable|array',
+                'variants'         => 'nullable|array',
                 'product_status'   => 'nullable|integer|in:0,1',
                 'product_edit_id'  => 'nullable|integer', // Add this field for update condition
             ]);
@@ -130,6 +144,67 @@ class ProductsController extends Controller
 
             // Check if updating an existing product
             if ($request->filled('product_edit_id')) {
+                // Process Variants
+                $product = Products::where('product_id', $productId)
+                    ->where('user_id', $userDetails['user_id'])
+                    ->first();
+
+                if (!$product) {
+                    return response()->json(['error' => 'Product not found or unauthorized'], 404);
+                }
+                $productVariants = $request->variants ?? [];
+                $existingVariants = json_decode($product->product_variation, true) ?? [];
+
+                foreach ($productVariants as $parentIndex => &$parentVariant) {
+                    $existingParent = $existingVariants[$parentIndex] ?? [];
+
+                    // Process parent image
+                    if ($request->hasFile("variants.$parentIndex.parentimage")) {
+                        $parentImage = $request->file("variants.$parentIndex.parentimage");
+                        $parentImagePath = $parentImage->store('variants', 'public');
+                        $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+                    } else {
+                        $parentVariant['parentimage'] = $existingParent['parentimage'] ?? null;
+                    }
+
+                    // Merge any missing parent fields from existing
+                    foreach ($existingParent as $key => $value) {
+                        if (!isset($parentVariant[$key]) && $key !== 'children') {
+                            $parentVariant[$key] = $value;
+                        }
+                    }
+
+                    // Ensure children array
+                    $parentVariant['children'] = $parentVariant['children'] ?? [];
+                    $existingChildren = $existingParent['children'] ?? [];
+
+                    foreach ($parentVariant['children'] as $childIndex => &$child) {
+                        $existingChild = $existingChildren[$childIndex] ?? [];
+
+                        // Handle child image
+                        if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
+                            $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
+                            $childImagePath = $childImage->store('variants', 'public');
+                            $child['image'] = "storage/" . $childImagePath;
+                        } else {
+                            $child['image'] = $existingChild['image'] ?? null;
+                        }
+
+                        // Merge any missing child fields
+                        foreach ($existingChild as $key => $value) {
+                            if (!isset($child[$key]) && $key !== 'image') {
+                                $child[$key] = $value;
+                            }
+                        }
+                    }
+                }
+
+                $storedImagePaths = [];
+                if ($request->has('product_images')) {
+                    $storedImagePaths = json_decode($request->product_images, true) ?? [];
+                }
+
+                // return $productVariants;
                 // Fetch the product that needs to be updated
                 $product = Products::where('product_id', $request->product_edit_id)
                     ->where('user_id', $userDetails['user_id'])
@@ -153,11 +228,22 @@ class ProductsController extends Controller
                     'product_discount'         => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
                 ];
+                // Conditionally update product_variation
+                if (!empty($productVariants)) {
+                    $updateData['product_variation'] = json_encode($productVariants);
+                }
 
+                if (!empty($storedImagePaths)) {
+                    $updateData['product_images'] = json_encode($storedImagePaths);
+                }
                 // Update the product
                 $product->update($updateData);
-
-                return redirect()->route('products')->with('success', 'Product updated successfully');
+                if ($userDetails['user_role'] == 'admin') {
+                    return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
+                } else {
+                    return redirect()->route('products')->with('success', 'Product updated successfully');
+                }
+                // return redirect()->route('products')->with('success', 'Product updated successfully');
             } else {
                 // Decode product images JSON if it exists
                 $storedImagePaths = [];
@@ -190,6 +276,7 @@ class ProductsController extends Controller
                         }
                     }
                 }
+                // return $productVariants;
                 // Insert new product (including all fields)
                 $productData = [
                     'user_id'                  => $userDetails['user_id'],
@@ -209,8 +296,13 @@ class ProductsController extends Controller
                 ];
 
                 Products::create($productData);
-
-                return redirect()->route('products')->with('success', 'Product added successfully');
+                // return $userDetails;
+                if ($userDetails['user_role'] == 'admin') {
+                    return redirect()->route('hibuy_product')->with('success', 'Product added successfully');
+                } else {
+                    return redirect()->route('products')->with('success', 'Product added successfully');
+                }
+                // return redirect()->route('products')->with('success', 'Product added successfully');
             }
         } catch (\Exception $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
@@ -245,23 +337,32 @@ class ProductsController extends Controller
             $category->sub_categories = json_encode($subCategories); // Save as JSON
             $category->save();
 
-            return response()->json(['message' => 'Category added successfully', 'category' => $category], 201);
+            return response()->json(['success' => true, 'message' => 'Category added successfully', 'category' => $category], 201);
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
 
     public function showcat()
     {
-        $categories = product_category::all();
-
+        // $categories = product_category::all();
+        $categories = DB::table('categories')
+        ->leftJoin('products', 'categories.id', '=', 'products.product_category')
+        ->select('categories.*', 'products.product_category')
+        ->distinct()
+        ->get();
         // Loop through each category and count subcategories
         foreach ($categories as $category) {
             $category->subcategory_count = is_array(json_decode($category->sub_categories, true))
                 ? count(json_decode($category->sub_categories, true))
                 : 0;
         }
-
+        foreach ($categories as $category) {
+            $category->product_count = DB::table('products')
+                ->where('product_category', $category->id)
+                ->count();
+        }
+        // return  $categories;
         return view('admin.ProductCategory', compact('categories'));
     }
 
@@ -319,7 +420,7 @@ class ProductsController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'sub_categories' => 'required|string', // JSON string of subcategories
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             // Find the category by ID
@@ -328,13 +429,18 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'Category not found'], 404);
             }
 
-            // Update category details
+            // Update category name
             $category->name = $request->input('name');
 
-            // Handle new image upload
+            // Handle image upload
             if ($request->hasFile('image')) {
+                // Optional: Delete old image
+                if ($category->image && Storage::exists(str_replace("storage/", "", $category->image))) {
+                    Storage::delete(str_replace("storage/", "", $category->image));
+                }
+
                 $imagePath = $request->file('image')->store('categories', 'public');
-                $category->image = $imagePath; // Update image only if a new one is uploaded
+                $category->image = "storage/" . $imagePath; // Ensure it's prefixed properly
             }
 
             // Convert subcategories JSON string to an array and save it
@@ -344,12 +450,19 @@ class ProductsController extends Controller
             }
             $category->sub_categories = json_encode($subCategories); // Save as JSON
 
-            // Save the updated category
+            // Save updated category
             $category->save();
 
-            return response()->json(['status' => 'success', 'message' => 'Category updated successfully', 'category' => $category], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Category updated successfully',
+                'category' => $category
+            ], 200);
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
 
@@ -364,9 +477,13 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role']; // Get user role
 
+        if ($loggedInUserRole == 'admin') {
+            $p_id = $loggedInUserId;
+        }
+
         // Base query
         $query = DB::table('products')
-            ->join('categories', 'products.product_category', '=', 'categories.id')
+            ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
             ->select(
                 'products.product_id',
@@ -382,6 +499,60 @@ class ProductsController extends Controller
                 'users.user_name as user_name'
             );
 
+
+        // If not admin, filter by logged-in user_id
+        if ($loggedInUserRole !== 'admin') {
+            $query->where('products.user_id', $loggedInUserId);
+        }else{
+            $query->where('products.user_id','!=', $p_id);
+        }
+
+        // Fetch products and format image
+        $products = $query->get()->map(function ($product) {
+            $images = json_decode($product->product_images, true);
+            $product->first_image = $images[0] ?? null;
+            unset($product->product_images);
+            return $product;
+        });
+
+
+        return view('pages.products', compact('products'));
+    }
+    public function showHibuyProducts()
+    {
+        // Retrieve user details from session
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $loggedInUserId = $userDetails['user_id'];
+        $loggedInUserRole = $userDetails['user_role']; // Get user role
+
+        if ($loggedInUserRole == 'admin') {
+            $p_id = $loggedInUserId;
+        }
+
+        // Base query
+        $query = DB::table('products')
+            ->join('categories', 'products.product_category', '=', 'categories.id')
+            ->join('users', 'products.user_id', '=', 'users.user_id')
+            ->where('products.user_id', '=', $p_id)
+            ->select(
+                'products.product_id',
+                'products.user_id',
+                'products.product_name',
+                'categories.name as product_category',
+                'products.product_discounted_price',
+                'products.product_images',
+                'products.product_status',
+                'products.is_boosted',
+                'products.created_at',
+                'products.updated_at',
+                'users.user_name as user_name'
+            );
+
+
         // If not admin, filter by logged-in user_id
         if ($loggedInUserRole !== 'admin') {
             $query->where('products.user_id', $loggedInUserId);
@@ -395,7 +566,8 @@ class ProductsController extends Controller
             return $product;
         });
 
-        return view('pages.products', compact('products'));
+
+        return view('admin.HibuyProduct', compact('products'));
     }
 
 
@@ -512,6 +684,6 @@ class ProductsController extends Controller
         $user = session('user_details')['user_id'];
         $products = Products::Where('user_id', '!=', $user)->get();
 
-        return $products;
+        return view('seller.OtherSeller', compact('products'));
     }
 }

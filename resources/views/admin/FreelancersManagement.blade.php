@@ -26,7 +26,7 @@
                             <span class='flex gap-4'>
 
                                 <a id="addmanagesellerBtn" class="viewModalBtn"
-                                    href="{{ route('FreelancerProfile', base64_encode($seller->user_id)) }}">
+                                    href="{{ route('FreelancerProfile', $seller->seller_id) }}">
                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <path fill-rule='evenodd' clip-rule='evenodd'
