@@ -50,6 +50,7 @@ class SellerController extends Controller
             // Always get seller info with user
             $seller = Seller::with('user')
                 ->select('seller_id', 'store_info', 'personal_info', 'user_id') // include user_id here!
+
                 ->where('seller_id', $sellerId)
                 ->first();
 
@@ -64,6 +65,7 @@ class SellerController extends Controller
                 'profile_picture' => $personalInfo['profile_picture'] ?? null,
                 'phone_no' => $personalInfo['phone_no'] ?? null,
                 'email' => $personalInfo['email'] ?? null,
+
             ];
 
             // If store exists
@@ -84,9 +86,11 @@ class SellerController extends Controller
                     "product_price",
                     "product_discount",
                     "product_discounted_price",
+
                     "product_images",
                     "is_boosted",
                     "product_status"
+
                 )
                     ->where('store_id', $store->store_id)
                     ->with(['category:id,name'])
@@ -103,7 +107,6 @@ class SellerController extends Controller
 
                     $product->is_discounted = $product->product_discount > 0;
                 }
-
                 // Final response
                 $storeData['products'] = $products;
                 $storeData['personal_info'] = $personalInfoFiltered;
@@ -116,11 +119,13 @@ class SellerController extends Controller
                     return view('admin.FreelancerProfile', compact('storeData'));
                 }
                 // return view('admin.SellerProfile', compact('storeData'));
+
             } else {
                 // Fallback if store doesn't exist
                 $storeData = json_decode($seller->store_info, true);
                 $storeData['products'] = [];
                 $storeData['personal_info'] = $personalInfoFiltered;
+
                 $storeData['seller'] = $seller;
 
                 // return view('admin.SellerProfile', compact('storeData'));
@@ -129,6 +134,7 @@ class SellerController extends Controller
                 } else {
                     return view('admin.FreelancerProfile', compact('storeData'));
                 }
+
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
