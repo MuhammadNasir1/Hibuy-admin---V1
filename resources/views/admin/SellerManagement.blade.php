@@ -17,7 +17,7 @@
                     <tr style="text-transform: capitalize">
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $seller->seller_id }}</td>
-                        <td>{{ $seller->user->user_name }}</td>
+                        <td class="capitalize">{{ $seller->user->user_name }}</td>
                         <td>{{ $seller->submission_date }}</td>
                         <td><span
                                 class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">{{ $seller->status }}</span>

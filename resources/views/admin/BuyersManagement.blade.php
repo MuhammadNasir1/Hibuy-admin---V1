@@ -26,7 +26,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $buyer['user_id'] }}</td>
-                        <td>{{ $buyer['user']['user_name'] }}</td>
+                        <td class="capitalize">{{ $buyer['user']['user_name'] }}</td>
                         <td>{{ $buyer['customer_phone'] }}</td>
                         <td>{{ $buyer['user']['joined_date'] }}</td>
                         <td>{{ $buyer['order_count'] }}</td>

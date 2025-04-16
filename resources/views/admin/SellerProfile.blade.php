@@ -214,8 +214,8 @@
                                     <img class="rounded-full w-11 h-11" src="{{ $finalImage }}" alt="Product image">
 
                                 </td>
-                                <td>{{ $product['product_name'] }}</td>
-                                <td>{{ $product['category_name'] }}</td>
+                                <td class="capitalize">{{ $product['product_name'] }}</td>
+                                <td class="capitalize">{{ $product['category_name'] }}</td>
                                 <td>{{ $product['product_discount'] }} %</td>
                                 <td class="whitespace-nowrap">Rs {{ $product['product_price'] }}</td>
                                 <td>
@@ -336,13 +336,13 @@
                                 <div class="space-y-5">
                                     <div class="flex items-center gap-6">
                                         <div class="w-32 text-sm font-medium text-gray-600">Title</div>
-                                        <div id="product_name" class="text-base font-semibold text-gray-800">
+                                        <div id="product_name" class="text-base font-semibold text-gray-800 capitalize">
                                         </div>
                                     </div>
 
                                     <div class="flex items-center gap-6">
                                         <div class="w-32 text-sm font-medium text-gray-600">Brand</div>
-                                        <div id="brand_name" class="text-base text-gray-700"></div>
+                                        <div id="brand_name" class="text-base text-gray-700 capitalize"></div>
                                     </div>
 
                                     <div class="flex items-center gap-6">
@@ -355,7 +355,7 @@
                                 <div class="space-y-5">
                                     <div class="flex items-center gap-6">
                                         <div class="w-32 text-sm font-medium text-gray-600">Category</div>
-                                        <div id="product_category" class="text-base text-gray-700"></div>
+                                        <div id="product_category" class="text-base text-gray-700 capitalize"></div>
                                     </div>
 
                                     <div class="flex items-center gap-6">
@@ -384,7 +384,7 @@
                                 <div class="flex flex-col gap-2">
                                     <div class="text-sm font-medium text-gray-600">Description</div>
                                     <div id="product_description"
-                                        class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md">
+                                        class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md capitalize">
                                     </div>
                                 </div>
                             </div>

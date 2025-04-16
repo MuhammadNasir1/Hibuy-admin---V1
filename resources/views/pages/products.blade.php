@@ -3,10 +3,10 @@
 @section('nav-title', 'Products')
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
-        <div class="flex justify-between px-5">
+        <div class="flex justify-between items-center px-5">
             <h2 class="text-2xl font-medium ">Product List</h1>
                 @if (session('user_details.user_role') !== 'admin')
-                    <a href="{{ route('product.add') }}" class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
+                    <a href="{{ route('product.add') }}" class="px-3 py-2 font-semibold text-white rounded-full bg-primary">
                         Add Product
                     </a>
                 @endif
@@ -50,11 +50,11 @@
                                 src="{{ $product->first_image ? asset($product->first_image) : asset('asset/Ellipse 2.png') }}"
                                 alt="Product Image">
                         </td>
-                        <td>{{ $product->product_name }}</td>
-                        <td>{{ $product->product_category }}</td>
+                        <td class="capitalize">{{ $product->product_name }}</td>
+                        <td class="capitalize">{{ $product->product_category }}</td>
                         <td>RS {{ $product->product_discounted_price }}</td>
                         <td>{{ \Carbon\Carbon::parse($product->created_at)->format('M d, Y') }}</td>
-                        <td>{{ $product->user_name }}</td>
+                        <td class="capitalize">{{ $product->user_name }}</td>
                         <td>
                             <span
                                 class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded
@@ -166,13 +166,13 @@
                                     <div class="space-y-5">
                                         <div class="flex items-center gap-6">
                                             <div class="w-32 text-sm font-medium text-gray-600">Title</div>
-                                            <div id="product_name" class="text-base font-semibold text-gray-800">
+                                            <div id="product_name" class="text-base font-semibold text-gray-800 capitalize">
                                             </div>
                                         </div>
 
                                         <div class="flex items-center gap-6">
                                             <div class="w-32 text-sm font-medium text-gray-600">Brand</div>
-                                            <div id="brand_name" class="text-base text-gray-700"></div>
+                                            <div id="brand_name" class="text-base text-gray-700 capitalize"></div>
                                         </div>
 
                                         <div class="flex items-center gap-6">
@@ -185,7 +185,7 @@
                                     <div class="space-y-5">
                                         <div class="flex items-center gap-6">
                                             <div class="w-32 text-sm font-medium text-gray-600">Category</div>
-                                            <div id="product_category" class="text-base text-gray-700"></div>
+                                            <div id="product_category" class="text-base text-gray-700 capitalize"></div>
                                         </div>
 
                                         <div class="flex items-center gap-6">
@@ -214,7 +214,7 @@
                                     <div class="flex flex-col gap-2">
                                         <div class="text-sm font-medium text-gray-600">Description</div>
                                         <div id="product_description"
-                                            class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md">
+                                            class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md capitalize">
                                         </div>
                                     </div>
                                 </div>
@@ -234,7 +234,7 @@
                                     </div>
                                 </div>
                                 <button type="submit" id="submitStatus"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded-full">
                                     Submit
                                 </button>
                             </form>
@@ -273,10 +273,10 @@
                             // Populate basic product details
                             $("#product_name").text(response.product.product_name);
                             $("#brand_name").text(response.product.product_brand);
-                            $("#product_discount").text(response.product.product_discount);
+                            $("#product_discount").text(response.product.product_discount + " %");
                             $("#product_category").text(response.product.category_name);
-                            $("#product_price").text(response.product.product_price);
-                            $("#product_discounted_price").text(response.product
+                            $("#product_price").text("Rs " + response.product.product_price);
+                            $("#product_discounted_price").text("Rs " + response.product
                                 .product_discounted_price);
                             $("#product_description").text(response.product
                                 .product_description);

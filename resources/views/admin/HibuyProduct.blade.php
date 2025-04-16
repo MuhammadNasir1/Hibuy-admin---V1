@@ -3,10 +3,10 @@
 @section('nav-title', 'Hibuy Product')
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
-        <div class="flex justify-between px-5">
+        <div class="flex justify-between items-center px-5">
             <h2 class="text-2xl font-medium  ">Hibuy Product List</h1>
                <a href="{{ route('product.add') }}"> <button id="addModalBtn"
-                class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button></a>
+                class="px-3 py-2 font-semibold text-white rounded-full bg-primary">Add New</button></a>
         </div>
         @php
             $headers = [
@@ -34,11 +34,11 @@
                             src="{{ $product->first_image ? asset($product->first_image) : asset('asset/Ellipse 2.png') }}"
                             alt="Product Image">
                     </td>
-                    <td>{{ $product->product_name }}</td>
-                    <td>{{ $product->product_category }}</td>
+                    <td class="capitalize">{{ $product->product_name }}</td>
+                    <td class="capitalize">{{ $product->product_category }}</td>
                     <td>RS {{ $product->product_discounted_price }}</td>
                     <td>{{ \Carbon\Carbon::parse($product->created_at)->format('M d, Y') }}</td>
-                    <td>{{ $product->user_name }}</td>
+                    <td class="capitalize">{{ $product->user_name }}</td>
                     <td>
                         <span
                             class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded
@@ -55,7 +55,8 @@
                     </td>
                     <td>
                         <span class="flex gap-4">
-                            <button viewproducturl="/view-product/{{ $product->product_id }}" class="viewModalBtn">
+                            <button viewproducturl="/view-product/{{ $product->product_id }}"  data-modal-target="hibuyproduct-modal"
+                                data-modal-toggle="hibuyproduct-modal" class="viewModalBtn">
                                 <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
                                     <path fill-rule='evenodd' clip-rule='evenodd'
@@ -102,20 +103,323 @@
             </x-slot>
         </x-table>
 
+
         <x-modal id="hibuyproduct-modal">
-            <x-slot name="title">Details</x-slot>
+            <x-slot name="title">Details </x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
+                <div class="">
+                    <div class="">
+                        <div class="md:p-5">
+                            <div class="flex items-start gap-4">
+                                <!-- Main Image -->
+                                <div class="w-1/3">
+                                    <div class="h-48 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="main-image" src="" alt="Main Product Image"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                                <!-- Sub Images -->
+                                <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-1" src="" alt="Sub Image 1"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-2" src="" alt="Sub Image 2"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-3" src="" alt="Sub Image 3"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-4" src="" alt="Sub Image 4"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                            </div>
 
+                            <!-- Modal Content -->
+                            <div class="p-6 bg-white rounded-lg shadow-lg">
+                                <!-- Title -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                    <div class="space-y-5">
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Title</div>
+                                            <div id="product_name" class="text-base font-semibold text-gray-800 capitalize">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Brand</div>
+                                            <div id="brand_name" class="text-base text-gray-700 capitalize"></div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Discount %</div>
+                                            <div id="product_discount" class="text-base text-green-600 font-medium">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-5">
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Category</div>
+                                            <div id="product_category" class="text-base text-gray-700 capitalize"></div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Product Price</div>
+                                            <div id="product_price" class="text-base text-gray-700 ">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Discounted Price</div>
+                                            <div id="product_discounted_price"
+                                                class="text-base font-semibold text-blue-600"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Variations -->
+                                <div class="mt-6">
+                                    <div id="product_variations"\>
+                                        <!-- Variations will be dynamically inserted here -->
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mt-6">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="text-sm font-medium text-gray-600">Description</div>
+                                        <div id="product_description"
+                                            class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md capitalize">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <form id="statusForm" class="max-w-sm">
+                                @csrf
+                                <div class="flex items-center mt-5 mb-4">
+                                    <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
+                                    <div>
+                                        <input type="hidden" id="edit_status_id" name="edit_status_id">
+                                        <select id="product_status" name="product_status"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="" selected>Select</option>
+                                            <option value="1">Approved</option>
+                                            <option value="0">Pending</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" id="submitStatus"
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full">
+                                    Submit
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </x-slot>
         </x-modal>
     </div>
+    <button class="hidden" ></button>
 
 
 @endsection
+
 @section('js')
     <script>
         $(document).ready(function() {
+            $(".viewModalBtn").on("click", function() {
+                let viewproducturl = $(this).attr(
+                    "viewproducturl"); // Get the URL from the button attribute
+
+                if (!viewproducturl) {
+                    alert("Invalid product URL!");
+                    return;
+                }
+                // Run AJAX to fetch product details
+                $.ajax({
+                    url: viewproducturl,
+                    type: "GET",
+                    success: function(response) {
+                        if (response.success) {
+                            // Populate basic product details
+                            $("#product_name").text(response.product.product_name);
+                            $("#brand_name").text(response.product.product_brand);
+                            $("#product_discount").text(response.product.product_discount + " %");
+                            $("#product_category").text(response.product.category_name);
+                            $("#product_price").text("Rs " + response.product.product_price);
+                            $("#product_discounted_price").text("Rs " + response.product
+                                .product_discounted_price);
+                            $("#product_description").text(response.product
+                                .product_description);
+                            $("#edit_status_id").val(response.product.product_id);
+                            $("#product_status").val(response.product.product_status
+                                .toString()).change();
+
+
+                            // Group parent variations by parent_option_name
+                            const variationsGrouped = {};
+                            response.product.product_variation.forEach(variation => {
+                                const optionName = variation.parent_option_name;
+                                if (!variationsGrouped[optionName]) {
+                                    variationsGrouped[optionName] = [];
+                                }
+                                variationsGrouped[optionName].push(variation);
+                            });
+
+                            // Generate variations HTML
+                            let variationsHtml = '';
+                            for (const optionName in variationsGrouped) {
+                                variationsHtml += `
+                        <div class="flex items-center gap-6 mb-4">
+                            <div class="w-32 text-sm font-medium text-gray-600">${optionName}</div>
+                            <div class="flex flex-wrap gap-3">
+                    `;
+                                variationsGrouped[optionName].forEach(variation => {
+                                    variationsHtml += `
+                            <span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-gray-200 transition">
+                                ${variation.parentname}
+                            </span>
+                        `;
+                                });
+                                variationsHtml += `
+                            </div>
+                        </div>
+                    `;
+                            }
+
+                            // Group and display children if they exist
+                            const children = response.product.product_variation[0]?.children;
+                            if (children && children.length > 0) {
+                                const childOptionName = children[0]?.child_option_name ||
+                                    "Options";
+                                variationsHtml += `
+                        <div class="flex items-center gap-6 mb-4">
+                            <div class="w-32 text-sm font-medium text-gray-600">${childOptionName}</div>
+                            <div class="flex flex-wrap gap-3">
+                    `;
+                                children.forEach(child => {
+                                    variationsHtml += `
+                            <span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200 hover:bg-gray-200 transition">
+                                ${child.name}
+                            </span>
+                        `;
+                                });
+                                variationsHtml += `
+                            </div>
+                        </div>
+                    `;
+                            }
+
+                            // Insert variations HTML
+                            $("#product_variations").html(variationsHtml);
+
+                            // Populate images (first 5 from product_images)
+                            const images = response.product.product_images;
+                            if (images && images.length > 0) {
+                                // Main image (first image)
+                                $("#main-image").attr("src", images[0]);
+
+                                // Sub images (next 4 images)
+                                $("#sub-image-1").attr("src", images[1] || "");
+                                $("#sub-image-2").attr("src", images[2] || "");
+                                $("#sub-image-3").attr("src", images[3] || "");
+                                $("#sub-image-4").attr("src", images[4] || "");
+                            }
+
+                        } else {
+                            alert("Product not found!");
+                        }
+                    },
+                    error: function() {
+                        alert("Error fetching product details.");
+                    }
+                });
+            });
+
+
+            // Close modal when clicking outside
+            $(".modal").on("click", function(event) {
+                if ($(event.target).hasClass("modal")) {
+                    $(this).hide();
+                }
+            });
+
+            // Close modal when clicking the close button
+            $(".close-modal").on("click", function() {
+                $(".modal").hide();
+            });
+
+            $("#statusForm").submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let productStatus = $("#product_status").val(); // Get selected status
+                let productId = $("#edit_status_id").val(); // Get product ID
+
+                if (productId === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Missing Product ID",
+                        text: "Product ID is required to update status!",
+                    });
+                    return;
+                }
+
+                // Show SweetAlert confirmation
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to update the product status?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Proceed with AJAX request
+                        $.ajax({
+                            url: "/update-product-status", // Your API endpoint
+                            type: "POST",
+                            data: {
+                                _token: $('input[name="_token"]').val(), // CSRF Token
+                                product_id: productId,
+                                product_status: productStatus
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Updated!",
+                                        text: "Product status has been updated successfully.",
+                                    }).then(() => {
+                                        location
+                                            .reload(); // Reload page after alert is dismissed
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Failed!",
+                                        text: "Failed to update product status.",
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error!",
+                                    text: "An error occurred while updating status.",
+                                });
+                            }
+                        });
+                    }
+                });
+            });
 
             // SweetAlert success (flash message)
             @if (session('success'))
