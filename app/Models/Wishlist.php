@@ -12,4 +12,28 @@ class Wishlist extends Model
         'user_id',
         'product_id',
     ];
+
+    // public function product()
+    // {
+    //     return $this->belongsTo(Products::class, 'product_id');
+    // }
+
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_id', 'product_id')
+            ->select([
+                'product_id',
+                'store_id',
+                'product_name',
+                'product_brand',
+                'product_category',
+                'product_subcategory',
+                'product_price',
+                'product_discount',
+                'product_discounted_price',
+                'product_images'
+            ]);
+    }
+
+
 }

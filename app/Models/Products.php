@@ -32,7 +32,8 @@ class Products extends Model
 
     public function category()
     {
-        return $this->belongsTo(product_category::class, 'product_category', 'id');
+        return $this->belongsTo(product_category::class, 'product_category', 'id')
+            ->select(['id', 'name']);
     }
 
     public function reviews()

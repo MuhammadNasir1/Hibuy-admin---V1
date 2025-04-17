@@ -42,6 +42,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('toggleWishlist', [apiproductController::class, 'toggleWishlist']);
 
+    Route::GET('getWishlist', [apiproductController::class, 'getWishlist']);
+
     Route::POST('storeAddress', [apiAuthController::class, 'storeAddress']);
 
     Route::POST('DeleteAddress', [apiAuthController::class, 'DeleteAddress']);
