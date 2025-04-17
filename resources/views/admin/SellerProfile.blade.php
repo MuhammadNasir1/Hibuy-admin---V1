@@ -25,6 +25,7 @@
                     <img src="{{ $finalPic }}" class="h-[80px] w-[80px] rounded-full" alt="">
 
                        </div>
+
                         <div>
                             <h3 class="text-lg font-semibold">{{ $storeData['personal_info']['full_name'] }}</h3>
                             <p class="text-sm text-gray-500 flex gap-3 items-center pt-1">
