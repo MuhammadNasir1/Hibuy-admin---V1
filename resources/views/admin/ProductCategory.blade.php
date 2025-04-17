@@ -6,7 +6,7 @@
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium">Product Category List</h1>
                 <button id="addModalBtn" data-modal-target="productcategory-modal" data-modal-toggle="productcategory-modal"
-                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">Add New</button>
+                    class="px-3 py-2 font-semibold text-white rounded-full bg-primary">Add New</button>
         </div>
         @php
             $headers = ['ID', 'Image', 'Name', 'No. of Sub Category', 'No. of Products', 'Status', 'Action'];
@@ -136,7 +136,7 @@
                     <div class="mt-6 bg-gray-300 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <button type="button"
-                                class="px-4 py-2 text-white bg-red-500 rounded close-modal">Close</button>
+                                class="px-6 py-2 text-white bg-red-500 rounded-full close-modal">Close</button>
                             <button type="submit" id="submit"
                                 class="px-6 py-2 text-white bg-primary rounded-3xl">Submit</button>
                         </div>
