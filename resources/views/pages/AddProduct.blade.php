@@ -194,7 +194,7 @@
                     </div>
                     {{-- Next Section --}}
                     <div class="grid grid-cols-1 lg:grid-cols-3">
-                        <div class="variant-box mt-5">
+                        <div class="variant-box mt-5 ">
                             <div class="variant-title">Variants</div>
                             <button type="button" id="add-option-btn" class="add-option-btn">
                                 <img src="https://img.icons8.com/ios-glyphs/30/000000/plus-math.png" alt="plus icon">
@@ -202,25 +202,28 @@
                             </button>
                         </div>
                     </div>
-                    <div id="options-container" class="flex"></div>
+                    <div id="options-container" class="flex flex-col md:flex-row"></div>
 
+                    <div class="overflow-x-auto mt-5 border rounded-lg">
+                        <table class="w-full table-auto min-w-[600px]">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="py-3 px-4 text-left">Image</th>
+                                    <th class="py-3 px-4 text-left">Variant</th>
+                                    <th class="py-3 px-4 text-left">Price</th>
+                                    <th class="py-3 px-4 text-left">Available Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody id="variantTableBody"></tbody>
+                        </table>
+                    </div>
 
-                    <table class="w-full table-auto mt-5 border">
-                        <thead>
-                            <tr class="bg-primary text-white">
-                                <th class="py-3">Image</th>
-                                <th class="py-3">Variant</th>
-                                <th class="py-3">Price</th>
-                                <th class="py-3">Available Stock</th>
-                            </tr>
-                        </thead>
-                        <tbody id="variantTableBody"></tbody>
-                    </table>
                     <!-- Buttons -->
                     <div class="mt-6 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
-                            <button type="submit" id="add_product_btn" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                            <button type="submit" id="add_product_btn"
+                                class="px-6 py-2 text-white bg-primary rounded-3xl">
                                 Submit
                             </button>
                         </div>
@@ -264,50 +267,42 @@
 
                 options.forEach((option, index) => {
                     let optionHtml = `
-                <div class="variant-box w-full md:w-[48%] lg:w-[32%] border rounded-lg bg-gray-100 p-4 mb-4 mr-4 last:mr-0" data-option-index="${index}">
-                    <div class="option-display-container mt-2">
-                        <div class="option-display p-2 bg-gray-200 rounded">
-                            <strong class="block text-base text-gray-700 mb-1">${option.name}</strong>
-                            <div class="option-values mt-2 flex flex-wrap gap-2">
-                                ${option.values.map(value => `
-                                    <span class="px-3 py-1 bg-gray-300 rounded text-sm">${value}</span>
-                                `).join('')}
+                <div class="variant-box border rounded-lg bg-gray-100 mr-4 p-4" data-option-index="${index}">
+                    <div class="option-display-container mt-4">
+                        <div class="option-display p-2 bg-gray-200 rounded mt-2">
+                            <strong>${option.name}</strong>
+                            <div class="option-values mt-2 flex gap-2">
+                                ${option.values.map(value => `<span class="px-3 py-1 bg-gray-300 rounded">${value}</span>`).join('')}
                             </div>
                         </div>
                     </div>
-
-                    <div class="edit-container hidden mt-3">
+                    <div class="edit-container hidden">
                         <div class="input-group mb-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Option name</label>
-                            <input type="text" class="option-name bg-gray-50 border border-gray-300 text-sm rounded-lg w-full p-2.5" value="${option.name}">
+                            <label>Option name</label>
+                            <input type="text" class="option-name bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${option.name}">
                         </div>
                         <div class="input-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Option values</label>
+                            <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                    <div class="value-item flex items-center mb-2">
-                                        <input type="text" class="option-value bg-gray-50 border border-gray-300 text-sm rounded-lg w-full p-2.5" value="${value}">
-                                        <button class="remove-value-btn bg-red-600 px-3 py-1 ml-2 rounded text-white text-sm">-</button>
-                                    </div>`).join('')}
+                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                        </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
-                                    <input type="text" class="option-value bg-gray-50 border border-gray-300 text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
+                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="flex justify-between items-center mt-4 gap-2 flex-wrap">
-                        <button class="delete-btn bg-red-700 text-white px-4 py-2 rounded text-sm w-full sm:w-auto">Delete</button>
-                        <button type="button" class="edit-btn bg-blue-600 text-white px-4 py-2 rounded text-sm w-full sm:w-auto">Edit</button>
+                    <div class="flex justify-between mt-4">
+                        <button class="delete-btn bg-red-700 text-white px-4 py-2 rounded">Delete</button>
+                        <button type="button" class="edit-btn bg-blue-600 text-white px-4 py-2 rounded">Edit</button>
                     </div>
-
                     <input type="hidden" name="options[${index}][name]" value="${option.name}">
-                    ${option.values.map(value => `
-                        <input type="hidden" name="options[${index}][values][]" value="${value}">
-                    `).join('')}
+                    ${option.values.map(value => `<input type="hidden" name="options[${index}][values][]" value="${value}">`).join('')}
                 </div>`;
-
-                $("#options-container").append(optionHtml);
+                    $("#options-container").append(optionHtml);
                 });
 
                 generateVariants(true);
@@ -457,10 +452,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                    <div class="value-item flex items-center mb-2">
-                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                    </div>`).join('')}
+                                                                        <div class="value-item flex items-center mb-2">
+                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                        </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -512,10 +507,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                <div class="value-item flex items-center mb-2">
-                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                </div>`).join('')}
+                                                                    <div class="value-item flex items-center mb-2">
+                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                    </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
