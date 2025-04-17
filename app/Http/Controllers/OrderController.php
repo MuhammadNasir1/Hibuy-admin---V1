@@ -243,17 +243,36 @@ class OrderController extends Controller
     {
         $request->validate([
             'order_id' => 'required|exists:orders,order_id',
-            'order_status' => 'required|string',
+            'order_status' => 'nullable|string',
             'courier_id' => 'nullable|exists:couriers,courier_id',
             'tracking_number' => 'nullable|string|max:255',
+            'delivery_status' => 'nullable|string',
+            'product_id' => 'nullable|integer',
         ]);
 
         $order = Order::find($request->order_id);
-        $order->order_status = $request->order_status;
-        $order->courier_id = $request->courier_id;
-        $order->tracking_number = $request->filled('tracking_number') ? $request->tracking_number : '';
-        // return $order->order_status;
-        $order->update();
+
+        // Admin update
+        if ($request->filled('order_status')) {
+            $order->order_status = $request->order_status;
+            $order->courier_id = $request->courier_id;
+            $order->tracking_number = $request->filled('tracking_number') ? $request->tracking_number : '';
+        }
+
+        //  Seller update (update status of a product inside order_items JSON)
+        if ($request->filled('delivery_status') && $request->filled('product_id')) {
+            $orderItems = json_decode($order->order_items, true);
+
+            foreach ($orderItems as &$item) {
+                if ($item['product_id'] == $request->product_id) {
+                    $item['delivery_status'] = $request->delivery_status;
+                }
+            }
+
+            $order->order_items = json_encode($orderItems);
+        }
+
+        $order->save();
 
         return response()->json(['message' => 'Order updated successfully']);
     }
