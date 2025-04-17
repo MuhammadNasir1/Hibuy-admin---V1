@@ -252,6 +252,7 @@ class apiproductController extends Controller
                     // Optionally remove the full category object if you don't want it
                     unset($item->product->category);
                 }
+
                 return $item;
             });
 
