@@ -57,7 +57,7 @@ class StoreController extends Controller
         }
         // return $storeData;
         // Pass data to the view
-        return view('seller.store', compact('storeData'));
+        return view('seller.Store', compact('storeData'));
     }
 
 
