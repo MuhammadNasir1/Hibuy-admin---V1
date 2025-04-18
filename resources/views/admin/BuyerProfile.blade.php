@@ -354,18 +354,23 @@
                         // Order items
                         let itemsHtml = "";
                         const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
-                        response.order_items?.forEach((item) => {
+                        response.order_items.forEach((item) => {
+                            console.log(item);
+                            let imageUrl = (item.product_image && item.product_image.startsWith("http"))
+                                            ? item.product_image
+                                            : `/${item.product_image || 'storage/products/default.jpg'}`;
+
                             itemsHtml += `
-                            <tr class="border-b">
-                                <td class="p-3">
-                                    <img src="${item.product_image || fallbackImage}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
-                                </td>
-                                <td class="p-3">${item.product_name}</td>
-                                <td class="p-3 text-center">${item.quantity}</td>
-                                <td class="p-3 text-center">Rs ${item.price}</td>
-                                <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
-                            </tr>`;
+                        <tr class="border-b">
+                           <td class="p-3">
+                           <img src="${imageUrl}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
+                            <td class="p-3">${item.product_name}</td>
+                            <td class="p-3 text-center">${item.quantity}</td>
+                            <td class="p-3 text-center">Rs${item.price}</td>
+                            <td class="p-3 text-center">Rs${(item.quantity * item.price).toFixed(2)}</td>
+                        </tr>`;
                         });
+
 
                         $("#order-items-body").html(itemsHtml);
                     },

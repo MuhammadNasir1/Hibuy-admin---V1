@@ -107,49 +107,83 @@
                     <form id="statusForm" class="w-full">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end">
-                            {{-- Order Status --}}
-                            <div>
-                                <label for="order_status" class="block mb-1 text-sm font-normal text-gray-600">Order
-                                    Status</label>
-                                <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
-                                <select id="order_status" name="order_status"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                                    <option value="" selected>Select Status</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="processing">Processing</option>
-                                    <option value="shipped">Shipped</option>
-                                    <option value="delivered">Delivered</option>
-                                    <option value="cancelled">Cancelled</option>
-                                    <option value="returned">Returned</option>
-                                </select>
-                            </div>
+                            @if (session('user_details.user_role') == 'admin')
+                                {{-- Order Status --}}
+                                <div>
+                                    <label for="order_status" class="block mb-1 text-sm font-normal text-gray-600">Order
+                                        Status</label>
+                                    <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
+                                    <select id="order_status" name="order_status"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                        <option value="" selected>Select Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="processing">Processing</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="returned">Returned</option>
+                                    </select>
+                                </div>
 
-                            {{-- Courier Selection --}}
-                            <div>
-                                <label for="courier_id" class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
-                                <select id="courier_id" name="courier_id"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                                    <option value="" selected>Select Courier</option>
-                                </select>
-                            </div>
+                                {{-- Courier Selection --}}
+                                <div>
+                                    <label for="courier_id"
+                                        class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
+                                    <select id="courier_id" name="courier_id"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                        <option value="" selected>Select Courier</option>
+                                    </select>
+                                </div>
 
-                            {{-- Tracking Number --}}
-                            <div>
-                                <label for="tracking_number" class="block mb-1 text-sm font-normal text-gray-600">Tracking
-                                    No.</label>
-                                <input type="text" id="tracking_number" name="tracking_number"
-                                    placeholder="Enter tracking number"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            </div>
+                                {{-- Tracking Number --}}
+                                <div>
+                                    <label for="tracking_number"
+                                        class="block mb-1 text-sm font-normal text-gray-600">Tracking
+                                        No.</label>
+                                    <input type="text" id="tracking_number" name="tracking_number"
+                                        placeholder="Enter tracking number"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                </div>
 
-                            {{-- Submit Button --}}
-                            <div class="flex justify-end">
-                                <button type="submit" id="submitStatus"
-                                    class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Submit
-                                </button>
-                            </div>
+                                {{-- Submit Button --}}
+                                <div class="flex justify-end">
+                                    <button type="submit" id="submitStatus"
+                                        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Submit
+                                    </button>
+                                </div>
+                            @else
+                                <div>
+                                    <label for="order_status_seller"
+                                        class="block mb-1 text-sm font-normal text-gray-600">Delivery
+                                        Status</label>
+                                    <input type="hidden" id="editbyseller_orderstatus_id"
+                                        name="editbyseller_orderstatus_id">
+                                    <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
+                                    <select id="order_status_seller" name="order_status_seller"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                        <option value="" selected>Select Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="processing">Processing</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="returned">Returned</option>
+                                    </select>
+                                </div>
+
+                                {{-- Submit Button --}}
+                                <div class="flex justify-end">
+                                    <button type="submit" id="submitStatusbyseller"
+                                        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Submit
+                                    </button>
+                                </div>
+                            @endif
+
+
                         </div>
+
                     </form>
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
@@ -261,6 +295,8 @@
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
+                        // console.log(response);
+
                         if (response.error) {
                             alert(response.error);
                             return;
@@ -270,8 +306,8 @@
                             .couriers; // Array of { courier_id, courier_name }
                         const selectBox = document.getElementById('courier_id');
 
-                        // Clear existing options (optional)
-                        selectBox.innerHTML = '<option value="">Select Courier</option>';
+                        // // Clear existing options (optional)
+                        // selectBox.innerHTML = '<option value="">Select Courier</option>';
 
                         // Loop through couriers and append options
                         couriers.forEach(courier => {
@@ -281,10 +317,12 @@
                             selectBox.appendChild(option);
                         });
 
-                        // Optional: Set selected courier if editing an existing order
+                        // // Optional: Set selected courier if editing an existing order
                         if (response.selected_courier_id) {
                             selectBox.value = response.selected_courier_id;
                         }
+
+
                         // Populate order details
                         $('#tracking_number').val(response.tracking_number);
                         $('#order_status').val(response.order_status).change();
@@ -307,10 +345,20 @@
 
                         // Populate order items table
                         let itemsHtml = "";
+                        const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
                         response.order_items.forEach((item) => {
+                            console.log(item);
+                            // Set order status if it's available in response
+                            if (response.status) {
+                                $("#order_status_seller").val(item.delivery_status)
+                                    .change();
+                                $("#editbyseller_orderstatus_id").val(item.product_id);
+                            }
+
                             itemsHtml += `
                         <tr class="border-b">
-                            <td class="p-3"><img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover"></td>
+                           <td class="p-3">
+                            <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
                             <td class="p-3">${item.product_name}</td>
                             <td class="p-3 text-center">${item.quantity}</td>
                             <td class="p-3 text-center">Rs${item.price}</td>
@@ -328,7 +376,7 @@
 
 
             // JS (place in a script tag or external JS file)
-            $('#statusForm').on('submit', function(e) {
+            $('#submitStatus').on('click', function(e) {
                 e.preventDefault();
 
                 let formData = {
@@ -346,6 +394,39 @@
                     success: function(response) {
                         console.log(response);
                         alert(response.message); // You can use toast or modal instead
+                        $("#order-status").text($('#order_status').val());
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Something went wrong.');
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+
+
+
+            $('#submitStatusbyseller').on('click', function(e) {
+                e.preventDefault();
+
+                let formData = {
+                    _token: $('input[name="_token"]').val(),
+                    delivery_status: $('#order_status_seller').val(),
+                    order_id: $('#edit_orderstatus_id').val(),
+                    product_id: $('#editbyseller_orderstatus_id').val()
+                };
+
+
+                console.log(formData);
+
+                $.ajax({
+                    url: '{{ route('orders.update.status') }}',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        console.log(response);
+                        alert(response.message);
+                        location.reload();
                     },
                     error: function(xhr) {
                         alert('Something went wrong.');
