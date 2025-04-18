@@ -40,10 +40,10 @@
         <div class="flex justify-center mt-6">
             <h1 class="">Forgot Password?<span class="text-primary font-bold ml-2">Reset here</span></h1>
         </div>
-        <h1 class="text-center mt-3">Join Us
+        {{-- <h1 class="text-center mt-3">Join Us
             <a href="{{ route('signup') }}" class="text-primary font-bold ml-2">Create
                 Store</a>
-        </h1>
+        </h1> --}}
     </div>
 @endsection
 @section('js')

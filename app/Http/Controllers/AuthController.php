@@ -22,7 +22,7 @@ class AuthController extends Controller
         if (!$role || !in_array($role, $allowedRoles)) {
             return redirect()->route('login');
         }
-        return view('auth.signup', ['role' => $role]);
+        return view('Auth.signup', ['role' => $role]);
     }
 
 
