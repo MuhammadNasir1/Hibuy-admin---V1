@@ -217,7 +217,6 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Review added successfully',
-                'review'  => $review
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
