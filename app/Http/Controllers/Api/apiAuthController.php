@@ -233,26 +233,28 @@ class apiAuthController extends Controller
             $user = Auth::user();
 
             if (!$user) {
-                return response()->json(['success' => false, 'message' => "User Not Found"], 404);
+                return response()->json([
+                    'success' => false,
+                    'message' => "User Not Found"
+                ], 404);
             }
 
             $reviews = Reviews::where('user_id', $user->user_id)
-                ->with('product') // Assuming review has a relationship with product
+                ->with('product')
                 ->get();
 
-            // Fetch customer only once
-            $customer = Customer::where('user_id', $user->user_id)->first();
-
-            $reviews->each(function ($review) use ($customer) {
+            $reviews->each(function ($review) {
                 $review->images = json_decode($review->images, true);
 
                 if ($review->product) {
-                    $review->product->product_images = json_decode($review->product->product_images, true);
-                    $review->product->product_image = $review->product->product_images[0] ?? null;
-                    $review->product->product_title = $review->product->product_name;
+                    // Decode product images
+                    $productImages = json_decode($review->product->product_images, true);
+                    $review->product = [
+                        'product_id'    => $review->product->product_id,
+                        'product_title' => $review->product->product_name,
+                        'product_image' => $productImages[0] ?? null,
+                    ];
                 }
-
-                $review->customer = $customer;
             });
 
             return response()->json([
@@ -261,9 +263,13 @@ class apiAuthController extends Controller
                 'reviews' => $reviews,
             ], 200);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
         }
     }
+
 
     public function editProfile(Request $request)
     {
