@@ -231,7 +231,9 @@ class apiAuthController extends Controller
         public function getReviews()
         {
             try {
+
                 $user = Auth::user();
+
                 if (!$user) {
                     return response()->json(['success' => false, 'message' => "User Not Found"], 404);
                 }
