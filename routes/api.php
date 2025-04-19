@@ -29,6 +29,7 @@ Route::GET('searchProducts', [apiproductController::class, 'searchProducts']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
+    Route::POST('getReview', [apiAuthController::class, 'getReviews']);
 
     Route::GET('/GetOrders', [OrderController::class, 'GetOrders']);
 
