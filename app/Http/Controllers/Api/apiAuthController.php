@@ -207,7 +207,7 @@ class apiAuthController extends Controller
 
             // Create the review
             $review = Reviews::create([
-                'user_id'    => $User->id, // Get user_id from authenticated user
+                'user_id'    => $User->user_id, // Get user_id from authenticated user
                 'product_id' => $request->product_id,
                 'rating'     => $request->rating,
                 'review'     => $request->review,
