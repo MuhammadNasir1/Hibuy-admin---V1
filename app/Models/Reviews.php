@@ -21,4 +21,9 @@ class Reviews extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id'); // Maps user_id in reviews to id in users table
     }
+
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_id', 'product_id');
+    }
 }
