@@ -111,7 +111,7 @@ class apiStoreController extends Controller
                 return [
                     'store_id'    => $store->store_id,
                     'store_name'  => $profileDetail['store_name'] ?? null,
-                    'store_image' => $profileDetail['store_image'] ?? null,
+                    'store_image' => $profileDetail['store_image'] ?? asset('asset/defualt-image.png'),
                 ];
             });
 
