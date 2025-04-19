@@ -239,12 +239,17 @@ class apiAuthController extends Controller
                 ], 404);
             }
 
+            // Fetch reviews for the authenticated user
             $reviews = Reviews::where('user_id', $user->user_id)
                 ->with('product')
                 ->get();
 
-            $reviews->each(function ($review) {
+            $reviews->each(function ($review) use ($user) {
+                // Decode review images
                 $review->images = json_decode($review->images, true);
+
+                // Add user_name from authenticated user
+                $review->user_name = $user->user_name; // Assuming 'name' is the column for user_name in the users table
 
                 if ($review->product) {
                     // Decode product images
