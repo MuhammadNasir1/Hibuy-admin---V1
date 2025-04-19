@@ -8,6 +8,7 @@ use App\Models\Reviews;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Products;
 use App\Models\Query;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -224,6 +225,44 @@ class apiAuthController extends Controller
                 'message' => 'Something went wrong!',
                 'error'   => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function getReviews()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => "User Not Found"], 404);
+            }
+
+            $reviews = Reviews::where('user_id', $user->user_id)
+                ->with('product') // Assuming review has a relationship with product
+                ->get();
+
+            // Fetch customer only once
+            $customer = Customer::where('user_id', $user->user_id)->first();
+
+            $reviews->each(function ($review) use ($customer) {
+                $review->images = json_decode($review->images, true);
+
+                if ($review->product) {
+                    $review->product->product_images = json_decode($review->product->product_images, true);
+                    $review->product->product_image = $review->product->product_images[0] ?? null;
+                    $review->product->product_title = $review->product->product_name;
+                }
+
+                $review->customer = $customer;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "Reviews fetched successfully",
+                'reviews' => $reviews,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
     }
 
