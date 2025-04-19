@@ -354,7 +354,6 @@
                                     .change();
                                 $("#editbyseller_orderstatus_id").val(item.product_id);
                             }
-
                             itemsHtml += `
                         <tr class="border-b">
                            <td class="p-3">

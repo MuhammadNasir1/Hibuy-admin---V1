@@ -29,6 +29,7 @@ class apiproductController extends Controller
                 "product_discounted_price",
                 "product_images"
             )
+                ->where('store_id', '!=', 0)
                 ->with(['category:id,name']);
 
             // Apply category filter
@@ -117,6 +118,7 @@ class apiproductController extends Controller
                     'reviews.user:user_id,user_name' // Fetch reviews along with the user's name
                 ])
                 ->where('product_id', $product_id)
+                ->where('store_id', '!=', 0)
                 ->first();
 
             if (!$product) {
