@@ -104,14 +104,15 @@ class apiStoreController extends Controller
                 ], 404);
             }
 
-            // Process each store and extract required info
             $storeList = $stores->map(function ($store) {
                 $profileDetail = json_decode($store->store_profile_detail, true);
+
+                $storeImage = $profileDetail['store_image'] ?? null;
 
                 return [
                     'store_id'    => $store->store_id,
                     'store_name'  => $profileDetail['store_name'] ?? null,
-                    'store_image' => $profileDetail['store_image'] ?? asset('asset/defualt-image.png'),
+                    'store_image' => !empty($storeImage) ? $storeImage : asset('asset/default-image.png'),
                 ];
             });
 
