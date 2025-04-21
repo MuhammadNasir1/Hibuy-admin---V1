@@ -488,7 +488,7 @@
     </div>
     <div class="mt-6 bg-gray-300 rounded-b-xl">
         <div class="flex items-center justify-between p-2">
-            <button type="button" class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
+            <button type="button" data-modal-hide="KYC-modal" class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
                 Close
             </button>
         </div>
