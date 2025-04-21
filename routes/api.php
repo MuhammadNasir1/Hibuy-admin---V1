@@ -29,6 +29,7 @@ Route::GET('searchProducts', [apiproductController::class, 'searchProducts']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
+    Route::GET('getReview', [apiAuthController::class, 'getReviews']);
 
     Route::GET('/GetOrders', [OrderController::class, 'GetOrders']);
 
@@ -41,6 +42,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::GET('userdetail', [apiAuthController::class, 'userdetail']);
 
     Route::POST('toggleWishlist', [apiproductController::class, 'toggleWishlist']);
+
+    Route::GET('getWishlist', [apiproductController::class, 'getWishlist']);
 
     Route::POST('storeAddress', [apiAuthController::class, 'storeAddress']);
 

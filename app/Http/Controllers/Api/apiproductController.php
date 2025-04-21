@@ -29,6 +29,7 @@ class apiproductController extends Controller
                 "product_discounted_price",
                 "product_images"
             )
+                ->where('store_id', '!=', 0)
                 ->with(['category:id,name']);
 
             // Apply category filter
@@ -117,6 +118,7 @@ class apiproductController extends Controller
                     'reviews.user:user_id,user_name' // Fetch reviews along with the user's name
                 ])
                 ->where('product_id', $product_id)
+                ->where('store_id', '!=', 0)
                 ->first();
 
             if (!$product) {
@@ -224,6 +226,50 @@ class apiproductController extends Controller
                 'message' => 'Product added to wishlist',
             ], 201);
         }
+    }
+
+    public function getWishlist(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $wishlist = Wishlist::with(['product.category'])
+            ->where('user_id', $user->user_id)
+            ->get()
+            ->map(function ($item) {
+                if (!empty($item->product)) {
+                    // Convert images to just the first one
+                    $images = json_decode($item->product->product_images, true);
+                    $item->product->product_images = $images[0] ?? null;
+
+                    // Flatten category name
+                    $item->product->category_name = $item->product->category->name ?? null;
+
+                    // Optionally remove the full category object if you don't want it
+                    unset($item->product->category);
+                }
+
+                return $item;
+            });
+
+        if ($wishlist->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No wishlist items found',
+                'wishlist' => [],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'wishlist' => $wishlist,
+        ]);
     }
 
     public function getCategories()

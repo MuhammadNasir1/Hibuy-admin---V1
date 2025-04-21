@@ -6,9 +6,9 @@
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium "></h2>
             <button id="viewModalBtn"
-                viewstoreurl="{{ isset($storeData['store_id']) || !empty($storeData['store_id']) ? '/view-store/' . $storeData['store_id'] :'/view-store/' . $storeData['seller_id'] }}"
+                viewstoreurl="{{ isset($storeData['store_id']) || !empty($storeData['store_id']) ? '/view-store/' . $storeData['store_id'] : '/view-store/' . $storeData['seller_id'] }}"
                 class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
-                {{!empty($storeData['store_id']) ? 'Edit Profile':'Cretae Profile'}}
+                {{ !empty($storeData['store_id']) ? 'Edit Profile' : 'Cretae Profile' }}
             </button>
             <button class="hidden" id="modal-btn" data-modal-target="edit-profile-modal" data-modal-toggle="edit-profile-modal">
             </button>
@@ -17,7 +17,7 @@
         <div
             class="h-[200px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
             <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center gap-5">
-                <img src="{{ !empty($storeData['store_image']) ? asset( $storeData['store_image']) : asset('asset/pic.jpg') }}"
+                <img src="{{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : asset('asset/pic.jpg') }}"
                     class="ms-5 h-[80px] w-[80px] rounded-full" alt="">
                 <div>
                     <h3 class="text-lg font-semibold">
@@ -36,7 +36,7 @@
         </div>
 
         <div class="mt-5 mx-6 shadow-xl rounded-xl min-h-[100px]">
-            <img src="{{ asset(@$storeData['store_banner'] ?  @$storeData['store_banner'] : 'asset/banner.png') }}"
+            <img src="{{ asset(@$storeData['store_banner'] ? @$storeData['store_banner'] : 'asset/banner.png') }}"
                 alt="Banner Image" class="w-full object-cover rounded-xl">
         </div>
 
@@ -175,13 +175,13 @@
 
                             // Store Image (Profile Picture)
                             let profileImagePath = response.data.store_image ?
-                                 response.data.store_image :
+                                response.data.store_image :
                                 "{{ asset('asset/pic.jpg') }}";
                             $("#profile_picture_preview").attr("src", profileImagePath);
 
                             // Store Banner (Full Width)
                             let bannerPath = response.data.store_banner ?
-                                 response.data.store_banner :
+                                response.data.store_banner :
                                 "";
                             $("#preview-banner").html( // Using `.html()` to replace content
                                 `<img src="${bannerPath}" class="my-3 w-full h-[200px] object-cover rounded-lg" alt="Store Banner">`
@@ -215,7 +215,7 @@
                                     `<div class="flex gap-3 my-3">`; // Flex wrap for responsive layout
 
                                 response.data.store_posts.forEach(post => {
-                                    let postImagePath =  post.image;
+                                    let postImagePath = post.image;
                                     postHtml += `
             <div class="w-1/2">
                 <img src="${postImagePath}" class="w-full h-[120px] object-cover rounded-lg" alt="Post Image">
@@ -259,12 +259,26 @@
                     success: function(response) {
                         console.log(response); // Check response in console
                         if (response.success) {
-                            alert("Store saved successfully!");
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.msg,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location
+                                .reload(); // Reload page after OK is clicked
+                                }
+                            });
                             console.log("Request Data:", response
-                                .request_data); // Log request data
-                            // location.reload(); // Reload page or redirect
+                            .request_data); // Log request data
                         } else {
-                            alert("Error: " + response.message);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.error,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     },
                     error: function(xhr) {

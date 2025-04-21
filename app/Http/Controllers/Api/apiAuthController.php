@@ -8,6 +8,7 @@ use App\Models\Reviews;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Products;
 use App\Models\Query;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -206,7 +207,7 @@ class apiAuthController extends Controller
 
             // Create the review
             $review = Reviews::create([
-                'user_id'    => $User->id, // Get user_id from authenticated user
+                'user_id'    => $User->user_id, // Get user_id from authenticated user
                 'product_id' => $request->product_id,
                 'rating'     => $request->rating,
                 'review'     => $request->review,
@@ -216,7 +217,6 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Review added successfully',
-                'review'  => $review
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -226,6 +226,55 @@ class apiAuthController extends Controller
             ], 500);
         }
     }
+
+    public function getReviews()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "User Not Found"
+                ], 404);
+            }
+
+            // Fetch reviews for the authenticated user
+            $reviews = Reviews::where('user_id', $user->user_id)
+                ->with('product')
+                ->get();
+
+            $reviews->each(function ($review) use ($user) {
+                // Decode review images
+                $review->images = json_decode($review->images, true);
+
+                // Add user_name from authenticated user
+                $review->user_name = $user->user_name; // Assuming 'name' is the column for user_name in the users table
+
+                if ($review->product) {
+                    // Decode product images
+                    $productImages = json_decode($review->product->product_images, true);
+                    $review->product = [
+                        'product_id'    => $review->product->product_id,
+                        'product_title' => $review->product->product_name,
+                        'product_image' => $productImages[0] ?? null,
+                    ];
+                }
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "Reviews fetched successfully",
+                'reviews' => $reviews,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
 
     public function editProfile(Request $request)
     {
