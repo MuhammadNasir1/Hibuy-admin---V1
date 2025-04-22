@@ -135,7 +135,7 @@
                     <!-- Buttons -->
                     <div class="mt-6 bg-gray-300 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
-                            <button type="button"
+                            <button type="button" data-modal-hide="productcategory-modal"
                                 class="px-6 py-2 text-white bg-red-500 rounded-full close-modal">Close</button>
                             <button type="submit" id="submit"
                                 class="px-6 py-2 text-white bg-primary rounded-3xl">Submit</button>
@@ -334,8 +334,8 @@
             //     $("#categoryForm").attr("action", "/ProductCategory");
 
             // });
-            $(document).ready(function() {
-                $(".categoryForm").on("submit", function(e) {
+
+            $(".categoryForm").on("submit", function(e) {
                     e.preventDefault();
 
                     let formData = new FormData(this);
@@ -389,11 +389,10 @@
                         }
                     });
                 });
-            });
 
-            $(document).ready(function() {
-                // When any close button inside a modal is clicked
-                $("[data-modal-hide]").click(function() {
+
+             // When any close button inside a modal is clicked
+             $("[data-modal-hide]").click(function() {
                     let modalId = $(this).attr("data-modal-hide"); // Get the modal ID
                     let modal = $("#" + modalId);
 
@@ -406,7 +405,7 @@
                         this.reset(); // Reset the form fields
                     });
                 });
-            });
+
 
         });
     </script>

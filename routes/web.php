@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\apiStoreController;
+use App\Http\Controllers\CreditRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KYCController;
@@ -138,6 +139,13 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
             // Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
             Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
+
+            // Credit request
+            Route::post('/credit-request', [CreditRequestController::class, 'store'])->name('credit-request.store');
+            Route::get('/credit_request', [CreditRequestController::class, 'index'])->name('credit-requests');
+            Route::get('/credit-request/{id}', [CreditRequestController::class, 'show'])->name('credit-request.show');
+            Route::post('/credit/update-status', [CreditRequestController::class, 'updateStatus'])->name('credit.updateStatus');
+
         });
     });
 });

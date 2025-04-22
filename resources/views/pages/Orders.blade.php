@@ -238,26 +238,27 @@
                         <div id="dropdownContent" class="mt-2 hidden">
                             <div class="overflow-x-auto">
                                 <div class="p-4 mt-2 rounded-lg shadow bg-gray-50">
-                                    <h3 class="font-bold text-gray-700">Items Details</h3>
-                                    <table class="w-full mt-2 text-sm text-gray-700 border">
-                                        <thead>
-                                            <tr class="bg-gray-200">
-                                                <th class="p-3 text-left">Image</th>
-                                                <th class="p-3 text-left">Product</th>
-                                                <th class="p-3 text-center">Qty</th>
-                                                <th class="p-3 text-center">U.Price</th>
-                                                <th class="p-3 text-center">Subtotal</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="order-items-body"></tbody>
-                                    </table>
+                                    <h3 class="font-bold text-gray-700 text-base md:text-lg">Items Details</h3>
+
+                                    <div class="w-full overflow-x-auto">
+                                        <table class="w-full min-w-[600px] mt-2 text-sm md:text-base text-gray-700 border">
+                                            <thead>
+                                                <tr class="bg-gray-200">
+                                                    <th class="p-3 text-left">Image</th>
+                                                    <th class="p-3 text-left">Product</th>
+                                                    <th class="p-3 text-center">Qty</th>
+                                                    <th class="p-3 text-center">U.Price</th>
+                                                    <th class="p-3 text-center">Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="order-items-body"></tbody>
+                                        </table>
+                                    </div>
 
                                     <!-- Total Calculation -->
-                                    <div class="mt-4 text-sm text-gray-700">
-                                        <div class="flex justify-between"><span>Total Bill:</span> <span
-                                                id="total-bill"></span></div>
-                                        <div class="flex justify-between"><span>Delivery fee:</span> <span
-                                                id="fee"></span></div>
+                                    <div class="mt-4 text-sm md:text-base text-gray-700 space-y-1">
+                                        <div class="flex justify-between"><span>Total Bill:</span> <span id="total-bill"></span></div>
+                                        <div class="flex justify-between"><span>Delivery fee:</span> <span id="fee"></span></div>
                                         <div class="flex justify-between text-red-500">
                                             <span>Discount:</span> <span id="discount">-0</span>
                                         </div>
@@ -267,6 +268,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -334,14 +336,14 @@
                         $("#order-date").text(response.order_date);
                         $("#customer-phone").text(response.phone);
                         $("#total-items").text(response.order_items.length);
-                        $("#order-total").text("Rs" + response.total);
-                        $("#delivery-fee").text("Rs" + response.delivery_fee);
-                        $("#grand-total").text("Rs" + response.grand_total);
+                        $("#order-total").text("Rs " + response.total);
+                        $("#delivery-fee").text("Rs " + response.delivery_fee);
+                        $("#grand-total").text("Rs " + response.grand_total);
 
                         // Populate billing details
-                        $("#total-bill").text("Rs" + response.total);
-                        $("#fee").text("Rs" + response.delivery_fee);
-                        $("#final-total").text("Rs" + response.grand_total);
+                        $("#total-bill").text("Rs " + response.total);
+                        $("#fee").text("Rs " + response.delivery_fee);
+                        $("#final-total").text("Rs " + response.grand_total);
 
                         // Populate order items table
                         let itemsHtml = "";
@@ -360,8 +362,8 @@
                             <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
                             <td class="p-3">${item.product_name}</td>
                             <td class="p-3 text-center">${item.quantity}</td>
-                            <td class="p-3 text-center">Rs${item.price}</td>
-                            <td class="p-3 text-center">Rs${(item.quantity * item.price).toFixed(2)}</td>
+                            <td class="p-3 text-center">Rs ${item.price}</td>
+                            <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
                         </tr>`;
                         });
 
