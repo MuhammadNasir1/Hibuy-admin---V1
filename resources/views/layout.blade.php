@@ -296,7 +296,7 @@
 
 
                 @endif
-                @if (session('user_details.user_role') == 'admin' || 'freelancer')
+                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'freelancer')
                 <li class="">
                     <a href="{{ route('credit-requests') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">

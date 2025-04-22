@@ -257,8 +257,10 @@
 
                                     <!-- Total Calculation -->
                                     <div class="mt-4 text-sm md:text-base text-gray-700 space-y-1">
-                                        <div class="flex justify-between"><span>Total Bill:</span> <span id="total-bill"></span></div>
-                                        <div class="flex justify-between"><span>Delivery fee:</span> <span id="fee"></span></div>
+                                        <div class="flex justify-between"><span>Total Bill:</span> <span
+                                                id="total-bill"></span></div>
+                                        <div class="flex justify-between"><span>Delivery fee:</span> <span
+                                                id="fee"></span></div>
                                         <div class="flex justify-between text-red-500">
                                             <span>Discount:</span> <span id="discount">-0</span>
                                         </div>
@@ -282,6 +284,10 @@
 @section('js')
     <script>
         $(document).ready(function() {
+            const user = {
+                user_role: "{{ session('user_details.user_role') }}"
+            };
+
             $(".viewModalBtn").on("click", function() {
                 let vieworderurl = $(this).attr("vieworderurl"); // Get order details URL
                 if (!vieworderurl) {
@@ -304,25 +310,28 @@
                             return;
                         }
                         // Assuming your API response is saved in a variable called response
-                        const couriers = response
+                        if (user.user_role === 'admin') {
+                            const couriers = response
                             .couriers; // Array of { courier_id, courier_name }
-                        const selectBox = document.getElementById('courier_id');
+                            const selectBox = document.getElementById('courier_id');
 
-                        // // Clear existing options (optional)
-                        // selectBox.innerHTML = '<option value="">Select Courier</option>';
+                            // Clear existing options (optional)
+                            // selectBox.innerHTML = '<option value="">Select Courier</option>';
 
-                        // Loop through couriers and append options
-                        couriers.forEach(courier => {
-                            const option = document.createElement('option');
-                            option.value = courier.courier_id;
-                            option.textContent = courier.courier_name;
-                            selectBox.appendChild(option);
-                        });
+                            // Loop through couriers and append options
+                            couriers.forEach(courier => {
+                                const option = document.createElement('option');
+                                option.value = courier.courier_id;
+                                option.textContent = courier.courier_name;
+                                selectBox.appendChild(option);
+                            });
 
-                        // // Optional: Set selected courier if editing an existing order
-                        if (response.selected_courier_id) {
-                            selectBox.value = response.selected_courier_id;
+                            // Optional: Set selected courier if editing an existing order
+                            if (response.selected_courier_id) {
+                                selectBox.value = response.selected_courier_id;
+                            }
                         }
+
 
 
                         // Populate order details
