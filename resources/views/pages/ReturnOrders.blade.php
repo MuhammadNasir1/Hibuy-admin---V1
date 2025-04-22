@@ -171,51 +171,57 @@
                         </button>
                         <div id="dropdownContent" class="mt-2 hidden">
                             <div class="overflow-x-auto">
-                                <div class="p-4 mt-2 rounded-lg shadow bg-gray-50"> <!-- Added padding here -->
-                                    <h3 class="font-bold text-gray-700">Items Details</h3>
-                                    <table class="w-full mt-2 text-sm text-gray-700 border">
-                                        <thead>
-                                            <tr class="bg-gray-200">
-                                                <th class="p-3 text-left">Product</th>
-                                                <th class="p-3 text-center">Qty</th>
-                                                <th class="p-3 text-center">U.Price</th>
-                                                <th class="p-3 text-center">Subtotal</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="border-b">
-                                                <td class="p-3">name</td>
-                                                <td class="p-3 text-center">1</td>
-                                                <td class="p-3 text-center">500.0</td>
-                                                <td class="p-3 text-center">500.0</td>
-                                            </tr>
-                                            <tr class="border-b">
-                                                <td class="p-3">name</td>
-                                                <td class="p-3 text-center">2</td>
-                                                <td class="p-3 text-center">50.0</td>
-                                                <td class="p-3 text-center">100.0</td>
-                                            </tr>
-                                            <tr class="border-b">
-                                                <td class="p-3">name</td>
-                                                <td class="p-3 text-center">5</td>
-                                                <td class="p-3 text-center">10.0</td>
-                                                <td class="p-3 text-center">100.0</td>
-                                            </tr>
-                                            <tr class="border-b">
-                                                <td class="p-3">name</td>
-                                                <td class="p-3 text-center">1</td>
-                                                <td class="p-3 text-center">200.0</td>
-                                                <td class="p-3 text-center">200.0</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="p-3">name</td>
-                                                <td class="p-3 text-center">2</td>
-                                                <td class="p-3 text-center">75.0</td>
-                                                <td class="p-3 text-center">150.0</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="mt-4 text-sm text-gray-700">
+                                <div class="p-4 mt-2 rounded-lg shadow bg-gray-50">
+                                    <h3 class="font-bold text-gray-700 text-base md:text-lg">Items Details</h3>
+
+                                    <!-- Responsive table wrapper -->
+                                    <div class="w-full overflow-x-auto">
+                                        <table class="w-full min-w-[600px] mt-2 text-sm md:text-base text-gray-700 border">
+                                            <thead>
+                                                <tr class="bg-gray-200">
+                                                    <th class="p-3 text-left">Product</th>
+                                                    <th class="p-3 text-center">Qty</th>
+                                                    <th class="p-3 text-center">U.Price</th>
+                                                    <th class="p-3 text-center">Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="border-b">
+                                                    <td class="p-3">name</td>
+                                                    <td class="p-3 text-center">1</td>
+                                                    <td class="p-3 text-center">500.0</td>
+                                                    <td class="p-3 text-center">500.0</td>
+                                                </tr>
+                                                <tr class="border-b">
+                                                    <td class="p-3">name</td>
+                                                    <td class="p-3 text-center">2</td>
+                                                    <td class="p-3 text-center">50.0</td>
+                                                    <td class="p-3 text-center">100.0</td>
+                                                </tr>
+                                                <tr class="border-b">
+                                                    <td class="p-3">name</td>
+                                                    <td class="p-3 text-center">5</td>
+                                                    <td class="p-3 text-center">10.0</td>
+                                                    <td class="p-3 text-center">100.0</td>
+                                                </tr>
+                                                <tr class="border-b">
+                                                    <td class="p-3">name</td>
+                                                    <td class="p-3 text-center">1</td>
+                                                    <td class="p-3 text-center">200.0</td>
+                                                    <td class="p-3 text-center">200.0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="p-3">name</td>
+                                                    <td class="p-3 text-center">2</td>
+                                                    <td class="p-3 text-center">75.0</td>
+                                                    <td class="p-3 text-center">150.0</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Totals -->
+                                    <div class="mt-4 text-sm md:text-base text-gray-700 space-y-1">
                                         <div class="flex justify-between"><span>Total Bill:</span> <span>1,050</span></div>
                                         <div class="flex justify-between"><span>Delivery fee:</span> <span>50</span></div>
                                         <div class="flex justify-between text-red-500">
@@ -227,6 +233,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
