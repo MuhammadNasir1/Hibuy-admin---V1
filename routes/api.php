@@ -25,6 +25,7 @@ Route::GET('getProductsDetail', [apiproductController::class, 'getProductsDetail
 Route::GET('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
 Route::GET('getStoreList', [apiStoreController::class, 'getStoreList']);
 Route::GET('searchProducts', [apiproductController::class, 'searchProducts']);
+Route::GET('getSubCategories', [apiproductController::class, 'getSubCategories']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
