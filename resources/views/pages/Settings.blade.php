@@ -14,7 +14,16 @@
             <!-- Profile Header -->
             <div class="flex items-center">
                 <div class="w-24 h-24 bg-gray-200 rounded-full">
-                    <img class="w-24 h-24 rounded-full" src="{{ asset('asset/Ellipse 2.png') }}" alt="Profile Picture">
+                    @php
+                        $imagePath = $personalInfo['profile_picture'] ?? 'default-profile.png';
+                        $defaultImage = asset('asset/Ellipse 2.png');
+                        $finalImage =
+                            !empty($imagePath) && file_exists(public_path($imagePath))
+                                ? asset($imagePath)
+                                : $defaultImage;
+                    @endphp
+                    <img class="w-24 h-24 rounded-full" src="{{ $finalImage }}" alt="Profile Picture">
+
                 </div>
                 <div class="ml-6">
                     <h2 class="text-2xl font-semibold"></h2>
@@ -76,22 +85,22 @@
                     <div class="mt-2">
                         <h3 class="text-lg font-semibold">Profile Details</h3>
                         <div class="mt-4 space-y-2">
-                            <div class="flex">
+                            <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Full Name:</span>
-                                <span></span>
+                                <span>{{ $personalInfo['full_name'] }}</span>
 
                             </div>
-                            <div class="flex">
+                            <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Email:</span>
-                                <span></< /span>
+                                <span>{{ $personalInfo['email'] ?? 'N/A' }}</span>
                             </div>
-                            <div class="flex">
+                            <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Phone:</span>
-                                <span></< /span>
+                                <span>{{ $personalInfo['phone_no'] ?? 'N/A' }}</span>
                             </div>
-                            <div class="flex">
+                            <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Address:</span>
-                                <span></< /span>
+                                <span>{{ $personalInfo['address'] ?? 'N/A' }}</span>
                             </div>
                         </div>
                     </div>
@@ -99,47 +108,59 @@
                 <div class="hidden rounded-lg" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                     <div class="pt-3 tab-pane fade profile-edit" id="profile-edit">
                         <!-- Profile Edit Form -->
-                        <form id="settingForm" url="updateUserDetails" method="POST" enctype="multipart/form-data">
+                        <form id="settingForm" data-url="{{ route('updatePersonalInfo') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
-                            <div class="flex items-center mb-3">
-                                <label for="profileImage" class="w-1/4 text-gray-700">Profile Image</label>
-                                <div class="flex-col w-3/4 ">
+                            <div class="flex flex-col md:flex-row md:items-center gap-4 mb-3">
+                                <label for="profile_picture"
+                                    class="w-1/4 whitespace-nowrap  font-semibold text-gray-600">Profile Image</label>
+                                <div class="flex gap-4 items-center w-full md:pl-9 ">
+                                    @php
+                                        $imagePath = $personalInfo['profile_picture'] ?? 'default-profile.png';
+                                        $defaultImage = asset('asset/Ellipse 2.png');
+                                        $finalImage =
+                                            !empty($imagePath) && file_exists(public_path($imagePath))
+                                                ? asset($imagePath)
+                                                : $defaultImage;
+                                    @endphp
+                                    <img class="w-24 h-24 rounded-lg" src="{{ $finalImage }}" alt="Profile Picture">
                                     <div class="lg:w-1/2">
-                                        <x-file-uploader name="user_image" id="userImage" />
+                                        <x-file-uploader name="profile_picture" id="profile_picture" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="flex items-center mb-4">
-                                <label for="fullName" class="w-1/4 text-gray-700">Full Name</label>
+                            <div class="flex flex-col md:flex-row mb-4">
+                                <label for="fullName" class="w-1/4 whitespace-nowrap font-semibold text-gray-600">Full
+                                    Name</label>
                                 <div class="w-3/4">
-                                    <input name="name" type="text"
+                                    <input name="full_name" type="text"
                                         class="w-full border-gray-300 rounded form-input focus:outline-none focus:border-customOrangeDark"
-                                        id="fullName" value="">
+                                        id="fullName" value="{{ $personalInfo['full_name'] ?? 'N/A' }}" required>
                                 </div>
                             </div>
-                            <div class="flex items-center mb-4">
-                                <label for="email" class="w-1/4 text-gray-700">Email</label>
+                            <div class="flex flex-col md:flex-row md:items-center mb-4">
+                                <label for="email" class="w-1/4 font-semibold text-gray-600">Email</label>
                                 <div class="w-3/4">
                                     <input name="email" type="text"
                                         class="w-full border-gray-300 rounded form-input focus:outline-none focus:border-customOrangeDark"
-                                        id="email" value="">
+                                        id="email" value="{{ $personalInfo['email'] ?? 'N/A' }}" required readonly>
                                 </div>
                             </div>
-                            <div class="flex items-center mb-4">
-                                <label for="phone" class="w-1/4 text-gray-700">Phone</label>
+                            <div class="flex flex-col md:flex-row md:items-center mb-4">
+                                <label for="phone" class="w-1/4 font-semibold text-gray-600">Phone</label>
                                 <div class="w-3/4">
-                                    <input name="phone" type="text"
+                                    <input name="phone_no" type="text"
                                         class="w-full border-gray-300 rounded form-input focus:outline-none focus:border-customOrangeDark"
-                                        id="phone" value="">
+                                        id="phone" value="{{ $personalInfo['phone_no'] ?? 'N/A' }}" required>
                                 </div>
                             </div>
-                            <div class="flex items-start mb-4">
-                                <label for="address" class="w-1/4 text-gray-700">Address</label>
+                            <div class="flex flex-col md:flex-row md:items-center mb-4">
+                                <label for="address" class="w-1/4 font-semibold text-gray-600">Address</label>
                                 <div class="w-3/4">
                                     <textarea name="address"
                                         class="w-full h-24 border-gray-300 rounded form-textarea focus:outline-none focus:border-customOrangeDark"
-                                        id="address"></textarea>
+                                        id="address" required>{{ $personalInfo['address'] ?? 'N/A' }}</textarea>
                                 </div>
                             </div>
 
@@ -147,7 +168,25 @@
 
                             <div class="flex justify-center">
                                 <div class="mt-4 w-60">
-                                    <x-modal-button :title="'Save Changes'"></x-modal-button>
+                                    <button
+                                        class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
+                                        id="SsubmitBtn" type="submit">
+                                        <div id="SbtnSpinner" class="hidden">
+                                            <svg aria-hidden="true"
+                                                class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
+                                                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                    fill="currentColor" />
+                                                <path
+                                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                    fill="currentFill" />
+                                            </svg>
+                                        </div>
+                                        <div id="SbtnText">
+                                            Update Profile
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -206,7 +245,7 @@
                 <div class="hidden rounded-lg" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
                     <div class="pt-3 tab-pane fade" id="profile-change-password">
                         <!-- Change Password Form -->
-                        <form id="passwordForm" url="updateUserPassword" method="POST">
+                        <form id="passwordForm" data-url="{{ route('updateUserPassword') }}" method="POST">
                             @csrf
                             {{-- <form id="passwordForm" url="updateUserPassword" method="POST"> --}}
                             <div class="flex flex-col mb-3 md:flex-row">
@@ -257,7 +296,7 @@
                                 <div class="mt-4 w-60">
                                     <button
                                         class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
-                                        id="SsubmitBtn">
+                                        id="SsubmitBtn" type="submit">
                                         <div id="SbtnSpinner" class="hidden">
                                             <svg aria-hidden="true"
                                                 class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
@@ -297,7 +336,9 @@
                                 <div class="bg-primary bg-opacity-20 p-6 rounded-lg shadow-lg m-2">
                                     <form>
                                         <div class="mb-4">
-                                            <h2 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
+                                            <h2
+                                                class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                                Referral
                                                 ID</h2>
                                             <div class="flex">
                                                 <input type="text" id="referral-id" value="ABC12345"
@@ -319,7 +360,9 @@
                                         </div>
 
                                         <div class="mb-4">
-                                            <h2 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">Referral
+                                            <h2
+                                                class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                                Referral
                                                 Link</h2>
                                             <div class="flex">
                                                 <input type="text" id="referral-link"
@@ -353,13 +396,7 @@
                             My Referals (5)
                         </h3>
                         @php
-                            $headers = [
-                                'Sr.',
-                                'ID',
-                                'Name',
-                                'Email Address',
-                                'Date Joined'
-                            ];
+                            $headers = ['Sr.', 'ID', 'Name', 'Email Address', 'Date Joined'];
                         @endphp
 
                         <x-table :headers="$headers">
@@ -425,62 +462,59 @@
                     $icon.removeClass('fa-eye').addClass('fa-eye-slash');
                 }
             });
+
+            $("#passwordForm ,#settingForm").submit(function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var $form = $(this);
+
+                $.ajax({
+                    type: "POST",
+                    url: $form.data("url"), // use data-url
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        $("#SbtnSpinner").removeClass("hidden");
+                        $("#SbtnText").addClass("hidden");
+                        $("#SsubmitBtn").attr("disabled", true);
+                    },
+                    success: function(response) {
+                        $("#SbtnSpinner").addClass("hidden");
+                        $("#SbtnText").removeClass("hidden");
+                        $("#SsubmitBtn").attr("disabled", false);
+
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Success",
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                        });
+                        setTimeout(() => {
+                            $form[0].reset();
+                            location.reload();
+                        }, 2000);
+                    },
+                    error: function(jqXHR) {
+                        let response = JSON.parse(jqXHR.responseText);
+                        $("#SbtnSpinner").addClass("hidden");
+                        $("#SbtnText").removeClass("hidden");
+                        $("#SsubmitBtn").attr("disabled", false);
+
+                        Swal.fire({
+                            position: "center",
+                            icon: "warning",
+                            title: "Error",
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                        });
+                    },
+                });
+            });
+
         });
-        // let userImageExists = {{ isset($user['user_image']) ? 'true' : 'false' }};
-        // let userImage = {!! isset($user['user_image']) ? json_encode($user['user_image']) : 'null' !!};
-        // let fileImg = $('#settingForm .file-preview');
-
-        // if (userImageExists) {
-        //     fileImg.removeClass('hidden').attr('src', userImage);
-        // } else {
-        //     fileImg.addClass('hidden');
-        // }
-        // $("#settingForm, #passwordForm").submit(function(e) {
-        //     e.preventDefault();
-        //     var formData = new FormData(this);
-        //     $.ajax({
-        //         type: "POST",
-        //         url: $(this).attr("url"),
-        //         data: formData,
-        //         processData: false,
-        //         contentType: false,
-        //         beforeSend: function() {
-        //             $("#btnSpinner , #SbtnSpinner").removeClass("hidden");
-        //             $("#btnText , #SbtnText").addClass("hidden");
-        //             $("#submitBtn , #submitBtn").attr("disabled", true);
-        //         },
-        //         success: function(response) {
-        //             $("#btnSpinner , #SbtnSpinner").addClass("hidden");
-        //             $("#btnText , #SbtnText").removeClass("hidden");
-        //             $("#submitBtn , #submitBtn").attr("disabled", false);
-        //             window.location.href = 'setting';
-        //             Swal.fire({
-        //                 position: "center",
-        //                 icon: "success",
-        //                 title: "Success",
-        //                 text: response.message,
-        //                 showConfirmButton: false,
-        //                 timer: 2000,
-        //             });
-
-        //         },
-
-        //         error: function(jqXHR) {
-        //             let response = JSON.parse(jqXHR.responseText);
-        //             $("#btnSpinner , #SbtnSpinner").addClass("hidden");
-        //             $("#btnText , #SbtnText").removeClass("hidden");
-        //             $("#submitBtn , #submitBtn").attr("disabled", false);
-        //             Swal.fire({
-        //                 position: "center",
-        //                 icon: "warning",
-        //                 title: "Error",
-        //                 text: response.message,
-        //                 showConfirmButton: false,
-        //                 timer: 2000,
-        //             });
-
-        //         },
-        //     });
-        // });
     </script>
 @endsection
