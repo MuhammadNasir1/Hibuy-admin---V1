@@ -322,7 +322,7 @@ class UserController extends Controller
 
         $personalInfo = json_decode($seller->personal_info, true); // 'true' ensures it returns an associative array
 
-        return view('pages.settings', compact('seller', 'personalInfo'));
+        return view('pages.Settings', compact('seller', 'personalInfo'));
 
     }
 
