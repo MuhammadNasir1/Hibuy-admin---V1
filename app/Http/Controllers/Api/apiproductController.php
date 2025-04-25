@@ -295,18 +295,51 @@ class apiproductController extends Controller
         }
     }
 
+    public function getSubCategories()
+    {
+        try {
+            // Fetch all sub_categories fields from categories
+            $categories = product_category::select('sub_categories')->get();
+
+            $allSubCategories = [];
+
+            foreach ($categories as $category) {
+                $subCategories = json_decode($category->sub_categories, true);
+
+                if (is_array($subCategories)) {
+                    $allSubCategories = array_merge($allSubCategories, $subCategories);
+                }
+            }
+
+            // Remove duplicates
+            $allSubCategories = array_unique($allSubCategories, SORT_REGULAR);
+
+            // Sort alphabetically
+            usort($allSubCategories, function ($a, $b) {
+                return strcmp(
+                    is_array($a) ? ($a['name'] ?? '') : $a,
+                    is_array($b) ? ($b['name'] ?? '') : $b
+                );
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subcategories fetched successfully',
+                'data' => array_values($allSubCategories),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function searchProducts(Request $request)
     {
         try {
             $query = $request->query('query');
-            $categoryId = $request->query('category_id'); // optional category filter
-
-            if (!$query) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search query is required.'
-                ], 400);
-            }
+            $categoryId = $request->query('category_id');
 
             $products = Products::select(
                 'product_id',
@@ -321,9 +354,12 @@ class apiproductController extends Controller
                 'product_discounted_price',
                 'product_images'
             )
-                ->with(['category:id,name']) // eager load category
-                ->where(function ($q) use ($query) {
-                    $q->where('product_name', 'LIKE', "%{$query}%")
+                ->with(['category:id,name']);
+
+            // Apply filters
+            $products->when($query, function ($q) use ($query) {
+                $q->where(function ($q2) use ($query) {
+                    $q2->where('product_name', 'LIKE', "%{$query}%")
                         ->orWhere('product_description', 'LIKE', "%{$query}%")
                         ->orWhere('product_brand', 'LIKE', "%{$query}%")
                         ->orWhere('product_subcategory', 'LIKE', "%{$query}%")
@@ -331,35 +367,30 @@ class apiproductController extends Controller
                             $catQuery->where('name', 'LIKE', "%{$query}%");
                         });
                 });
+            });
 
-            // Apply category filter if category_id is provided
-            if (!empty($categoryId)) {
-                $products->where('product_category', $categoryId);
-            }
+            $products->when($categoryId, function ($q) use ($categoryId) {
+                $q->where('product_category', $categoryId);
+            });
 
             $result = $products->limit(20)->get();
 
-            // Post-process each product
+            // Post-processing
             foreach ($result as $product) {
-                // Decode and extract image
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
                 unset($product->product_images);
 
-                // Default rating
                 $product->product_rating = 4.5;
-
-                // Category name
                 $product->category_name = $product->category->name ?? null;
                 unset($product->category);
 
-                // Discount flag
                 $product->is_discounted = $product->product_discount > 0;
             }
 
             return response()->json([
-                'success'  => true,
-                'message'  => 'Search results fetched successfully',
+                'success' => true,
+                'message' => 'Search results fetched successfully',
                 'products' => $result
             ], 200);
         } catch (\Exception $e) {
