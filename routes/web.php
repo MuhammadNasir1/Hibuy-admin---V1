@@ -18,8 +18,15 @@ use App\Http\Middleware\FetchNotifications;
 Route::get('/Login', function () {
     return view('Auth.login');
 })->name("login");
+Route::get('/forgot_password', function () {
+    return view('Auth.forgotPassword');
+})->name("forgot_Password");
+
 
 Route::post('login', [AuthController::class, 'login']);
+Route::post('/forgot/password', [AuthController::class, 'forgotPassword'])->name('forgot.password');
+Route::get('/forgot/password/{token}', [AuthController::class, 'showLinkForm'])->name('forgot.password.Link');
+Route::post('/reset/password/email', [AuthController::class, 'resetPassword'])->name('reset.password');
 Route::get('/signup/{role?}', [AuthController::class, 'showSignup'])->name('signup');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
@@ -146,6 +153,10 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::get('/credit-request/{id}', [CreditRequestController::class, 'show'])->name('credit-request.show');
             Route::post('/credit/update-status', [CreditRequestController::class, 'updateStatus'])->name('credit.updateStatus');
 
+
+            Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
+            Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
+            Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
         });
     });
 });
