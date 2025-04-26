@@ -161,6 +161,7 @@ class AuthController extends Controller
 
         // Generate reset token
         $token = Str::random(65);
+        DB::table('password_forgot')->where('email', $validatedData['user_email'])->delete();
 
         // Store token in the password_forgot table
         DB::table('password_forgot')->insert([
@@ -170,56 +171,24 @@ class AuthController extends Controller
             'updated_at' => now(),
         ]);
 
-        // Send reset email
-        Mail::send("Auth.emails.forgotPassword", [
-            'token' => $token,
-            'email' => $validatedData['user_email'],
-        ], function ($message) use ($validatedData) {
-            $message->to($validatedData['user_email']);
-            $message->subject("Forgot Password");
-        });
+        try {
+            // Send reset email with both token and email
+            Mail::to($validatedData['user_email'])->send(new ForgotPasswordMail($token, $validatedData['user_email']));
 
-        return response()->json([
-            'message' => 'We have sent a reset password link to your email.'
-        ], 200);
+            return response()->json([
+                'message' => 'We have sent a reset password link to your email.'
+            ], 200);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Failed to send password reset email: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'An error occurred. Please try again later.',
+            ], 500);
+        }
     }
 
 
-    //     public function forgotPassword(Request $request)
-// {
-//     $validatedData = $request->validate([
-//         'user_email' => 'required|email|exists:users,user_email',
-//     ]);
-
-    //     // Check if the user exists with allowed roles
-//     $user = User::where('user_email', $validatedData['user_email'])
-//         ->whereIn('user_role', ['seller', 'freelancer'])
-//         ->first();
-
-    //     if (!$user) {
-//         return response()->json([
-//             'message' => 'Your account doesn’t have access to this feature.'
-//         ], 403);
-//     }
-
-    //     // Generate reset token
-//     $token = Str::random(65);
-
-    //     // Store token in the password_forgot table
-//     DB::table('password_forgot')->insert([
-//         'email' => $validatedData['user_email'],
-//         'token' => $token,
-//         'created_at' => now(),
-//         'updated_at' => now(),
-//     ]);
-
-    //     // Send email using queued mail
-//     Mail::to($validatedData['user_email'])->queue(new ForgotPasswordMail($token, $validatedData['user_email']));
-
-    //     return response()->json([
-//         'message' => 'We have sent a reset password link to your email.'
-//     ], 200);
-// }
 
     public function showLinkForm($token, Request $request)
     {
@@ -246,7 +215,7 @@ class AuthController extends Controller
         if (!$record) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired token.',
+                'message' => 'Invalid or expired Link.',
             ], 400);
         }
 

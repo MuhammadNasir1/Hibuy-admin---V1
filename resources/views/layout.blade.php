@@ -311,7 +311,7 @@
                 </li>
                 @endif
 
-                @if (session('user_details.user_role') == 'seller')
+                @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
                     <li class="">
                         <a href="{{ route('getStoreDetails') }}"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">

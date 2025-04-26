@@ -318,19 +318,70 @@ class UserController extends Controller
     {
         $userId = session('user_details.user_id'); // get logged-in user ID from session
 
-        $seller = DB::table('seller')->where('user_id', $userId)->first(); // adjust "id" if your primary key is different
+        if (session('user_details.user_role') !== 'admin') {
+            $seller = DB::table('seller')->where('user_id', $userId)->first(); // adjust "id" if your primary key is different
 
-        $personalInfo = json_decode($seller->personal_info, true); // 'true' ensures it returns an associative array
+            $personalInfo = json_decode($seller->personal_info, true);
+            return view('pages.Settings', compact('seller', 'personalInfo'));
+        } else {
+            $users = DB::table('users')->where('user_id', $userId)->first();
+            return view('pages.Settings', compact('users'));
+        }
 
-        return view('pages.Settings', compact('seller', 'personalInfo'));
+
+
 
     }
 
 
 
+    // public function updatePersonalInfo(Request $request)
+    // {
+    //     $userId = session('user_details.user_id'); // Get logged-in user ID
+
+    //     // Validate the incoming request
+    //     $validated = $request->validate([
+    //         'full_name' => 'required|string|max:255',
+    //         'phone_no' => 'required|string|max:15',
+    //         'email' => 'required|email|max:255',
+    //         'address' => 'nullable|string|max:500',
+    //         'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+
+    //     // Get the seller's data
+    //     $seller = Seller::where('user_id', $userId)->first();
+
+    //     if (!$seller) {
+    //         return response()->json(['message' => 'Seller not found!'], 404);
+    //     }
+
+    //     // Decode existing personal_info or create new array
+    //     $personalInfo = $seller->personal_info ? json_decode($seller->personal_info, true) : [];
+
+    //     // Update fields
+    //     $personalInfo['full_name'] = $validated['full_name'];
+    //     $personalInfo['phone_no'] = $validated['phone_no'];
+    //     $personalInfo['email'] = $validated['email'];
+    //     $personalInfo['address'] = $validated['address'] ?? ($personalInfo['address'] ?? null);
+
+    //     // Handle profile picture
+    //     if ($request->hasFile('profile_picture')) {
+    //         $imagePath = $request->file('profile_picture')->store('kyc_files', 'public');
+    //         $personalInfo['profile_picture'] = 'storage/' . $imagePath;
+    //     }
+
+    //     // Save back to personal_info column
+    //     $seller->personal_info = json_encode($personalInfo);
+    //     $seller->save();
+
+    //     return response()->json(['message' => 'Personal information updated successfully!']);
+    // }
+
+
     public function updatePersonalInfo(Request $request)
     {
-        $userId = session('user_details.user_id'); // Get logged-in user ID
+        $userId = session('user_details.user_id');
+        $userRole = session('user_details.user_role');
 
         // Validate the incoming request
         $validated = $request->validate([
@@ -341,36 +392,44 @@ class UserController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Get the seller's data
+        if ($userRole === 'admin') {
+            // If admin, only update the user_name in users table
+            $user = User::find($userId);
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found!'], 404);
+            }
+
+            $user->user_name = $validated['full_name']; // Only update full_name to user_name
+            $user->save();
+
+            return response()->json(['message' => 'Admin information updated successfully!']);
+        }
+
+        // Normal seller update
         $seller = Seller::where('user_id', $userId)->first();
 
         if (!$seller) {
             return response()->json(['message' => 'Seller not found!'], 404);
         }
 
-        // Decode existing personal_info or create new array
         $personalInfo = $seller->personal_info ? json_decode($seller->personal_info, true) : [];
 
-        // Update fields
         $personalInfo['full_name'] = $validated['full_name'];
         $personalInfo['phone_no'] = $validated['phone_no'];
         $personalInfo['email'] = $validated['email'];
         $personalInfo['address'] = $validated['address'] ?? ($personalInfo['address'] ?? null);
 
-        // Handle profile picture
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('kyc_files', 'public');
             $personalInfo['profile_picture'] = 'storage/' . $imagePath;
         }
 
-        // Save back to personal_info column
         $seller->personal_info = json_encode($personalInfo);
         $seller->save();
 
         return response()->json(['message' => 'Personal information updated successfully!']);
     }
-
-
 
     public function updateUserPassword(Request $request)
     {

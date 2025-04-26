@@ -7,6 +7,10 @@
             color: #FE8D2F;
             border-color: #FE8D2F;
         }
+
+        /* .active-tab:hover{
+                color: #FE8D2F;
+            } */
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <div class="container p-6 mx-auto">
@@ -80,19 +84,19 @@
                             veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit.
                         </p>
                     </div>
-
+                    {{-- @if (session('user_details.user_role') !== 'admin') --}}
                     <!-- Profile Details -->
                     <div class="mt-2">
                         <h3 class="text-lg font-semibold">Profile Details</h3>
                         <div class="mt-4 space-y-2">
                             <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Full Name:</span>
-                                <span>{{ $personalInfo['full_name'] }}</span>
+                                <span>{{ $personalInfo['full_name'] ?? $users->user_name }}</span>
 
                             </div>
                             <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Email:</span>
-                                <span>{{ $personalInfo['email'] ?? 'N/A' }}</span>
+                                <span>{{ $personalInfo['email'] ?? $users->user_email }}</span>
                             </div>
                             <div class="flex flex-col md:flex-row">
                                 <span class="w-32 font-semibold text-gray-600">Phone:</span>
@@ -104,6 +108,8 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
                 <div class="hidden rounded-lg" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                     <div class="pt-3 tab-pane fade profile-edit" id="profile-edit">
@@ -136,7 +142,8 @@
                                 <div class="w-3/4">
                                     <input name="full_name" type="text"
                                         class="w-full border-gray-300 rounded form-input focus:outline-none focus:border-customOrangeDark"
-                                        id="fullName" value="{{ $personalInfo['full_name'] ?? 'N/A' }}" required>
+                                        id="fullName" value="{{ $personalInfo['full_name'] ?? $users->user_name }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="flex flex-col md:flex-row md:items-center mb-4">
@@ -144,7 +151,8 @@
                                 <div class="w-3/4">
                                     <input name="email" type="text"
                                         class="w-full border-gray-300 rounded form-input focus:outline-none focus:border-customOrangeDark"
-                                        id="email" value="{{ $personalInfo['email'] ?? 'N/A' }}" required readonly>
+                                        id="email" value="{{ $personalInfo['email'] ?? $users->user_email }}" required
+                                        readonly>
                                 </div>
                             </div>
                             <div class="flex flex-col md:flex-row md:items-center mb-4">

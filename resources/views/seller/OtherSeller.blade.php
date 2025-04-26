@@ -46,7 +46,8 @@
                     </svg>
                 </div>
 
-                <p class="text-customGrayColorDark">We found 29 items for you!</p>
+                <p id="productCount" class="text-customGrayColorDark">We found {{ count($products) }} items for you!</p>
+
             </div>
 
             <div
@@ -107,8 +108,9 @@
                     $mainImage = isset($images[0]) ? str_replace('\/', '/', $images[0]) : 'asset/product.png';
                 @endphp
 
-                <div class="product border p-5 rounded-xl flex-column" data-name="{{ strtolower($product->product_name) }}">
-                    <img src="{{ asset($mainImage) }}" alt="product"
+<div class="product border p-5 rounded-xl flex-column"
+data-name="{{ strtolower($product->product_name ?? '') }}"
+data-brand="{{ strtolower($product->product_brand ?? '') }}">  <img src="{{ asset($mainImage) }}" alt="product"
                         class="product-img w-full object-contain rounded-xl h-[200px]">
                     <div class="flex-1 mt-3 product-info">
                         <p class="text-gray-600">{{ $product->product_brand }}</p>
@@ -167,19 +169,46 @@
             });
         });
 
-        $(document).ready(function() {
-            $("#search").on("keyup", function() {
-                let searchText = $(this).val().toLowerCase();
+    //     $(document).ready(function() {
+    //         $("#search").on("keyup", function() {
+    //             let searchText = $(this).val().toLowerCase();
 
-                $(".product").each(function() {
-                    let productName = $(this).attr("data-name").toLowerCase();
-                    if (productName.includes(searchText)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            });
+    //             $(".product").each(function() {
+    //                 let productName = $(this).attr("data-name").toLowerCase();
+    //                 if (productName.includes(searchText)) {
+    //                     $(this).show();
+    //                 } else {
+    //                     $(this).hide();
+    //                 }
+    //             });
+    //         });
+    //     });
+    //
+
+    $(document).ready(function() {
+    $("#search").on("keyup input", function() {
+        let searchText = $(this).val().toLowerCase();
+
+        $(".product").each(function() {
+            let productName = ($(this).data("name") || "").toString().toLowerCase();
+            let productBrand = ($(this).data("brand") || "").toString().toLowerCase();
+
+            if (searchText === "") {
+                $(this).show();
+            } else {
+                if (productName.includes(searchText) || productBrand.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            }
         });
+
+        // 🧠 Count and show visible products
+        let visibleCount = $(".product:visible").length;
+        $("#productCount").text("We found " + visibleCount + " items for you!");
+    });
+});
+
     </script>
 @endsection

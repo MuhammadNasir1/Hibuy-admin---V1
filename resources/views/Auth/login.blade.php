@@ -1,7 +1,7 @@
 @extends('Auth.layout')
 @section('title', 'Login')
 @section('content')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <div
         class="w-full max-w-sm  p-4 mx-auto mt-5 bg-white shadow-lg rounded-tr-[40px] rounded-tl-[100px]  rounded-br-[100px]  rounded-bl-[20px] lg:px-6 lg:py-20  lg:max-w-lg">
         <h2 class="text-4xl font-medium text-center ">LOG IN</h2>
@@ -13,13 +13,15 @@
                 <x-input id="email" value="" label="Email" placeholder="Enter Email" name='user_email'
                     type="email"></x-input>
             </div>
-            <div class="relative mt-6">
-                <x-input id="mediaTitle" value="" label="Password" placeholder="Enter Password" name='user_password'
-                    type="password"></x-input>
+            <div class=" mt-6">
+                <div class="relative">
+                    <x-input id="mediaTitle" value="" label="Password" placeholder="Enter Password"
+                        name='user_password' type="password"></x-input>
 
-                    <span class="absolute right-4 top-2/3 transform -translate-y-1/2 cursor-pointer">
+                    <span class="absolute right-4 top-11 transform -translate-y-1/2 cursor-pointer">
                         <i class="fa-solid fa-eye-slash text-customGrayColorDark"></i>
                     </span>
+                </div>
             </div>
 
             <div class="mt-6">

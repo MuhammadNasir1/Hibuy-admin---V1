@@ -2,6 +2,7 @@
 @section('title', 'Login')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <div
         class="w-full max-w-sm p-10 mx-auto mt-5 bg-white shadow-lg rounded-tr-[40px] rounded-tl-[100px] rounded-br-[100px] rounded-bl-[20px] lg:px-6 lg:py-20 lg:max-w-lg">
         <h2 class="text-4xl font-medium text-center">Reset Password</h2>
@@ -15,18 +16,18 @@
             <div class="relative mt-6">
                 <x-input id="password" value="" label="Password" placeholder="Enter Password" name="user_password"
                     type="password" />
-                @error('user_password')
-                    <span class="text-sm text-red-500">{{ $message }}</span>
-                @enderror
+                <span class="absolute right-4 top-11 transform -translate-y-1/2 cursor-pointer">
+                    <i class="fa-solid fa-eye-slash text-customGrayColorDark"></i>
+                </span>
             </div>
 
             <div class="relative mt-6">
                 <x-input id="password_confirmation" value="" label="Confirm Password" placeholder="Confirm Password"
                     name="user_password_confirmation" type="password" />
+                <span class="absolute right-4 top-11 transform -translate-y-1/2 cursor-pointer">
+                    <i class="fa-solid fa-eye-slash text-customGrayColorDark"></i>
+                </span>
 
-                @error('user_password_confirmation')
-                    <span class="text-sm text-red-500">{{ $message }}</span>
-                @enderror
             </div>
 
             <div class="mt-6">
@@ -54,6 +55,18 @@
 @section('js')
     <script>
         $(document).ready(function() {
+            $('.fa-eye-slash').on('click', function() {
+                let $icon = $(this);
+                let $input = $icon.closest('div').find('input');
+                if ($input.attr('type') === 'password') {
+                    $input.attr('type', 'text');
+                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                } else {
+                    $input.attr('type', 'password');
+                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                }
+            });
+
             $("#ResetPasswordForm").submit(function(e) {
                 e.preventDefault();
                 let formData = $(this).serialize();
@@ -110,7 +123,8 @@
                             Swal.fire({
                                 icon: "error",
                                 title: "Request Failed",
-                                text: response.message || "Something went wrong. Please try again!"
+                                text: response.message ||
+                                    "Something went wrong. Please try again!"
                             });
                         }
                     }
