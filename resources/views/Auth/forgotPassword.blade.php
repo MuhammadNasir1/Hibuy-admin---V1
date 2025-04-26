@@ -115,7 +115,7 @@
             Swal.fire({
                 icon: "error",
                 title: "Request Failed",
-                text: "Something went wrong. Please try again!"
+                text: response.message || "Something went wrong. Please try again!"
             });
         }
     }
