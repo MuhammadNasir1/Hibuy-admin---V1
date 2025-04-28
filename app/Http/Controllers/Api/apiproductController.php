@@ -146,6 +146,7 @@ class apiproductController extends Controller
                 'category_id'              => $product->category->id ?? null,
                 'category_name'            => $product->category->name ?? null,
                 'review_count'             => $product->reviews->count(), // Count total reviews
+                'store_id'                 => $product->store_id,
                 'reviews'                  => []
             ];
 
