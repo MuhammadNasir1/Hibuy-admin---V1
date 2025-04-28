@@ -143,7 +143,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::view('/all-notifications', 'pages.AllNotifications')->name('allNotifications');
             Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
             Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
-            Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
+            Route::view('/Inquiries', 'seller.Inquiries')->name('inquirieslist');
             // Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
             Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
 

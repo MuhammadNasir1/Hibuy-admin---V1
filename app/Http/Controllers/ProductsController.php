@@ -109,7 +109,8 @@ class ProductsController extends Controller
                 // Fetch store_id based on seller_id
                 $store = Store::where('seller_id', $seller->seller_id)->first();
                 if (!$store) {
-                    return response()->json(['error' => 'Store record not found'], 404);
+                    // return response()->json(['error' => 'Store record not found'], 404);
+                    return redirect('/products')->with('error', 'Store record not found. Please Create Store First');
                 }
             } else {
                 $seller_id = '0';
@@ -305,7 +306,9 @@ class ProductsController extends Controller
                 // return redirect()->route('products')->with('success', 'Product added successfully');
             }
         } catch (\Exception $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
+            // return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
+            return redirect('/product/add')->with('error', $th->getMessage());
+
         }
     }
 
@@ -679,11 +682,23 @@ class ProductsController extends Controller
         return response()->json(['message' => 'Product deleted successfully!']);
     }
 
-    public function getOtherSellerProduct()
-    {
-        $user = session('user_details')['user_id'];
-        $products = Products::Where('user_id', '!=', $user)->get();
+    // public function getOtherSellerProduct()
+    // {
+    //     $user = session('user_details')['user_id'];
+    //     $products = Products::Where('user_id', '!=', $user)->get();
 
-        return view('seller.OtherSeller', compact('products'));
-    }
+    //     return view('seller.OtherSeller', compact('products'));
+    // }
+    public function getOtherSellerProduct()
+{
+    $user = session('user_details')['user_id'];
+
+    $products = Products::with('category')
+        ->where('user_id', '!=', $user)
+        ->get();
+
+    $categories = product_category::all(); // <-- Get all categories
+
+    return view('seller.OtherSeller', compact('products', 'categories'));
+}
 }
