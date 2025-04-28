@@ -84,12 +84,12 @@
                         <div class="px-6 mt-5">
                             {{-- <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Title</label> --}}
                             <x-input type="text" label="Title" placeholder="Name Here" id="notification_title"
-                                name="title" />
+                                name="title" value="" />
                         </div>
                         <div class="px-6 mt-5">
                             <label class="block text-gray-700  font-medium text-sm mb-2">Description</label>
                             <x-input type="text" label="" placeholder="Name Here" id="notification_d"
-                                name="description" />
+                                name="description" value="" />
                         </div>
                         <div class="flex gap-6 px-6 mt-5">
                             <!-- Type -->

@@ -293,22 +293,20 @@
                             <span class="ms-3 text-custom15">Freelancers Management</span>
                         </a>
                     </li>
-
-
                 @endif
                 @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'freelancer')
-                <li class="">
-                    <a href="{{ route('credit-requests') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                            viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M22.9166 10.918V17.168C22.9166 18.273 22.4776 19.3328 21.6962 20.1142C20.9148 20.8956 19.855 21.3346 18.7499 21.3346H6.24992C5.14485 21.3346 4.08504 20.8956 3.30364 20.1142C2.52224 19.3328 2.08325 18.273 2.08325 17.168V10.918H22.9166ZM7.302 15.0846H7.29158C7.15479 15.0853 7.01947 15.1129 6.89335 15.1659C6.76723 15.2189 6.65279 15.2962 6.55654 15.3934C6.36217 15.5897 6.25375 15.8552 6.25513 16.1315C6.25581 16.2683 6.28343 16.4036 6.33641 16.5297C6.38939 16.6559 6.4667 16.7703 6.56391 16.8666C6.66112 16.9628 6.77633 17.039 6.90298 17.0907C7.02962 17.1424 7.16521 17.1687 7.302 17.168C7.57827 17.168 7.84322 17.0582 8.03857 16.8629C8.23392 16.6675 8.34367 16.4026 8.34367 16.1263C8.34367 15.85 8.23392 15.5851 8.03857 15.3897C7.84322 15.1944 7.57827 15.0846 7.302 15.0846ZM13.5416 15.0846H11.4583C11.182 15.0846 10.917 15.1944 10.7217 15.3897C10.5263 15.5851 10.4166 15.85 10.4166 16.1263C10.4166 16.4026 10.5263 16.6675 10.7217 16.8629C10.917 17.0582 11.182 17.168 11.4583 17.168H13.5416C13.8179 17.168 14.0828 17.0582 14.2782 16.8629C14.4735 16.6675 14.5833 16.4026 14.5833 16.1263C14.5833 15.85 14.4735 15.5851 14.2782 15.3897C14.0828 15.1944 13.8179 15.0846 13.5416 15.0846ZM18.7499 4.66797C19.855 4.66797 20.9148 5.10696 21.6962 5.88836C22.4776 6.66976 22.9166 7.72957 22.9166 8.83464H2.08325C2.08325 7.72957 2.52224 6.66976 3.30364 5.88836C4.08504 5.10696 5.14485 4.66797 6.24992 4.66797H18.7499Z"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Credits Requests</span>
-                    </a>
-                </li>
+                    <li class="">
+                        <a href="{{ route('credit-requests') }}"
+                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
+                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M22.9166 10.918V17.168C22.9166 18.273 22.4776 19.3328 21.6962 20.1142C20.9148 20.8956 19.855 21.3346 18.7499 21.3346H6.24992C5.14485 21.3346 4.08504 20.8956 3.30364 20.1142C2.52224 19.3328 2.08325 18.273 2.08325 17.168V10.918H22.9166ZM7.302 15.0846H7.29158C7.15479 15.0853 7.01947 15.1129 6.89335 15.1659C6.76723 15.2189 6.65279 15.2962 6.55654 15.3934C6.36217 15.5897 6.25375 15.8552 6.25513 16.1315C6.25581 16.2683 6.28343 16.4036 6.33641 16.5297C6.38939 16.6559 6.4667 16.7703 6.56391 16.8666C6.66112 16.9628 6.77633 17.039 6.90298 17.0907C7.02962 17.1424 7.16521 17.1687 7.302 17.168C7.57827 17.168 7.84322 17.0582 8.03857 16.8629C8.23392 16.6675 8.34367 16.4026 8.34367 16.1263C8.34367 15.85 8.23392 15.5851 8.03857 15.3897C7.84322 15.1944 7.57827 15.0846 7.302 15.0846ZM13.5416 15.0846H11.4583C11.182 15.0846 10.917 15.1944 10.7217 15.3897C10.5263 15.5851 10.4166 15.85 10.4166 16.1263C10.4166 16.4026 10.5263 16.6675 10.7217 16.8629C10.917 17.0582 11.182 17.168 11.4583 17.168H13.5416C13.8179 17.168 14.0828 17.0582 14.2782 16.8629C14.4735 16.6675 14.5833 16.4026 14.5833 16.1263C14.5833 15.85 14.4735 15.5851 14.2782 15.3897C14.0828 15.1944 13.8179 15.0846 13.5416 15.0846ZM18.7499 4.66797C19.855 4.66797 20.9148 5.10696 21.6962 5.88836C22.4776 6.66976 22.9166 7.72957 22.9166 8.83464H2.08325C2.08325 7.72957 2.52224 6.66976 3.30364 5.88836C4.08504 5.10696 5.14485 4.66797 6.24992 4.66797H18.7499Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Credits Requests</span>
+                        </a>
+                    </li>
                 @endif
 
                 @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
@@ -324,6 +322,8 @@
                             <span class="ms-3 text-custom15">My Store - Store Name</span>
                         </a>
                     </li>
+                @endif
+                @if (session('user_details.user_role') == 'seller')
                     <li class="">
                         <a href="{{ route('other-seller-product') }}"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
@@ -534,7 +534,7 @@
                         <span class="ms-3 text-custom15">Logout</span>
                     </a>
                 </li>
-                @if (session('user_details.user_role') == 'seller')
+                @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
                     <li class="">
                         <a href="#"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
@@ -577,16 +577,17 @@
         <nav class="relative bg-white border-gray-200 ">
 
             <div class="w-full flex items-center justify-between mx-auto px-4">
-                <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar"
-            type="button"
-            class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path clip-rule="evenodd" fill-rule="evenodd"
-                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
-                </path>
-            </svg>
-        </button>
+                <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar"
+                    aria-controls="default-sidebar" type="button"
+                    class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd" fill-rule="evenodd"
+                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                        </path>
+                    </svg>
+                </button>
                 <div class="absolute top-14 left-6 sm:hidden">
                     <h3 class="font-semibold text-2xl">
                         @yield('nav-title', 'No title')
@@ -645,7 +646,8 @@
                         @if (session('notifications'))
                             @foreach (session('notifications') as $notification)
                                 <div class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    <a href="{{ route('allNotifications') }}" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <a href="{{ route('allNotifications') }}"
+                                        class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
                                         <div class="shrink-0">
                                             <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}"
                                                 alt="Jese image">
@@ -665,10 +667,13 @@
 
                                             <div class="w-full ps-3">
                                                 <div class="text-gray-500 text-sm  dark:text-gray-400">
-                                                    <span class="m-0 p-0 font-semibold">{{ $notification->title ?? 'No title' }}</span> <br>
+                                                    <span
+                                                        class="m-0 p-0 font-semibold">{{ $notification->title ?? 'No title' }}</span>
+                                                    <br>
                                                     "{{ $notification->description ?? 'No message' }}"
                                                 </div>
-                                                <div class="text-xs text-blue-600 dark:text-blue-500">{{ $notification->created_at ?? 'Few Moments Ago' }}
+                                                <div class="text-xs text-blue-600 dark:text-blue-500">
+                                                    {{ $notification->created_at ?? 'Few Moments Ago' }}
                                                 </div>
                                             </div>
 
