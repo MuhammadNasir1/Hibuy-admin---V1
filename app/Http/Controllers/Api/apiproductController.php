@@ -109,6 +109,7 @@ class apiproductController extends Controller
                 'product_images',
                 'product_variation',
                 'store_id',
+                'created_at',
                 'product_category', // Category ID
                 'product_subcategory' // Subcategory ID
             )
@@ -143,6 +144,7 @@ class apiproductController extends Controller
                 'product_discounted_price' => $product->product_discounted_price,
                 'product_images'           => $product->product_images,
                 'product_variation'        => $product->product_variation,
+                'product_date'             => $product->created_at,
                 'category_id'              => $product->category->id ?? null,
                 'category_name'            => $product->category->name ?? null,
                 'review_count'             => $product->reviews->count(), // Count total reviews

@@ -40,6 +40,12 @@ class apiStoreController extends Controller
             $storeProfileDetail = json_decode($store->store_profile_detail, true);
             $storeInfo = json_decode($store->store_info, true);
 
+            // Prioritize store profile details if available
+            $storeData = $storeProfileDetail ?: $storeInfo;
+
+            // Add static store_rating into the store data
+            $storeData['store_rating'] = 4.5; // You can change 4.5 to any default rating you want
+
             // Fetch all products of the store
             $products = Products::select(
                 "product_id",
@@ -74,19 +80,22 @@ class apiStoreController extends Controller
                 $product->is_discounted = $product->product_discount > 0;
             }
 
+            // Return success response
             return response()->json([
                 'success'  => true,
                 'message'  => 'Store details fetched successfully',
-                'store'    => $storeProfileDetail ?: $storeInfo, // Prioritize store profile details
+                'store'    => $storeData, // Store object with added store_rating
                 'products' => $products
             ], 200);
         } catch (\Exception $e) {
+            // Return error response
             return response()->json([
                 'success'  => false,
                 'message'  => $e->getMessage()
             ], 500);
         }
     }
+
 
 
     public function getStoreList(Request $request)
