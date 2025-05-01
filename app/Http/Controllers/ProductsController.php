@@ -115,7 +115,7 @@ class ProductsController extends Controller
             } else {
                 $seller_id = '0';
                 $store_id = '0';
-                $store = (object)[
+                $store = (object) [
                     'store_id' => $store_id,
                     'seller_id' => $seller_id,
                 ];
@@ -127,18 +127,18 @@ class ProductsController extends Controller
 
             // Validate request data
             $validatedData = $request->validate([
-                'title'            => 'required|string|max:255',
-                'description'      => 'nullable|string',
-                'company'          => 'required|string|max:255',
-                'category'         => 'required|integer|max:255',
-                'sub_category'     => 'required|string|max:255',
-                'purchase_price'   => 'required|numeric|min:0',
-                'product_price'    => 'required|numeric|min:0',
-                'discount'         => 'nullable|numeric|min:0',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'company' => 'required|string|max:255',
+                'category' => 'required|integer|max:255',
+                'sub_category' => 'required|string|max:255',
+                'purchase_price' => 'required|numeric|min:0',
+                'product_price' => 'required|numeric|min:0',
+                'discount' => 'nullable|numeric|min:0',
                 'discounted_price' => 'nullable|numeric|min:0',
-                'variants'         => 'nullable|array',
-                'product_status'   => 'nullable|integer|in:0,1',
-                'product_edit_id'  => 'nullable|integer', // Add this field for update condition
+                'variants' => 'nullable|array',
+                'product_status' => 'nullable|integer|in:0,1',
+                'product_edit_id' => 'nullable|integer', // Add this field for update condition
             ]);
 
 
@@ -217,16 +217,16 @@ class ProductsController extends Controller
 
                 // Prepare update data (excluding specified fields)
                 $updateData = [
-                    'user_id'                  => $userDetails['user_id'],
-                    'store_id'                 => $store->store_id,
-                    'product_name'             => $validatedData['title'],
-                    'product_description'      => $validatedData['description'] ?? null,
-                    'product_brand'            => $validatedData['company'],
-                    'product_category'         => $validatedData['category'],
-                    'product_subcategory'      => $validatedData['sub_category'],
-                    'purchase_price'           => $validatedData['purchase_price'],
-                    'product_price'            => $validatedData['product_price'],
-                    'product_discount'         => $validatedData['discount'] ?? 0,
+                    'user_id' => $userDetails['user_id'],
+                    'store_id' => $store->store_id,
+                    'product_name' => $validatedData['title'],
+                    'product_description' => $validatedData['description'] ?? null,
+                    'product_brand' => $validatedData['company'],
+                    'product_category' => $validatedData['category'],
+                    'product_subcategory' => $validatedData['sub_category'],
+                    'purchase_price' => $validatedData['purchase_price'],
+                    'product_price' => $validatedData['product_price'],
+                    'product_discount' => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
                 ];
                 // Conditionally update product_variation
@@ -280,20 +280,20 @@ class ProductsController extends Controller
                 // return $productVariants;
                 // Insert new product (including all fields)
                 $productData = [
-                    'user_id'                  => $userDetails['user_id'],
-                    'store_id'                 => $store->store_id,
-                    'product_name'             => $validatedData['title'],
-                    'product_description'      => $validatedData['description'] ?? null,
-                    'product_brand'            => $validatedData['company'],
-                    'product_category'         => $validatedData['category'],
-                    'product_subcategory'      => $validatedData['sub_category'],
-                    'purchase_price'           => $validatedData['purchase_price'],
-                    'product_price'            => $validatedData['product_price'],
-                    'product_discount'         => $validatedData['discount'] ?? 0,
+                    'user_id' => $userDetails['user_id'],
+                    'store_id' => $store->store_id,
+                    'product_name' => $validatedData['title'],
+                    'product_description' => $validatedData['description'] ?? null,
+                    'product_brand' => $validatedData['company'],
+                    'product_category' => $validatedData['category'],
+                    'product_subcategory' => $validatedData['sub_category'],
+                    'purchase_price' => $validatedData['purchase_price'],
+                    'product_price' => $validatedData['product_price'],
+                    'product_discount' => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
-                    'product_images'           => json_encode($storedImagePaths),
-                    'product_variation'        => json_encode($productVariants),
-                    'product_status'           => $validatedData['product_status'] ?? 0,
+                    'product_images' => json_encode($storedImagePaths),
+                    'product_variation' => json_encode($productVariants),
+                    'product_status' => $validatedData['product_status'] ?? 0,
                 ];
 
                 Products::create($productData);
@@ -350,10 +350,10 @@ class ProductsController extends Controller
     {
         // $categories = product_category::all();
         $categories = DB::table('categories')
-        ->leftJoin('products', 'categories.id', '=', 'products.product_category')
-        ->select('categories.*', 'products.product_category')
-        ->distinct()
-        ->get();
+            ->leftJoin('products', 'categories.id', '=', 'products.product_category')
+            ->select('categories.*', 'products.product_category')
+            ->distinct()
+            ->get();
         // Loop through each category and count subcategories
         foreach ($categories as $category) {
             $category->subcategory_count = is_array(json_decode($category->sub_categories, true))
@@ -506,8 +506,8 @@ class ProductsController extends Controller
         // If not admin, filter by logged-in user_id
         if ($loggedInUserRole !== 'admin') {
             $query->where('products.user_id', $loggedInUserId);
-        }else{
-            $query->where('products.user_id','!=', $p_id);
+        } else {
+            $query->where('products.user_id', '!=', $p_id);
         }
 
         // Fetch products and format image
@@ -616,18 +616,18 @@ class ProductsController extends Controller
 
             // Prepare response data
             $response = [
-                'product_id'               => $product->product_id,
-                'product_name'             => $product->product_name,
-                'product_description'      => $product->product_description,
-                'product_price'            => $product->product_price,
-                'product_brand'            => $product->product_brand,
-                'product_discount'         => $product->product_discount,
+                'product_id' => $product->product_id,
+                'product_name' => $product->product_name,
+                'product_description' => $product->product_description,
+                'product_price' => $product->product_price,
+                'product_brand' => $product->product_brand,
+                'product_discount' => $product->product_discount,
                 'product_discounted_price' => $product->product_discounted_price,
-                'product_images'           => $product->product_images,
-                'product_variation'        => $product->product_variation,
-                'category_name'            => $product->category->name ?? null, // Get category name
-                'subcategory'              => $product->product_subcategory,
-                'product_status'           => $product->product_status
+                'product_images' => $product->product_images,
+                'product_variation' => $product->product_variation,
+                'category_name' => $product->category->name ?? null, // Get category name
+                'subcategory' => $product->product_subcategory,
+                'product_status' => $product->product_status
             ];
 
             return response()->json([
@@ -681,24 +681,16 @@ class ProductsController extends Controller
         $product->delete();
         return response()->json(['message' => 'Product deleted successfully!']);
     }
-
-    // public function getOtherSellerProduct()
-    // {
-    //     $user = session('user_details')['user_id'];
-    //     $products = Products::Where('user_id', '!=', $user)->get();
-
-    //     return view('seller.OtherSeller', compact('products'));
-    // }
     public function getOtherSellerProduct()
-{
-    $user = session('user_details')['user_id'];
+    {
+        $user = session('user_details')['user_id'];
 
-    $products = Products::with('category')
-        ->where('user_id', '!=', $user)
-        ->get();
+        $products = Products::with('category')
+            ->where('user_id', '!=', $user)
+            ->get();
 
-    $categories = product_category::all(); // <-- Get all categories
+        $categories = product_category::all(); // <-- Get all categories
 
-    return view('seller.OtherSeller', compact('products', 'categories'));
-}
+        return view('seller.OtherSeller', compact('products', 'categories'));
+    }
 }

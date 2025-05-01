@@ -113,7 +113,7 @@
                                     <label for="order_status" class="block mb-1 text-sm font-normal text-gray-600">Order
                                         Status</label>
                                     <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
-                                    <select id="order_status" name="order_status"
+                                    <select id="order_status" name="order_status" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                         <option value="" selected>Select Status</option>
                                         <option value="pending">Pending</option>
@@ -129,7 +129,7 @@
                                 <div>
                                     <label for="courier_id"
                                         class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
-                                    <select id="courier_id" name="courier_id"
+                                    <select id="courier_id" name="courier_id" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                         <option value="" selected>Select Courier</option>
                                     </select>
@@ -141,7 +141,7 @@
                                         class="block mb-1 text-sm font-normal text-gray-600">Tracking
                                         No.</label>
                                     <input type="text" id="tracking_number" name="tracking_number"
-                                        placeholder="Enter tracking number"
+                                        placeholder="Enter tracking number" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                 </div>
 
@@ -153,7 +153,24 @@
                                     </button>
                                 </div>
                             @else
-                                <div>
+                                <div class="flex flex-col sm:flex-row gap-2 col-span-2">
+                                    <!-- Video Preview -->
+                                    <video id="videoPreview" controls class="h-[150px] mr-3 hidden">
+                                        <source id="videoSource" src="" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+
+                                    <!-- File Input for Video Upload -->
+                                    <div class="flex flex-col">
+                                        <label for="videoInput"
+                                            class="block mb-1 text-sm font-normal text-gray-600">Upload Video (Max
+                                            20MB)</label>
+                                        <input type="file" id="videoInput" name="status_video" accept="video/*"
+                                            class="block" value="">
+
+                                    </div>
+                                </div>
+                                <div class="w-full col-span-1">
                                     <label for="order_status_seller"
                                         class="block mb-1 text-sm font-normal text-gray-600">Delivery
                                         Status</label>
@@ -171,9 +188,8 @@
                                         <option value="returned">Returned</option>
                                     </select>
                                 </div>
-
                                 {{-- Submit Button --}}
-                                <div class="flex justify-end">
+                                <div class="flex justify-end col-span-1">
                                     <button type="submit" id="submitStatusbyseller"
                                         class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                         Submit
@@ -246,6 +262,10 @@
                                                 <tr class="bg-gray-200">
                                                     <th class="p-3 text-left">Image</th>
                                                     <th class="p-3 text-left">Product</th>
+                                                    @if (session('user_details.user_role') == 'admin')
+                                                        <th class="p-3 text-left">Status</th>
+                                                        <th class="p-3 text-left">Video Prove</th>
+                                                    @endif
                                                     <th class="p-3 text-center">Qty</th>
                                                     <th class="p-3 text-center">U.Price</th>
                                                     <th class="p-3 text-center">Subtotal</th>
@@ -312,7 +332,7 @@
                         // Assuming your API response is saved in a variable called response
                         if (user.user_role === 'admin') {
                             const couriers = response
-                            .couriers; // Array of { courier_id, courier_name }
+                                .couriers; // Array of { courier_id, courier_name }
                             const selectBox = document.getElementById('courier_id');
 
                             // Clear existing options (optional)
@@ -331,9 +351,6 @@
                                 selectBox.value = response.selected_courier_id;
                             }
                         }
-
-
-
                         // Populate order details
                         $('#tracking_number').val(response.tracking_number);
                         $('#order_status').val(response.order_status).change();
@@ -348,12 +365,10 @@
                         $("#order-total").text("Rs " + response.total);
                         $("#delivery-fee").text("Rs " + response.delivery_fee);
                         $("#grand-total").text("Rs " + response.grand_total);
-
                         // Populate billing details
                         $("#total-bill").text("Rs " + response.total);
                         $("#fee").text("Rs " + response.delivery_fee);
                         $("#final-total").text("Rs " + response.grand_total);
-
                         // Populate order items table
                         let itemsHtml = "";
                         const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
@@ -364,16 +379,47 @@
                                 $("#order_status_seller").val(item.delivery_status)
                                     .change();
                                 $("#editbyseller_orderstatus_id").val(item.product_id);
+                                // Only show the video preview for non-admin users
+                                if (user.user_role !== 'admin') {
+                                    if (item.status_video) {
+                                        const videoUrl =
+                                            `/storage/${item.status_video}`;
+                                        $("#videoSource").attr("src", videoUrl);
+                                        $("#videoPreview").removeClass("hidden")[0]
+                                            .load();
+                                    } else {
+                                        $("#videoPreview").addClass("hidden");
+                                        $("#videoSource").attr("src",
+                                            "");
+                                    }
+                                } else {
+                                    $("#videoPreview").addClass(
+                                        "hidden");
+                                    $("#videoSource").attr("src", "");
+                                }
                             }
+
                             itemsHtml += `
-                        <tr class="border-b">
-                           <td class="p-3">
-                            <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
-                            <td class="p-3">${item.product_name}</td>
-                            <td class="p-3 text-center">${item.quantity}</td>
-                            <td class="p-3 text-center">Rs ${item.price}</td>
-                            <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
-                        </tr>`;
+                                    <tr class="border-b">
+                                        <td class="p-3">
+                                            <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
+                                        </td>
+                                        <td class="p-3">${item.product_name}</td>
+                                        ${user.user_role == 'admin' ? `
+                                                <td class="p-3">${item.delivery_status}</td>
+                                                <td class="p-3">
+                                                    ${item.status_video ? `
+                                                    <video controls class="w-28 h-16 rounded shadow">
+                                                        <source src="/storage/${item.status_video}" type="video/mp4">
+                                                        Your browser does not support the video tag.
+                                                    </video>` : 'No video'}
+                                                </td>
+                                            ` : ''}
+                                        <td class="p-3 text-center">${item.quantity}</td>
+                                        <td class="p-3 text-center">Rs ${item.price}</td>
+                                        <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
+                                    </tr>`;
+
                         });
 
                         $("#order-items-body").html(itemsHtml);
@@ -403,13 +449,38 @@
                     data: formData,
                     success: function(response) {
                         console.log(response);
-                        alert(response.message); // You can use toast or modal instead
-                        $("#order-status").text($('#order_status').val());
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true
+                        }).then(() => {
+                            $("#order-status").text($('#order_status').val());
+                            location.reload();
+                        });
                     },
-                    error: function(xhr) {
-                        alert('Something went wrong.');
+                    error: function(xhr, status, error) {
                         console.error(xhr.responseText);
+
+                        let errorMessage = 'Something went wrong. Please try again.';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.message) {
+                                errorMessage = response.message;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing JSON response:', e);
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: errorMessage,
+                            timer: 4000,
+                            showConfirmButton: false,
+                            timerProgressBar: true
+                        });
                     }
                 });
             });
@@ -419,28 +490,71 @@
             $('#submitStatusbyseller').on('click', function(e) {
                 e.preventDefault();
 
-                let formData = {
-                    _token: $('input[name="_token"]').val(),
-                    delivery_status: $('#order_status_seller').val(),
-                    order_id: $('#edit_orderstatus_id').val(),
-                    product_id: $('#editbyseller_orderstatus_id').val()
-                };
+                const videoFile = $('#videoInput')[0].files[0];
+                // ✅ Optional: client-side file size validation (20MB = 20 * 1024 * 1024 bytes)
+                if (videoFile && videoFile.size > 20 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File too large',
+                        text: 'Please upload a video smaller than 20MB.',
+                        timer: 4000,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                    });
+                    return;
+                }
+                // Create FormData
+                let formData = new FormData();
+                formData.append('_token', $('input[name="_token"]').val());
+                formData.append('delivery_status', $('#order_status_seller').val());
+                formData.append('order_id', $('#edit_orderstatus_id').val());
+                formData.append('product_id', $('#editbyseller_orderstatus_id').val());
 
+                if (videoFile) {
+                    formData.append('status_video', videoFile);
+                }
 
-                console.log(formData);
+                // Show uploading loader
+                Swal.fire({
+                    title: 'Uploading...',
+                    text: 'Please wait while your data is being submitted.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
+                // AJAX request
                 $.ajax({
                     url: '{{ route('orders.update.status') }}',
                     type: 'POST',
                     data: formData,
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
-                        console.log(response);
-                        alert(response.message);
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message ||
+                                'Order status updated successfully!',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                        }).then(() => {
+                            location.reload();
+                        });
                     },
                     error: function(xhr) {
-                        alert('Something went wrong.');
                         console.error(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: xhr.responseJSON?.message ||
+                                'Something went wrong. Please try again!',
+                            timer: 4000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                        });
                     }
                 });
             });
@@ -454,5 +568,19 @@
             dropdownContent.classList.toggle('hidden');
             dropdownArrow.classList.toggle('rotate-180');
         });
+
+        document.getElementById('videoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const videoPreview = document.getElementById('videoPreview');
+                const videoSource = document.getElementById('videoSource');
+
+                const fileURL = URL.createObjectURL(file);
+                videoSource.src = fileURL;
+                videoPreview.load();
+                videoPreview.classList.remove('hidden');
+            }
+        });
     </script>
+
 @endsection

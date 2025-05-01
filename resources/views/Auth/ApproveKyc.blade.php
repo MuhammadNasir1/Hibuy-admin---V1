@@ -2,85 +2,78 @@
 @section('title', 'KYC')
 @section('content')
 
-    <div class="h-[75vh] w-[70vw] mt-10   bg-white rounded-lg p-5  mx-auto">
-        <div class="h-[100px] bg-gradient-to-r from-[#4A90E2] rounded-t-xl  via-green-300 to-[#FFCE31]"></div>
+    <div class="w-[90vw] max-w-4xl mt-10 bg-white rounded-lg p-5 mx-auto">
+        <div class="h-[100px] bg-gradient-to-r from-[#4A90E2] rounded-t-xl via-green-300 to-[#FFCE31]"></div>
         <input type="hidden" name="upload-banner" id="upload-banner">
         <div
             class="h-[100px] w-[100px] bg-primary overflow-hidden rounded-full flex items-center justify-center mx-auto -mt-16">
             <x-file-uploader name="profile_picture" id="profile_picture" />
         </div>
 
-        <p class="text-center">My Store</p>
+        <p class="text-center text-lg font-semibold mt-2">My Store</p>
 
-        <div>
-            {{--  --}}
+        <div class="flex flex-wrap justify-center mt-5 text-sm gap-4 sm:gap-8">
+            <a href="{{ route('ProfileDetail') }}" class="text-center">
+                <img src="{{ $statusImages['personal_info'] }}" alt=""
+                    class="mx-auto h-10 w-10 sm:h-auto sm:w-auto">
+                <p class="mt-1">Personal Info</p>
+            </a>
+            <a href="{{ route('ProfileDetail') }}" class="text-center">
+                <img src="{{ $statusImages['store_info'] }}" alt="" class="mx-auto h-10 w-10 sm:h-auto sm:w-auto">
+                <p class="mt-1">My Store</p>
+            </a>
+            <a href="{{ route('ProfileDetail') }}" class="text-center">
+                <img src="{{ $statusImages['documents_info'] }}" alt=""
+                    class="mx-auto h-10 w-10 sm:h-auto sm:w-auto">
+                <p class="mt-1">Document</p>
+            </a>
+            <a href="{{ route('ProfileDetail') }}" class="text-center">
+                <img src="{{ $statusImages['bank_info'] }}" alt="" class="mx-auto h-10 w-10 sm:h-auto sm:w-auto">
+                <p class="mt-1">Account</p>
+            </a>
+            <a href="{{ route('ProfileDetail') }}" class="text-center">
+                <img src="{{ $statusImages['business_info'] }}" alt=""
+                    class="mx-auto h-10 w-10 sm:h-auto sm:w-auto">
+                <p class="mt-1">Business</p>
+            </a>
+        </div>
 
-            <div class="flex justify-center mt-5 text-sm">
-                <a href="{{ route('ProfileDetail') }}">
-                    <div class="px-5">
-                        <img src="{{ $statusImages['personal_info'] }}" alt="" class="mx-auto">
-                        <p>Personal Info</p>
-                    </div>
-                </a>
-                <a href="{{ route('ProfileDetail') }}">
-                    <div class="px-5">
-                        <img src="{{ $statusImages['store_info'] }}" alt="" class="mx-auto">
-                        <p>My Store</p>
-                    </div>
-                </a>
-                <a href="{{ route('ProfileDetail') }}">
-                    <div class="px-5">
-                        <img src="{{ $statusImages['documents_info'] }}" alt="" class="mx-auto">
-                        <p>Document</p>
-                    </div>
-                </a>
-                <a href="{{ route('ProfileDetail') }}">
-                    <div class="px-5">
-                        <img src="{{ $statusImages['bank_info'] }}" alt="" class="mx-auto">
-                        <p>Account</p>
-                    </div>
-                </a>
-                <a href="{{ route('ProfileDetail') }}">
-                    <div class="px-5">
-                        <img src="{{ $statusImages['business_info'] }}" alt="" class="mx-auto">
-                        <p>Business</p>
-                    </div>
-                </a>
-            </div>
-
-
-            {{--  --}}
-
-            <div class="  text-center mt-5 relative">
-                <img src="{{ asset('asset/kyc-bg.png') }}" alt="" class="mx-auto">
-                <div class="absolute top-[15%] text-center w-full">
-                    <img src="{{ $imageSrc }}" alt="KYC Status" class="mx-auto">
-                    <p class="font-semibold">
-                        {{ $kycStatus === 'approved' ? 'KYC Approved' : 'In Review' }}
-                    </p>
-                    <p class="text-customBlackColor text-sm pt-3">
-                        {{ $kycStatus === 'approved' ? 'Now you can list your products.' : 'Fill this form if your business registered.' }}
-                    </p>
-                </div>
-            </div>
-
-            {{--  --}}
-
-            <div class="flex justify-center pt-4 gap-5 text-sm">
-                <button class="px-5 py-2 border-2 border-gray-600 text-gray-600  rounded-full">Edit Details</button>
-                <a href="{{ $isDisabled ? 'Kyc-profile' : '/' }}" {{ $isDisabled ? 'disabled' : '' }}>
-                    <button
-                        class="px-5 py-2 border-2 bg-primary text-white border-primary rounded-full
-                       {{ $isDisabled ? 'disabled text-gray-600 cursor-not-allowed' : '' }}"
-                        {{ $isDisabled ? 'disabled' : '' }}>
-                        Start Store
-                    </button>
-                </a>
+        <div class="relative text-center mt-6">
+            <img src="{{ asset('asset/kyc-bg.png') }}" alt="" class="mx-auto w-full max-w-md">
+            <div class="absolute top-[15%] left-1/2 transform -translate-x-1/2 text-center w-full px-4">
+                <img src="{{ $imageSrc }}" alt="KYC Status" class="mx-auto h-16">
+                <p class="font-semibold mt-2 text-base">
+                    {{ $kycStatus === 'approved' ? 'KYC Approved' : 'In Review' }}
+                </p>
+                <p class="text-customBlackColor text-sm pt-2">
+                    {{ $kycStatus === 'approved' ? 'Now you can list your products.' : 'Fill this form if your business registered.' }}
+                </p>
             </div>
         </div>
 
-        <div class="mt-3 flex justify-end pr-3">
-            <a href="{{ route('logout') }}">Logout</a>
+        <div class="flex flex-col sm:flex-row justify-center pt-11 sm:pt-6 gap-4 text-sm mt-6 text-center">
+            {{-- Edit Details Button --}}
+            <button class="px-6 py-2 border border-gray-600 text-gray-700 rounded-full hover:bg-gray-100 transition">
+                Edit Details
+            </button>
+
+            {{-- Start Store Button --}}
+            <a href="{{ $isDisabled ? 'Kyc-profile' : '/' }}"
+                class="px-6 py-2 rounded-full border transition
+        {{ $isDisabled
+            ? 'bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed'
+            : 'bg-primary text-white border-primary hover:bg-blue-600' }}"
+                {{ $isDisabled ? 'disabled' : '' }}>
+                Start Store
+            </a>
+
+            {{-- Logout Button --}}
+            <a href="{{ route('logout') }}"
+                class="px-6 py-2 bg-red-500 text-white border border-red-500 rounded-full hover:bg-red-600 transition">
+                Logout
+            </a>
         </div>
+
     </div>
+
 @endsection
