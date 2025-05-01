@@ -20,7 +20,8 @@
             <h2 class="text-2xl font-medium ">Other Seller Products</h2>
         </div>
 
-        <div class="w-full border bg-[#F7F7F8] flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
+        <div
+            class="w-full border bg-[#F7F7F8] flex flex-col gap-3 px-4 py-2 lg:flex-row lg:items-center lg:justify-between">
 
             <!-- Left Section: Buttons + Search + Count -->
             <div class="flex flex-col gap-3 w-full md:flex-row md:items-center md:w-auto">
@@ -81,14 +82,9 @@
         <div class="px-5 pt-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                 <div>
-                    {{-- <x-select label="Category" name="category" id="category">
-                        <x-slot name="options">
-                            <option selected disabled>Select Category</option>
-                        </x-slot>
-                    </x-select> --}}
                     <x-select label="Category" name="category" id="category">
                         <x-slot name="options">
-                            <option selected disabled>Select Category</option>
+                            <option selected value="all">All Categories</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
@@ -139,12 +135,12 @@
                 <div class="product flex flex-col border p-4 rounded-2xl bg-white hover:shadow-lg transition-all duration-300"
                     data-name="{{ strtolower($product->product_name ?? '') }}"
                     data-brand="{{ strtolower($product->product_brand ?? '') }}"
-                    data-price="{{ $product->product_discounted_price }}">
+                    data-price="{{ $product->product_discounted_price ?? '' }}"
+                    data-category="{{ $product->product_category ?? '' }}">
 
                     <!-- Product Image -->
                     <div class="product-img w-full h-[220px] flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset($mainImage) }}" alt="Product Image"
-                            class="h-full object-contain rounded-xl" />
+                        <img src="{{ asset($mainImage) }}" alt="Product Image" class="h-full object-contain rounded-xl" />
                     </div>
 
                     <!-- Product Info -->
@@ -166,7 +162,8 @@
                             <p class="text-green-600 font-bold text-base">
                                 Rs {{ number_format($product->product_discounted_price) }}
                             </p>
-                            <button class="px-4 py-2 text-xs sm:text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors">
+                            <button
+                                class="px-4 py-2 text-xs sm:text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors">
                                 Buy
                             </button>
                         </div>
@@ -254,9 +251,9 @@
     </script> --}}
     <script>
         $(document).ready(function() {
-            // View toggle functions
             $("#gridView").click(function() {
-                $("#productContainer").removeClass("flex flex-col").addClass("grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5");
+                $("#productContainer").removeClass("flex flex-col").addClass(
+                    "grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5");
                 $(".product-img").removeClass("h-[220px]").addClass("w-full h-[220px]");
                 $(".product").addClass("flex-col").removeClass("flex gap-5 items-center");
                 $(".rating").addClass("justify-between flex").removeClass("flex-column");
@@ -266,19 +263,22 @@
             });
 
             $("#rowView").click(function() {
-                $("#productContainer").removeClass("grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5").addClass("flex flex-col gap-5");
+                $("#productContainer").removeClass(
+                    "grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5").addClass(
+                    "flex flex-col gap-5");
                 $(".product-img").removeClass("w-full").addClass("h-[220px] w-[300px]");
-                $(".product").removeClass("flex-col").addClass("flex flex-col md:flex-row gap-2 items-center ");
+                $(".product").removeClass("flex-col").addClass(
+                    "flex flex-col md:flex-row gap-2 items-center ");
                 $(".rating").removeClass("justify-between flex").addClass("flex-column");
                 $(".buy-btn-container").removeClass("flex justify-between").addClass("flex-column");
                 $(".title").addClass("w-[300px]");
                 $(".product-info").removeClass("mt-3");
             });
 
-            // Function to filter products based on search and price
             function filterProducts() {
                 let searchText = $("#search").val().toLowerCase();
                 let priceRange = $("#price").val();
+                let selectedCategory = $("#category").val();
 
                 let [minPrice, maxPrice] = priceRange === 'all' ? [0, Infinity] :
                     priceRange === '10001+' ? [10001, Infinity] :
@@ -288,6 +288,7 @@
                     let productName = ($(this).data("name") || "").toString().toLowerCase();
                     let productBrand = ($(this).data("brand") || "").toString().toLowerCase();
                     let productPrice = parseFloat($(this).data("price")) || 0;
+                    let productCategory = $(this).data("category");
 
                     let matchesSearch = searchText === "" ||
                         productName.includes(searchText) ||
@@ -296,7 +297,10 @@
                     let matchesPrice = productPrice >= minPrice &&
                         (maxPrice === Infinity ? true : productPrice <= maxPrice);
 
-                    if (matchesSearch && matchesPrice) {
+                    let matchesCategory = selectedCategory === "all" ||
+                        productCategory == selectedCategory;
+
+                    if (matchesSearch && matchesPrice && matchesCategory) {
                         $(this).show();
                     } else {
                         $(this).hide();
@@ -315,6 +319,11 @@
 
             // Price filter handler
             $("#price").on("change", function() {
+                filterProducts();
+            });
+
+            // Category filter handler
+            $("#category").on("change", function() {
                 filterProducts();
             });
         });

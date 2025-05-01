@@ -9,6 +9,7 @@ use App\Models\Courier;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -241,14 +242,29 @@ class OrderController extends Controller
 
     public function updateOrderStatus(Request $request)
     {
-        $request->validate([
-            'order_id' => 'required|exists:orders,order_id',
-            'order_status' => 'nullable|string',
-            'courier_id' => 'nullable|exists:couriers,courier_id',
-            'tracking_number' => 'nullable|string|max:255',
-            'delivery_status' => 'nullable|string',
-            'product_id' => 'nullable|integer',
-        ]);
+
+        if (session('user_details.user_role') === 'admin') {
+            $request->validate([
+                'order_id' => 'required|exists:orders,order_id',
+                'order_status' => 'required|string',
+                'courier_id' => 'required|exists:couriers,courier_id',
+                'tracking_number' => 'required|string|max:255',
+                'delivery_status' => 'nullable|string',
+                'product_id' => 'nullable|integer',
+                'status_video' => 'nullable|file|mimes:mp4,avi,mov,webm|max:20480',
+            ]);
+        } else {
+            $request->validate([
+                'order_id' => 'required|exists:orders,order_id',
+                'order_status' => 'nullable|string',
+                'courier_id' => 'nullable|exists:couriers,courier_id',
+                'tracking_number' => 'nullable|string|max:255',
+                'delivery_status' => 'required|string',
+                'product_id' => 'required|integer',
+                'status_video' => 'required|file|mimes:mp4,avi,mov,webm|max:20480',
+            ]);
+        }
+
 
         $order = Order::find($request->order_id);
 
@@ -260,17 +276,36 @@ class OrderController extends Controller
         }
 
         //  Seller update (update status of a product inside order_items JSON)
+
+
         if ($request->filled('delivery_status') && $request->filled('product_id')) {
             $orderItems = json_decode($order->order_items, true);
 
             foreach ($orderItems as &$item) {
                 if ($item['product_id'] == $request->product_id) {
                     $item['delivery_status'] = $request->delivery_status;
+
+                    // Handle status video upload
+                    if ($request->hasFile('status_video')) {
+                        $video = $request->file('status_video');
+
+                        // Delete the old video if it exists
+                        if (!empty($item['status_video']) && Storage::disk('public')->exists($item['status_video'])) {
+                            Storage::disk('public')->delete($item['status_video']);
+                        }
+                        // Store the new video in storage/app/public/orders
+                        $videoPath = $video->store('orders', 'public');
+                        // Update the item with the new video path
+                        $item['status_video'] = $videoPath;
+                    }
                 }
             }
 
+            // Save the updated items
             $order->order_items = json_encode($orderItems);
         }
+
+
 
         $order->save();
 
