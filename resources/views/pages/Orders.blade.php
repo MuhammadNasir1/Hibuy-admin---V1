@@ -308,8 +308,35 @@
                 user_role: "{{ session('user_details.user_role') }}"
             };
 
+            // Function to stop all videos in the modal
+            const stopVideo = () => {
+                const videos = document.querySelectorAll('#orders-modal video');
+                videos.forEach(video => {
+                    video.pause();
+                    video.currentTime = 0; // Optional: Reset to start
+                });
+            };
+            // Detect modal close for Flowbite
+            const modal = document.getElementById('orders-modal');
+            const closeButtons = document.querySelectorAll('[data-modal-toggle="orders-modal"]');
+            // Observe changes to modal's class (e.g., 'hidden' added by Flowbite)
+            if (modal) {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach(mutation => {
+                        if (mutation.attributeName === 'class' && modal.classList.contains(
+                            'hidden')) {
+                            stopVideo();
+                        }
+                    });
+                });
+                observer.observe(modal, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+            }
+
             $(".viewModalBtn").on("click", function() {
-                let vieworderurl = $(this).attr("vieworderurl"); // Get order details URL
+                let vieworderurl = $(this).attr("vieworderurl");
                 if (!vieworderurl) {
                     alert("Invalid order URL!");
                     return;
@@ -317,41 +344,30 @@
 
                 $("#modal-btn").click(); // Open modal
 
-                // Run AJAX to fetch order details
                 $.ajax({
                     url: vieworderurl,
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
-                        // console.log(response);
-
                         if (response.error) {
                             alert(response.error);
                             return;
                         }
-                        // Assuming your API response is saved in a variable called response
                         if (user.user_role === 'admin') {
-                            const couriers = response
-                                .couriers; // Array of { courier_id, courier_name }
+                            const couriers = response.couriers;
                             const selectBox = document.getElementById('courier_id');
-
-                            // Clear existing options (optional)
-                            // selectBox.innerHTML = '<option value="">Select Courier</option>';
-
-                            // Loop through couriers and append options
+                            selectBox.innerHTML =
+                                '<option value="" selected>Select Courier</option>';
                             couriers.forEach(courier => {
                                 const option = document.createElement('option');
                                 option.value = courier.courier_id;
                                 option.textContent = courier.courier_name;
                                 selectBox.appendChild(option);
                             });
-
-                            // Optional: Set selected courier if editing an existing order
                             if (response.selected_courier_id) {
                                 selectBox.value = response.selected_courier_id;
                             }
                         }
-                        // Populate order details
                         $('#tracking_number').val(response.tracking_number);
                         $('#order_status').val(response.order_status).change();
                         $("#order-status").text(response.order_status);
@@ -365,63 +381,53 @@
                         $("#order-total").text("Rs " + response.total);
                         $("#delivery-fee").text("Rs " + response.delivery_fee);
                         $("#grand-total").text("Rs " + response.grand_total);
-                        // Populate billing details
                         $("#total-bill").text("Rs " + response.total);
                         $("#fee").text("Rs " + response.delivery_fee);
                         $("#final-total").text("Rs " + response.grand_total);
-                        // Populate order items table
                         let itemsHtml = "";
                         const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
                         response.order_items.forEach((item) => {
-                            console.log(item);
-                            // Set order status if it's available in response
                             if (response.status) {
                                 $("#order_status_seller").val(item.delivery_status)
                                     .change();
                                 $("#editbyseller_orderstatus_id").val(item.product_id);
-                                // Only show the video preview for non-admin users
                                 if (user.user_role !== 'admin') {
                                     if (item.status_video) {
                                         const videoUrl =
-                                            `/storage/${item.status_video}`;
+                                        `/storage/${item.status_video}`;
                                         $("#videoSource").attr("src", videoUrl);
                                         $("#videoPreview").removeClass("hidden")[0]
                                             .load();
                                     } else {
                                         $("#videoPreview").addClass("hidden");
-                                        $("#videoSource").attr("src",
-                                            "");
+                                        $("#videoSource").attr("src", "");
                                     }
                                 } else {
-                                    $("#videoPreview").addClass(
-                                        "hidden");
+                                    $("#videoPreview").addClass("hidden");
                                     $("#videoSource").attr("src", "");
                                 }
                             }
-
                             itemsHtml += `
-                                    <tr class="border-b">
-                                        <td class="p-3">
-                                            <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
-                                        </td>
-                                        <td class="p-3">${item.product_name}</td>
-                                        ${user.user_role == 'admin' ? `
-                                                <td class="p-3">${item.delivery_status}</td>
-                                                <td class="p-3">
-                                                    ${item.status_video ? `
-                                                    <video controls class="w-28 h-16 rounded shadow">
-                                                        <source src="/storage/${item.status_video}" type="video/mp4">
-                                                        Your browser does not support the video tag.
-                                                    </video>` : 'No video'}
-                                                </td>
-                                            ` : ''}
-                                        <td class="p-3 text-center">${item.quantity}</td>
-                                        <td class="p-3 text-center">Rs ${item.price}</td>
-                                        <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
-                                    </tr>`;
-
+                                <tr class="border-b">
+                                    <td class="p-3">
+                                        <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
+                                    </td>
+                                    <td class="p-3">${item.product_name}</td>
+                                    ${user.user_role == 'admin' ? `
+                                            <td class="p-3">${item.delivery_status}</td>
+                                            <td class="p-3">
+                                                ${item.status_video ? `
+                                            <video controls class="w-28 h-16 rounded shadow">
+                                                <source src="/storage/${item.status_video}" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>` : 'No video'}
+                                            </td>
+                                        ` : ''}
+                                    <td class="p-3 text-center">${item.quantity}</td>
+                                    <td class="p-3 text-center">Rs ${item.price}</td>
+                                    <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
+                                </tr>`;
                         });
-
                         $("#order-items-body").html(itemsHtml);
                     },
                     error: function() {
@@ -430,25 +436,20 @@
                 });
             });
 
-
-            // JS (place in a script tag or external JS file)
             $('#submitStatus').on('click', function(e) {
                 e.preventDefault();
-
                 let formData = {
                     _token: $('input[name="_token"]').val(),
                     order_status: $('#order_status').val(),
                     courier_id: $('#courier_id').val(),
                     tracking_number: $('#tracking_number').val(),
-                    order_id: $('#edit_orderstatus_id').val() // hidden input carrying order_id
+                    order_id: $('#edit_orderstatus_id').val()
                 };
-
                 $.ajax({
                     url: '{{ route('orders.update.status') }}',
                     type: 'POST',
                     data: formData,
                     success: function(response) {
-                        console.log(response);
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
@@ -462,8 +463,6 @@
                         });
                     },
                     error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-
                         let errorMessage = 'Something went wrong. Please try again.';
                         try {
                             var response = JSON.parse(xhr.responseText);
@@ -485,13 +484,9 @@
                 });
             });
 
-
-
             $('#submitStatusbyseller').on('click', function(e) {
                 e.preventDefault();
-
                 const videoFile = $('#videoInput')[0].files[0];
-                // ✅ Optional: client-side file size validation (20MB = 20 * 1024 * 1024 bytes)
                 if (videoFile && videoFile.size > 20 * 1024 * 1024) {
                     Swal.fire({
                         icon: 'error',
@@ -503,18 +498,14 @@
                     });
                     return;
                 }
-                // Create FormData
                 let formData = new FormData();
                 formData.append('_token', $('input[name="_token"]').val());
                 formData.append('delivery_status', $('#order_status_seller').val());
                 formData.append('order_id', $('#edit_orderstatus_id').val());
                 formData.append('product_id', $('#editbyseller_orderstatus_id').val());
-
                 if (videoFile) {
                     formData.append('status_video', videoFile);
                 }
-
-                // Show uploading loader
                 Swal.fire({
                     title: 'Uploading...',
                     text: 'Please wait while your data is being submitted.',
@@ -523,8 +514,6 @@
                         Swal.showLoading();
                     }
                 });
-
-                // AJAX request
                 $.ajax({
                     url: '{{ route('orders.update.status') }}',
                     type: 'POST',
@@ -545,7 +534,6 @@
                         });
                     },
                     error: function(xhr) {
-                        console.error(xhr.responseText);
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -558,8 +546,8 @@
                     }
                 });
             });
-
         });
+
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownContent = document.getElementById('dropdownContent');
         const dropdownArrow = document.getElementById('dropdownArrow');
@@ -569,18 +557,21 @@
             dropdownArrow.classList.toggle('rotate-180');
         });
 
-        document.getElementById('videoInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const videoPreview = document.getElementById('videoPreview');
-                const videoSource = document.getElementById('videoSource');
+        // Add event listener for video input, but only if it exists
+        const videoInput = document.getElementById('videoInput');
+        if (videoInput) {
+            videoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const videoPreview = document.getElementById('videoPreview');
+                    const videoSource = document.getElementById('videoSource');
 
-                const fileURL = URL.createObjectURL(file);
-                videoSource.src = fileURL;
-                videoPreview.load();
-                videoPreview.classList.remove('hidden');
-            }
-        });
+                    const fileURL = URL.createObjectURL(file);
+                    videoSource.src = fileURL;
+                    videoPreview.load();
+                    videoPreview.classList.remove('hidden');
+                }
+            });
+        }
     </script>
-
 @endsection
