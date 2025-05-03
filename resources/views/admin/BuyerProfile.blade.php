@@ -13,15 +13,15 @@
                     <div class="flex flex-col md:flex-row items-center gap-2 md:gap-5">
                         <div>
                             @php
-                            $imagePath = $buyer->customer_image;
-                            $defaultImage = asset('asset/Ellipse 2.png');
-                            $finalImage =
-                                !empty($imagePath) && file_exists(public_path($imagePath))
-                                    ? asset($imagePath)
-                                    : $defaultImage;
-                        @endphp
+                                $imagePath = $buyer->customer_image;
+                                $defaultImage = asset('asset/Ellipse 2.png');
+                                $finalImage =
+                                    !empty($imagePath) && file_exists(public_path($imagePath))
+                                        ? asset($imagePath)
+                                        : $defaultImage;
+                            @endphp
 
-                        <img class="h-[80px] w-[80px] rounded-full" src="{{ $finalImage }}" alt="Customer image">
+                            <img class="h-[80px] w-[80px] rounded-full" src="{{ $finalImage }}" alt="Customer image">
 
                         </div>
                         <div>
@@ -260,22 +260,26 @@
                     <div id="dropdownContent" class="mt-2 hidden">
                         <div class="overflow-x-auto">
                             <div class="p-4 mt-2 rounded-lg shadow bg-gray-50">
-                                <h3 class="font-bold text-gray-700">Items Details</h3>
-                                <table class="w-full mt-2 text-sm text-gray-700 border">
-                                    <thead>
-                                        <tr class="bg-gray-200">
-                                            <th class="p-3 text-left">Image</th>
-                                            <th class="p-3 text-left">Product</th>
-                                            <th class="p-3 text-center">Qty</th>
-                                            <th class="p-3 text-center">U.Price</th>
-                                            <th class="p-3 text-center">Subtotal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="order-items-body"></tbody>
-                                </table>
+                                <h3 class="font-bold text-gray-700 text-base md:text-lg">Items Details</h3>
 
-                                <!-- Total Calculation -->
-                                <div class="mt-4 text-sm text-gray-700">
+                                <!-- Responsive Table -->
+                                <div class="w-full overflow-x-auto">
+                                    <table class="w-full min-w-[640px] mt-2 text-sm md:text-base text-gray-700 border">
+                                        <thead>
+                                            <tr class="bg-gray-200">
+                                                <th class="p-3 text-left">Image</th>
+                                                <th class="p-3 text-left">Product</th>
+                                                <th class="p-3 text-center">Qty</th>
+                                                <th class="p-3 text-center">U.Price</th>
+                                                <th class="p-3 text-center">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="order-items-body"></tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Totals Section -->
+                                <div class="mt-4 text-sm md:text-base text-gray-700 space-y-1">
                                     <div class="flex justify-between"><span>Total Bill:</span> <span
                                             id="total-bill"></span></div>
                                     <div class="flex justify-between"><span>Delivery fee:</span> <span
@@ -289,6 +293,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -356,9 +361,10 @@
                         const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
                         response.order_items.forEach((item) => {
                             console.log(item);
-                            let imageUrl = (item.product_image && item.product_image.startsWith("http"))
-                                            ? item.product_image
-                                            : `/${item.product_image || 'storage/products/default.jpg'}`;
+                            let imageUrl = (item.product_image && item.product_image
+                                    .startsWith("http")) ?
+                                item.product_image :
+                                `/${item.product_image || 'storage/products/default.jpg'}`;
 
                             itemsHtml += `
                         <tr class="border-b">
@@ -366,8 +372,8 @@
                            <img src="${imageUrl}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
                             <td class="p-3">${item.product_name}</td>
                             <td class="p-3 text-center">${item.quantity}</td>
-                            <td class="p-3 text-center">Rs${item.price}</td>
-                            <td class="p-3 text-center">Rs${(item.quantity * item.price).toFixed(2)}</td>
+                            <td class="p-3 text-center">Rs ${item.price}</td>
+                            <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
                         </tr>`;
                         });
 

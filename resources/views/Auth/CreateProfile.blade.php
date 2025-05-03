@@ -47,10 +47,20 @@
         </div>
         <div class="flex justify-center">
             <img src="{{ asset("asset/dextopdiagram3.svg
-                        ") }}" alt="">
+                                    ") }}" alt="">
         </div>
-        <div class="flex justify-center mt-5 ">
-            <button class="px-5 py-2 text-white rounded-full bg-primary"> <a href="{{ route("ProfileDetail") }}">Create my Account</a></button>
+        <div class="flex flex-col sm:flex-row text-center justify-center mt-5 gap-4">
+            {{-- Create Account Button --}}
+            <a href="{{ route('ProfileDetail') }}"
+                class="px-6 py-2 bg-primary text-white rounded-full text-sm font-medium hover:bg-blue-600 transition">
+                Create my Account
+            </a>
+            {{-- Logout Button --}}
+            <a href="{{ route('logout') }}"
+                class="px-6 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition">
+                Logout
+            </a>
         </div>
+
     </div>
 @endsection

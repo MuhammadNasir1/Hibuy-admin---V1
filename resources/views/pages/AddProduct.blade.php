@@ -150,7 +150,7 @@
                             <x-select type="text" label="Category" placeholder="Category Here" id="category"
                                 name="category">
                                 <x-slot name="options">
-                                    <option disabled>Select Category</option>
+                                    <option value="" disabled selected>Select Category</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}"
                                             {{ isset($products->product_category) && $products->product_category == $category->id ? 'selected' : '' }}>
@@ -165,7 +165,7 @@
                             <x-select type="text" label="Sub Category" placeholder="Sub Category Here" id="sub_category"
                                 name="sub_category">
                                 <x-slot name="options">
-                                    <option disabled selected>Select Sub Category</option>
+                                    <option value="" disabled selected>Select Sub Category</option>
                                     @if (isset($products->product_subcategory))
                                         <option selected value="{{ $products->product_subcategory }}">
                                             {{ $products->product_subcategory }}
@@ -649,14 +649,14 @@
                 let subCategoryDropdown = $('#sub_category');
 
                 // Clear previous options
-                subCategoryDropdown.html('<option disabled selected>Loading...</option>');
+                subCategoryDropdown.html('<option value="" disabled selected>Loading...</option>');
 
                 $.ajax({
                     url: `/get-subcategories/${categoryId}`,
                     type: 'GET',
                     success: function(response) {
                         subCategoryDropdown.html(
-                            '<option disabled selected>Select Sub Category</option>');
+                            '<option value="" disabled selected>Select Sub Category</option>');
 
                         if (response.success && response.sub_categories.length > 0) {
                             response.sub_categories.forEach(subCategory => {
@@ -687,6 +687,27 @@
                     $("#discounted_price").val('');
                 }
             });
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: @js(session('success')),
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            @endif
+
+            // SweetAlert error (flash message)
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: @js(session('error')),
+                    confirmButtonColor: '#d33'
+                });
+            @endif
+
         });
 
 
@@ -783,6 +804,8 @@
             }
         });
     </script>
+
+
 
 
 

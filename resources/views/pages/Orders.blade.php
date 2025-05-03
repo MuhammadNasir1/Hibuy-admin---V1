@@ -113,7 +113,7 @@
                                     <label for="order_status" class="block mb-1 text-sm font-normal text-gray-600">Order
                                         Status</label>
                                     <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
-                                    <select id="order_status" name="order_status"
+                                    <select id="order_status" name="order_status" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                         <option value="" selected>Select Status</option>
                                         <option value="pending">Pending</option>
@@ -129,7 +129,7 @@
                                 <div>
                                     <label for="courier_id"
                                         class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
-                                    <select id="courier_id" name="courier_id"
+                                    <select id="courier_id" name="courier_id" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                         <option value="" selected>Select Courier</option>
                                     </select>
@@ -141,7 +141,7 @@
                                         class="block mb-1 text-sm font-normal text-gray-600">Tracking
                                         No.</label>
                                     <input type="text" id="tracking_number" name="tracking_number"
-                                        placeholder="Enter tracking number"
+                                        placeholder="Enter tracking number" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                 </div>
 
@@ -153,7 +153,24 @@
                                     </button>
                                 </div>
                             @else
-                                <div>
+                                <div class="flex flex-col sm:flex-row gap-2 col-span-2">
+                                    <!-- Video Preview -->
+                                    <video id="videoPreview" controls class="h-[150px] mr-3 hidden">
+                                        <source id="videoSource" src="" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+
+                                    <!-- File Input for Video Upload -->
+                                    <div class="flex flex-col">
+                                        <label for="videoInput"
+                                            class="block mb-1 text-sm font-normal text-gray-600">Upload Video (Max
+                                            20MB)</label>
+                                        <input type="file" id="videoInput" name="status_video" accept="video/*"
+                                            class="block" value="">
+
+                                    </div>
+                                </div>
+                                <div class="w-full col-span-1">
                                     <label for="order_status_seller"
                                         class="block mb-1 text-sm font-normal text-gray-600">Delivery
                                         Status</label>
@@ -171,9 +188,8 @@
                                         <option value="returned">Returned</option>
                                     </select>
                                 </div>
-
                                 {{-- Submit Button --}}
-                                <div class="flex justify-end">
+                                <div class="flex justify-end col-span-1">
                                     <button type="submit" id="submitStatusbyseller"
                                         class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                         Submit
@@ -238,22 +254,29 @@
                         <div id="dropdownContent" class="mt-2 hidden">
                             <div class="overflow-x-auto">
                                 <div class="p-4 mt-2 rounded-lg shadow bg-gray-50">
-                                    <h3 class="font-bold text-gray-700">Items Details</h3>
-                                    <table class="w-full mt-2 text-sm text-gray-700 border">
-                                        <thead>
-                                            <tr class="bg-gray-200">
-                                                <th class="p-3 text-left">Image</th>
-                                                <th class="p-3 text-left">Product</th>
-                                                <th class="p-3 text-center">Qty</th>
-                                                <th class="p-3 text-center">U.Price</th>
-                                                <th class="p-3 text-center">Subtotal</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="order-items-body"></tbody>
-                                    </table>
+                                    <h3 class="font-bold text-gray-700 text-base md:text-lg">Items Details</h3>
+
+                                    <div class="w-full overflow-x-auto">
+                                        <table class="w-full min-w-[600px] mt-2 text-sm md:text-base text-gray-700 border">
+                                            <thead>
+                                                <tr class="bg-gray-200">
+                                                    <th class="p-3 text-left">Image</th>
+                                                    <th class="p-3 text-left">Product</th>
+                                                    @if (session('user_details.user_role') == 'admin')
+                                                        <th class="p-3 text-left">Status</th>
+                                                        <th class="p-3 text-left">Video Prove</th>
+                                                    @endif
+                                                    <th class="p-3 text-center">Qty</th>
+                                                    <th class="p-3 text-center">U.Price</th>
+                                                    <th class="p-3 text-center">Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="order-items-body"></tbody>
+                                        </table>
+                                    </div>
 
                                     <!-- Total Calculation -->
-                                    <div class="mt-4 text-sm text-gray-700">
+                                    <div class="mt-4 text-sm md:text-base text-gray-700 space-y-1">
                                         <div class="flex justify-between"><span>Total Bill:</span> <span
                                                 id="total-bill"></span></div>
                                         <div class="flex justify-between"><span>Delivery fee:</span> <span
@@ -267,6 +290,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -280,8 +304,39 @@
 @section('js')
     <script>
         $(document).ready(function() {
+            const user = {
+                user_role: "{{ session('user_details.user_role') }}"
+            };
+
+            // Function to stop all videos in the modal
+            const stopVideo = () => {
+                const videos = document.querySelectorAll('#orders-modal video');
+                videos.forEach(video => {
+                    video.pause();
+                    video.currentTime = 0; // Optional: Reset to start
+                });
+            };
+            // Detect modal close for Flowbite
+            const modal = document.getElementById('orders-modal');
+            const closeButtons = document.querySelectorAll('[data-modal-toggle="orders-modal"]');
+            // Observe changes to modal's class (e.g., 'hidden' added by Flowbite)
+            if (modal) {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach(mutation => {
+                        if (mutation.attributeName === 'class' && modal.classList.contains(
+                            'hidden')) {
+                            stopVideo();
+                        }
+                    });
+                });
+                observer.observe(modal, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+            }
+
             $(".viewModalBtn").on("click", function() {
-                let vieworderurl = $(this).attr("vieworderurl"); // Get order details URL
+                let vieworderurl = $(this).attr("vieworderurl");
                 if (!vieworderurl) {
                     alert("Invalid order URL!");
                     return;
@@ -289,41 +344,30 @@
 
                 $("#modal-btn").click(); // Open modal
 
-                // Run AJAX to fetch order details
                 $.ajax({
                     url: vieworderurl,
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
-                        // console.log(response);
-
                         if (response.error) {
                             alert(response.error);
                             return;
                         }
-                        // Assuming your API response is saved in a variable called response
-                        const couriers = response
-                            .couriers; // Array of { courier_id, courier_name }
-                        const selectBox = document.getElementById('courier_id');
-
-                        // // Clear existing options (optional)
-                        // selectBox.innerHTML = '<option value="">Select Courier</option>';
-
-                        // Loop through couriers and append options
-                        couriers.forEach(courier => {
-                            const option = document.createElement('option');
-                            option.value = courier.courier_id;
-                            option.textContent = courier.courier_name;
-                            selectBox.appendChild(option);
-                        });
-
-                        // // Optional: Set selected courier if editing an existing order
-                        if (response.selected_courier_id) {
-                            selectBox.value = response.selected_courier_id;
+                        if (user.user_role === 'admin') {
+                            const couriers = response.couriers;
+                            const selectBox = document.getElementById('courier_id');
+                            selectBox.innerHTML =
+                                '<option value="" selected>Select Courier</option>';
+                            couriers.forEach(courier => {
+                                const option = document.createElement('option');
+                                option.value = courier.courier_id;
+                                option.textContent = courier.courier_name;
+                                selectBox.appendChild(option);
+                            });
+                            if (response.selected_courier_id) {
+                                selectBox.value = response.selected_courier_id;
+                            }
                         }
-
-
-                        // Populate order details
                         $('#tracking_number').val(response.tracking_number);
                         $('#order_status').val(response.order_status).change();
                         $("#order-status").text(response.order_status);
@@ -334,37 +378,56 @@
                         $("#order-date").text(response.order_date);
                         $("#customer-phone").text(response.phone);
                         $("#total-items").text(response.order_items.length);
-                        $("#order-total").text("Rs" + response.total);
-                        $("#delivery-fee").text("Rs" + response.delivery_fee);
-                        $("#grand-total").text("Rs" + response.grand_total);
-
-                        // Populate billing details
-                        $("#total-bill").text("Rs" + response.total);
-                        $("#fee").text("Rs" + response.delivery_fee);
-                        $("#final-total").text("Rs" + response.grand_total);
-
-                        // Populate order items table
+                        $("#order-total").text("Rs " + response.total);
+                        $("#delivery-fee").text("Rs " + response.delivery_fee);
+                        $("#grand-total").text("Rs " + response.grand_total);
+                        $("#total-bill").text("Rs " + response.total);
+                        $("#fee").text("Rs " + response.delivery_fee);
+                        $("#final-total").text("Rs " + response.grand_total);
                         let itemsHtml = "";
                         const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
                         response.order_items.forEach((item) => {
-                            console.log(item);
-                            // Set order status if it's available in response
                             if (response.status) {
                                 $("#order_status_seller").val(item.delivery_status)
                                     .change();
                                 $("#editbyseller_orderstatus_id").val(item.product_id);
+                                if (user.user_role !== 'admin') {
+                                    if (item.status_video) {
+                                        const videoUrl =
+                                        `/storage/${item.status_video}`;
+                                        $("#videoSource").attr("src", videoUrl);
+                                        $("#videoPreview").removeClass("hidden")[0]
+                                            .load();
+                                    } else {
+                                        $("#videoPreview").addClass("hidden");
+                                        $("#videoSource").attr("src", "");
+                                    }
+                                } else {
+                                    $("#videoPreview").addClass("hidden");
+                                    $("#videoSource").attr("src", "");
+                                }
                             }
                             itemsHtml += `
-                        <tr class="border-b">
-                           <td class="p-3">
-                            <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
-                            <td class="p-3">${item.product_name}</td>
-                            <td class="p-3 text-center">${item.quantity}</td>
-                            <td class="p-3 text-center">Rs${item.price}</td>
-                            <td class="p-3 text-center">Rs${(item.quantity * item.price).toFixed(2)}</td>
-                        </tr>`;
+                                <tr class="border-b">
+                                    <td class="p-3">
+                                        <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
+                                    </td>
+                                    <td class="p-3">${item.product_name}</td>
+                                    ${user.user_role == 'admin' ? `
+                                            <td class="p-3">${item.delivery_status}</td>
+                                            <td class="p-3">
+                                                ${item.status_video ? `
+                                            <video controls class="w-28 h-16 rounded shadow">
+                                                <source src="/storage/${item.status_video}" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>` : 'No video'}
+                                            </td>
+                                        ` : ''}
+                                    <td class="p-3 text-center">${item.quantity}</td>
+                                    <td class="p-3 text-center">Rs ${item.price}</td>
+                                    <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
+                                </tr>`;
                         });
-
                         $("#order-items-body").html(itemsHtml);
                     },
                     error: function() {
@@ -373,68 +436,118 @@
                 });
             });
 
-
-            // JS (place in a script tag or external JS file)
             $('#submitStatus').on('click', function(e) {
                 e.preventDefault();
-
                 let formData = {
                     _token: $('input[name="_token"]').val(),
                     order_status: $('#order_status').val(),
                     courier_id: $('#courier_id').val(),
                     tracking_number: $('#tracking_number').val(),
-                    order_id: $('#edit_orderstatus_id').val() // hidden input carrying order_id
+                    order_id: $('#edit_orderstatus_id').val()
                 };
-
                 $.ajax({
                     url: '{{ route('orders.update.status') }}',
                     type: 'POST',
                     data: formData,
                     success: function(response) {
-                        console.log(response);
-                        alert(response.message); // You can use toast or modal instead
-                        $("#order-status").text($('#order_status').val());
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true
+                        }).then(() => {
+                            $("#order-status").text($('#order_status').val());
+                            location.reload();
+                        });
                     },
-                    error: function(xhr) {
-                        alert('Something went wrong.');
-                        console.error(xhr.responseText);
+                    error: function(xhr, status, error) {
+                        let errorMessage = 'Something went wrong. Please try again.';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.message) {
+                                errorMessage = response.message;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing JSON response:', e);
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: errorMessage,
+                            timer: 4000,
+                            showConfirmButton: false,
+                            timerProgressBar: true
+                        });
                     }
                 });
             });
-
-
 
             $('#submitStatusbyseller').on('click', function(e) {
                 e.preventDefault();
-
-                let formData = {
-                    _token: $('input[name="_token"]').val(),
-                    delivery_status: $('#order_status_seller').val(),
-                    order_id: $('#edit_orderstatus_id').val(),
-                    product_id: $('#editbyseller_orderstatus_id').val()
-                };
-
-
-                console.log(formData);
-
+                const videoFile = $('#videoInput')[0].files[0];
+                if (videoFile && videoFile.size > 20 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File too large',
+                        text: 'Please upload a video smaller than 20MB.',
+                        timer: 4000,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                    });
+                    return;
+                }
+                let formData = new FormData();
+                formData.append('_token', $('input[name="_token"]').val());
+                formData.append('delivery_status', $('#order_status_seller').val());
+                formData.append('order_id', $('#edit_orderstatus_id').val());
+                formData.append('product_id', $('#editbyseller_orderstatus_id').val());
+                if (videoFile) {
+                    formData.append('status_video', videoFile);
+                }
+                Swal.fire({
+                    title: 'Uploading...',
+                    text: 'Please wait while your data is being submitted.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 $.ajax({
                     url: '{{ route('orders.update.status') }}',
                     type: 'POST',
                     data: formData,
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
-                        console.log(response);
-                        alert(response.message);
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message ||
+                                'Order status updated successfully!',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                        }).then(() => {
+                            location.reload();
+                        });
                     },
                     error: function(xhr) {
-                        alert('Something went wrong.');
-                        console.error(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: xhr.responseJSON?.message ||
+                                'Something went wrong. Please try again!',
+                            timer: 4000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                        });
                     }
                 });
             });
-
         });
+
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownContent = document.getElementById('dropdownContent');
         const dropdownArrow = document.getElementById('dropdownArrow');
@@ -443,5 +556,22 @@
             dropdownContent.classList.toggle('hidden');
             dropdownArrow.classList.toggle('rotate-180');
         });
+
+        // Add event listener for video input, but only if it exists
+        const videoInput = document.getElementById('videoInput');
+        if (videoInput) {
+            videoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const videoPreview = document.getElementById('videoPreview');
+                    const videoSource = document.getElementById('videoSource');
+
+                    const fileURL = URL.createObjectURL(file);
+                    videoSource.src = fileURL;
+                    videoPreview.load();
+                    videoPreview.classList.remove('hidden');
+                }
+            });
+        }
     </script>
 @endsection

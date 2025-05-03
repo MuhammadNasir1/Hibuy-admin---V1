@@ -7,10 +7,14 @@ use App\Models\Customer;
 use App\Models\Seller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Mail\ForgotPasswordMail;
+
 
 class AuthController extends Controller
 {
@@ -57,7 +61,6 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
     }
-
     public function login(Request $request)
     {
         // Validate request
@@ -70,17 +73,27 @@ class AuthController extends Controller
         $user = User::where('user_email', $validatedData['user_email'])
             ->whereIn('user_role', ['seller', 'freelancer', 'admin'])
             ->first();
-            $kyc_status = Seller::Where('user_id' , $user->user_id)->first();
 
-        // Check if user exists and password is correct
-        if (!$user || !Hash::check($validatedData['user_password'], $user->user_password)) {
-
+        // If user not found
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid email or password.',
-                'errors' => ['user_email' => ['Invalid email or password.']]
+                'message' => 'User not found.',
+                'errors' => ['user_email' => ['User not found.']]
+            ], 404);
+        }
+
+        // If user found and password is incorrect
+        if (!Hash::check($validatedData['user_password'], $user->user_password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect password.',
+                'errors' => ['user_password' => ['Incorrect password.']]
             ], 401);
         }
+
+        // Get seller KYC status
+        $kyc_status = Seller::where('user_id', $user->user_id)->first();
 
         // Regenerate session to prevent session fixation attacks
         session()->regenerate();
@@ -92,7 +105,7 @@ class AuthController extends Controller
                 'user_role' => $user->user_role
             ]
         ]);
-        $role  = $user->user_role;
+        $role = $user->user_role;
         // Return success response
         return response()->json([
             'success' => true,
@@ -106,8 +119,6 @@ class AuthController extends Controller
             ]
         ], 200);
     }
-
-
 
     public function logout(Request $request)
     {
@@ -130,4 +141,123 @@ class AuthController extends Controller
         //     'message' => 'Logout successful.',
         // ], 200);
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $validatedData = $request->validate([
+            'user_email' => 'required|email|exists:users,user_email',
+        ]);
+
+        // Check if the user exists with allowed roles
+        $user = User::where('user_email', $validatedData['user_email'])
+            ->whereIn('user_role', ['seller', 'freelancer'])
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Your account doesn’t have access to this feature.'
+            ], 403);
+        }
+
+        // Generate reset token
+        $token = Str::random(65);
+        DB::table('password_forgot')->where('email', $validatedData['user_email'])->delete();
+
+        // Store token in the password_forgot table
+        DB::table('password_forgot')->insert([
+            'email' => $validatedData['user_email'],
+            'token' => $token,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        try {
+            // Send reset email with both token and email
+            Mail::to($validatedData['user_email'])->send(new ForgotPasswordMail($token, $validatedData['user_email']));
+
+            return response()->json([
+                'message' => 'We have sent a reset password link to your email.'
+            ], 200);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Failed to send password reset email: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'An error occurred. Please try again later.',
+            ], 500);
+        }
+    }
+
+
+
+    public function showLinkForm($token, Request $request)
+    {
+        // You can validate the token here if necessary
+        $email = $request->query('email'); // Get the email from the URL
+        return view('Auth.forgotPasswordForm', compact('token', 'email'));
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            "token" => 'required',
+            "email" => 'required|email',
+            "user_password" => 'required|confirmed|min:8',
+        ]);
+
+        // Find token entry
+        $record = DB::table("password_forgot")
+            ->where("email", $request->email)
+            ->where("token", $request->token)
+            ->first();
+
+        // If token not found
+        if (!$record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired Link.',
+            ], 400);
+        }
+
+        // Check if token is expired (older than 5 minutes)
+        $tokenCreatedAt = \Carbon\Carbon::parse($record->created_at);
+        if ($tokenCreatedAt->diffInMinutes(now()) > 5) {
+
+            DB::table("password_forgot")
+                ->where("email", $request->email)
+                ->where("token", $request->token)
+                ->delete();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'This password reset link has expired',
+            ], 410);
+        }
+
+        // Check if user exists
+        $user = User::where("user_email", $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No user found with this email address.',
+            ], 404);
+        }
+
+        // Update password
+        $user->user_password = Hash::make($request->user_password);
+        $user->save();
+
+        // Delete token
+        DB::table("password_forgot")
+            ->where("email", $request->email)
+            ->where("token", $request->token)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password has been reset successfully.',
+            'redirect' => route('login')
+        ]);
+    }
+
 }

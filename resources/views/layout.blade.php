@@ -293,9 +293,10 @@
                             <span class="ms-3 text-custom15">Freelancers Management</span>
                         </a>
                     </li>
-
+                @endif
+                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'freelancer')
                     <li class="">
-                        <a href="{{ route('credit_request') }}"
+                        <a href="{{ route('credit-requests') }}"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                             <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                                 viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -308,7 +309,7 @@
                     </li>
                 @endif
 
-                @if (session('user_details.user_role') == 'seller')
+                @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
                     <li class="">
                         <a href="{{ route('getStoreDetails') }}"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
@@ -321,6 +322,8 @@
                             <span class="ms-3 text-custom15">My Store - Store Name</span>
                         </a>
                     </li>
+                @endif
+                @if (session('user_details.user_role') == 'seller')
                     <li class="">
                         <a href="{{ route('other-seller-product') }}"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
@@ -506,7 +509,7 @@
                 </li>
 
                 <li class="">
-                    <a href="{{ route('editsettings') }}"
+                    <a href="{{ route('settings') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
                         <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
                             viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -531,7 +534,7 @@
                         <span class="ms-3 text-custom15">Logout</span>
                     </a>
                 </li>
-                @if (session('user_details.user_role') == 'seller')
+                @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
                     <li class="">
                         <a href="#"
                             class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
@@ -574,22 +577,30 @@
         <nav class="relative bg-white border-gray-200 ">
 
             <div class="w-full flex items-center justify-between mx-auto px-4">
-                <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar"
-            type="button"
-            class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path clip-rule="evenodd" fill-rule="evenodd"
-                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
-                </path>
-            </svg>
-        </button>
-                <div class="absolute top-14 left-6 sm:top-2">
+                <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar"
+                    aria-controls="default-sidebar" type="button"
+                    class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd" fill-rule="evenodd"
+                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                        </path>
+                    </svg>
+                </button>
+                <div class="absolute top-14 left-6 sm:hidden">
                     <h3 class="font-semibold text-2xl">
                         @yield('nav-title', 'No title')
                     </h3>
                 </div>
-                <div class="flex items-center sm:pl-32 md:order-2 space-x-3 md:space-x-5 rtl:space-x-reverse">
+                <div>
+                    <div class="hidden sm:block">
+                        <h3 class="font-semibold text-2xl">
+                            @yield('nav-title', 'No title')
+                        </h3>
+                    </div>
+                </div>
+                <div class="flex items-center md:order-2 space-x-2 md:space-x-5 rtl:space-x-reverse">
                     <p style="text-transform: capitalize">{{ session('user_details.user_role') }}</p>
                     <div>
                         <a href="">
@@ -635,7 +646,8 @@
                         @if (session('notifications'))
                             @foreach (session('notifications') as $notification)
                                 <div class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    <a href="{{ route('allNotifications') }}" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <a href="{{ route('allNotifications') }}"
+                                        class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
                                         <div class="shrink-0">
                                             <img class="rounded-full w-11 h-11" src="{{ asset('asset/Ellipse 2.png') }}"
                                                 alt="Jese image">
@@ -655,10 +667,13 @@
 
                                             <div class="w-full ps-3">
                                                 <div class="text-gray-500 text-sm  dark:text-gray-400">
-                                                    <span class="m-0 p-0 font-semibold">{{ $notification->title ?? 'No title' }}</span> <br>
+                                                    <span
+                                                        class="m-0 p-0 font-semibold">{{ $notification->title ?? 'No title' }}</span>
+                                                    <br>
                                                     "{{ $notification->description ?? 'No message' }}"
                                                 </div>
-                                                <div class="text-xs text-blue-600 dark:text-blue-500">{{ $notification->created_at ?? 'Few Moments Ago' }}
+                                                <div class="text-xs text-blue-600 dark:text-blue-500">
+                                                    {{ $notification->created_at ?? 'Few Moments Ago' }}
                                                 </div>
                                             </div>
 

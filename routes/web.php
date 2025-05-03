@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\apiStoreController;
+use App\Http\Controllers\CreditRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KYCController;
@@ -17,8 +18,15 @@ use App\Http\Middleware\FetchNotifications;
 Route::get('/Login', function () {
     return view('Auth.login');
 })->name("login");
+Route::get('/forgot_password', function () {
+    return view('Auth.forgotPassword');
+})->name("forgot_Password");
+
 
 Route::post('login', [AuthController::class, 'login']);
+Route::post('/forgot/password', [AuthController::class, 'forgotPassword'])->name('forgot.password');
+Route::get('/forgot/password/{token}', [AuthController::class, 'showLinkForm'])->name('forgot.password.Link');
+Route::post('/reset/password/email', [AuthController::class, 'resetPassword'])->name('reset.password');
 Route::get('/signup/{role?}', [AuthController::class, 'showSignup'])->name('signup');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
@@ -135,9 +143,20 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::view('/all-notifications', 'pages.AllNotifications')->name('allNotifications');
             Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
             Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
-            Route::view('/Inquiries', 'seller.inquiries')->name('inquirieslist');
+            Route::view('/Inquiries', 'seller.Inquiries')->name('inquirieslist');
             // Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
             Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
+
+            // Credit request
+            Route::post('/credit-request', [CreditRequestController::class, 'store'])->name('credit-request.store');
+            Route::get('/credit_request', [CreditRequestController::class, 'index'])->name('credit-requests');
+            Route::get('/credit-request/{id}', [CreditRequestController::class, 'show'])->name('credit-request.show');
+            Route::post('/credit/update-status', [CreditRequestController::class, 'updateStatus'])->name('credit.updateStatus');
+
+
+            Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
+            Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
+            Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
         });
     });
 });
