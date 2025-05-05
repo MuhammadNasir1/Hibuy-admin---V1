@@ -65,17 +65,24 @@
                                         $addresses = json_decode($buyer->customer_addresses, true);
                                     @endphp
 
-                                    @foreach ($addresses as $index => $address)
+                                    @if (!empty($addresses) && count($addresses) > 0)
+                                        @foreach ($addresses as $index => $address)
+                                            <tr>
+                                                <th class="w-[12%] px-2 py-2 text-lg text-gray-500 dark:text-gray-400">
+                                                    Address {{ $index + 1 }}:</th>
+                                                <td class="px-2 py-2">
+                                                    <span class="font-semibold">{{ $address['first_name'] }}
+                                                        {{ $address['last_name'] }}</span><br>
+                                                    {{ $address['address_line'] }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
                                         <tr>
-                                            <th class="w-[12%] px-2 py-2 text-lg text-gray-500 dark:text-gray-400">Address
-                                                {{ $index + 1 }}:</th>
-                                            <td class="px-2 py-2">
-                                                <span class="font-semibold">{{ $address['first_name'] }}
-                                                    {{ $address['last_name'] }}</span><br>
-                                                {{ $address['address_line'] }}
-                                            </td>
+                                            <td colspan="2" class="px-2 py-2 text-center text-gray-500">No addresses
+                                                found.</td>
                                         </tr>
-                                    @endforeach
+                                    @endif
 
                                 </tbody>
                             </table>

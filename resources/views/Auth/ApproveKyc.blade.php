@@ -53,10 +53,9 @@
 
         <div class="flex flex-col sm:flex-row justify-center pt-11 sm:pt-6 gap-4 text-sm mt-6 text-center">
             {{-- Edit Details Button --}}
-            <button class="px-6 py-2 border border-gray-600 text-gray-700 rounded-full hover:bg-gray-100 transition">
+            <a href="{{ route('ProfileDetail') }}" class="px-6 py-2 border border-gray-600 text-gray-700 rounded-full hover:bg-gray-100 transition">
                 Edit Details
-            </button>
-
+            </a>
             {{-- Start Store Button --}}
             <a href="{{ $isDisabled ? 'Kyc-profile' : '/' }}"
                 class="px-6 py-2 rounded-full border transition
