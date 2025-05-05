@@ -9,12 +9,13 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ForgotPasswordMail extends Mailable
+class ForgotPasswordMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public $token;
     public $email;
+    public $name;
 
     /**
      * Create a new message instance.
@@ -23,10 +24,11 @@ class ForgotPasswordMail extends Mailable
      * @param  string  $email
      * @return void
      */
-    public function __construct($token, $email)
+    public function __construct($token, $email, $name)
     {
         $this->token = $token;
         $this->email = $email;
+        $this->name = $name;
     }
 
     /**
@@ -49,6 +51,7 @@ class ForgotPasswordMail extends Mailable
             with: [
                 'token' => $this->token,
                 'email' => $this->email,
+                'name' => $this->name,
             ],
         );
     }

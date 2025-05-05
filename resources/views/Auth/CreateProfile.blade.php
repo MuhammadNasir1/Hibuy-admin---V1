@@ -2,9 +2,9 @@
 @section('title', 'Create Profile')
 @section('content')
     <div class="w-full p-4 mt-5 flex-column justify-center items-center bg-white min-h-[80vh] pb-10 rounded-lg">
-        <div>
+        {{-- <div>
             <button class="px-5 py-1 text-black border border-gray-500 rounded-full ">Back</button>
-        </div>
+        </div> --}}
         <div class="mt-3">
             <h1 class="text-lg font-bold text-center md:text-3xl text-primary ">Welcome to Create Profile</h1>
         </div>
