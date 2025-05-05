@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Customer;
 use App\Models\Products;
-use App\Models\Store;
-use Carbon\Carbon;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -77,19 +78,16 @@ class UserController extends Controller
         }
     }
 
-
     public function KYC_Authentication(Request $request)
     {
         try {
             $user = session('user_details')['user_id'];
-
-            // Find the seller record for the authenticated user
             $seller = Seller::where('user_id', $user)->first();
+
             if (!$seller) {
-                return response()->json(['error' => 'Seller record not found'], 404);
+                return response()->json(['success' => false, 'message' => 'Seller record not found'], 404);
             }
 
-            // Define step mapping
             $stepMapping = [
                 1 => 'personal_info',
                 2 => 'store_info',
@@ -98,63 +96,183 @@ class UserController extends Controller
                 5 => 'business_info',
             ];
 
-            // Validate request input
-            $validatedData = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'step' => 'required|integer|between:1,5',
             ]);
 
-            $step = $validatedData['step'];
-
-            // Verify step exists in mapping
-            if (!isset($stepMapping[$step])) {
-                return response()->json(['error' => 'Invalid step'], 400);
+            if ($validator->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
             }
 
-            // Get the column name based on step
+            $step = $request->input('step');
+
+            if (!isset($stepMapping[$step])) {
+                return response()->json(['success' => false, 'message' => 'Invalid step'], 400);
+            }
+
             $column = $stepMapping[$step];
 
-            // Separate text and file data
-            $textData = $request->except(['_token']);
+            $stepRules = [
+                1 => [
+                    'status' => 'required',
+                    'full_name' => 'required|string|max:255',
+                    'address' => 'required|string|max:500',
+                    'phone_no' => 'required|regex:/^[0-9]+$/|string|min:8|max:15',
+                    'email' => 'required|email|max:255',
+                    'cnic' => 'required|string|max:15',
+
+                    'profile_picture' => 'required_without:profile_picture_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'profile_picture_path' => 'nullable|string',
+
+                    'front_image' => 'required_without:front_image_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'front_image_path' => 'nullable|string',
+
+                    'back_image' => 'required_without:back_image_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'back_image_path' => 'nullable|string',
+                ],
+                2 => [
+                    'status' => 'required|in:pending',
+                    'store_name' => 'required|string|max:255',
+                    'type' => 'required|in:Retail,Wholesale',
+                    'phone_no' => 'required|regex:/^[0-9]+$/|string|min:8|max:15',
+                    'email' => 'required|email|max:255',
+                    'country' => 'required|string|max:100',
+                    'province' => 'required|string|max:100',
+                    'city' => 'required|string|max:100',
+                    'zip_code' => 'required|string|max:10',
+                    'address' => 'required|string|max:500',
+                    'pin_location' => 'required|string|max:255',
+
+                    'profile_picture_store' => 'required_without:profile_picture_store_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'profile_picture_store_path' => 'nullable|string',
+                ],
+                3 => [
+                    'status' => 'required|in:pending',
+                    'country' => 'required|string|max:100',
+                    'province' => 'required|string|max:100',
+                    'city' => 'required|string|max:100',
+
+                    'home_bill' => 'required_without:home_bill_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'home_bill_path' => 'nullable|string',
+
+                    'shop_video' => 'nullable|file|mimes:mp4,mov,avi,wmv|max:20480',
+                    'shop_video_path' => 'nullable|string',
+                ],
+                4 => [
+                    'status' => 'required|in:pending',
+                    'account_type' => 'required|in:savings,current',
+                    'bank_name' => 'required|string|max:255',
+                    'branch_code' => 'required|string|max:50',
+                    'branch_name' => 'required|string|max:255',
+                    'branch_phone' => 'required|regex:/^[0-9]+$/|string|min:8|max:15',
+                    'account_title' => 'required|string|max:255',
+                    'account_no' => 'required|string|max:50',
+                    'iban_no' => 'required|string|max:50',
+
+                    'canceled_cheque' => 'required_without:canceled_cheque_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'canceled_cheque_path' => 'nullable|string',
+
+                    'verification_letter' => 'nullable:verification_letter_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'verification_letter_path' => 'nullable|string',
+                ],
+                5 => [
+                    'status' => 'required|in:pending',
+                    'business_name' => 'required|string|max:255',
+                    'owner_name' => 'required|string|max:255',
+                    'phone_no' => 'required|regex:/^[0-9]+$/|string|min:8|max:15',
+                    'reg_no' => 'required|string|max:100',
+                    'tax_no' => 'required|string|max:100',
+                    'address' => 'required|string|max:500',
+                    'pin_location' => 'required|string|max:255',
+
+                    'personal_profile' => 'required_without:personal_profile_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'personal_profile_path' => 'nullable|string',
+
+                    'letter_head' => 'required_without:letter_head_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'letter_head_path' => 'nullable|string',
+
+                    'stamp' => 'required_without:stamp_path|file|mimes:jpg,jpeg,png|max:2048',
+                    'stamp_path' => 'nullable|string',
+                ],
+            ];
+
+            // Step-specific validation
+            $stepValidator = Validator::make($request->all(), $stepRules[$step], [
+                'personal_profile.required_without' => 'The Personal Profile is required.',
+                'letter_head.required_without' => 'The Letter Head is required.',
+                'stamp.required_without' => 'The Stamp is required.',
+                'profile_picture.required_without' => 'The Profile Picture is required.',
+                'front_image.required_without' => 'The Front Image is required.',
+                'back_image.required_without' => 'The Back Image is required.',
+                'profile_picture_store.required_without' => 'The Store Profile Picture is required.',
+                'home_bill.required_without' => 'The Home Bill is required.',
+                'canceled_cheque.required_without' => 'The Canceled Cheque is required.',
+                'verification_letter.required_without' => 'The Verification Letter is required.',
+            ]);
+
+            if ($stepValidator->fails()) {
+                return response()->json(['success' => false, 'errors' => $stepValidator->errors()], 422);
+            }
+
+            $existingData = [];
+            if (!empty($seller->$column)) {
+                $decoded = json_decode($seller->$column, true);
+                if (is_array($decoded)) {
+                    $existingData = $decoded;
+                }
+            }
+
+            $textData = $request->except(array_keys($request->allFiles()));
             $fileData = [];
 
-            // Define custom upload path
             $uploadPath = public_path('storage/kyc_files');
-
-            // Ensure the directory exists
             if (!file_exists($uploadPath)) {
                 mkdir($uploadPath, 0777, true);
             }
 
-            // Handle file uploads
-            foreach ($request->allFiles() as $fileField => $file) { // Iterate through all uploaded files
+            foreach ($request->allFiles() as $fileField => $file) {
                 if ($request->hasFile($fileField)) {
                     $fileName = time() . '_' . $fileField . '.' . $file->getClientOriginalExtension();
                     $file->move($uploadPath, $fileName);
-                    $fileData[$fileField] = 'storage/kyc_files/' . $fileName; // Store relative path
+                    $fileData[$fileField] = 'storage/kyc_files/' . $fileName;
                 }
             }
 
-            // Merge text and file data
-            $finalData = array_merge($textData, $fileData);
-
-            // Encode to JSON safely
-            $jsonData = json_encode($finalData, JSON_UNESCAPED_UNICODE);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return response()->json(['error' => 'Invalid JSON data'], 400);
+            foreach (array_keys($stepRules[$step]) as $field) {
+                if (str_ends_with($field, '_path')) {
+                    $originalField = str_replace('_path', '', $field);
+                    if (!isset($fileData[$originalField]) && $request->filled($field)) {
+                        $fileData[$originalField] = $request->input($field);
+                    }
+                }
             }
 
-            // Store in DB
+            $finalData = array_merge($existingData, $textData, $fileData);
+            $jsonData = json_encode($finalData, JSON_UNESCAPED_UNICODE);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return response()->json(['success' => false, 'message' => 'Invalid JSON data'], 400);
+            }
+
             $seller->$column = $jsonData;
             $seller->save();
 
             return response()->json([
-                'success' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully',
+                'success' => true,
+                'message' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully',
                 'data' => $finalData
-            ], 200);
+            ]);
+
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
+
+
+
+
+
+
 
 
     public function sellerManagement()

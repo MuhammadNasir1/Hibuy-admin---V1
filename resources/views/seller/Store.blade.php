@@ -180,13 +180,16 @@
                             $("#profile_picture_preview").attr("src", profileImagePath);
 
                             // Store Banner (Full Width)
-                            let bannerPath = response.data.store_banner ?
-                                response.data.store_banner :
-                                "";
-                            $("#preview-banner").html( // Using `.html()` to replace content
-                                `<img src="${bannerPath}" class="my-3 w-full h-[200px] object-cover rounded-lg" alt="Store Banner">`
-                            );
-
+                            let bannerPath = response.data.store_banner ? response.data
+                                .store_banner : "";
+                            if (bannerPath) {
+                                $("#preview-banner").html(
+                                    `<img src="${bannerPath}" class="my-3 w-full h-[200px] object-cover rounded-lg" alt="Store Banner">`
+                                );
+                            } else {
+                                $("#preview-banner").html(
+                                ""); // Clear the preview if no banner exists
+                            }
                             // Store Tags
                             if (Array.isArray(response.data.store_tags) && response.data
                                 .store_tags.length > 0) {
@@ -267,11 +270,11 @@
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     location
-                                .reload(); // Reload page after OK is clicked
+                                        .reload(); // Reload page after OK is clicked
                                 }
                             });
                             console.log("Request Data:", response
-                            .request_data); // Log request data
+                                .request_data); // Log request data
                         } else {
                             Swal.fire({
                                 title: 'Error!',

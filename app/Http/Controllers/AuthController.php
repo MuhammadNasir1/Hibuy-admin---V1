@@ -30,37 +30,39 @@ class AuthController extends Controller
     }
 
 
-    public function register(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'user_name' => 'required|string',
-                'user_email' => 'required|string|email|unique:users',
-                'user_password' => 'required|min:8',
-                'user_role' => 'required|string',
-            ]);
-            $user = User::create([
-                'user_name' => $validatedData['user_name'],
-                'user_email' => $validatedData['user_email'],
-                'user_password' => Hash::make($validatedData['user_password']),
-                'user_role' => $validatedData['user_role'],
-            ]);
+    
 
-            if ($validatedData['user_role'] == 'customer') {
-                Customer::create([
-                    'user_id' => $user->user_id,
-                ]);
-            } else if ($validatedData['user_role'] == 'seller' || $validatedData['user_role'] == 'freelancer') {
-                Seller::create([
-                    'user_id' => $user->user_id,
-                ]);
-                // Mail::to($validatedData['user_email'])->send(new SellerRegistration($user->user_name, asset("setupPassword?i=" .  Crypt::encrypt($user->user_id))));
-            }
-            return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+public function register(Request $request)
+{
+    try {
+        $validatedData = $request->validate([
+            'user_name' => 'required|string',
+            'user_email' => 'required|string|email|unique:users',
+            'user_password' => 'required|min:8',
+            'user_role' => 'required|string',
+        ]);
+
+        $user = User::create([
+            'user_name' => $validatedData['user_name'],
+            'user_email' => $validatedData['user_email'],
+            'user_password' => Hash::make($validatedData['user_password']),
+            'user_role' => $validatedData['user_role'],
+        ]);
+
+        if ($validatedData['user_role'] == 'customer') {
+            Customer::create(['user_id' => $user->user_id]);
+        } elseif (in_array($validatedData['user_role'], ['seller', 'freelancer'])) {
+            Seller::create(['user_id' => $user->user_id]);
         }
+
+        return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
+    } catch (ValidationException $e) {
+        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
+}
+
     public function login(Request $request)
     {
         // Validate request
@@ -173,8 +175,9 @@ class AuthController extends Controller
 
         try {
             // Send reset email with both token and email
-            Mail::to($validatedData['user_email'])->send(new ForgotPasswordMail($token, $validatedData['user_email']));
-
+            // Mail::to($validatedData['user_email'])->send(new ForgotPasswordMail($token, $validatedData['user_email'],$user->user_name));
+            Mail::to($validatedData['user_email'])
+                ->queue(new ForgotPasswordMail($token, $validatedData['user_email'], $user->user_name));
             return response()->json([
                 'message' => 'We have sent a reset password link to your email.'
             ], 200);

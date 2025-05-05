@@ -93,7 +93,7 @@
 
                             $.each(response.errors, function(key, value) {
                                 errorMessages +=
-                                `• ${value}\n`; // Collect all error messages
+                                ` ${value}\n`; // Collect all error messages
                             });
 
                             Swal.fire({
