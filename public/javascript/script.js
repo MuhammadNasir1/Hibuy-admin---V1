@@ -172,6 +172,7 @@ $(document).ready(function () {
         let actionUrl = form.attr("action"); // Get form action URL
         let formData = new FormData(this); // Properly create FormData object
         let currentTabButton = $("#default-tab button[aria-selected='true']"); // Find active tab button
+        console.log(formData);
 
         $.ajax({
             url: actionUrl,
@@ -190,10 +191,10 @@ $(document).ready(function () {
                         showConfirmButton: false,
                     }).then(() => {
                         if (currentTabButton.attr("id") === "business-tab") {
-                            // Agar last tab ka form hai to redirect
+                            // If it's the last tab form, redirect
                             window.location.href = "/Kyc-profile"; // Replace with actual route
                         } else {
-                            // Baqi kisi bhi tab pe ho to page reload
+                            // Reload the page if it's not the last tab
                             location.reload();
                         }
                     });
@@ -206,17 +207,24 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
-                let errorMessage = "An error occurred.";
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    errorMessage = Object.values(xhr.responseJSON.errors).join(
-                        "\n"
-                    );
+                let errorMessage = "Please fill all fields correctly.";
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors)
+                            .flat() // This will flatten array values
+                            .join("\n"); // Join error messages with newline
+                    } else if (xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
                 }
+
                 Swal.fire({
                     title: "Validation Error!",
                     text: errorMessage,
                     icon: "warning",
                 });
+
+                console.error("Validation Error Details:", xhr.responseJSON);
             },
         });
     });

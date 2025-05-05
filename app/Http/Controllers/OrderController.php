@@ -182,7 +182,7 @@ class OrderController extends Controller
 
                         return $order;
                     })->filter();
-
+                    // return $orders;
                 return view('pages.Orders', compact('orders'));
             }
 

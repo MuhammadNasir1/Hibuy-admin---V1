@@ -64,6 +64,7 @@
                             aria-controls="contacts" aria-selected="false">Changes Password</button>
                     </li>
                     {{-- Referal --}}
+                    @if (session('user_details.user_role') !== 'admin')
                     <li role="presentation">
                         <button
                             class="inline-block p-4 border-b-2 rounded-t-lg hover:text-[#FE8D2F] hover:border-gray-300 dark:hover:text-gray-300"
@@ -72,6 +73,7 @@
                             My Referrals
                         </button>
                     </li>
+                    @endif
                 </ul>
             </div>
             <div id="default-tab-content">
