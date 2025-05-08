@@ -13,7 +13,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="shortcut icon" href="{{ asset('asset/Favicon.png') }}" type="image/x-icon">
     <!-- Add this meta tag in the <head> section of your layout -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Dropzone CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css" />
@@ -35,7 +34,9 @@
         $('#loading').hide();
     })
     $(document).ready(function() {
-        $('#datatable').DataTable();
+        $('#datatable').DataTable({
+            stateSave: true
+        });
         $('select').select2({
             width: '100%'
         });
