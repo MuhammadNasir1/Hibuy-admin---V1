@@ -214,7 +214,8 @@
                                                 <label class="md:w-32">Full Name</label>
                                                 <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
                                                     type="text" placeholder="Enter Here" name="full_name"
-                                                    value="{{ $personal_info['full_name'] ?? '' }}" required>
+                                                    value="{{ $personal_info['full_name'] ?? ($user->user_name ?? '') }}"
+                                                    required>
                                             </div>
 
                                             <!-- Address -->
@@ -265,7 +266,8 @@
                                             <label class="md:w-32">Email</label>
                                             <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
                                                 type="email" placeholder="Enter Here" name="email"
-                                                value="{{ $personal_info['email'] ?? '' }}" required>
+                                                value="{{ $personal_info['email'] ?? ($user->user_email ?? '') }}"
+                                                required>
                                         </div>
                                     </div>
 
@@ -278,8 +280,7 @@
                                     </div>
 
                                     <!-- CNIC Images -->
-                                    <div
-                                        class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-20 text-base font-semibold">
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-20 text-base font-semibold">
                                         <!-- Front Image -->
                                         <div>
                                             <h3 class="pb-2">Front Image</h3>
@@ -415,7 +416,8 @@
                                         <label class="md:w-32">Email</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#333]"
                                             type="email" placeholder="Enter Here" name="email"
-                                            value="{{ $store_info['email'] ?? '' }}" required>
+                                            value="{{ $store_info['email'] ?? ($user->user_email ?? '') }}" required
+                                            >
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
@@ -433,7 +435,8 @@
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                        <label class="md:w-32">Province/Region</label>
+                                        <label class="md:w-32">Province/
+                                            Region</label>
                                         <select name="province" id="province"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#333]" required>
                                             <option value="">Select Province</option>
@@ -476,14 +479,21 @@
                                         value="{{ $store_info['address'] ?? '' }}" required>
                                 </div>
 
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 mb-32 gap-2 md:gap-0 relative">
+                                <div class="location-section flex flex-col md:flex-row md:items-center mb-32 md:mb-20 text-sm font-semibold mt-6 gap-2 md:gap-0 relative" data-location="store">
                                     <label class="md:w-32">Pin Location</label>
                                     <div class="relative w-full">
-                                        <input class="rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
-                                            type="text" placeholder="Enter Pin Location" name="pin_location"
+                                        <input class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]" name="pin_location" placeholder="Enter Pin Location"
                                             value="{{ $store_info['pin_location'] ?? '' }}" required>
-
+                                        <div class="get-location-btn cursor-pointer  absolute inset-y-0 right-3 flex items-center" data-target="store">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 10s8-4.5 8-10a8 8 0 10-16 0c0 5.5 8 10 8 10z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="map-container hidden" data-target="store">
+                                        <div class="map" style="height: 400px;"></div>
                                     </div>
                                 </div>
 
@@ -501,9 +511,7 @@
                                     </button>
                                 </div>
                             </form>
-
                         </div>
-
                     </div>
                     {{-- documen --}}
                     <div class="hidden relative p-4 pt-2 rounded-2xl  dark:bg-gray-800" id="document" role="tabpanel"
@@ -575,7 +583,7 @@
                                 </div>
 
                                 {{-- Select Options --}}
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 mb-32 md:mb-20">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 mb-32">
                                     <!-- Country -->
 
                                     <div
@@ -1056,15 +1064,22 @@
                                             type="text" placeholder="Enter here" name="address" id="address"
                                             value="{{ $business_info['address'] ?? '' }}" required>
                                     </div>
-                                    <div
-                                        class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0 relative">
+
+                                    <div class="location-section flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0 relative" data-location="business">
                                         <label class="md:w-32">Pin Location</label>
                                         <div class="relative w-full">
-                                            <input
-                                                class="rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#B4B4B4]"
-                                                type="text" placeholder="Enter Pin Location" name="pin_location"
-                                                id="pin_location" value="{{ $business_info['pin_location'] ?? '' }}"
-                                                required>
+                                            <input class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#B4B4B4]" name="pin_location" placeholder="Enter Pin Location"
+                                                value="{{ $business_info['pin_location'] ?? '' }}">
+                                            <div class="get-location-btn absolute inset-y-0 right-3 flex items-center cursor-pointer" data-target="business">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 10s8-4.5 8-10a8 8 0 10-16 0c0 5.5 8 10 8 10z" />
+                                            </svg>
+                                            </div>
+                                        </div>
+                                        <div class="map-container hidden" data-target="business">
+                                            <div class="map" style="height: 400px;"></div>
                                         </div>
                                     </div>
                                     <div
@@ -1120,6 +1135,77 @@
     </div>
 @endsection
 @section('js')
+<script>
+    let maps = {};
+
+    function initMap(section, position = { lat: -33.8688, lng: 151.2195 }) {
+        const mapContainer = section.querySelector('.map');
+        const input = section.querySelector('.location-input');
+
+        const map = new google.maps.Map(mapContainer, {
+            center: position,
+            zoom: 13,
+        });
+
+        const marker = new google.maps.Marker({
+            map,
+            position,
+            draggable: true,
+        });
+
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo("bounds", map);
+
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                alert("No details available for input: '" + place.name + "'");
+                return;
+            }
+            const location = place.geometry.location;
+            map.setCenter(location);
+            map.setZoom(17);
+            marker.setPosition(location);
+            input.value = `${location.lat().toFixed(6)}, ${location.lng().toFixed(6)}`;
+        });
+
+        marker.addListener("dragend", () => {
+            const pos = marker.getPosition();
+            input.value = `${pos.lat().toFixed(6)}, ${pos.lng().toFixed(6)}`;
+        });
+
+        maps[section.dataset.location] = { map, marker };
+    }
+
+    document.querySelectorAll(".get-location-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const target = btn.dataset.target;
+            const section = document.querySelector(`.location-section[data-location="${target}"]`);
+            const mapContainer = section.querySelector('.map-container');
+            const input = section.querySelector('.location-input');
+
+            mapContainer.classList.remove("hidden");
+
+            if (!maps[target]) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        const userPos = {
+                            lat: pos.coords.latitude,
+                            lng: pos.coords.longitude,
+                        };
+                        initMap(section, userPos);
+                        input.value = `${userPos.lat.toFixed(6)}, ${userPos.lng.toFixed(6)}`;
+                    }, () => initMap(section));
+                } else {
+                    initMap(section);
+                }
+            }
+        });
+    });
+</script>
+
+
+
 
 
     <script>
@@ -1203,5 +1289,8 @@
         }
     </script>
 
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw_TRHWZfahR4yKXWfz11qRjXpx4vIdPA&callback=initMap&libraries=places"
+        async defer></script>
 
 @endsection

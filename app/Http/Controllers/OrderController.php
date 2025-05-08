@@ -193,9 +193,9 @@ class OrderController extends Controller
             }
 
             $storeId = Store::where('seller_id', $sellerId)->value('store_id');
-            if (!$storeId) {
-                return redirect()->back()->with('error', 'Store not found');
-            }
+            // if (!$storeId) {
+            //     return redirect()->back()->with('error', 'Store not found');
+            // }
 
             $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
 
