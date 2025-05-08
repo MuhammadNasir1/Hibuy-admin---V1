@@ -24,6 +24,9 @@ class UserController extends Controller
         $user = session('user_details')['user_id'];
         $seller = Seller::Where('user_id', $user)->first();
 
+        // Get user name from users table
+        $user = DB::table('users')->where('user_id', $user)->first();
+
         $statusImages = [
             'personal_info' => asset('asset/kyc-pending.png'),
             'store_info' => asset('asset/kyc-pending.png'),
@@ -47,9 +50,11 @@ class UserController extends Controller
                 }
             }
         }
-        return view('Auth.ProfileDetail', compact('seller', 'statusImages'));
+        return view('Auth.ProfileDetail', compact('seller', 'statusImages', 'user'));
         // return response()->json(['success' => true, 'data' => $seller]);
     }
+
+
 
     public function setPassword(Request $request)
     {
@@ -141,7 +146,12 @@ class UserController extends Controller
                     'city' => 'required|string|max:100',
                     'zip_code' => 'required|string|max:10',
                     'address' => 'required|string|max:500',
-                    'pin_location' => 'required|string|max:255',
+                    'pin_location' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        'regex:/^-?\d{1,2}(\.\d+)?,\s*-?\d{1,3}(\.\d+)?$/',
+                    ],
 
                     'profile_picture_store' => 'required_without:profile_picture_store_path|file|mimes:jpg,jpeg,png|max:2048',
                     'profile_picture_store_path' => 'nullable|string',
@@ -183,7 +193,12 @@ class UserController extends Controller
                     'reg_no' => 'required|string|max:100',
                     'tax_no' => 'required|string|max:100',
                     'address' => 'required|string|max:500',
-                    'pin_location' => 'required|string|max:255',
+                    'pin_location' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        'regex:/^-?\d{1,2}(\.\d+)?,\s*-?\d{1,3}(\.\d+)?$/',
+                    ],
 
                     'personal_profile' => 'required_without:personal_profile_path|file|mimes:jpg,jpeg,png|max:2048',
                     'personal_profile_path' => 'nullable|string',
@@ -208,6 +223,8 @@ class UserController extends Controller
                 'home_bill.required_without' => 'The Home Bill is required.',
                 'canceled_cheque.required_without' => 'The Canceled Cheque is required.',
                 'verification_letter.required_without' => 'The Verification Letter is required.',
+
+                'pin_location.regex' => 'Pin location must be a valid "latitude, longitude" coordinate pair.',
             ]);
 
             if ($stepValidator->fails()) {

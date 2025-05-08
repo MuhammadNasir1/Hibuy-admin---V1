@@ -2,9 +2,9 @@
 @section('title', 'KYC')
 @section('nav-title', 'KYC (Know Your Customer)')
 @section('content')
-    <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
+    <div class="w-full pt-10 min-h-[86vh] rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
-            <h2 class="text-2xl font-medium  ">KYC List</h1>
+            <h2 class="text-2xl font-medium">KYC List</h2>
         </div>
         @php
             $headers = ['Sr', 'Image', 'Name', 'Type', 'Submission Date', 'Steps Approved', 'Status', 'Action'];
@@ -40,7 +40,7 @@
 
                         <td>
                             <span class='flex gap-4'>
-                                <button class="viewModalBtn" editId = "{{ $data->seller_id }}" data-modal-target="KYC-modal"
+                                <button class="viewModalBtn" editId="{{ $data->seller_id }}" data-modal-target="KYC-modal"
                                     data-modal-toggle="KYC-modal">
                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
@@ -58,7 +58,7 @@
                                             <linearGradient id='paint1_linear_872_5570' x1='18.4287' y1='0'
                                                 x2='18.4287' y2='36' gradientUnits='userSpaceOnUse'>
                                                 <stop stop-color='#FCB376' />
-                                                <stop offset='1' stop-color='#FE8A29' />F
+                                                <stop offset='1' stop-color='#FE8A29' />
                                             </linearGradient>
                                         </defs>
                                     </svg>
@@ -67,24 +67,19 @@
                         </td>
                     </tr>
                 @endforeach
-
-
             </x-slot>
         </x-table>
-
 
         <x-modal id="KYC-modal">
             <x-slot name="title">Details</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-
-                <div class="p-6 ">
-                    <!-- Header -->
-
+                <div class="p-6">
+                    <!-- Personal Information -->
                     <div class="mb-3">
                         <button type="button" onclick="toggleDropdown()"
-                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton ">
-                            <div class="flex items-center gap-2 ">
+                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton">
+                            <div class="flex items-center gap-2">
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="20" height="20" rx="10" fill="#4B91E1" />
@@ -95,69 +90,61 @@
                                         fill="white" />
                                 </svg>
                                 <h1 class="text-lg font-semibold">Personal Information</h1>
+                                <span class="status-badge text-xs font-semibold px-2 py-1 rounded"
+                                    data-step="personal_info"></span>
                             </div>
-                            <svg id="" class="w-5 h-5 transition-transform duration-300 transform dropdownArrow"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-5 h-5 transition-transform duration-300 transform dropdownArrow" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                         </button>
-                        <div id="" class="hidden mt-2 dropdownContent">
+                        <div class="hidden mt-2 dropdownContent">
                             <div class="overflow-x-auto">
                                 <div class="flex justify-center mb-6">
                                     <div
-                                        class="relative flex items-center justify-center bg-gray-200 w-24 h-24  overflow-hidden rounded-full cursor-pointer">
+                                        class="relative flex items-center justify-center bg-gray-200 w-24 h-24 overflow-hidden rounded-full cursor-pointer">
                                         <img id="personal_profile_picture" src="" alt=""
                                             class="h-full object-cover">
                                     </div>
                                 </div>
-
-                                <!-- Form Grid -->
                                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
-                                    <div><strong>Full Name:</strong><span id="full_name"> Full Name
-                                            Here</span></div>
+                                    <div><strong>Full Name:</strong><span id="full_name"> Full Name Here</span></div>
                                     <div><strong>Email:</strong><span id="email"> mail@gmail.com</span></div>
                                     <div><strong>Phone No:</strong><span id="number"> +923001234567</span></div>
                                     <div><strong>Address:</strong><span id="address"> Address 123, City, Province
                                             Pakistan</span></div>
-                                    <div><strong>CNIC:</strong><span id="cnic"> 000000-0000000-0</span> </div>
+                                    <div><strong>CNIC:</strong><span id="cnic"> 000000-0000000-0</span></div>
                                 </div>
-
-                                <!-- Document Images -->
                                 <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
-                                    <!-- Front Image -->
                                     <div>
                                         <label class="block mb-1 text-sm font-bold text-gray-700">Front Image</label>
                                         <div
                                             class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                                            <img id="personal_front_image" src="{{ asset('as set/Vector (1).svg') }}"
+                                            <img id="personal_front_image" src="{{ asset('asset/Vector (1).svg') }}"
                                                 alt="" class="h-full object-cover">
                                         </div>
                                     </div>
-
-                                    <!-- Back Image -->
                                     <div>
-                                        <label class="block mb-1 text-sm font-bold text-gray-700">Front Image</label>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Back Image</label>
                                         <div
                                             class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                                            <img id="personal_back_image" src="{{ asset('as set/Vector (1).svg') }}"
+                                            <img id="personal_back_image" src="{{ asset('asset/Vector (1).svg') }}"
                                                 alt="" class="h-full object-cover">
                                         </div>
                                     </div>
                                 </div>
                                 <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
-                                <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md" id="personal_reason_input">
-
-                                <!-- Action Buttons -->
+                                <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md"
+                                    id="personal_reason_input">
                                 <div class="flex justify-end gap-2 mb-6">
-                                    <button class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button"
-                                        onclick="rejectKyc(this.value, 1)">Reject</button>
                                     <button
-                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
-                                        onclick="approveKyc(this.value, 1)">Approve</button>
+                                        class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button personal-reject-button"
+                                        value="" onclick="rejectKyc(this.value, 'personal_info')">Reject</button>
+                                    <button
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button personal-approve-button"
+                                        value="" onclick="approveKyc(this.value, 'personal_info')">Approve</button>
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
@@ -165,13 +152,12 @@
                 <div>
                     <img class="w-full px-8" src="{{ asset('asset/Line 49.png') }}" alt="">
                 </div>
-                <div class="p-6 ">
-                    <!-- Header -->
-
+                <div class="p-6">
+                    <!-- Store Information -->
                     <div class="mb-3">
                         <button type="button" onclick="toggleDropdown()"
-                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton ">
-                            <div class="flex items-center gap-2 ">
+                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton">
+                            <div class="flex items-center gap-2">
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="20" height="20" rx="10" fill="#FFAE42" />
@@ -182,15 +168,16 @@
                                         fill="white" />
                                 </svg>
                                 <h1 class="text-lg font-semibold">Store Information</h1>
+                                <span class="status-badge text-xs font-semibold px-2 py-1 rounded"
+                                    data-step="store_info"></span>
                             </div>
-                            <svg id="" class="w-5 h-5 transition-transform duration-300 transform dropdownArrow"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-5 h-5 transition-transform duration-300 transform dropdownArrow" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                         </button>
-                        <div id="" class="hidden mt-2 dropdownContent">
+                        <div class="hidden mt-2 dropdownContent">
                             <div class="overflow-x-auto">
                                 <div class="flex justify-center mb-6">
                                     <div
@@ -199,15 +186,12 @@
                                             class="h-full object-cover">
                                     </div>
                                 </div>
-
-                                <!-- Form Grid -->
                                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
                                     <div><strong>Store Name:</strong> <span id="store_name">Name Here</span></div>
                                     <div><strong>Store Type:</strong> <span id="store_type">individual</span></div>
                                     <div><strong>Store Phone No:</strong> <span id="store_phone_no">+923001234567</span>
                                     </div>
-                                    <div><strong>Store Email:</strong> <span id="store_email">mail@gmail.com</span>
-                                    </div>
+                                    <div><strong>Store Email:</strong> <span id="store_email">mail@gmail.com</span></div>
                                     <div><strong>Store Country:</strong> <span id="store_country">Pakistan</span></div>
                                     <div><strong>Store Province:</strong> <span id="store_province">Punjab</span></div>
                                     <div><strong>Store City:</strong> <span id="store_city">Faisalabad</span></div>
@@ -216,22 +200,18 @@
                                             Here</span></div>
                                     <div><strong>Store Address:</strong> <span id="store_address">Address 123, City,
                                             Province, Pakistan</span></div>
-
                                 </div>
-                            </div>
-
-
-                            <!-- Document Images -->
-                            <label class="block mb-1 text-sm font-medium text-gray-700 mt-3">Reason (If Reject)</label>
-                            <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md" id="store_reason_input">
-
-                            <!-- Action Buttons -->
-                            <div class="flex justify-end gap-2 mb-6 mt-5">
-                                <button class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button"
-                                    onclick="rejectKyc(this.value, 2)">Reject</button>
-                                <button
-                                    class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
-                                    value="" onclick="approveKyc(this.value, 2)">Approve</button>
+                                <label class="block mb-1 text-sm font-medium text-gray-700 mt-3">Reason (If Reject)</label>
+                                <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md"
+                                    id="store_reason_input">
+                                <div class="flex justify-end gap-2 mb-6 mt-5">
+                                    <button
+                                        class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button store-reject-button"
+                                        value="" onclick="rejectKyc(this.value, 'store_info')">Reject</button>
+                                    <button
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button store-approve-button"
+                                        value="" onclick="approveKyc(this.value, 'store_info')">Approve</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -239,13 +219,12 @@
                 <div>
                     <img class="w-full px-8" src="{{ asset('asset/Line 49.png') }}" alt="">
                 </div>
-                <div class="p-6 ">
-                    <!-- Header -->
-
+                <div class="p-6">
+                    <!-- Document Information -->
                     <div class="mb-3">
                         <button type="button" onclick="toggleDropdown()"
-                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton ">
-                            <div class="flex items-center gap-2 ">
+                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton">
+                            <div class="flex items-center gap-2">
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="20" height="20" rx="10" fill="#29B126" />
@@ -259,62 +238,64 @@
                                         fill="white" />
                                 </svg>
                                 <h1 class="text-lg font-semibold">Document Information</h1>
+                                <span class="status-badge text-xs font-semibold px-2 py-1 rounded"
+                                    data-step="documents_info"></span>
                             </div>
-                            <svg id="" class="w-5 h-5 transition-transform duration-300 transform dropdownArrow"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-5 h-5 transition-transform duration-300 transform dropdownArrow" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                         </button>
-                        <div id="" class="hidden mt-2 dropdownContent">
+                        <div class="hidden mt-2 dropdownContent">
                             <div class="overflow-x-auto">
                                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
                                     <div><strong>Country:</strong> <span id="document_country">Pakistan</span></div>
                                     <div><strong>Province:</strong> <span id="document_province">Punjab</span></div>
                                     <div><strong>City:</strong> <span id="document_city">Faisalabad</span></div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
-                                <div>
-                                    <label class="block mb-1 text-sm font-bold text-gray-700">Shop / Home Bill</label>
-                                    <div
-                                        class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
-                                        <img id="document_image" class="h-full object-cover" src=""
-                                            alt="">
-
+                                <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
+                                    <div>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Shop / Home Bill</label>
+                                        <div
+                                            class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
+                                            <img id="document_image" class="h-full object-cover" src=""
+                                                alt="">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Shop Video</label>
+                                        <div
+                                            class="relative flex items-center justify-center bg-gray-200 overflow-hidden rounded-lg aspect-video">
+                                            <video id="document_video" src="" controls
+                                                class="h-full object-cover"></video>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- Back Image -->
-                                <div>
-                                    <label class="block mb-1 text-sm font-bold text-gray-700">Shop Video</label>
-                                    <div
-                                        class="relative flex items-center justify-center bg-gray-200 overflow-hidden rounded-lg aspect-video">
-                                        <video id="document_video" src="" controls
-                                            class="h-full object-cover"></video>
-                                    </div>
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
+                                <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md"
+                                    id="document_reason_input">
+                                <div class="flex justify-end gap-2 mb-6">
+                                    <button
+                                        class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button document-reject-button"
+                                        value="" onclick="rejectKyc(this.value, 'documents_info')">Reject</button>
+                                    <button
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button document-approve-button"
+                                        value="" onclick="approveKyc(this.value, 'documents_info')">Approve</button>
                                 </div>
-                            </div>
-                            <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
-                            <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md"  id="document_reason_input">
-                            <!-- Action Buttons -->
-                            <div class="flex justify-end gap-2 mb-6">
-                                <button class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button"
-                                    onclick="rejectKyc(this.value, 3)">Reject</button>
-                                <button
-                                    class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
-                                    onclick="approveKyc(this.value, 3)">Approve</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="p-6 ">
-                    <!-- Header -->
-
+                <div>
+                    <img class="w-full px-8" src="{{ asset('asset/Line 49.png') }}" alt="">
+                </div>
+                <div class="p-6">
+                    <!-- Bank Information -->
                     <div class="mb-3">
                         <button type="button" onclick="toggleDropdown()"
-                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton ">
-                            <div class="flex items-center gap-2 ">
+                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton">
+                            <div class="flex items-center gap-2">
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="20" height="20" rx="10" fill="#FFAE42" />
@@ -325,26 +306,25 @@
                                         fill="white" />
                                 </svg>
                                 <h1 class="text-lg font-semibold">Bank Information</h1>
+                                <span class="status-badge text-xs font-semibold px-2 py-1 rounded"
+                                    data-step="bank_info"></span>
                             </div>
-                            <svg id="" class="w-5 h-5 transition-transform duration-300 transform dropdownArrow"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-5 h-5 transition-transform duration-300 transform dropdownArrow" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                         </button>
-                        <div id="" class="hidden mt-2 dropdownContent">
+                        <div class="hidden mt-2 dropdownContent">
                             <div class="overflow-x-auto">
-
-                                <!-- Form Grid -->
                                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
                                     <div><strong>Bank Account Type:</strong> <span id="bank_account_type">current</span>
                                     </div>
                                     <div><strong>Bank Name:</strong> <span id="bank_name">Bank B</span></div>
                                     <div><strong>Branch Code:</strong> <span id="bank_branch_code">Nisi quaerat
                                             archite</span></div>
-                                    <div><strong>Branch Name:</strong> <span id="bank_branch_name">Alyssa
-                                            Guthrie</span></div>
+                                    <div><strong>Branch Name:</strong> <span id="bank_branch_name">Alyssa Guthrie</span>
+                                    </div>
                                     <div><strong>Branch Phone:</strong> <span id="bank_branch_phone">+1 (101)
                                             396-4747</span></div>
                                     <div><strong>Account Title:</strong> <span id="bank_account_title">Quia nostrum aut
@@ -354,41 +334,36 @@
                                     <div><strong>IBAN No:</strong> <span id="bank_iban_no">Maxime mollitia cumq</span>
                                     </div>
                                 </div>
-                            </div>
-
-
-                            <!-- Document Images -->
-                            <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
-                                <!-- Front Image -->
-                                <div>
-                                    <label class="block mb-1 text-sm font-bold text-gray-700"> Cancelled Cheque</label>
-                                    <div
-                                        class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
-                                        <img id="bank_cheque_image" src="" alt=""
-                                            class="h-full object-cover">
-
+                                <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
+                                    <div>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Cancelled Cheque</label>
+                                        <div
+                                            class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
+                                            <img id="bank_cheque_image" src="" alt=""
+                                                class="h-full object-cover">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Verification
+                                            Letter</label>
+                                        <div
+                                            class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
+                                            <img src="" alt="" class="h-full object-cover"
+                                                id="bank_letter_image">
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- Back Image -->
-                                <div>
-                                    <label class="block mb-1 text-sm font-bold text-gray-700"> Verification
-                                        Letter</label>
-                                    <div
-                                        class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video">
-                                        <img src="" alt="" class="h-full object-cover"
-                                            id="bank_letter_image">
-                                    </div>
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
+                                <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md"
+                                    id="bank_reason_input">
+                                <div class="flex justify-end gap-2 mb-6">
+                                    <button
+                                        class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button bank-reject-button"
+                                        value="" onclick="rejectKyc(this.value, 'bank_info')">Reject</button>
+                                    <button
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button bank-approve-button"
+                                        value="" onclick="approveKyc(this.value, 'bank_info')">Approve</button>
                                 </div>
-                            </div>
-                            <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
-                            <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md" id="bank_reason_input">
-                            <!-- Action Buttons -->
-                            <div class="flex justify-end gap-2 mb-6">
-                                <button class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button"
-                                    onclick="rejectKyc(this.value, 4)">Reject</button>
-                                <button
-                                    class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
-                                    onclick="approveKyc(this.value, 4)">Approve</button>
                             </div>
                         </div>
                     </div>
@@ -396,16 +371,12 @@
                 <div>
                     <img class="w-full px-8" src="{{ asset('asset/Line 49.png') }}" alt="">
                 </div>
-                <div>
-                    <img class="w-full px-8" src="{{ asset('asset/Line 49.png') }}" alt="">
-                </div>
-                <div class="p-6 ">
-                    <!-- Header -->
-
+                <div class="p-6">
+                    <!-- Business Information -->
                     <div class="mb-3">
                         <button type="button" onclick="toggleDropdown()"
-                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton ">
-                            <div class="flex items-center gap-2 ">
+                            class="flex items-center justify-between w-full px-1 py-2 text-sm font-semibold text-left text-gray-700 transition duration-300 rounded-lg dropdownButton">
+                            <div class="flex items-center gap-2">
                                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <rect x="1" y="1" width="20" height="20" rx="10" fill="#4B91E1" />
@@ -416,15 +387,16 @@
                                         fill="white" />
                                 </svg>
                                 <h1 class="text-lg font-semibold">Business Information</h1>
+                                <span class="status-badge text-xs font-semibold px-2 py-1 rounded"
+                                    data-step="business_info"></span>
                             </div>
-                            <svg id="" class="w-5 h-5 transition-transform duration-300 transform dropdownArrow"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-5 h-5 transition-transform duration-300 transform dropdownArrow" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                         </button>
-                        <div id="" class="hidden mt-2 dropdownContent">
+                        <div class="hidden mt-2 dropdownContent">
                             <div class="overflow-x-auto">
                                 <div class="flex justify-center mb-6">
                                     <div
@@ -433,11 +405,8 @@
                                             src="{{ asset('asset/Vector (1).svg') }}" alt="">
                                     </div>
                                 </div>
-
-                                <!-- Form Grid -->
                                 <div class="grid grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
-                                    <div><strong>Business Name:</strong> <span id="business_name">Name Here</span>
-                                    </div>
+                                    <div><strong>Business Name:</strong> <span id="business_name">Name Here</span></div>
                                     <div><strong>Business Owner Name:</strong> <span id="business_owner_name">Name
                                             Here</span></div>
                                     <div><strong>Business Phone No:</strong> <span
@@ -448,63 +417,64 @@
                                     </div>
                                     <div><strong>Business Pin Location:</strong> <span id="business_pin_location">Location
                                             Here</span></div>
-                                    <div><strong>Business Address:</strong> <span id="business_address">Address 123,
-                                            City, Province Pakistan</span></div>
-
+                                    <div><strong>Business Address:</strong> <span id="business_address">Address 123, City,
+                                            Province Pakistan</span></div>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
-                                <div>
-                                    <label class="block mb-1 text-sm font-bold text-gray-700">Letter Head</label>
-                                    <div
-                                        class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                                        <img src="{{ asset('asset/Vector (1).svg') }}" alt=""
-                                            id="buisness_letter_head" class="h-full object-cover">
+                                <div class="grid grid-cols-1 gap-4 mt-5 mb-6 md:grid-cols-2">
+                                    <div>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Letter Head</label>
+                                        <div
+                                            class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                                            <img src="{{ asset('asset/Vector (1).svg') }}" alt=""
+                                                id="buisness_letter_head" class="h-full object-cover">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-sm font-bold text-gray-700">Stamp</label>
+                                        <div
+                                            class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                                            <img src="{{ asset('asset/Vector (1).svg') }}" alt=""
+                                                id="buisness_stamp" class="h-full object-cover">
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="block mb-1 text-sm font-bold text-gray-700">Stamp</label>
-                                    <div
-                                        class="relative flex items-center justify-center bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                                        <img src="{{ asset('asset/Vector (1).svg') }}" alt=""
-                                            id="buisness_stamp" class="h-full object-cover">
-                                    </div>
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
+                                <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md"
+                                    id="business_reason_input">
+                                <div class="flex justify-end gap-2 mb-6">
+                                    <button
+                                        class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button business-reject-button"
+                                        value="" onclick="rejectKyc(this.value, 'business_info')">Reject</button>
+                                    <button
+                                        class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button business-approve-button"
+                                        value="" onclick="approveKyc(this.value, 'business_info')">Approve</button>
                                 </div>
-                            </div>
-                            <label class="block mb-1 text-sm font-medium text-gray-700">Reason (If Reject)</label>
-                            <input type="text" placeholder="Enter here" class="w-full p-2 mb-2 border rounded-md" id="business_reason_input">
-                            <div class="flex justify-end gap-2 mb-6">
-                                <button class="px-4 py-2 border rounded-full hover:bg-gray-50 reject-button"
-                                    onclick="rejectKyc(this.value, 5)">Reject</button>
-                                <button
-                                    class="px-4 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-600 approve-button"
-                                    onclick="approveKyc(this.value, 5)">Approve</button>
                             </div>
                         </div>
-
-                        <!-- Action Buttons -->
                     </div>
                 </div>
+                <div class="mt-6 bg-gray-300 rounded-b-xl">
+                    <div class="flex items-center justify-between p-2">
+                        <button type="button" data-modal-hide="KYC-modal"
+                            class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </x-slot>
+        </x-modal>
     </div>
-    <div class="mt-6 bg-gray-300 rounded-b-xl">
-        <div class="flex items-center justify-between p-2">
-            <button type="button" data-modal-hide="KYC-modal" class="px-3 py-1.5 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
-                Close
-            </button>
-        </div>
-    </div>
-    </x-slot>
-    </x-modal>
-    </div>
-
-
 @endsection
 
 @section('js')
     <script>
+        $('[data-modal-hide="KYC-modal"]').on('click', function() {
+            location.reload();
+        });
+
         function viewData() {
             $('.viewModalBtn').click(function() {
-
+                resetDropdowns();
                 $('#view-modal').addClass('flex').removeClass('hidden');
                 $('#dTitle').text($(this).attr('mediaTitle'));
                 $('#dAuthor').text($(this).attr('mediaAuthor'));
@@ -515,16 +485,12 @@
                 let id = $(this).attr('editId'); // Get selected ID
 
                 $.ajax({
-                    url: '/KYC-data/' + id, // Correctly formatted URL
+                    url: '/KYC-data/' + id,
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
                         console.log(response);
                         let personal_info = response.selectedSeller.personal_info;
-                        console.log(personal_info.full_name);
-
-
-
                         $('#full_name').text(' ' + personal_info.full_name);
                         $('#email').text(' ' + personal_info.email);
                         $('#number').text(' ' + personal_info.phone_no);
@@ -535,9 +501,7 @@
                         $('#personal_back_image').attr("src", personal_info.back_image);
                         $('#personal_reason_input').val(personal_info.reason);
 
-
                         let store_info = response.selectedSeller.store_info;
-
                         $('#store_name').text(' ' + store_info.store_name);
                         $('#store_type').text(' ' + store_info.type);
                         $('#store_phone_no').text(' ' + store_info.phone_no);
@@ -552,7 +516,6 @@
                         $('#store_reason_input').val(store_info.reason);
 
                         let document_info = response.selectedSeller.documents_info;
-
                         $('#document_country').text(' ' + document_info.country);
                         $('#document_province').text(' ' + document_info.province);
                         $('#document_city').text(' ' + document_info.city);
@@ -561,7 +524,6 @@
                         $('#document_reason_input').val(document_info.reason);
 
                         let business_info = response.selectedSeller.business_info;
-
                         $('#business_name').text(' ' + business_info.business_name);
                         $('#business_owner_name').text(' ' + business_info.owner_name);
                         $('#business_phone_no').text(' ' + business_info.phone_no);
@@ -575,7 +537,6 @@
                         $('#business_reason_input').val(business_info.reason);
 
                         let bank_info = response.selectedSeller.bank_info;
-
                         $('#bank_account_type').text(' ' + bank_info.account_type);
                         $('#bank_name').text(' ' + bank_info.bank_name);
                         $('#bank_branch_code').text(' ' + bank_info.branch_code);
@@ -587,64 +548,104 @@
                         $('#bank_cheque_image').attr("src", bank_info.canceled_cheque);
                         $('#bank_letter_image').attr("src", bank_info.verification_letter);
                         $('#bank_reason_input').val(bank_info.reason);
-                        // Alert(bank_info.reason);
 
+                        // Set seller_id to buttons
+                        $(".approve-button, .reject-button").val(response.selectedSeller.seller_id);
 
-                        $(".approve-button").val(response.selectedSeller.seller_id);
-                        $(".reject-button").val(response.selectedSeller.seller_id);
-
+                        // Update button states and badges based on step statuses
+                        updateButtonStates(response.selectedSeller);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching data:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to load KYC data. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             });
-
-
-
         }
-        viewData()
+        viewData();
 
-        function updateDatafun() {
-            viewData()
-            $('.updateDataBtn').click(function() {
-                $('#blog-modal').removeClass("hidden").addClass('flex');
+        function updateButtonStates(seller) {
+            const steps = [{
+                    key: 'personal_info',
+                    buttons: '.personal-approve-button, .personal-reject-button',
+                    badge: '.status-badge[data-step="personal_info"]',
+                    status: seller.personal_info.status
+                },
+                {
+                    key: 'store_info',
+                    buttons: '.store-approve-button, .store-reject-button',
+                    badge: '.status-badge[data-step="store_info"]',
+                    status: seller.store_info.status
+                },
+                {
+                    key: 'documents_info',
+                    buttons: '.document-approve-button, .document-reject-button',
+                    badge: '.status-badge[data-step="documents_info"]',
+                    status: seller.documents_info.status
+                },
+                {
+                    key: 'business_info',
+                    buttons: '.business-approve-button, .business-reject-button',
+                    badge: '.status-badge[data-step="business_info"]',
+                    status: seller.business_info.status
+                },
+                {
+                    key: 'bank_info',
+                    buttons: '.bank-approve-button, .bank-reject-button',
+                    badge: '.status-badge[data-step="bank_info"]',
+                    status: seller.bank_info.status
+                }
+            ];
 
-                let mediaDetails = $(this).siblings('.viewModalBtn');;
-                $('#updateId').val(mediaDetails.attr('mediaId'));
-                $('#mediaTitle').val(mediaDetails.attr('mediaTitle'));
-                $('#mediaTitle').val(mediaDetails.attr('mediaTitle'));
-                $('#mediaAuthor').val(mediaDetails.attr('mediaAuthor'));
-                $('#categoryId').val(mediaDetails.attr('mediaCategoryId')).trigger('change');
-                $('#mediaDescription').val(mediaDetails.attr('mediaDescription'));
-                let fileImg = $('#blog-modal .file-preview');
-                fileImg.removeClass('hidden').attr('src', mediaDetails.attr('mediaImage'));
-
-
-                $('#blog-modal #modalTitle').text("Update Blog");
-                $('#blog-modal #btnText').text("Update");
-
+            steps.forEach(step => {
+                const $buttons = $(step.buttons);
+                const $badge = $(step.badge);
+                if (step.status === 'approved') {
+                    $buttons.prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+                    $badge.text('Approved').removeClass('bg-yellow-500 bg-red-500').addClass(
+                        'bg-green-500 text-white');
+                } else if (step.status === 'rejected') {
+                    $buttons.prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+                    $badge.text('Rejected').removeClass('bg-yellow-500 bg-green-500').addClass(
+                        'bg-red-500 text-white');
+                } else {
+                    $buttons.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                    $badge.text('Pending').removeClass('bg-green-500 bg-red-500').addClass(
+                        'bg-yellow-500 text-white');
+                }
             });
         }
-        updateDatafun();
-        $('#addModalBtn').click(function() {
-            $('#postDataForm')[0].reset();
-            $('#categoryId').trigger('change');
-            $('#updateId').val('');
-            $('#blog-modal #modalTitle').text("Add Post");
-            $('#blog-modal #btnText').text("Preview");
-            let fileImg = $('#blog-modal .file-preview');
-            fileImg.addClass('hidden');
 
-        })
+        // Map string step identifiers to numeric values for server compatibility
+        const stepMapping = {
+            'personal_info': 1,
+            'store_info': 2,
+            'documents_info': 3,
+            'bank_info': 4,
+            'business_info': 5
+        };
 
         function approveKyc(sellerId, step) {
-            // Find the closest approve button and its related reason input
-            const approveButton = $(event.currentTarget).closest('.approve-button');
+            // Validate step
+            if (!stepMapping[step]) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'No matching step found for: ' + step,
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const approveButton = $(event.currentTarget);
             const reasonInput = approveButton.closest('.dropdownContent').find('input[type="text"]');
             const reason = reasonInput.val().trim();
 
-            // Check if reason is entered
             if (reason) {
                 Swal.fire({
                     icon: 'error',
@@ -660,7 +661,7 @@
                 type: "POST",
                 data: {
                     seller_id: sellerId,
-                    step: step
+                    step: stepMapping[step] // Send numeric step value
                 },
                 headers: {
                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
@@ -672,7 +673,18 @@
                         text: response.message,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        location.reload();
+                        if (step === 'business_info') {
+                            location.reload(); // Reload the page for the last step
+                        } else {
+                            // Disable buttons and update badge for this step
+                            const stepButtons = $(`.${step}-approve-button, .${step}-reject-button`);
+                            const stepBadge = $(`.status-badge[data-step="${step}"]`);
+                            stepButtons.prop('disabled', true).addClass(
+                                'opacity-50 cursor-not-allowed');
+                            stepBadge.text('Approved').removeClass('bg-yellow-500 bg-red-500').addClass(
+                                'bg-green-500 text-white');
+                            // $('.viewModalBtn[editId="' + sellerId + '"]').click();
+                        }
                     });
                 },
                 error: function(xhr) {
@@ -687,6 +699,17 @@
         }
 
         function rejectKyc(sellerId, step) {
+            // Validate step
+            if (!stepMapping[step]) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'No matching step found for: ' + step,
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
             const rejectButton = event.currentTarget;
             const reasonInput = $(rejectButton).closest('.dropdownContent').find('input[type="text"]');
             const reason = reasonInput.val().trim();
@@ -706,7 +729,7 @@
                 type: "POST",
                 data: {
                     seller_id: sellerId,
-                    step: step,
+                    step: stepMapping[step], // Send numeric step value
                     reason: reason
                 },
                 headers: {
@@ -719,7 +742,18 @@
                         text: response.message,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        location.reload();
+                        if (step === 'business_info') {
+                            location.reload(); // Reload the page for the last step
+                        } else {
+                            // Disable buttons and update badge for this step
+                            const stepButtons = $(`.${step}-approve-button, .${step}-reject-button`);
+                            const stepBadge = $(`.status-badge[data-step="${step}"]`);
+                            stepButtons.prop('disabled', true).addClass(
+                                'opacity-50 cursor-not-allowed');
+                            stepBadge.text('Rejected').removeClass('bg-yellow-500 bg-green-500')
+                                .addClass('bg-red-500 text-white');
+                            // $('.viewModalBtn[editId="' + sellerId + '"]').click();
+                        }
                     });
                 },
                 error: function(xhr) {
@@ -733,17 +767,43 @@
             });
         }
 
+        function updateDatafun() {
+            viewData();
+            $('.updateDataBtn').click(function() {
+                $('#blog-modal').removeClass("hidden").addClass('flex');
+                let mediaDetails = $(this).siblings('.viewModalBtn');
+                $('#updateId').val(mediaDetails.attr('mediaId'));
+                $('#mediaTitle').val(mediaDetails.attr('mediaTitle'));
+                $('#mediaAuthor').val(mediaDetails.attr('mediaAuthor'));
+                $('#categoryId').val(mediaDetails.attr('mediaCategoryId')).trigger('change');
+                $('#mediaDescription').val(mediaDetails.attr('mediaDescription'));
+                let fileImg = $('#blog-modal .file-preview');
+                fileImg.removeClass('hidden').attr('src', mediaDetails.attr('mediaImage'));
 
-        // Listen for the custom form submission response event
-        $(document).on("formSubmissionResponse", function(event, response, Alert, SuccessAlert, WarningAlert) {
-            // console.log(response);
-            if (response.success) {
+                $('#blog-modal #modalTitle').text("Update Blog");
+                $('#blog-modal #btnText').text("Update");
+            });
+        }
+        updateDatafun();
 
-                // $('.modalCloseBtn').click();
-            } else {}
+        $('#addModalBtn').click(function() {
+            $('#postDataForm')[0].reset();
+            $('#categoryId').trigger('change');
+            $('#updateId').val('');
+            $('#blog-modal #modalTitle').text("Add Post");
+            $('#blog-modal #btnText').text("Preview");
+            let fileImg = $('#blog-modal .file-preview');
+            fileImg.addClass('hidden');
         });
-    </script>
-    <script>
+
+        $(document).on("formSubmissionResponse", function(event, response, Alert, SuccessAlert, WarningAlert) {
+            if (response.success) {
+                // Handle successful form submission
+            } else {
+                // Handle errors
+            }
+        });
+
         const dropdownButtons = document.getElementsByClassName('dropdownButton');
         const dropdownContents = document.getElementsByClassName('dropdownContent');
         const dropdownArrows = document.getElementsByClassName('dropdownArrow');
@@ -754,5 +814,14 @@
                 dropdownArrows[i].classList.toggle('rotate-180');
             });
         }
+
+        function resetDropdowns() {
+            for (let i = 0; i < dropdownContents.length; i++) {
+                dropdownContents[i].classList.add('hidden');
+                dropdownArrows[i].classList.remove('rotate-180');
+            }
+        }
     </script>
+
+
 @endsection

@@ -26,3 +26,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('[data-modal-target="{{ $id }}"]')) {
+            const modal = document.getElementById('{{ $id }}');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+        if (event.target.closest('[data-modal-hide="{{ $id }}"]')) {
+            const modal = document.getElementById('{{ $id }}');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+    });
+    </script>

@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SellerRegistration;
-use App\Models\Customer;
-use App\Models\Seller;
 use App\Models\User;
+use App\Models\Store;
+use App\Models\Seller;
+use App\Models\Customer;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\ForgotPasswordMail;
+use App\Mail\SellerRegistration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Mail\ForgotPasswordMail;
 
 
 class AuthController extends Controller
@@ -30,7 +31,7 @@ class AuthController extends Controller
     }
 
 
-    
+
 
 public function register(Request $request)
 {
@@ -96,7 +97,8 @@ public function register(Request $request)
 
         // Get seller KYC status
         $kyc_status = Seller::where('user_id', $user->user_id)->first();
-
+        $store = Store::where('user_id', $user->user_id)->first();
+        $store_id = $store ? $store->store_id : null;
         // Regenerate session to prevent session fixation attacks
         session()->regenerate();
 
@@ -104,7 +106,10 @@ public function register(Request $request)
         session([
             'user_details' => [
                 'user_id' => $user->user_id,
-                'user_role' => $user->user_role
+                'user_role' => $user->user_role,
+                'user_name'  => $user->user_name,
+                'user_email' => $user->user_email,
+                'store_id'   => $store_id,
             ]
         ]);
         $role = $user->user_role;
