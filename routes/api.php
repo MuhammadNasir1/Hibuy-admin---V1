@@ -27,6 +27,9 @@ Route::GET('getStoreList', [apiStoreController::class, 'getStoreList']);
 Route::GET('searchProducts', [apiproductController::class, 'searchProducts']);
 Route::GET('getSubCategories', [apiproductController::class, 'getSubCategories']);
 
+// Route::get('login/google', [apiAuthController::class, 'redirectToGoogle']);
+Route::post('login/google/callback', [apiAuthController::class, 'handleGoogleCallback']);  // Handle Google login callback
+
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);

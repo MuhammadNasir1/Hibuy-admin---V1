@@ -434,7 +434,7 @@ class UserController extends Controller
 
         $orders = DB::table('orders')
             ->where('user_id', $user_id)
-            ->select('order_id', 'total', 'created_at')
+            ->select('order_id', 'total', 'created_at','order_status')
             ->get();
 
         $queries = DB::table('queries')
@@ -463,55 +463,7 @@ class UserController extends Controller
             return view('pages.Settings', compact('users'));
         }
 
-
-
-
     }
-
-
-
-    // public function updatePersonalInfo(Request $request)
-    // {
-    //     $userId = session('user_details.user_id'); // Get logged-in user ID
-
-    //     // Validate the incoming request
-    //     $validated = $request->validate([
-    //         'full_name' => 'required|string|max:255',
-    //         'phone_no' => 'required|string|max:15',
-    //         'email' => 'required|email|max:255',
-    //         'address' => 'nullable|string|max:500',
-    //         'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-
-    //     // Get the seller's data
-    //     $seller = Seller::where('user_id', $userId)->first();
-
-    //     if (!$seller) {
-    //         return response()->json(['message' => 'Seller not found!'], 404);
-    //     }
-
-    //     // Decode existing personal_info or create new array
-    //     $personalInfo = $seller->personal_info ? json_decode($seller->personal_info, true) : [];
-
-    //     // Update fields
-    //     $personalInfo['full_name'] = $validated['full_name'];
-    //     $personalInfo['phone_no'] = $validated['phone_no'];
-    //     $personalInfo['email'] = $validated['email'];
-    //     $personalInfo['address'] = $validated['address'] ?? ($personalInfo['address'] ?? null);
-
-    //     // Handle profile picture
-    //     if ($request->hasFile('profile_picture')) {
-    //         $imagePath = $request->file('profile_picture')->store('kyc_files', 'public');
-    //         $personalInfo['profile_picture'] = 'storage/' . $imagePath;
-    //     }
-
-    //     // Save back to personal_info column
-    //     $seller->personal_info = json_encode($personalInfo);
-    //     $seller->save();
-
-    //     return response()->json(['message' => 'Personal information updated successfully!']);
-    // }
-
 
     public function updatePersonalInfo(Request $request)
     {

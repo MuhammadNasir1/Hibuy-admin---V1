@@ -4,17 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Reviews;
-
 use App\Models\Customer;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Products;
 use App\Models\Query;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
+use Google_Client;
 
 class apiAuthController extends Controller
 {
@@ -549,6 +550,95 @@ class apiAuthController extends Controller
             return response()->json(['sucess' => true, 'message' => 'Query Added Successfully']);
         } catch (\Exception $e) {
             return response()->json(['sucess' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    // For google login
+
+    // Redirect to Google for authentication
+    // public function redirectToGoogle()
+    // {
+    //     return Socialite::driver('google')->redirect();
+    // }
+
+    // Handle Google callback and verify token
+    public function handleGoogleCallback(Request $request)
+    {
+        $tokenId = $request->input('tokenId');
+
+        $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+
+        try {
+            $payload = $client->verifyIdToken($tokenId);
+
+            if ($payload) {
+                $googleId = $payload['sub'];
+                $email = $payload['email'];
+                $name = $payload['name'];
+
+                // Find user by google_id or user_email
+                $user = User::where('google_id', $googleId)
+                    ->orWhere('user_email', $email)
+                    ->first();
+
+                $isNewUser = false;
+
+                if (!$user) {
+                    $user = User::create([
+                        'google_id' => $googleId,
+                        'user_name' => $name,
+                        'user_email' => $email,
+                        'user_role' => 'customer',
+                        'user_password' => Hash::make(uniqid()),
+                    ]);
+
+                    $isNewUser = true;
+                } elseif (!$user->google_id) {
+                    $user->google_id = $googleId;
+                    $user->save();
+                }
+
+                // Create customer record if new user
+                if ($isNewUser) {
+                    \App\Models\Customer::create([
+                        'user_id' => $user->user_id
+                    ]);
+                }
+
+                // Create Sanctum token
+                $token = $user->createToken('google-login-token')->plainTextToken;
+
+                // Prepare user data
+                $userData = $user->toArray();
+
+                // Merge customer-specific details
+                if ($user->customer) {
+                    $customerData = $user->customer->toArray();
+
+                    // Decode customer_addresses JSON if present
+                    if (!empty($customerData['customer_addresses'])) {
+                        $customerData['customer_addresses'] = json_decode($customerData['customer_addresses'], true);
+                    }
+
+                    // Merge into user data
+                    $userData = array_merge($userData, $customerData);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login successful',
+                    'access_token' => $token,
+                    'user' => $userData,
+                ]);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Invalid token'], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token verification failed',
+                'error' => $e->getMessage(),
+            ], 400);
         }
     }
 }
