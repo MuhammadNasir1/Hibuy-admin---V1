@@ -82,13 +82,13 @@
             </x-slot>
         </x-table>
 
-        <x-modal id="manageseller-modal">
+        {{-- <x-modal id="manageseller-modal">
             <x-slot name="title">Details</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
 
             </x-slot>
-        </x-modal>
+        </x-modal> --}}
     </div>
 
 

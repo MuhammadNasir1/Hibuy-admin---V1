@@ -134,6 +134,9 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
             Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
             Route::GET('/SellerProfile/{sellerId}', [SellerController::class, 'getSellerDetail'])->name('SellerProfile');
+            Route::get('/refresh-csrf-token', function () {
+                return response()->json(['csrf_token' => csrf_token()]);
+            });
 
 
             Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
@@ -157,6 +160,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
             Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
             Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
+
         });
     });
 });

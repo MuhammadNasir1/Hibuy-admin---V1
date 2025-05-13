@@ -131,15 +131,13 @@
                                         <td>-</td>
                                         <td>
                                             <span
-                                                class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Completed</span>
+                                                class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">{{ $order->order_status }}</span>
                                         </td>
                                         <td>
                                             <span class='flex gap-4'>
                                                 <button class="viewModalBtn" id="viewModalBtn"
                                                     data-modal-target="orders-modal" data-modal-toggle="orders-modal"
-                                                    vieworderurl="/view-order/{{ $order->order_id }}"
-                                                    data-modal-target="view-product-modal"
-                                                    data-modal-toggle="view-product-modal">
+                                                    vieworderurl="/view-order/{{ $order->order_id }}">
                                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
                                                         xmlns='http://www.w3.org/2000/svg'>
                                                         <path fill-rule='evenodd' clip-rule='evenodd'
@@ -319,29 +317,19 @@
                     return;
                 }
 
-                // Open modal
-                $("#modal-btn").click();
+                $("#modal-btn").click(); // Open modal
 
-                // Run AJAX to fetch order details
                 $.ajax({
                     url: vieworderurl,
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
-                        console.log("AJAX Response:", response);
-
                         if (response.error) {
                             alert(response.error);
                             return;
                         }
 
-                        // Safeguard for missing elements
-                        if (!document.getElementById("order-items-body")) {
-                            console.error("#order-items-body not found in DOM!");
-                            return;
-                        }
-
-                        // Populate order details
+                        // General Order Info
                         $('#tracking_number').val(response.tracking_number || '');
                         $('#order_status').val(response.order_status || '').change();
                         $("#order-status").text(response.order_status || '');
@@ -352,40 +340,53 @@
                         $("#order-date").text(response.order_date || '');
                         $("#customer-phone").text(response.phone || '');
                         $("#total-items").text(response.order_items?.length || 0);
-                        $("#order-total").text("Rs " + (response.total || 0));
-                        $("#delivery-fee").text("Rs " + (response.delivery_fee || 0));
-                        $("#grand-total").text("Rs " + (response.grand_total || 0));
 
-                        // Billing details
-                        $("#total-bill").text("Rs " + (response.total || 0));
-                        $("#fee").text("Rs " + (response.delivery_fee || 0));
-                        $("#final-total").text("Rs " + (response.grand_total || 0));
-
-
-
-                        // Order items
                         let itemsHtml = "";
+                        let total = 0;
                         const fallbackImage = "{{ asset('asset/Ellipse 2.png') }}";
+
                         response.order_items.forEach((item) => {
-                            console.log(item);
-                            let imageUrl = (item.product_image && item.product_image
-                                    .startsWith("http")) ?
+                            const itemTotal = item.quantity * item.price;
+                            total += itemTotal;
+
+                            // Optional: set delivery status and order ID for sellers
+                            if (response.status) {
+                                $("#order_status_seller").val(item.delivery_status ||
+                                    '').change();
+                                $("#editbyseller_orderstatus_id").val(item.product_id ||
+                                    '');
+                            }
+
+                            let imageUrl = item.product_image?.startsWith("http") ?
                                 item.product_image :
                                 `/${item.product_image || 'storage/products/default.jpg'}`;
 
                             itemsHtml += `
-                        <tr class="border-b">
-                           <td class="p-3">
-                           <img src="${imageUrl}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'"></td>
-                            <td class="p-3">${item.product_name}</td>
-                            <td class="p-3 text-center">${item.quantity}</td>
-                            <td class="p-3 text-center">Rs ${item.price}</td>
-                            <td class="p-3 text-center">Rs ${(item.quantity * item.price).toFixed(2)}</td>
-                        </tr>`;
+                    <tr class="border-b">
+                        <td class="p-3">
+                            <img src="${imageUrl}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
+                        </td>
+                        <td class="p-3">${item.product_name}</td>
+                        <td class="p-3 text-center">${item.quantity}</td>
+                        <td class="p-3 text-center">Rs ${item.price}</td>
+                        <td class="p-3 text-center">Rs ${itemTotal.toFixed(2)}</td>
+                    </tr>`;
                         });
 
-
                         $("#order-items-body").html(itemsHtml);
+
+                        // Totals
+                        const deliveryFee = parseFloat(response.delivery_fee) || 0;
+                        const grandTotal = total + deliveryFee;
+
+                        $("#order-total").text("Rs " + total.toFixed(2));
+                        $("#delivery-fee").text("Rs " + deliveryFee.toFixed(2));
+                        $("#grand-total").text("Rs " + grandTotal.toFixed(2));
+
+                        // Optional: duplicated totals elsewhere in modal
+                        $("#total-bill").text("Rs " + total.toFixed(2));
+                        $("#fee").text("Rs " + deliveryFee.toFixed(2));
+                        $("#final-total").text("Rs " + grandTotal.toFixed(2));
                     },
                     error: function(xhr) {
                         alert("Failed to fetch order details. Please try again.");
@@ -394,7 +395,6 @@
                 });
             });
 
-            // Dropdown toggle
             const dropdownButton = document.getElementById('dropdownButton');
             const dropdownContent = document.getElementById('dropdownContent');
             const dropdownArrow = document.getElementById('dropdownArrow');
