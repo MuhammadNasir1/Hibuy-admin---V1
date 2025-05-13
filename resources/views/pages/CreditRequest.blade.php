@@ -77,7 +77,8 @@
             <h2 class="text-2xl font-medium ">Credit Request History</h2>
             @if (session('user_details.user_role') !== 'admin')
                 <button class="px-3 py-2 font-semibold text-white rounded-full bg-primary"
-                    data-modal-target="creditrequest-modal" data-modal-toggle="creditrequest-modal">
+                    data-modal-target="creditrequest-modal" data-modal-toggle="creditrequest-modal"
+                    >
                     Request Credit
                 </button>
             @endif
@@ -134,7 +135,7 @@
                                         </defs>
                                     </svg>
                                 </button>
-                                <button id="viewmoreBtn" class="viewmoreModalBtn">
+                                <button id="" class="">
                                     <svg width="35" height="37" viewBox="0 0 35 37" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g opacity="0.1" filter="url(#filter0_d_635_21720)">
@@ -168,7 +169,7 @@
             </x-slot>
         </x-table>
 
-
+@if (session('user_details.user_role') !== 'admin')
         <x-modal id="creditrequest-modal">
             <x-slot name="title">Request Credit</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
@@ -214,7 +215,7 @@
                 </form>
             </x-slot>
         </x-modal>
-
+@endif
         <x-modal id="viewrequest-modal">
             <x-slot name="title">Credit Request</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>

@@ -200,6 +200,7 @@
                     <x-slot name="tablebody">
 
                         @foreach ($storeData['products'] as $product)
+                           @if (!empty($product['category_name']))
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
 
@@ -284,6 +285,7 @@
                                     </span>
                                 </td>
                             </tr>
+                           @endif
                         @endforeach
                     </x-slot>
                 </x-table>

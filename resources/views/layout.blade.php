@@ -232,10 +232,10 @@
                     <li class="mt-6">
                         <a href="{{ route('manage_seller') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                              {{ request()->routeIs('manage_seller') ? 'active bg-white text-primary' : 'text-white' }}"
+                                  {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_seller">
                             <svg class="w-5 h-5 transition duration-200
-                                    {{ request()->routeIs('manage_seller') ? 'text-primary' : 'text-white' }}"
+                                    {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_14326)">
@@ -274,14 +274,13 @@
                             <span class="ms-3 text-custom15">Sellers Management</span>
                         </a>
                     </li>
-
                     <li class="mt-6">
                         <a href="{{ route('manage_buyer') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                                  {{ request()->routeIs('manage_buyer') ? 'active bg-white text-primary' : 'text-white' }}"
+                                  {{ request()->routeIs('manage_buyer') || request()->routeIs('BuyerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_buyer">
                             <svg class="w-5 h-5 transition duration-200
-                                        {{ request()->routeIs('manage_buyer') ? 'text-primary' : 'text-white' }}"
+                                        {{ request()->routeIs('manage_buyer') || request()->routeIs('BuyerProfile') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_182)">
@@ -318,7 +317,6 @@
                                 </defs>
                             </svg>
 
-
                             <span class="ms-3 text-custom15">Buyers Management</span>
                         </a>
                     </li>
@@ -326,10 +324,10 @@
                     <li class="mt-6">
                         <a href="{{ route('manage_freelancer') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                                  {{ request()->routeIs('manage_freelancer') ? 'active bg-white text-primary' : 'text-white' }}"
+                                  {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_freelancer">
                             <svg class="w-5 h-5 transition duration-200
-                                        {{ request()->routeIs('manage_freelancer') ? 'text-primary' : 'text-white' }}"
+                                        {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_193)">
@@ -639,15 +637,16 @@
                 <li class="mt-6">
                     <a href="{{ route('logout') }}"
                         class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                              {{ request()->routeIs('logout') ? 'active bg-white text-primary' : 'text-white' }}">
+                              {{ request()->routeIs('logout') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="logout">
                         <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('logout') ? 'text-primary' : 'text-white' }}"
                             width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M6.94444 17.4447L2.5 13.0002M2.5 13.0002L6.94444 8.55577M2.5 13.0002H18.0556M11.3889 17.4447V18.5558C11.3889 19.4398 11.7401 20.2877 12.3652 20.9128C12.9903 21.5379 13.8382 21.8891 14.7222 21.8891H19.1667C20.0507 21.8891 20.8986 21.5379 21.5237 20.9128C22.1488 20.2877 22.5 19.4398 22.5 18.5558V7.44466C22.5 6.56061 22.1488 5.71276 21.5237 5.08764C20.8986 4.46252 20.0507 4.11133 19.1667 4.11133H14.7222C13.8382 4.11133 12.9903 4.46252 12.3652 5.08764C11.7401 5.71276 11.3889 6.56061 11.3889 7.44466V8.55577"
-                                stroke="#D9D9D9" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"
-                                fill="currentColor" />
+                                stroke="#D9D9D9" stroke-width="1.66667" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
                         <span class="ms-3 text-custom15">Logout</span>
                     </a>
@@ -749,7 +748,8 @@
                                 fill="#D9D9D9" />
                         </svg>
                         <div
-                            class="absolute block w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900">
+                            class="absolute w-4 h-4 bg-primary border-2 text-white rounded-full -top-2 start-2.5 border-none flex items-center justify-center">
+                            4
                         </div>
                     </button>
 

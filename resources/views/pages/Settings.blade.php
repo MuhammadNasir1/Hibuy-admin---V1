@@ -179,9 +179,9 @@
                             <div class="flex justify-center">
                                 <div class="mt-4 w-60">
                                     <button
-                                        class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
-                                        id="SsubmitBtn" type="submit">
-                                        <div id="SbtnSpinner" class="hidden">
+                                        class="SsubmitBtn w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
+                                         type="submit">
+                                        <div  class="SbtnSpinner hidden">
                                             <svg aria-hidden="true"
                                                 class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
                                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -193,7 +193,7 @@
                                                     fill="currentFill" />
                                             </svg>
                                         </div>
-                                        <div id="SbtnText">
+                                        <div class="SbtnText">
                                             Update Profile
                                         </div>
                                     </button>
@@ -305,9 +305,9 @@
                             <div class="flex justify-center">
                                 <div class="mt-4 w-60">
                                     <button
-                                        class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
-                                        id="SsubmitBtn" type="submit">
-                                        <div id="SbtnSpinner" class="hidden">
+                                        class="SsubmitBtn w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
+                                         type="submit">
+                                        <div  class="SbtnSpinner hidden">
                                             <svg aria-hidden="true"
                                                 class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
                                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -319,7 +319,7 @@
                                                     fill="currentFill" />
                                             </svg>
                                         </div>
-                                        <div id="SbtnText">
+                                        <div class="SbtnText">
                                             Update Password
                                         </div>
                                     </button>
@@ -473,7 +473,7 @@
                 }
             });
 
-            $("#passwordForm ,#settingForm").submit(function(e) {
+            $("#settingForm , #passwordForm ").submit(function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
                 var $form = $(this);
@@ -485,14 +485,14 @@
                     processData: false,
                     contentType: false,
                     beforeSend: function() {
-                        $("#SbtnSpinner").removeClass("hidden");
-                        $("#SbtnText").addClass("hidden");
-                        $("#SsubmitBtn").attr("disabled", true);
+                        $(".SbtnSpinner").removeClass("hidden");
+                        $(".SbtnText").addClass("hidden");
+                        $(".SsubmitBtn").attr("disabled", true);
                     },
                     success: function(response) {
-                        $("#SbtnSpinner").addClass("hidden");
-                        $("#SbtnText").removeClass("hidden");
-                        $("#SsubmitBtn").attr("disabled", false);
+                        $(".SbtnSpinner").addClass("hidden");
+                        $(".SbtnText").removeClass("hidden");
+                        $(".SsubmitBtn").attr("disabled", false);
 
                         Swal.fire({
                             position: "center",
@@ -509,9 +509,9 @@
                     },
                     error: function(jqXHR) {
                         let response = JSON.parse(jqXHR.responseText);
-                        $("#SbtnSpinner").addClass("hidden");
-                        $("#SbtnText").removeClass("hidden");
-                        $("#SsubmitBtn").attr("disabled", false);
+                        $(".SbtnSpinner").addClass("hidden");
+                        $(".SbtnText").removeClass("hidden");
+                        $(".SsubmitBtn").attr("disabled", false);
 
                         Swal.fire({
                             position: "center",
