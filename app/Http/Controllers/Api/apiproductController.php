@@ -56,18 +56,22 @@ class apiproductController extends Controller
 
             $products = $query->get();
 
-            // Process product images and add category name
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
                 unset($product->product_images);
 
-                // Default product rating
-                $product->product_rating = 4.5;
+                // Cast fields to proper types
+                $product->product_id = (int) $product->product_id;
+                $product->store_id = (int) $product->store_id;
+                $product->product_price = (int) $product->product_price;
+                $product->product_discount = (int) $product->product_discount;
+                $product->product_discounted_price = (int) $product->product_discounted_price;
+                $product->product_rating = (float) 4.5;
 
                 // Add category name
                 $product->category_name = $product->category->name ?? null;
-                unset($product->category); // Remove the full category object
+                unset($product->category);
 
                 // Add is_discounted flag
                 $product->is_discounted = $product->product_discount > 0;
