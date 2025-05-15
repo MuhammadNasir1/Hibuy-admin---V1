@@ -163,13 +163,13 @@ class apiproductController extends Controller
             // Attach reviews
             foreach ($product->reviews as $review) {
                 $response['reviews'][] = [
-                    'review_id' => $review->review_id,
-                    'user_id'   => $review->user_id,
-                    'username'  => $review->user->user_name ?? 'Unknown', // Fetch username
-                    'rating'    => $review->rating,
-                    'review'    => $review->review,
-                    'images'    => $review->images,
-                    'review_date'    => $review->created_at
+                    'review_id'    => $review->review_id,
+                    'user_id'      => $review->user_id,
+                    'username'     => $review->user->user_name ?? 'Unknown',
+                    'rating'       => $review->rating,
+                    'review'       => $review->review,
+                    'images'       => json_decode($review->images, true), // ✅ Decode review images
+                    'review_date'  => $review->created_at
                 ];
             }
 

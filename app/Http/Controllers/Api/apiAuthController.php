@@ -202,7 +202,8 @@ class apiAuthController extends Controller
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $imagePaths[] = $image->store('review_images', 'public'); // Store in `storage/app/public/review_images`
+                    $path = $image->store('review_images', 'public'); // returns: review_images/filename.jpg
+                    $imagePaths[] = 'storage/' . $path; // prepend 'storage/' to make: storage/review_images/filename.jpg
                 }
             }
 
