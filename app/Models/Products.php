@@ -24,6 +24,7 @@ class Products extends Model
         'product_images',
         'product_variation',
         'product_status',
+        'is_boosted',
     ];
     public function store()
     {
