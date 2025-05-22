@@ -1,28 +1,72 @@
 @props([
-    'name',
-    'id' => null,
-    'accept' => 'image/*,video/*'
+    'id' => 'media',
+    'name' => 'media',
+    'type' => 'image', // 'image' or 'video'
+    'preview' => '/asset/media_1.png',
+    'previewClass' => 'w-64 h-48',
 ])
 
+<div class="mb-4">
+    <!-- Hidden file input -->
+    <input type="file" id="{{ $id }}" name="{{ $name }}" accept="{{ $type }}/*"
+        class="hidden" />
 
- <div class="relative flex items-center justify-center w-full h-full">
-    <label class="flex flex-col items-center justify-center w-full h-full bg-gray-300 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer file-upload-label">
-        <div class="flex flex-col items-center justify-center pt-5 pb-6 file-upload-content">
-            <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M27.2551 9.98342C26.3185 4.55652 22.1455 0.482422 17.1323 0.482422C13.1521 0.482422 9.69525 3.06216 7.9737 6.83739C3.82821 7.34075 0.605469 11.3519 0.605469 16.2125C0.605469 21.4192 4.31024 25.6506 8.86891 25.6506H26.773C30.5742 25.6506 33.6592 22.1271 33.6592 17.7856C33.6592 13.6328 30.8359 10.2666 27.2551 9.98342ZM19.8868 14.6395V20.9316H14.3779V14.6395H10.2461L17.1323 6.77447L24.0185 14.6395H19.8868Z" fill="#4B91E1"/>
-            </svg>
-            <p class="mb-2 text-sm text-customblue dark:text-gray-400"><span class="font-semibold">upload</span></p>
+    <!-- Preview label (clickable area) -->
+    <label for="{{ $id }}" class="cursor-pointer">
+        <div class="relative inline-block border rounded overflow-hidden bg-gray-100 {{ $previewClass }}">
+            <!-- Image preview -->
+            <img id="{{ $id }}ImagePreview" src="{{ $preview ?: asset('asset/media (1).png') }}" alt="Preview"
+                class="w-full h-full object-cover {{ $type === 'video' ? 'hidden' : '' }}" />
+
+            <!-- Video preview -->
+            <div id="{{ $id }}VideoWrapper"
+                class="absolute top-0 left-0 w-full h-full {{ $type === 'video' ? '' : 'hidden' }}">
+                <video id="{{ $id }}VideoPreview" src="{{ $preview }}"
+                    class="w-full h-full object-cover" muted playsinline preload="metadata" controls></video>
+            </div>
+
+            @if ($type === 'video')
+                <!-- 🖉 Edit icon (clickable) -->
+                <div id="{{ $id }}EditButton"
+                    class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded z-20 hover:bg-black cursor-pointer">
+                    🖉 Edit
+                </div>
+            @endif
         </div>
-        <input
-    type="file"
-    name="{{ $name }}"
-    id="{{ $id ?? $name }}"
-    class="hidden file-input"
-    accept="{{ $accept }}"
-    onchange="previewFile(event)" />
-
-
     </label>
-
-    <div class="absolute top-0 left-0 hidden w-full h-full rounded-lg file-preview bg-customOrangeDark overflow-hidden z-10"></div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const input = document.getElementById(@json($id));
+        const imagePreview = document.getElementById(@json($id . 'ImagePreview'));
+        const videoPreview = document.getElementById(@json($id . 'VideoPreview'));
+        const videoWrapper = document.getElementById(@json($id . 'VideoWrapper'));
+        const editButton = document.getElementById(@json($id . 'EditButton'));
+
+        if (editButton) {
+            editButton.addEventListener("click", function(e) {
+                e.preventDefault();
+                input.click();
+            });
+        }
+
+        input.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const url = URL.createObjectURL(file);
+
+            if (file.type.startsWith('image/')) {
+                imagePreview.classList.remove('hidden');
+                videoWrapper.classList.add('hidden');
+                imagePreview.src = url;
+            } else if (file.type.startsWith('video/')) {
+                imagePreview.classList.add('hidden');
+                videoWrapper.classList.remove('hidden');
+                videoPreview.src = url;
+                videoPreview.load();
+            }
+        });
+    });
+</script>

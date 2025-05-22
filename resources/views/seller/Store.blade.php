@@ -17,7 +17,7 @@
         <div
             class="h-[200px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
             <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center gap-5">
-                <img src="{{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : asset('asset/defualt-image.png') }}"
+                <img src="{{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : ($storeData['profile_picture_store']) }}"
                     class="ms-5 h-[80px] w-[80px] rounded-full" alt="">
                 <div>
                     <h3 class="text-lg font-semibold">

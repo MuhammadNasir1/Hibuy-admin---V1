@@ -162,16 +162,182 @@
                             <p class="text-green-600 font-bold text-base">
                                 Rs {{ number_format($product->product_discounted_price) }}
                             </p>
-                            <button
+                            {{-- <button data-modal-target="view-modal" data-modal-toggle="view-modal"
                                 class="px-4 py-2 text-xs sm:text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors">
                                 Buy
+                            </button> --}}
+                            <button data-modal-target="view-modal" data-modal-toggle="view-modal"
+                                class="viewModalBtn px-4 py-2 text-xs sm:text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
+                                viewproducturl="/view-product/{{ $product->product_id }}">
+                                Buy
                             </button>
+
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
 
+
+        <x-modal id="view-modal">
+            <x-slot name="title">Product Details</x-slot>
+            <x-slot name="modal_width">max-w-4xl</x-slot>
+            <x-slot name="body">
+                <div class="">
+                    <div class="">
+                        <div class="md:p-5">
+                            <div class="flex items-start gap-4">
+                                <!-- Main Image -->
+                                <div class="w-1/3">
+                                    <div class="h-48 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="main-image" src="" alt="Main Product Image"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                                <!-- Sub Images -->
+                                <div class="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-1" src="" alt="Sub Image 1"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-2" src="" alt="Sub Image 2"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-3" src="" alt="Sub Image 3"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="h-24 bg-gray-100 border-2 border-gray-200 rounded-sm overflow-hidden">
+                                        <img id="sub-image-4" src="" alt="Sub Image 4"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal Content -->
+                            <div class="p-6 bg-white rounded-lg shadow-lg">
+                                <!-- Title -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                    <div class="space-y-5">
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Title</div>
+                                            <div id="product_name"
+                                                class="text-base font-semibold text-gray-700 capitalize">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Rating</div>
+                                            <div id="product_rating"
+                                                class="text-base font-semibold text-gray-700 capitalize">4.0</div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Brand</div>
+                                            <div id="brand_name" class="text-base text-gray-700 capitalize"></div>
+                                        </div>
+
+                                        {{-- <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Stock</div>
+                                            <div id="stock" class="text-base text-gray-700 capitalize"></div>
+                                        </div> --}}
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Price</div>
+                                            <div id="product_price" class="text-base text-gray-700 font-medium">
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="space-y-5">
+                                        {{-- <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Orders</div>
+                                            <div id="Orders" class="text-base text-gray-700 capitalize">56</div>
+                                        </div> --}}
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Category</div>
+                                            <div id="product_category" class="text-base text-gray-700 ">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <div class="w-32 text-sm font-medium text-gray-600">Whole Sale</div>
+                                            <div id="whole-sale" class="text-base font-semibold text-gray-700"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Variations -->
+                                <div class="mt-6">
+                                    <div id="product_variations"\>
+                                        <!-- Variations will be dynamically inserted here -->
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mt-6">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="text-sm font-medium text-gray-600">Description</div>
+                                        <div id="product_description"
+                                            class="text-base text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-md capitalize">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <form id="statusForm" class="">
+                                    @csrf
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mt-4">
+                                        <div class="flex items-center gap-6">
+                                            <label class="block text-sm  font-medium text-gray-600">Purchase
+                                                <br>Stock</label>
+                                            <input placeholder="Enter Here" type="text" id="purchase_stock"
+                                                class="w-[200px] p-2 mt-1 border border-gray-700 rounded-lg ">
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-6 align-middle">
+                                                <div class="text-sm text-gray-600">Price</div>
+                                                {{-- <div  class="text-gray-700">$100 (20%: 20)</div> --}}
+                                                <div id="price_formula" class="text-gray-700">$0 (0%: 0)</div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex w-full gap-14 mt-2">
+                                        <label class="block text-sm  font-medium text-gray-600">Note
+                                        </label>
+                                        <input placeholder="Enter Here" type="text"
+                                            class="w-full border border-gray-700 rounded-lg  ">
+                                    </div>
+                            </div>
+                            <div class=" bg-gray-300 rounded-b-lg">
+                                <div class="flex items-center justify-between p-2">
+                                    <button type="button" data-modal-hide="view-modal" type="button"
+                                        class=" ms-3 text-sm font-medium
+                      px-3 py-1 text-gray-700 bg-gray-300 border-2 border-gray-400 rounded-3xl">
+                                        Close
+                                    </button>
+
+                                    <button type="button" type="submit"
+                                        class=" me-3 text-sm font-medium
+                                     px-4 py-2 text-white bg-primary  rounded-3xl">
+                                        Send Inquiry
+                                    </button>
+                                </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </x-slot>
+        </x-modal>
     </div>
 
 @endsection
@@ -328,4 +494,140 @@
             });
         });
     </script>
+    <script>
+        let currentPrice = 0;
+        let availableStock = 0; // Track total stock
+
+        $(document).ready(function() {
+            $(".viewModalBtn").on("click", function() {
+                const url = $(this).attr("viewproducturl");
+
+                if (!url) {
+                    alert("Invalid product URL!");
+                    return;
+                }
+
+                // Clear old data
+                $("#product_variations").html("");
+                $("#main-image, #sub-image-1, #sub-image-2, #sub-image-3, #sub-image-4").attr("src", "");
+                $("#price_formula").text("Rs 0 (0%: Rs 0)");
+                currentPrice = 0;
+                availableStock = 0;
+                $("#purchase_stock").val("");
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function(response) {
+                        console.log(response);
+
+                        if (response.success) {
+                            const product = response.product;
+
+                            // Basic product info
+                            $("#product_name").text(product.product_name);
+                            $("#brand_name").text(product.product_brand);
+                            $("#product_category").text(product.category_name);
+                            $("#product_price").text("Rs " + product.product_price);
+                            $("#product_description").text(product.product_description);
+                            $("#whole-sale").text("Rs " + product.product_discounted_price);
+
+                            // Set price and calculate discount
+                            currentPrice = parseFloat(product.product_price);
+                            updateDiscountDisplay(currentPrice);
+
+                            // Images
+                            const images = product.product_images || [];
+                            $("#main-image").attr("src", images[0] || "");
+                            $("#sub-image-1").attr("src", images[1] || "");
+                            $("#sub-image-2").attr("src", images[2] || "");
+                            $("#sub-image-3").attr("src", images[3] || "");
+                            $("#sub-image-4").attr("src", images[4] || "");
+
+                            // Variations
+                            const variationsGrouped = {};
+                            product.product_variation.forEach(variation => {
+                                const key = variation.parent_option_name;
+                                if (!variationsGrouped[key]) variationsGrouped[
+                            key] = [];
+                                variationsGrouped[key].push(variation);
+                            });
+
+                            // Sum total stock
+                            availableStock = product.product_variation.reduce((total,
+                                variation) => {
+                                    return total + parseInt(variation.parentstock || 0);
+                                }, 0);
+
+                            let html = "";
+                            for (let key in variationsGrouped) {
+                                html += `
+                                <div class="flex items-center gap-6 mb-4">
+                                    <div class="w-32 text-sm font-medium text-gray-600">${key}</div>
+                                    <div class="flex flex-wrap gap-3">
+                            `;
+                                variationsGrouped[key].forEach(v => {
+                                    html += `<span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200">
+                                    ${v.parentname} <span class="text-xs text-gray-500">(Stock: ${v.parentstock})</span>
+                                </span>`;
+                                });
+                                html += "</div></div>";
+                            }
+
+                            // Child variations
+                            const children = product.product_variation[0]?.children || [];
+                            if (children.length) {
+                                const childOption = children[0].child_option_name || "Options";
+                                html += `
+                                <div class="flex items-center gap-6 mb-4">
+                                    <div class="w-32 text-sm font-medium text-gray-600">${childOption}</div>
+                                    <div class="flex flex-wrap gap-3">
+                            `;
+                                children.forEach(child => {
+                                    html +=
+                                        `<span class="px-4 py-1 text-sm text-gray-700 bg-gray-100 rounded-full border border-gray-200">${child.name}</span>`;
+                                });
+                                html += "</div></div>";
+                            }
+
+                            $("#product_variations").html(html);
+
+                        } else {
+                            alert("Product not found.");
+                        }
+                    },
+                    error: function() {
+                        alert("Error fetching product data.");
+                    }
+                });
+            });
+
+            // Stock input validation
+            $("#purchase_stock").on("input", function() {
+                let stock = parseInt($(this).val()) || 0;
+
+                if (stock > availableStock) {
+                    alert(`Only ${availableStock} units available in stock.`);
+                    $(this).val(availableStock); // Reset to max available
+                    stock = availableStock;
+                }
+
+                if (currentPrice > 0) {
+                    updateDiscountDisplay(currentPrice, stock);
+                }
+            });
+
+            function updateDiscountDisplay(price, stock = null) {
+                const enteredStock = stock !== null ? stock : (parseInt($("#purchase_stock").val()) || 0);
+                const totalPrice = price * enteredStock;
+                const discountPercent = 20;
+                const discountAmount = totalPrice > 0 ? ((discountPercent / 100) * totalPrice).toFixed(2) : 0;
+
+                $("#price_formula").text(`Rs ${totalPrice} (${discountPercent}%: Rs ${discountAmount})`);
+            }
+        });
+    </script>
+
+
+
 @endsection

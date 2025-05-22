@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
@@ -23,6 +24,13 @@ class ProductsController extends Controller
     public function getProductwithCategories($editid = null)
     {
         try {
+            $userId = session('user_details.user_id');
+
+            $user = User::where('user_id', $userId)->first();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+            }
+
             // Fetch all categories from the database
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')->get();
 
@@ -38,9 +46,9 @@ class ProductsController extends Controller
             foreach ($categories as $category) {
                 $category->sub_categories = json_decode($category->sub_categories, true);
             }
-            // return $products;
+            // return $user;
             // Return to the Blade view with compacted data
-            return view('pages.AddProduct', compact('categories', 'products'));
+            return view('pages.AddProduct', compact('user', 'categories', 'products'));
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
@@ -139,9 +147,26 @@ class ProductsController extends Controller
                 'variants' => 'nullable|array',
                 'product_status' => 'nullable|integer|in:0,1',
                 'product_edit_id' => 'nullable|integer', // Add this field for update condition
+                'is_boosted' => 'nullable|in:0,1',
+
+
             ]);
+            if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
+                $user = User::where('user_id', $userDetails['user_id'])->first();
 
+                if (!$user) {
+                    return redirect('/products')->with('error', 'User not found.');
+                }
 
+                $packageDetail = is_array($user->package_detail)
+                    ? $user->package_detail
+                    : json_decode($user->package_detail, true);
+
+                if (!isset($packageDetail['package_status']) || $packageDetail['package_status'] !== 'approved') {
+                    return redirect('/products')->with('error', 'You are not authorized to boost products.');
+                }
+            }
+            $isBoosted = $request->has('is_boosted') ? 1 : 0;
 
             // Check if updating an existing product
             if ($request->filled('product_edit_id')) {
@@ -199,7 +224,6 @@ class ProductsController extends Controller
                         }
                     }
                 }
-
                 $storedImagePaths = [];
                 if ($request->has('product_images')) {
                     $storedImagePaths = json_decode($request->product_images, true) ?? [];
@@ -228,6 +252,7 @@ class ProductsController extends Controller
                     'product_price' => $validatedData['product_price'],
                     'product_discount' => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
+                    'is_boosted' => $isBoosted,
                 ];
                 // Conditionally update product_variation
                 if (!empty($productVariants)) {
@@ -294,6 +319,7 @@ class ProductsController extends Controller
                     'product_images' => json_encode($storedImagePaths),
                     'product_variation' => json_encode($productVariants),
                     'product_status' => $validatedData['product_status'] ?? 0,
+                    'is_boosted' => $isBoosted,
                 ];
 
                 Products::create($productData);
@@ -518,9 +544,16 @@ class ProductsController extends Controller
             return $product;
         });
 
+// return $products;
+ $user = User::where('user_id', $loggedInUserId)->first();
+    $packageDetail = json_decode($user->package_detail, true);
 
-        return view('pages.products', compact('products'));
-    }
+    $packageStatus = $packageDetail['package_status'] ?? null;
+
+    // return $products;
+    return view('pages.products', compact('products', 'packageStatus'));
+}
+
     public function showHibuyProducts()
     {
         // Retrieve user details from session
@@ -629,7 +662,7 @@ class ProductsController extends Controller
                 'subcategory' => $product->product_subcategory,
                 'product_status' => $product->product_status
             ];
-
+// return $response;
             return response()->json([
                 'success' => true,
                 'message' => 'Product Fetched Successfully',
@@ -693,4 +726,71 @@ class ProductsController extends Controller
 
         return view('seller.OtherSeller', compact('products', 'categories'));
     }
+
+    public function boost($id)
+{
+    $user = session('user_details');
+
+    $product = Products::findOrFail($id);
+
+    // Only allow the owner to boost their own products
+    if ($product->user_id != $user['user_id']) {
+        return redirect()->back()->with('error', 'You are not authorized to boost this product.');
+    }
+
+    $fullUser = User::where('user_id', $user['user_id'])->first();
+
+    $packageDetail = json_decode($fullUser->package_detail, true);
+
+    // Check if package is approved
+    $packageStatus = strtolower($packageDetail['package_status'] ?? '');
+    if ($packageStatus !== 'approved') {
+        return redirect()->back()->with('error', 'Your package is not approved. You cannot boost products.');
+    }
+
+    $packageType = strtolower($packageDetail['package_type'] ?? '');
+
+    // Determine max boostable product count
+    $maxBoosts = match ($packageType) {
+        'silver' => 3,
+        'gold' => 6,
+        'platinum' => 10,
+        default => 0
+    };
+
+    // Get start and end date
+    $boostStartDate = $packageDetail['package_start_date'] ?? null;
+    $boostEndDate = $packageDetail['package_end_date'] ?? null;
+
+    // Toggle boosting
+    if ($product->is_boosted == 0) {
+        // Count current boosted products
+        $boostedCount = Products::where('user_id', $user['user_id'])
+            ->where('is_boosted', 1)
+            ->count();
+
+        // Check if boosting limit reached
+        if ($boostedCount >= $maxBoosts) {
+            return redirect()->back()->with('error', "You can only boost up to {$maxBoosts} products with your {$packageType} package.");
+        }
+
+        $product->is_boosted = 1;
+        $product->boost_start_date = $boostStartDate;
+        $product->boost_end_date = $boostEndDate;
+
+        $message = 'Product boosted successfully!';
+    } else {
+        $product->is_boosted = 0;
+        $product->boost_start_date = null;
+        $product->boost_end_date = null;
+
+        $message = 'Product unboosted successfully!';
+    }
+
+    $product->save();
+
+    return redirect()->back()->with('success', $message);
+}
+
+
 }
