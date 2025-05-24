@@ -466,7 +466,7 @@
                         </a>
                     </li>
                     <li class="mt-6">
-                        <a href="{{ route('promotion_list') }}"
+                        <a href="{{ route('promotions') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('promotion_list') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="promotion_list">
@@ -748,15 +748,10 @@
                                 fill="#D9D9D9" />
                         </svg>
                         <div
-                            class="absolute w-4 h-4 bg-primary border-2 text-white rounded-full -top-2 start-2.5 border-none flex items-center justify-center">
-                            4
+                            class="absolute w-2 h-2 bg-red-500 border-2 text-white rounded-full -top-0.5 start-2.5 border-none flex items-center justify-center">
+
                         </div>
                     </button>
-
-
-
-
-
 
                     <!-- Dropdown menu -->
                     <div id="dropdownNotification"
@@ -807,7 +802,8 @@
                                 </div>
                             @endforeach
                         @endif
-                        <a href="{{ route('allNotifications') }}"
+
+                        <a href="{{ session('user_details.user_role') == 'admin' ? route('notifications') : route('allNotifications') }}"
                             class="block py-2 text-sm font-medium text-center text-white rounded-b-lg  bg-primary">
                             <div class="inline-flex items-center ">
                                 <svg class="w-4 h-4 me-2 text-white" aria-hidden="true"
@@ -825,7 +821,23 @@
                         id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                         data-dropdown-placement="bottom">
                         <span class="sr-only">Open user menu</span>
-                        <img class="w-12 h-12 rounded-full" src="{{ asset('asset/Ellipse 2.png') }}" alt="user photo">
+                        @php
+                            $seller = \App\Models\Seller::where('user_id', session('user_details.user_id'))->first();
+                            $profilePicture = asset('asset/Ellipse 2.png');
+
+                            if ($seller && $seller->personal_info) {
+                                $info = json_decode($seller->personal_info, true);
+
+                                if (
+                                    !empty($info['profile_picture']) &&
+                                    file_exists(public_path($info['profile_picture']))
+                                ) {
+                                    $profilePicture = asset($info['profile_picture']);
+                                }
+                            }
+                        @endphp
+
+                        <img src="{{ $profilePicture }}" class="w-12 h-12 rounded-full object-cover" />
                     </button>
                     <!-- Dropdown menu -->
                     <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"

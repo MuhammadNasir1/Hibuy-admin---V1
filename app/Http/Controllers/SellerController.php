@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SellerController extends Controller
 {
@@ -19,7 +22,7 @@ class SellerController extends Controller
             ]);
             // $newData = $validatedData['info_type'];
 
-            $seller = Seller::where('user_id', $validatedData['user_id'] )->first();
+            $seller = Seller::where('user_id', $validatedData['user_id'])->first();
             if (!$seller) {
                 return response()->json(['success' => false, 'message' => "Seller Not Found"], 404);
             }
@@ -140,5 +143,117 @@ class SellerController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
+    public function saveTransactionImage(Request $request)
+    {
+        $request->validate([
+            'transaction_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $userId = session('user_details.user_id');
+
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Decode existing JSON if it exists
+        $packageDetail = json_decode($user->package_detail, true) ?? [];
+
+        // Delete old image if it exists
+        if (!empty($packageDetail['transaction_image']) && Storage::disk('public')->exists($packageDetail['transaction_image'])) {
+            Storage::disk('public')->delete($packageDetail['transaction_image']);
+        }
+
+        // Store new image
+        $path = $request->file('transaction_image')->store('transactions', 'public');
+
+        // Update package_detail as JSON
+        $packageDetail['package_type'] = 'silver';
+        $packageDetail['transaction_image'] = $path;
+        $packageDetail['package_status'] = 'pending';
+
+        $user->package_detail = json_encode($packageDetail);
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Image submitted successfully.'
+        ]);
+    }
+
+    public function showPromotions()
+    {
+        $users = User::whereNotNull('package_detail->transaction_image')->get();
+        // return $users;
+        return view('admin.promotions', compact('users'));
+    }
+
+    public function updatePackageStatus(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'package_status' => 'required|in:approved,rejected,pending'
+        ]);
+
+        $user = User::where('user_id', $request->user_id)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+
+        // Decode package_detail JSON
+        $packageDetail = json_decode($user->package_detail, true) ?? [];
+
+
+        $packageDetail['package_status'] = $request->package_status;
+
+
+        if ($request->package_status === 'approved') {
+            $packageDetail['package_start_date'] = now()->toDateString();
+            $packageDetail['package_end_date'] = now()->addMonth()->toDateString();
+        } else {
+            $packageDetail['package_start_date'] = null;
+            $packageDetail['package_end_date'] = null;
+
+            Products::where('user_id', $user->user_id)
+                ->where('is_boosted', 1)
+                ->update([
+                    'is_boosted' => 0,
+                    'boost_start_date' => null,
+                    'boost_end_date' => null
+                ]);
+        }
+
+        $user->package_detail = json_encode($packageDetail);
+        $user->save();
+
+        return response()->json(['success' => true]);
+    }
+
+
+    public function BoostStatus()
+    {
+        $userId = session('user_details.user_id');
+
+        $user = User::where('user_id', $userId)->first();
+
+        // Decode the JSON package_detail field
+        $packageDetail = json_decode($user->package_detail, true) ?? [];
+
+        $packageStatus = $packageDetail['package_status'] ?? null;
+
+        return view('seller.BoostProducts', compact('user', 'packageStatus', 'packageDetail'));
+    }
+
+
 
 }

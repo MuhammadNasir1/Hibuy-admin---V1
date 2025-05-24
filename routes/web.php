@@ -145,10 +145,14 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
             Route::view('/all-notifications', 'pages.AllNotifications')->name('allNotifications');
             Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
-            Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
             Route::view('/Inquiries', 'seller.Inquiries')->name('inquirieslist');
             // Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
             Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
+            Route::post('/save-transaction-image', [SellerController::class, 'saveTransactionImage']);
+            Route::get('/promotions', [SellerController::class, 'showPromotions'])->name('promotions');
+            Route::post('/update-package-status', [SellerController::class, 'updatePackageStatus'])->name('update.package.status');
+            Route::get('/BoostProducts', [SellerController::class, 'BoostStatus'])->name('BoostProducts');
+            Route::post('/product/boost/{id}', [ProductsController::class, 'boost'])->name('product.boost');
 
             // Credit request
             Route::post('/credit-request', [CreditRequestController::class, 'store'])->name('credit-request.store');
