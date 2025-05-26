@@ -359,7 +359,8 @@ class apiproductController extends Controller
                 'product_discounted_price',
                 'product_images'
             )
-                ->with(['category:id,name']);
+                ->with(['category:id,name'])
+                ->where('store_id', '!=', 0);
 
             // Apply filters
             $products->when($query, function ($q) use ($query) {
