@@ -250,18 +250,20 @@ class apiproductController extends Controller
             ->map(function ($item) {
                 if (!empty($item->product)) {
                     // Convert images to just the first one
-                    $images = json_decode($item->product->product_image, true);
+                    $images = json_decode($item->product->product_images, true);
                     $item->product->product_image = $images[0] ?? null;
+                    unset($item->product->product_images); // remove old key if needed
 
                     // Flatten category name
                     $item->product->category_name = $item->product->category->name ?? null;
 
-                    // Optionally remove the full category object if you don't want it
+                    // Remove the full category object
                     unset($item->product->category);
                 }
 
                 return $item;
             });
+
 
         if ($wishlist->isEmpty()) {
             return response()->json([
