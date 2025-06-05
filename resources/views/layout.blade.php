@@ -420,12 +420,12 @@
                     </li>
 
                     <li class="mt-6">
-                        <a href="{{ route('savePurchases') }}"
+                        <a href="{{ route('seller.purchases') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                                  {{ request()->routeIs('savePurchases') ? 'active bg-white text-primary' : 'text-white' }}"
-                            data-tab="savePurchases">
+                                  {{ request()->routeIs('seller.purchases') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="seller.purchases">
                             <svg class="w-5 h-5 transition duration-200
-                                        {{ request()->routeIs('savePurchases') ? 'text-primary' : 'text-white' }}"
+                                        {{ request()->routeIs('seller.purchases') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1741_13705)">
@@ -468,10 +468,10 @@
                     <li class="mt-6">
                         <a href="{{ route('promotions') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                                  {{ request()->routeIs('promotion_list') ? 'active bg-white text-primary' : 'text-white' }}"
+                                  {{ request()->routeIs('promotions') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="promotion_list">
                             <svg class="w-5 h-5 transition duration-200
-                                        {{ request()->routeIs('promotion_list') ? 'text-primary' : 'text-white' }}"
+                                        {{ request()->routeIs('promotions') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1853_20490)">
@@ -560,12 +560,12 @@
                         </a>
                     </li>
                     <li class="mt-6">
-                        <a href="{{ route('inquirieslist') }}"
+                        <a href="{{ route('seller.inquiries') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                                  {{ request()->routeIs('inquirieslist') ? 'active bg-white text-primary' : 'text-white' }}"
-                            data-tab="inquirieslist">
+                                  {{ request()->routeIs('seller.inquiries') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="seller.inquiries">
                             <svg class="w-5 h-5 transition duration-200
-                                        {{ request()->routeIs('inquirieslist') ? 'text-primary' : 'text-white' }}"
+                                        {{ request()->routeIs('seller.inquiries') ? 'text-primary' : 'text-white' }}"
                                 width="22" height="26" viewBox="0 0 22 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -655,7 +655,7 @@
                     (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer') &&
                         session('user_details.store_id'))
                     <li class="mt-6">
-                        <a href="https://hibuy.vercel.app/store/{{ session('user_details.store_id') }}"
+                        <a href="https://hibuy.vercel.app/store/{{ session('user_details.store_id') }}" target="_blank"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'active bg-white text-primary' : 'text-white' }}">
                             <svg class="w-5 h-5 transition duration-200
@@ -747,9 +747,10 @@
                                 d="M11.1632 24.4999C8.54665 24.4999 6.42554 22.4853 6.42554 20H15.9008C15.9008 22.4853 13.7797 24.4999 11.1632 24.4999Z"
                                 fill="#D9D9D9" />
                         </svg>
-                        <div
-                            class="absolute w-2 h-2 bg-red-500 border-2 text-white rounded-full -top-0.5 start-2.5 border-none flex items-center justify-center">
 
+                        <!-- Notification dot -->
+                        <div
+                            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white">
                         </div>
                     </button>
 

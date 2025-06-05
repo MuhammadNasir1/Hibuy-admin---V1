@@ -449,21 +449,32 @@ class UserController extends Controller
     }
 
 
-    public function settings()
-    {
-        $userId = session('user_details.user_id'); // get logged-in user ID from session
+public function settings()
+{
+    $userId = session('user_details.user_id'); // get logged-in user ID from session
 
-        if (session('user_details.user_role') !== 'admin') {
-            $seller = DB::table('seller')->where('user_id', $userId)->first(); // adjust "id" if your primary key is different
+    // Get the current user's info for referral use
+    $currentUser = User::find($userId);
 
-            $personalInfo = json_decode($seller->personal_info, true);
-            return view('pages.Settings', compact('seller', 'personalInfo'));
-        } else {
-            $users = DB::table('users')->where('user_id', $userId)->first();
-            return view('pages.Settings', compact('users'));
-        }
+    // Get users referred by this user
+    $referredUsers = User::where('referred_by', $userId)
+        ->get(['user_name', 'user_email', 'created_at']);
+        $referredCount = $referredUsers->count();
 
+    if (session('user_details.user_role') !== 'admin') {
+        $seller = DB::table('seller')->where('user_id', $userId)->first();
+        $personalInfo = json_decode($seller->personal_info, true);
+
+        return view('pages.Settings', compact('seller', 'personalInfo', 'referredCount', 'referredUsers'));
+    } else {
+        $users = DB::table('users')->where('user_id', $userId)->first();
+        return view('pages.Settings', compact('users'));
     }
+}
+
+
+
+
 
     public function updatePersonalInfo(Request $request)
     {
@@ -555,6 +566,5 @@ class UserController extends Controller
             'message' => 'Password updated successfully!',
         ]);
     }
-
 
 }

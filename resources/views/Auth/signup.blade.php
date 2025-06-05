@@ -1,8 +1,8 @@
 @extends('Auth.layout')
 @section('title', 'Login')
 @section('content')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
     <div
         class="w-full max-w-sm  p-4 mx-auto mt-5 bg-white shadow-lg rounded-tr-[40px] rounded-tl-[100px]  rounded-br-[100px]  rounded-bl-[20px] lg:px-6 lg:py-20  lg:max-w-lg">
         <h2 class="text-4xl font-medium text-center ">Sign Up</h2>
@@ -12,18 +12,19 @@
             <input type="hidden" name="user_role" value="{{ $role }}">
             @csrf
             <div class="mt-4">
-                <x-input id="user_name"  value="" label="User Name" placeholder="Name Here" name='user_name'
-                type="text"></x-input>
+                <x-input id="user_name" value="" label="User Name" placeholder="Name Here" name='user_name'
+                    type="text"></x-input>
             </div>
             <div class="mt-4">
-                <x-input id="email" label="Email" value="" placeholder="Enter Email" name='user_email' type="email"></x-input>
+                <x-input id="email" label="Email" value="" placeholder="Enter Email" name='user_email'
+                    type="email"></x-input>
             </div>
             <div class="relative mt-6">
-                <x-input id="mediaTitle" label="Password"  value="" placeholder="Enter Password" name='user_password'
+                <x-input id="mediaTitle" label="Password" value="" placeholder="Enter Password" name='user_password'
                     type="password"></x-input>
-                    <span class="absolute right-4 top-11 transform -translate-y-1/2 cursor-pointer">
-                        <i class="fa-solid fa-eye-slash text-customGrayColorDark"></i>
-                    </span>
+                <span class="absolute right-4 top-11 transform -translate-y-1/2 cursor-pointer">
+                    <i class="fa-solid fa-eye-slash text-customGrayColorDark"></i>
+                </span>
             </div>
             <div class="mt-6">
                 <button class="w-full px-4 py-2 font-semibold text-white rounded-md bg-primary">
@@ -71,20 +72,30 @@
 
             $("#signupForm").submit(function(e) {
                 e.preventDefault();
-                let formData = $(this).serialize();
-                const url = "{{ route('register') }}"; // Ensure this is a valid API URL
+
+                let formData = $(this).serializeArray();
+                const urlParams = new URLSearchParams(window.location.search);
+                const referralCode = urlParams.get('ref');
+                if (referralCode) {
+                    formData.push({
+                        name: "referred_by",
+                        value: referralCode
+                    });
+                }
+                const url = "{{ route('register') }}";
 
                 $.ajax({
                     type: "POST",
                     url: url,
-                    data: formData,
+                    data: $.param(formData),
                     dataType: "json",
                     beforeSend: function() {
+                        console.log('Sending AJAX request with data:', $.param(formData));
                         $("#btnSpinner").removeClass("hidden");
                         $("#btnText").addClass("hidden");
                         $("#submitBtn").attr("disabled", true);
-                        $(".error-text").remove(); // Remove previous error messages
-                        $("input").removeClass("border-red-500"); // Remove previous red border
+                        $(".error-text").remove();
+                        $("input").removeClass("border-red-500");
                     },
                     success: function(response) {
                         Swal.fire({
@@ -109,8 +120,7 @@
                             let errorMessages = "";
 
                             $.each(response.errors, function(key, value) {
-                                errorMessages +=
-                                ` ${value}\n`; // Collect all error messages
+                                errorMessages += ` ${value}\n`;
                             });
 
                             Swal.fire({
@@ -120,7 +130,7 @@
                                 confirmButtonText: "OK"
                             });
                         }
-                    },
+                    }
                 });
             });
 

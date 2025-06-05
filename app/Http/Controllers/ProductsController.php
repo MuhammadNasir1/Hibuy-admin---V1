@@ -252,7 +252,7 @@ class ProductsController extends Controller
                     'product_price' => $validatedData['product_price'],
                     'product_discount' => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
-                    'is_boosted' => $isBoosted,
+                    // 'is_boosted' => $isBoosted,
                 ];
                 // Conditionally update product_variation
                 if (!empty($productVariants)) {
@@ -495,22 +495,80 @@ class ProductsController extends Controller
         }
     }
 
-    public function showAllProducts()
+    //     public function showAllProducts()
+//     {
+//         // Retrieve user details from session
+//         $userDetails = session('user_details');
+//         if (!$userDetails) {
+//             return response()->json(['error' => 'User not authenticated'], 401);
+//         }
+
+    //         $loggedInUserId = $userDetails['user_id'];
+//         $loggedInUserRole = $userDetails['user_role']; // Get user role
+
+    //         if ($loggedInUserRole == 'admin') {
+//             $p_id = $loggedInUserId;
+//         }
+
+    //         // Base query
+//         $query = DB::table('products')
+//             ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
+//             ->join('users', 'products.user_id', '=', 'users.user_id')
+//             ->select(
+//                 'products.product_id',
+//                 'products.user_id',
+//                 'products.product_name',
+//                 'categories.name as product_category',
+//                 'products.product_discounted_price',
+//                 'products.product_images',
+//                 'products.product_status',
+//                 'products.is_boosted',
+//                 'products.created_at',
+//                 'products.updated_at',
+//                 'users.user_name as user_name'
+//             );
+
+
+    //         // If not admin, filter by logged-in user_id
+//         if ($loggedInUserRole !== 'admin') {
+//             $query->where('products.user_id', $loggedInUserId);
+//         } else {
+//             $query->where('products.user_id', '!=', $p_id);
+//         }
+
+    //         // Fetch products and format image
+//         $products = $query->get()->map(function ($product) {
+//             $images = json_decode($product->product_images, true);
+//             $product->first_image = $images[0] ?? null;
+//             unset($product->product_images);
+//             return $product;
+//         });
+
+    // // return $products;
+//  $user = User::where('user_id', $loggedInUserId)->first();
+//     $packageDetail = json_decode($user->package_detail, true);
+
+    //     $packageStatus = $packageDetail['package_status'] ?? null;
+
+    //     // return $products;
+//     return view('pages.products', compact('products', 'packageStatus'));
+// }
+
+
+    public function showAllProducts(Request $request)
     {
-        // Retrieve user details from session
         $userDetails = session('user_details');
         if (!$userDetails) {
             return response()->json(['error' => 'User not authenticated'], 401);
         }
 
         $loggedInUserId = $userDetails['user_id'];
-        $loggedInUserRole = $userDetails['user_role']; // Get user role
+        $loggedInUserRole = $userDetails['user_role'];
 
         if ($loggedInUserRole == 'admin') {
             $p_id = $loggedInUserId;
         }
 
-        // Base query
         $query = DB::table('products')
             ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
@@ -528,15 +586,17 @@ class ProductsController extends Controller
                 'users.user_name as user_name'
             );
 
-
-        // If not admin, filter by logged-in user_id
         if ($loggedInUserRole !== 'admin') {
             $query->where('products.user_id', $loggedInUserId);
         } else {
             $query->where('products.user_id', '!=', $p_id);
         }
 
-        // Fetch products and format image
+        // Filter by boosted if passed in request
+        if ($request->has('boosted') && $request->boosted == '1') {
+            $query->where('products.is_boosted', 1);
+        }
+
         $products = $query->get()->map(function ($product) {
             $images = json_decode($product->product_images, true);
             $product->first_image = $images[0] ?? null;
@@ -544,15 +604,13 @@ class ProductsController extends Controller
             return $product;
         });
 
-// return $products;
- $user = User::where('user_id', $loggedInUserId)->first();
-    $packageDetail = json_decode($user->package_detail, true);
+        $user = User::where('user_id', $loggedInUserId)->first();
+        $packageDetail = json_decode($user->package_detail, true);
+        $packageStatus = $packageDetail['package_status'] ?? null;
 
-    $packageStatus = $packageDetail['package_status'] ?? null;
+        return view('pages.products', compact('products', 'packageStatus'));
+    }
 
-    // return $products;
-    return view('pages.products', compact('products', 'packageStatus'));
-}
 
     public function showHibuyProducts()
     {
@@ -619,6 +677,7 @@ class ProductsController extends Controller
             $product = Products::select(
                 'product_id',
                 'product_name',
+                'user_id',
                 'product_description',
                 'product_price',
                 'product_brand',
@@ -650,6 +709,7 @@ class ProductsController extends Controller
             // Prepare response data
             $response = [
                 'product_id' => $product->product_id,
+                'user_id' => $product->user_id,
                 'product_name' => $product->product_name,
                 'product_description' => $product->product_description,
                 'product_price' => $product->product_price,
@@ -659,10 +719,11 @@ class ProductsController extends Controller
                 'product_images' => $product->product_images,
                 'product_variation' => $product->product_variation,
                 'category_name' => $product->category->name ?? null, // Get category name
+                'category_id' => $product->category->id,
                 'subcategory' => $product->product_subcategory,
                 'product_status' => $product->product_status
             ];
-// return $response;
+            // return $response;
             return response()->json([
                 'success' => true,
                 'message' => 'Product Fetched Successfully',
@@ -702,95 +763,118 @@ class ProductsController extends Controller
     {
         $userDetails = session('user_details');
         if (!$userDetails) {
-            return response()->json(['error' => 'User not authenticated'], 401);
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
         }
 
         $product = Products::find($id);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found!'], 404);
+            return response()->json(['success' => false, 'message' => 'Product not found!'], 404);
         }
 
         $product->delete();
-        return response()->json(['message' => 'Product deleted successfully!']);
+        return response()->json(['success' => true, 'message' => 'Product deleted successfully!']);
     }
+
+    // public function getOtherSellerProduct()
+    // {
+    //     $user = session('user_details')['user_id'];
+
+    //     $products = Products::with('category')
+    //         ->where('user_id', '!=', $user )
+    //         ->get();
+
+    //     $categories = product_category::all(); // <-- Get all categories
+
+    //     return view('seller.OtherSeller', compact('products', 'categories'));
+    // }
+
+
     public function getOtherSellerProduct()
     {
-        $user = session('user_details')['user_id'];
+        $userId = session('user_details')['user_id'];
 
         $products = Products::with('category')
-            ->where('user_id', '!=', $user)
+            ->where('user_id', '!=', $userId)
+            ->whereHas('user', function ($query) {
+                $query->where('user_role', '!=', 'admin');
+            })
+            ->whereHas('category', function ($query) {
+                // Ensure the product has a valid category in the product_category table
+                $query->whereNotNull('id');
+            })
             ->get();
 
-        $categories = product_category::all(); // <-- Get all categories
+        $categories = product_category::all();
 
         return view('seller.OtherSeller', compact('products', 'categories'));
     }
 
+
     public function boost($id)
-{
-    $user = session('user_details');
+    {
+        $user = session('user_details');
 
-    $product = Products::findOrFail($id);
+        $product = Products::findOrFail($id);
 
-    // Only allow the owner to boost their own products
-    if ($product->user_id != $user['user_id']) {
-        return redirect()->back()->with('error', 'You are not authorized to boost this product.');
-    }
-
-    $fullUser = User::where('user_id', $user['user_id'])->first();
-
-    $packageDetail = json_decode($fullUser->package_detail, true);
-
-    // Check if package is approved
-    $packageStatus = strtolower($packageDetail['package_status'] ?? '');
-    if ($packageStatus !== 'approved') {
-        return redirect()->back()->with('error', 'Your package is not approved. You cannot boost products.');
-    }
-
-    $packageType = strtolower($packageDetail['package_type'] ?? '');
-
-    // Determine max boostable product count
-    $maxBoosts = match ($packageType) {
-        'silver' => 3,
-        'gold' => 6,
-        'platinum' => 10,
-        default => 0
-    };
-
-    // Get start and end date
-    $boostStartDate = $packageDetail['package_start_date'] ?? null;
-    $boostEndDate = $packageDetail['package_end_date'] ?? null;
-
-    // Toggle boosting
-    if ($product->is_boosted == 0) {
-        // Count current boosted products
-        $boostedCount = Products::where('user_id', $user['user_id'])
-            ->where('is_boosted', 1)
-            ->count();
-
-        // Check if boosting limit reached
-        if ($boostedCount >= $maxBoosts) {
-            return redirect()->back()->with('error', "You can only boost up to {$maxBoosts} products with your {$packageType} package.");
+        // Only allow the owner to boost their own products
+        if ($product->user_id != $user['user_id']) {
+            return redirect()->back()->with('error', 'You are not authorized to boost this product.');
         }
 
-        $product->is_boosted = 1;
-        $product->boost_start_date = $boostStartDate;
-        $product->boost_end_date = $boostEndDate;
+        $fullUser = User::where('user_id', $user['user_id'])->first();
 
-        $message = 'Product boosted successfully!';
-    } else {
-        $product->is_boosted = 0;
-        $product->boost_start_date = null;
-        $product->boost_end_date = null;
+        $packageDetail = json_decode($fullUser->package_detail, true);
 
-        $message = 'Product unboosted successfully!';
+        // Check if package is approved
+        $packageStatus = strtolower($packageDetail['package_status'] ?? '');
+        if ($packageStatus !== 'approved') {
+            return redirect()->back()->with('error', 'Your package is not approved. You cannot boost products.');
+        }
+
+        $packageType = strtolower($packageDetail['package_type'] ?? '');
+
+        // Determine max boostable product count
+        $maxBoosts = match ($packageType) {
+            'silver' => 3,
+            'gold' => 6,
+            'platinum' => 10,
+            default => 0
+        };
+
+        // Get start and end date
+        $boostStartDate = $packageDetail['package_start_date'] ?? null;
+        $boostEndDate = $packageDetail['package_end_date'] ?? null;
+
+        // Toggle boosting
+        if ($product->is_boosted == 0) {
+            // Count current boosted products
+            $boostedCount = Products::where('user_id', $user['user_id'])
+                ->where('is_boosted', 1)
+                ->count();
+
+            // Check if boosting limit reached
+            if ($boostedCount >= $maxBoosts) {
+                return redirect()->back()->with('error', "You can only boost up to {$maxBoosts} products with your {$packageType} package.");
+            }
+
+            $product->is_boosted = 1;
+            $product->boost_start_date = $boostStartDate;
+            $product->boost_end_date = $boostEndDate;
+
+            $message = 'Product boosted successfully!';
+        } else {
+            $product->is_boosted = 0;
+            $product->boost_start_date = null;
+            $product->boost_end_date = null;
+
+            $message = 'Product unboosted successfully!';
+        }
+
+        $product->save();
+
+        return redirect()->back()->with('success', $message);
     }
-
-    $product->save();
-
-    return redirect()->back()->with('success', $message);
-}
 
 
 }
