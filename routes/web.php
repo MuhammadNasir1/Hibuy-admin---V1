@@ -123,9 +123,9 @@ Route::middleware(['custom_auth'])->group(function () {
 
 
 
-            Route::get('/Settings', function () {
-                return view('pages.Settings');
-            })->name('editsettings');
+            // Route::get('/Settings', function () {
+            //     return view('pages.Settings');
+            // })->name('editsettings');
 
             Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
             Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
@@ -153,6 +153,12 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::post('/update-package-status', [SellerController::class, 'updatePackageStatus'])->name('update.package.status');
             Route::get('/BoostProducts', [SellerController::class, 'BoostStatus'])->name('BoostProducts');
             Route::post('/product/boost/{id}', [ProductsController::class, 'boost'])->name('product.boost');
+            Route::post('/send-inquiry', [SellerController::class, 'store']);
+            Route::get('/seller/purchases', [SellerController::class, 'purchases'])->name('seller.purchases');
+            Route::get('/seller/inquiries', [SellerController::class, 'inquiries'])->name('seller.inquiries');
+            Route::post('/save-Inquiry-image', [SellerController::class, 'saveInquiryImage'])->name('save.inquiry.image');
+            Route::get('/inquiry-details/{id}', [SellerController::class, 'purchasesWithProductDetails']);
+            Route::post('/update-inquiry-status', [SellerController::class, 'updateInquiryStatus'])->name('update.inquiry.status');
 
             // Credit request
             Route::post('/credit-request', [CreditRequestController::class, 'store'])->name('credit-request.store');

@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Store;
 use App\Models\Seller;
+use App\Models\Inquiry;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class SellerController extends Controller
 {
@@ -255,5 +257,187 @@ class SellerController extends Controller
     }
 
 
+public function store(Request $request)
+{
+     $buyerId = session('user_details.user_id');
 
+
+    if (!$buyerId) {
+        return response()->json(['success' => false, 'message' => 'User not logged in.'], 401);
+    }
+    $validated = $request->validate([
+        'product_id' => 'required',
+        'seller_userid' => 'required',
+        'category_id' => 'required',
+        'stock' => 'required|integer|min:1',
+        'price' => 'required|numeric',
+        'twenty_percent_amount' => 'required|numeric',
+        'note' => 'nullable|string',
+    ]);
+
+    Inquiry::create([
+        'buyer_id' => $buyerId,
+        'seller_id' => $validated['seller_userid'],
+        'product_id' => $validated['product_id'],
+        'product_category' => $validated['category_id'],
+        'product_stock' => $validated['stock'],
+        'amount' => $validated['price'] * $validated['stock'],
+        'twenty_percent_amount' => $validated['twenty_percent_amount'],
+        'remaining_amount' => ($validated['price'] * $validated['stock']) - $validated['twenty_percent_amount'],
+        'inquiry_date' => now(),
+        'status' => 'pending',
+        'note' => $validated['note'],
+    ]);
+
+    return response()->json(['success' => true]);
+}
+
+public function purchases()
+{
+    $buyerId = session('user_details.user_id');
+
+    $inquiries = Inquiry::where('buyer_id', $buyerId)
+        ->join('products', 'inquiries.product_id', '=', 'products.product_id')
+        ->join('categories', 'inquiries.product_category', '=', 'categories.id')
+        ->join('users', 'inquiries.seller_id', '=', 'users.user_id'
+        )
+        ->select(
+            'inquiries.*',
+            'products.product_name',
+            'products.product_images',
+            'categories.name as category_name',
+            'users.user_name as seller_name'
+        )
+        ->latest()
+        ->get();
+// return $inquiries;
+    return view('seller.purchases', compact('inquiries'));
+}
+
+
+public function saveInquiryImage(Request $request)
+{
+    try {
+        $request->validate([
+            'transaction_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'inquiry_id' => 'required|exists:inquiries,inquiry_id',
+        ]);
+
+        if ($request->hasFile('transaction_image')) {
+            $path = $request->file('transaction_image')->store('inquiries', 'public');
+
+            Inquiry::where('inquiry_id', $request->inquiry_id)->update([
+                'payment_ss' => $path
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image uploaded successfully',
+                'path' => $path
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No image provided'
+        ], 400);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->validator->errors()->first()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to upload image: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
+public function purchasesWithProductDetails($inquiryId)
+{
+    $inquiry = Inquiry::where('inquiry_id', $inquiryId)
+        ->join('products', 'inquiries.product_id', '=', 'products.product_id')
+        ->join('categories', 'inquiries.product_category', '=', 'categories.id')
+        ->join('users', 'inquiries.seller_id', '=', 'users.user_id')
+        ->select(
+            'inquiries.*',
+            'products.product_name',
+            'products.product_description',
+            'products.product_brand',
+            'products.product_price',
+            'products.product_discount',
+            'products.product_discounted_price',
+            'products.product_variation',
+            'products.product_images',
+            'categories.name as category_name',
+            'users.user_name as seller_name'
+        )
+        ->first();
+
+    if (!$inquiry) {
+        return response()->json(['success' => false, 'message' => 'Inquiry not found'], 404);
+    }
+
+    // Decode JSON fields
+    $inquiry->product_images = json_decode($inquiry->product_images, true);
+    $inquiry->product_variation = json_decode($inquiry->product_variation, true);
+// return $inquiry;
+    return response()->json(['success' => true, 'data' => $inquiry]);
+}
+
+
+public function inquiries()
+{
+    $sellerId = session('user_details.user_id');
+
+    $inquiries = Inquiry::where('seller_id', $sellerId)
+        ->join('products', 'inquiries.product_id', '=', 'products.product_id')
+        ->join('categories', 'inquiries.product_category', '=', 'categories.id')
+        ->join('users', 'inquiries.buyer_id', '=', 'users.user_id')
+        ->select(
+            'inquiries.*',
+            'products.product_name',
+            'products.product_images',
+            'categories.name as category_name',
+            'users.user_name as buyer_name'
+        )
+        ->latest()
+        ->get();
+// return $inquiries;
+    return view('seller.Inquiries', compact('inquiries'));
+}
+
+
+
+ public function updateInquiryStatus(Request $request)
+    {
+        try {
+            $request->validate([
+                'inquiry_id' => 'required|exists:inquiries,inquiry_id',
+                'status' => 'required|in:pending,approved,rejected',
+            ]);
+
+            $inquiry = Inquiry::where('inquiry_id', $request->inquiry_id)->first();
+            $inquiry->status = $request->status;
+            $inquiry->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . implode(', ', array_merge(...array_values($e->errors())))
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

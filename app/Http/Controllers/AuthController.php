@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
+use Vinkla\Hashids\Facades\Hashids;
 
 
 class AuthController extends Controller
@@ -30,39 +31,49 @@ class AuthController extends Controller
         return view('Auth.signup', ['role' => $role]);
     }
 
+    public function register(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'user_name' => 'required|string',
+                'user_email' => 'required|string|email|unique:users',
+                'user_password' => 'required|min:8',
+                'user_role' => 'required|string',
+            ]);
 
+            $referralCode = $request->input('referred_by') ?? $request->query('ref');
+            $referredBy = null;
 
+            if ($referralCode) {
+                $decodedArray = Hashids::decode($referralCode);
+                $decodedId = $decodedArray[0] ?? null;
 
-public function register(Request $request)
-{
-    try {
-        $validatedData = $request->validate([
-            'user_name' => 'required|string',
-            'user_email' => 'required|string|email|unique:users',
-            'user_password' => 'required|min:8',
-            'user_role' => 'required|string',
-        ]);
+                if ($decodedId && User::where('user_id', $decodedId)->exists()) {
+                    $referredBy = $decodedId;
+                }
+            }
 
-        $user = User::create([
-            'user_name' => $validatedData['user_name'],
-            'user_email' => $validatedData['user_email'],
-            'user_password' => Hash::make($validatedData['user_password']),
-            'user_role' => $validatedData['user_role'],
-        ]);
+            $user = User::create([
+                'user_name' => $validatedData['user_name'],
+                'user_email' => $validatedData['user_email'],
+                'user_password' => Hash::make($validatedData['user_password']),
+                'user_role' => $validatedData['user_role'],
+                'referred_by' => $referredBy,
+            ]);
 
-        if ($validatedData['user_role'] == 'customer') {
-            Customer::create(['user_id' => $user->user_id]);
-        } elseif (in_array($validatedData['user_role'], ['seller', 'freelancer'])) {
-            Seller::create(['user_id' => $user->user_id]);
+            if ($validatedData['user_role'] === 'customer') {
+                Customer::create(['user_id' => $user->user_id]);
+            } elseif (in_array($validatedData['user_role'], ['seller', 'freelancer'])) {
+                Seller::create(['user_id' => $user->user_id]);
+            }
+
+            return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
-
-        return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
-    } catch (ValidationException $e) {
-        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
-}
 
     public function login(Request $request)
     {
@@ -107,9 +118,9 @@ public function register(Request $request)
             'user_details' => [
                 'user_id' => $user->user_id,
                 'user_role' => $user->user_role,
-                'user_name'  => $user->user_name,
+                'user_name' => $user->user_name,
                 'user_email' => $user->user_email,
-                'store_id'   => $store_id,
+                'store_id' => $store_id,
             ]
         ]);
         $role = $user->user_role;

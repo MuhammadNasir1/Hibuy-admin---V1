@@ -18,7 +18,7 @@ class NotificationController extends Controller
 
             $notification = new Notification();
             $notification->sent_by = session('user_details')['user_id'];
-            $notification->received_by     = $request->type;
+            $notification->received_by = $request->type;
             $notification->title = $request->title;
             $notification->description = $request->description;
             $notification->type = $request->type;
@@ -40,7 +40,7 @@ class NotificationController extends Controller
     public function show()
     {
         if (session('user_details')['user_role'] !== 'admin') {
-            return redirect()-> route('allNotifications');
+            return redirect()->route('allNotifications');
         }
 
         $notifications = Notification::all();
@@ -50,13 +50,19 @@ class NotificationController extends Controller
     public function delete(string $id)
     {
         try {
-            $notification = Notification::where('notification_id', $id)->get();
-            $notification->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Notification deleted successfully',
-            ], 200);
+            $notification = Notification::where('notification_id', $id)->first();
+            if ($notification) {
+                $notification->delete();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Notification deleted successfully',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Notification not found',
+                ], 404);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

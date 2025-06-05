@@ -33,7 +33,9 @@
             const modal = document.getElementById('{{ $id }}');
             if (modal) {
                 modal.classList.remove('hidden');
+                modal.classList.add('flex');
                 modal.setAttribute('aria-hidden', 'false');
+
             }
         }
         if (event.target.closest('[data-modal-hide="{{ $id }}"]')) {
