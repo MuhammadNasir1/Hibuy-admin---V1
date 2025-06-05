@@ -251,7 +251,7 @@ class apiproductController extends Controller
                 if (!empty($item->product)) {
                     // Convert images to just the first one
                     $images = json_decode($item->product->product_images, true);
-                    $item->product->product_images = $images[0] ?? null;
+                    $item->product->product_image = $images[0] ?? null;
 
                     // Flatten category name
                     $item->product->category_name = $item->product->category->name ?? null;
