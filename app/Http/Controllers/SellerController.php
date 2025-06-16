@@ -311,7 +311,7 @@ public function purchases()
         ->latest()
         ->get();
 // return $inquiries;
-    return view('seller.purchases', compact('inquiries'));
+    return view('seller.Purchases', compact('inquiries'));
 }
 
 
