@@ -3,8 +3,51 @@
 @section('title', 'Hibuy')
 
 @section('main-content')
+    <style>
+        .active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -50px;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 50%;
+            box-shadow: 35px 35px 0 10px #fff;
+            pointer-events: none;
+        }
 
+        .active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            bottom: -50px;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 50%;
+            box-shadow: 35px -35px 0 10px #fff;
+            pointer-events: none;
+        }
 
+        .sidebar-item:not(.active) {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            /* transform: translateX(2px); */
+            border-radius: 25px 0 0 25px;
+        }
+
+        .sidebar-item:not(.active):hover svg {
+            transform: scale(1.1);
+        }
+
+        .sidebar-item:not(.active):hover span {
+            font-weight: 600;
+        }
+    </style>
 
     <aside id="default-sidebar"
         class="fixed top-0 left-0 z-40 w-[300px] h-[97vh] transition-transform -translate-x-full sm:translate-x-0"
@@ -20,8 +63,9 @@
                 </li>
                 <li class="mt-6">
                     <a href="{{ route('dashboard') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('dashboard') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="dashboard">
+                        <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('dashboard') ? 'text-primary' : 'text-white' }}"
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="15.1827" y="3" width="2.43901" height="5.69101" rx="1" fill="currentColor" />
                             <rect x="18.4351" y="3" width="4.06501" height="5.69101" rx="1" fill="currentColor" />
@@ -33,11 +77,11 @@
                         <span class="ms-3 text-custom15">Dashboard</span>
                     </a>
                 </li>
-
-                <li class="">
+                <li class="mt-6">
                     <a href="{{ route('products') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('products') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="products">
+                        <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('products') ? 'text-primary' : 'text-white' }}"
                             viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M12.5002 10.4736L16.2861 8.9592L6.91094 5.20915L3.67864 6.50207C3.51274 6.56843 3.36015 6.65677 3.22367 6.76295L12.5002 10.4736ZM2.54427 7.83748C2.51519 7.96885 2.5 8.10465 2.5 8.24296V17.8004C2.5 18.5671 2.96678 19.2565 3.67864 19.5413L10.8752 22.4199C11.1993 22.5495 11.535 22.6389 11.8752 22.688V11.5698L2.54427 7.83748ZM13.1252 22.6879C13.4652 22.6388 13.8008 22.5495 14.1248 22.4199L21.3214 19.5413C22.0332 19.2565 22.5 18.5671 22.5 17.8004V8.24296C22.5 8.1047 22.4848 7.96894 22.4558 7.83762L13.1252 11.5698V22.6879ZM21.7765 6.76305L17.9689 8.28606L8.5938 4.53601L10.8752 3.62346C11.9182 3.20624 13.0818 3.20624 14.1248 3.62346L21.3214 6.50207C21.4873 6.56845 21.6399 6.65683 21.7765 6.76305Z"
@@ -47,10 +91,11 @@
                     </a>
                 </li>
                 @if (session('user_details.user_role') == 'freelancer')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('PurchaseProducts') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('PurchaseProducts') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="PurchaseProducts">
+                            <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('PurchaseProducts') ? 'text-primary' : 'text-white' }}"
                                 viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M12.5002 10.4736L16.2861 8.9592L6.91094 5.20915L3.67864 6.50207C3.51274 6.56843 3.36015 6.65677 3.22367 6.76295L12.5002 10.4736ZM2.54427 7.83748C2.51519 7.96885 2.5 8.10465 2.5 8.24296V17.8004C2.5 18.5671 2.96678 19.2565 3.67864 19.5413L10.8752 22.4199C11.1993 22.5495 11.535 22.6389 11.8752 22.688V11.5698L2.54427 7.83748ZM13.1252 22.6879C13.4652 22.6388 13.8008 22.5495 14.1248 22.4199L21.3214 19.5413C22.0332 19.2565 22.5 18.5671 22.5 17.8004V8.24296C22.5 8.1047 22.4848 7.96894 22.4558 7.83762L13.1252 11.5698V22.6879ZM21.7765 6.76305L17.9689 8.28606L8.5938 4.53601L10.8752 3.62346C11.9182 3.20624 13.0818 3.20624 14.1248 3.62346L21.3214 6.50207C21.4873 6.56845 21.6399 6.65683 21.7765 6.76305Z"
@@ -61,10 +106,12 @@
                     </li>
                 @endif
                 @if (session('user_details.user_role') == 'admin')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('addProductCategory') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('addProductCategory') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="addProductCategory">
+                            <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('addProductCategory') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M11.6146 4.04258L7.73959 10.3759C7.3125 11.0634 7.8125 11.9592 8.625 11.9592H16.3646C17.1771 11.9592 17.6771 11.0634 17.25 10.3759L13.3854 4.04258C13.2933 3.89012 13.1634 3.76402 13.0083 3.67649C12.8532 3.58896 12.6781 3.54297 12.5 3.54297C12.3219 3.54297 12.1468 3.58896 11.9917 3.67649C11.8366 3.76402 11.7067 3.89012 11.6146 4.04258Z"
@@ -80,6 +127,7 @@
                         </a>
                     </li>
 
+
                     {{-- <li class="">
                     <a href="{{ route('PackagesOffer') }}"
                         class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
@@ -92,10 +140,14 @@
                         <span class="ms-3 text-custom15">Packages Offer</span>
                     </a>
                 </li> --}}
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('KYC_auth') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('KYC_auth') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="KYC_auth">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('KYC_auth') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_14295)">
                                     <path
@@ -128,11 +180,15 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('allorders') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('allorders') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="allorders">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('allorders') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M20.1316 18.2622H12.7632C11.6022 18.2622 10.658 19.2064 10.658 20.3675C10.658 21.5285 11.6022 22.4728 12.7632 22.4728H20.1316C21.2927 22.4728 22.2369 21.5285 22.2369 20.3675C22.2369 19.2064 21.2927 18.2622 20.1316 18.2622ZM20.1316 10.8938H12.7632C11.6022 10.8938 10.658 11.838 10.658 12.9991C10.658 14.1601 11.6022 15.1043 12.7632 15.1043H20.1316C21.2927 15.1043 22.2369 14.1601 22.2369 12.9991C22.2369 11.838 21.2927 10.8938 20.1316 10.8938ZM20.1316 3.52539H12.7632C11.6022 3.52539 10.658 4.4696 10.658 5.63065C10.658 6.79171 11.6022 7.73592 12.7632 7.73592H20.1316C21.2927 7.73592 22.2369 6.79171 22.2369 5.63065C22.2369 4.4696 21.2927 3.52539 20.1316 3.52539Z"
                                     fill="currentColor" />
@@ -150,11 +206,15 @@
                         </a>
                     </li>
 
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('return_orders') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('return_orders') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="return_orders">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('return_orders') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <rect x="9.96863" y="4.5" width="13" height="7" rx="1"
                                     fill="currentColor" />
                                 <rect x="9.96863" y="14.5" width="13" height="7" rx="1"
@@ -169,11 +229,15 @@
                     </li>
                 @endif
                 @if (session('user_details.user_role') == 'admin')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('manage_seller') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="manage_seller">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_14326)">
                                     <g clip-path="url(#clip1_1739_14326)">
                                         <path
@@ -210,12 +274,15 @@
                             <span class="ms-3 text-custom15">Sellers Management</span>
                         </a>
                     </li>
-
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('manage_buyer') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('manage_buyer') || request()->routeIs('BuyerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="manage_buyer">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('manage_buyer') || request()->routeIs('BuyerProfile') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_182)">
                                     <g clip-path="url(#clip1_1739_182)">
                                         <path
@@ -250,16 +317,19 @@
                                 </defs>
                             </svg>
 
-
                             <span class="ms-3 text-custom15">Buyers Management</span>
                         </a>
                     </li>
 
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('manage_freelancer') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="manage_freelancer">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1739_193)">
                                     <path
                                         d="M20.8168 23.905C15.2719 23.905 9.75992 23.905 4.21202 23.905C4.13073 23.2535 4.04945 22.6056 3.96993 21.9577C3.73669 20.0505 3.50579 18.1433 3.27196 16.236C3.21836 15.7978 3.5105 15.3826 3.94461 15.3066C4.0789 15.283 4.21791 15.2824 4.35515 15.2824C9.81116 15.2813 15.2672 15.2812 20.7238 15.2812C21.5036 15.2812 21.8182 15.6641 21.7216 16.4322C21.5089 18.115 21.3169 19.8001 21.1143 21.4841C21.0183 22.2817 20.9181 23.0792 20.8168 23.905ZM15.9769 19.6058C15.9763 17.7027 14.4137 16.14 12.5106 16.14C10.6104 16.14 9.05075 17.708 9.05487 19.614C9.0584 21.5047 10.6122 23.0597 12.5029 23.065C14.406 23.0703 15.9775 21.5053 15.9769 19.6058Z"
@@ -295,11 +365,15 @@
                     </li>
                 @endif
                 @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'freelancer')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('credit-requests') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('credit-requests') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="credit-requests">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('credit-requests') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M22.9166 10.918V17.168C22.9166 18.273 22.4776 19.3328 21.6962 20.1142C20.9148 20.8956 19.855 21.3346 18.7499 21.3346H6.24992C5.14485 21.3346 4.08504 20.8956 3.30364 20.1142C2.52224 19.3328 2.08325 18.273 2.08325 17.168V10.918H22.9166ZM7.302 15.0846H7.29158C7.15479 15.0853 7.01947 15.1129 6.89335 15.1659C6.76723 15.2189 6.65279 15.2962 6.55654 15.3934C6.36217 15.5897 6.25375 15.8552 6.25513 16.1315C6.25581 16.2683 6.28343 16.4036 6.33641 16.5297C6.38939 16.6559 6.4667 16.7703 6.56391 16.8666C6.66112 16.9628 6.77633 17.039 6.90298 17.0907C7.02962 17.1424 7.16521 17.1687 7.302 17.168C7.57827 17.168 7.84322 17.0582 8.03857 16.8629C8.23392 16.6675 8.34367 16.4026 8.34367 16.1263C8.34367 15.85 8.23392 15.5851 8.03857 15.3897C7.84322 15.1944 7.57827 15.0846 7.302 15.0846ZM13.5416 15.0846H11.4583C11.182 15.0846 10.917 15.1944 10.7217 15.3897C10.5263 15.5851 10.4166 15.85 10.4166 16.1263C10.4166 16.4026 10.5263 16.6675 10.7217 16.8629C10.917 17.0582 11.182 17.168 11.4583 17.168H13.5416C13.8179 17.168 14.0828 17.0582 14.2782 16.8629C14.4735 16.6675 14.5833 16.4026 14.5833 16.1263C14.5833 15.85 14.4735 15.5851 14.2782 15.3897C14.0828 15.1944 13.8179 15.0846 13.5416 15.0846ZM18.7499 4.66797C19.855 4.66797 20.9148 5.10696 21.6962 5.88836C22.4776 6.66976 22.9166 7.72957 22.9166 8.83464H2.08325C2.08325 7.72957 2.52224 6.66976 3.30364 5.88836C4.08504 5.10696 5.14485 4.66797 6.24992 4.66797H18.7499Z"
                                     fill="currentColor" />
@@ -310,12 +384,15 @@
                 @endif
 
                 @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('getStoreDetails') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('getStoreDetails') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="getStoreDetails">
                             <svg xmlns="http://www.w3.org/2000/svg"
-                                class="w-5 h-5 fill-white transition duration-25  group-hover:fill-primary "
-                                viewBox="0 0 576 512">
+                                class="w-5 h-5 transition duration-200
+                                     {{ request()->routeIs('getStoreDetails') ? 'text-primary' : 'text-white' }}"
+                                viewBox="0 0 576 512" fill="currentColor">
                                 <path
                                     d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z" />
                             </svg>
@@ -324,11 +401,15 @@
                     </li>
                 @endif
                 @if (session('user_details.user_role') == 'seller')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('other-seller-product') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('other-seller-product') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="other-seller-product">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('other-seller-product') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M12.5002 10.4736L16.2861 8.9592L6.91094 5.20915L3.67864 6.50207C3.51274 6.56843 3.36015 6.65677 3.22367 6.76295L12.5002 10.4736ZM2.54427 7.83748C2.51519 7.96885 2.5 8.10465 2.5 8.24296V17.8004C2.5 18.5671 2.96678 19.2565 3.67864 19.5413L10.8752 22.4199C11.1993 22.5495 11.535 22.6389 11.8752 22.688V11.5698L2.54427 7.83748ZM13.1252 22.6879C13.4652 22.6388 13.8008 22.5495 14.1248 22.4199L21.3214 19.5413C22.0332 19.2565 22.5 18.5671 22.5 17.8004V8.24296C22.5 8.1047 22.4848 7.96894 22.4558 7.83762L13.1252 11.5698V22.6879ZM21.7765 6.76305L17.9689 8.28606L8.5938 4.53601L10.8752 3.62346C11.9182 3.20624 13.0818 3.20624 14.1248 3.62346L21.3214 6.50207C21.4873 6.56845 21.6399 6.65683 21.7765 6.76305Z"
                                     fill="currentColor" />
@@ -338,11 +419,15 @@
                         </a>
                     </li>
 
-                    <li class="">
-                        <a href="{{ route('savePurchases') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <li class="mt-6">
+                        <a href="{{ route('seller.purchases') }}"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('seller.purchases') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="seller.purchases">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('seller.purchases') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1741_13705)">
                                     <path
                                         d="M15.5918 6.41984C14.9217 6.41868 14.8461 6.33527 14.845 5.6089C14.8439 4.16543 14.845 2.72196 14.845 1.20898H4.09275C3.24417 1.20898 3.00109 1.4708 3 2.38021C3 9.59988 3 16.8184 3.00109 24.038C3.00109 24.9486 3.24198 25.2081 4.09165 25.2081C9.03639 25.2093 13.98 25.2093 18.9237 25.2081C19.7482 25.2081 20 24.9451 20 24.0786V6.41984C18.4715 6.41984 17.0316 6.421 15.5918 6.41984ZM11.0982 10.5336C11.0982 10.4456 11.0686 10.4131 10.9909 10.3911C10.5989 10.2787 10.2145 10.1478 9.86416 9.92309C9.46451 9.66591 9.19844 9.30446 9.12727 8.80979C9.00026 7.93514 9.32764 7.16474 10.0766 6.69788C10.3689 6.51484 10.6876 6.41289 11.0215 6.3596C11.0839 6.34917 11.0971 6.31905 11.096 6.26229C11.096 6.114 11.0982 5.96571 11.096 5.81859C11.0938 5.75255 11.1113 5.72359 11.1792 5.72475C11.4058 5.72823 11.6336 5.72823 11.8613 5.72475C11.9281 5.72359 11.9467 5.74908 11.9456 5.81627C11.9413 5.96456 11.9467 6.11284 11.9424 6.26113C11.9402 6.3399 11.9697 6.36539 12.042 6.37582C12.7614 6.47081 13.3931 6.77434 13.9428 7.27364C13.9516 7.28175 13.957 7.29218 13.9691 7.3084C13.7589 7.60844 13.5497 7.90733 13.3351 8.21433C13.3077 8.19348 13.2837 8.17726 13.2618 8.15872C12.9037 7.8413 12.5008 7.61424 12.0497 7.48564C11.9511 7.459 11.9445 7.46247 11.9445 7.57137C11.9434 8.15061 11.9445 8.73101 11.9434 9.31026C11.9424 9.38092 11.9621 9.41336 12.031 9.43074C12.4252 9.52805 12.815 9.64274 13.1774 9.83737C13.518 10.0192 13.8092 10.2579 13.9844 10.6286C14.1443 10.9646 14.1804 11.3249 14.1366 11.6898C14.0151 12.7127 13.4008 13.2445 12.5062 13.4831C12.3519 13.5248 12.192 13.5399 12.0332 13.5596C11.9675 13.5677 11.9413 13.592 11.9434 13.6627C11.9467 13.8202 11.9413 13.9778 11.9456 14.1342C11.9478 14.2095 11.9216 14.2292 11.8537 14.228C11.6292 14.2245 11.4047 14.2245 11.1803 14.228C11.1146 14.2292 11.0938 14.2037 11.0949 14.1365C11.0982 13.9731 11.0927 13.8098 11.0982 13.6465C11.1003 13.5607 11.0642 13.5341 10.993 13.5248C10.2003 13.4113 9.50502 13.0707 8.905 12.5135C8.89186 12.5007 8.87872 12.488 8.86668 12.4752C8.8623 12.4706 8.86011 12.4648 8.85025 12.4486C9.07252 12.1578 9.2937 11.8682 9.52254 11.5705C9.97475 12.0037 10.4839 12.3026 11.0872 12.4405C11.0905 12.3941 11.096 12.3617 11.096 12.3293C11.096 11.7315 11.0949 11.1325 11.0982 10.5336ZM5.74282 15.9206C9.57291 15.9229 13.403 15.9229 17.232 15.9194C17.5386 15.9194 17.8802 15.9113 17.8736 16.3353C17.8682 16.7547 17.5265 16.7384 17.221 16.7373C15.3246 16.7315 13.4282 16.7338 11.5318 16.7338C9.59809 16.7338 7.66553 16.7315 5.73296 16.7373C5.4439 16.7373 5.13403 16.7442 5.1198 16.3527C5.10447 15.9136 5.43843 15.9206 5.74282 15.9206ZM5.77348 18.4843C9.58714 18.4773 13.4008 18.4727 17.2134 18.4611C17.5254 18.46 17.8583 18.4808 17.8802 18.8735C17.9043 19.3149 17.543 19.2883 17.2473 19.2883H11.4453C9.54773 19.2883 7.6502 19.2929 5.75267 19.2848C5.48113 19.2825 5.09352 19.3763 5.11432 18.8909C5.13184 18.46 5.47675 18.4843 5.77348 18.4843ZM17.8671 21.5114C17.8364 21.7338 17.6864 21.8022 17.5068 21.8242C17.5046 21.823 17.5035 21.8242 17.5024 21.8242C17.4882 21.83 17.4729 21.8335 17.4576 21.8346C16.9134 21.8763 16.3648 21.852 15.8184 21.852C14.3797 21.8531 12.9398 21.852 11.5011 21.852C9.58824 21.852 7.67429 21.852 5.76143 21.8531C5.47018 21.8531 5.11213 21.8937 5.12089 21.4604C5.1198 21.4558 5.1198 21.4523 5.1198 21.4477C5.10447 21.0075 5.43843 21.0156 5.74282 21.0156C9.57291 21.0179 13.403 21.0179 17.232 21.0144C17.5386 21.0144 17.8802 21.0051 17.8736 21.4291C17.8736 21.4465 17.8725 21.4627 17.8703 21.479C17.8747 21.4848 17.8802 21.4894 17.8846 21.4952C17.8791 21.4998 17.8725 21.5056 17.8671 21.5114ZM12.0759 12.4822C12.3508 12.43 12.6026 12.3246 12.7887 12.0906C13.0406 11.7732 13.0329 11.3086 12.7657 11.0526C12.5391 10.8348 12.2522 10.7491 11.9511 10.6518C11.9478 10.7085 11.9445 10.7479 11.9445 10.7873C11.9434 11.311 11.9445 11.8357 11.9445 12.3594C11.9445 12.5042 11.9445 12.5077 12.0759 12.4822ZM11.0106 7.459C10.8157 7.52387 10.6427 7.62466 10.5014 7.78569C10.2134 8.1147 10.1872 8.69626 10.658 8.96619C10.7445 9.016 10.8343 9.06002 10.9241 9.10404C10.9733 9.12721 11.0248 9.14227 11.0817 9.16313C11.0883 9.12837 11.096 9.10752 11.096 9.08783C11.096 8.56651 11.096 8.04519 11.0971 7.52503C11.0971 7.45321 11.0708 7.4393 11.0106 7.459Z"
@@ -364,11 +449,15 @@
                 @endif
 
                 @if (session('user_details.user_role') == 'admin')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('hibuy_product') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                                viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('hibuy_product') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="hibuy_product">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('hibuy_product') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M12.5002 10.4755L16.2861 8.96116L6.91094 5.2111L3.67864 6.50402C3.51274 6.57038 3.36015 6.65873 3.22367 6.76491L12.5002 10.4755ZM2.54427 7.83944C2.51519 7.9708 2.5 8.1066 2.5 8.24492V17.8023C2.5 18.569 2.96678 19.2585 3.67864 19.5432L10.8752 22.4218C11.1993 22.5515 11.535 22.6408 11.8752 22.6899V11.5718L2.54427 7.83944ZM13.1252 22.6899C13.4652 22.6408 13.8008 22.5514 14.1248 22.4218L21.3214 19.5432C22.0332 19.2585 22.5 18.569 22.5 17.8023V8.24492C22.5 8.10665 22.4848 7.9709 22.4558 7.83957L13.1252 11.5718V22.6899ZM21.7765 6.76501L17.9689 8.28801L8.5938 4.53796L10.8752 3.62541C11.9182 3.2082 13.0818 3.2082 14.1248 3.62541L21.3214 6.50402C21.4873 6.57041 21.6399 6.65878 21.7765 6.76501Z"
                                     fill="currentColor" />
@@ -376,10 +465,14 @@
                             <span class="ms-3 text-custom15">Hibuy Products</span>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="{{ route('promotion_list') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                    <li class="mt-6">
+                        <a href="{{ route('promotions') }}"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('promotions') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="promotion_list">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('promotions') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_1853_20490)">
                                     <path
@@ -415,11 +508,15 @@
                         </a>
                     </li>
                 @endif
-                <li class="">
+                <li class="mt-6">
                     <a href="{{ route('queries') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                            viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('queries') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="queries">
+                        <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('queries') ? 'text-primary' : 'text-white' }}"
+                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
                                 d="M2.5 13C2.5 7.47715 6.97715 3 12.5 3C18.0228 3 22.5 7.47715 22.5 13C22.5 18.5228 18.0228 23 12.5 23C6.97715 23 2.5 18.5228 2.5 13ZM12.5 10C12.2015 10 11.9344 10.1296 11.7497 10.3388C11.3843 10.7529 10.7523 10.7923 10.3383 10.4268C9.9242 10.0614 9.8848 9.42942 10.2503 9.01535C10.7985 8.3942 11.6038 8 12.5 8C14.1569 8 15.5 9.34315 15.5 11C15.5 12.3072 14.6647 13.4171 13.5 13.829V14C13.5 14.5523 13.0523 15 12.5 15C11.9477 15 11.5 14.5523 11.5 14V13.5C11.5 12.6284 12.1873 12.112 12.7482 11.9692C13.181 11.859 13.5 11.4655 13.5 11C13.5 10.4477 13.0523 10 12.5 10ZM12.5 16C11.9477 16 11.5 16.4477 11.5 17C11.5 17.5523 11.9477 18 12.5 18H12.51C13.0623 18 13.51 17.5523 13.51 17C13.51 16.4477 13.0623 16 12.51 16H12.5Z"
                                 fill="currentColor" />
@@ -428,10 +525,14 @@
                     </a>
                 </li>
                 @if (session('user_details.user_role') == 'seller')
-                    <li class="">
+                    <li class="mt-6">
                         <a href="{{ route('BoostProducts') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg width="22" height="26" viewBox="0 0 22 26" fill="currentColor"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('BoostProducts') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="BoostProducts">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('BoostProducts') ? 'text-primary' : 'text-white' }}"
+                                width="22" height="26" viewBox="0 0 22 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M10.2619 25.5007C8.05567 24.8669 5.95904 24.267 3.8664 23.6611C1.32335 22.9257 1.32135 22.9237 1.32335 20.3129C1.32534 18.9218 1.33132 17.5307 1.33929 16.1376C1.33929 16.0758 1.37516 16.012 1.43894 15.8008C2.23414 16.0758 3.02935 16.3469 3.82056 16.6259C4.82105 16.9766 5.84943 17.2676 6.80806 17.7101C7.73679 18.1386 8.42836 17.9891 9.08605 17.2457C9.38101 16.9109 9.77363 16.6637 10.2599 16.2612C10.2619 19.4141 10.2619 22.3677 10.2619 25.5007Z"
@@ -458,10 +559,14 @@
                             <span class="ms-3 text-custom15">Boost Products</span>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="{{ route('inquirieslist') }}"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg width="22" height="26" viewBox="0 0 22 26" fill="currentColor"
+                    <li class="mt-6">
+                        <a href="{{ route('seller.inquiries') }}"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                  {{ request()->routeIs('seller.inquiries') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="seller.inquiries">
+                            <svg class="w-5 h-5 transition duration-200
+                                        {{ request()->routeIs('seller.inquiries') ? 'text-primary' : 'text-white' }}"
+                                width="22" height="26" viewBox="0 0 22 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M10.2619 25.5007C8.05567 24.8669 5.95904 24.267 3.8664 23.6611C1.32335 22.9257 1.32135 22.9237 1.32335 20.3129C1.32534 18.9218 1.33132 17.5307 1.33929 16.1376C1.33929 16.0758 1.37516 16.012 1.43894 15.8008C2.23414 16.0758 3.02935 16.3469 3.82056 16.6259C4.82105 16.9766 5.84943 17.2676 6.80806 17.7101C7.73679 18.1386 8.42836 17.9891 9.08605 17.2457C9.38101 16.9109 9.77363 16.6637 10.2599 16.2612C10.2619 19.4141 10.2619 22.3677 10.2619 25.5007Z"
@@ -490,11 +595,15 @@
                     </li>
                 @endif
 
-                <li class="">
+                <li class="mt-6">
                     <a href="{{ session('user_details.user_role') == 'admin' ? route('notifications') : route('allNotifications') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                            viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('notifications') || request()->routeIs('allNotifications') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="notifications">
+                        <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('notifications') || request()->routeIs('allNotifications') ? 'text-primary' : 'text-white' }}"
+                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M12.3739 2.10019C12.9263 2.10028 13.4561 2.31976 13.8467 2.71039C14.2373 3.10101 14.4568 3.63079 14.4569 4.18321C15.6534 4.74879 16.6734 5.62934 17.4076 6.73047C18.1417 7.83159 18.5624 9.11176 18.6244 10.4337L18.6229 13.5583C18.7013 14.206 18.9307 14.8262 19.2927 15.369C19.6546 15.9119 20.1389 16.3621 20.7067 16.6835L4.04181 16.6843C4.60934 16.3628 5.09348 15.9127 5.45527 15.37C5.81707 14.8273 6.0464 14.2072 6.12483 13.5597L6.12336 10.4337C6.18538 9.11176 6.60603 7.83159 7.3402 6.73046C8.07437 5.62934 9.09437 4.74879 10.2909 4.18321C10.291 3.63079 10.5104 3.10101 10.9011 2.71039C11.2917 2.31976 11.8215 2.10028 12.3739 2.10019Z"
                                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -508,11 +617,15 @@
                     </a>
                 </li>
 
-                <li class="">
+                <li class="mt-6">
                     <a href="{{ route('settings') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                            viewBox="0 0 25 26" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('settings') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="settings">
+                        <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('settings') ? 'text-primary' : 'text-white' }}"
+                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M12.5036 10.277C11.8353 10.277 11.2094 10.5363 10.7355 11.0102C10.2639 11.484 10.0024 12.1099 10.0024 12.7783C10.0024 13.4466 10.2639 14.0725 10.7355 14.5464C11.2094 15.018 11.8353 15.2796 12.5036 15.2796C13.172 15.2796 13.7979 15.018 14.2718 14.5464C14.7434 14.0725 15.0049 13.4466 15.0049 12.7783C15.0049 12.1099 14.7434 11.484 14.2718 11.0102C14.0403 10.7769 13.7648 10.592 13.4613 10.4661C13.1577 10.3403 12.8322 10.276 12.5036 10.277ZM21.7198 15.5411L20.2579 14.2916C20.3272 13.8669 20.3629 13.4332 20.3629 13.0018C20.3629 12.5704 20.3272 12.1345 20.2579 11.712L21.7198 10.4625C21.8302 10.368 21.9092 10.2421 21.9464 10.1015C21.9835 9.96097 21.977 9.81245 21.9276 9.6757L21.9075 9.61758C21.5052 8.49254 20.9024 7.4497 20.1282 6.53958L20.088 6.49264C19.994 6.38211 19.8687 6.30266 19.7286 6.26475C19.5886 6.22684 19.4403 6.23226 19.3034 6.28029L17.4883 6.92629C16.8178 6.37641 16.0712 5.94276 15.262 5.641L14.9111 3.74323C14.8846 3.60027 14.8152 3.46875 14.7122 3.36614C14.6092 3.26353 14.4774 3.19469 14.3343 3.16876L14.274 3.15759C13.1116 2.94747 11.8867 2.94747 10.7244 3.15759L10.664 3.16876C10.5209 3.19469 10.3891 3.26353 10.2861 3.36614C10.1831 3.46875 10.1138 3.60027 10.0873 3.74323L9.73412 5.64994C8.93261 5.95411 8.18594 6.3867 7.52342 6.93076L5.69495 6.28029C5.55807 6.23188 5.4097 6.22626 5.26956 6.2642C5.12942 6.30213 5.00413 6.3818 4.91036 6.49264L4.87012 6.53958C4.09737 7.45067 3.49468 8.49325 3.09083 9.61758L3.07071 9.6757C2.97013 9.95511 3.05283 10.2681 3.2786 10.4625L4.75836 11.7255C4.68907 12.1457 4.65554 12.5749 4.65554 12.9996C4.65554 13.4288 4.68907 13.8579 4.75836 14.2737L3.28307 15.5366C3.17263 15.6312 3.0936 15.7571 3.05646 15.8976C3.01933 16.0382 3.02586 16.1867 3.07518 16.3235L3.0953 16.3816C3.49989 17.5059 4.09671 18.5453 4.87459 19.4596L4.91483 19.5065C5.00883 19.617 5.13412 19.6965 5.27418 19.7344C5.41424 19.7723 5.5625 19.7669 5.69942 19.7189L7.52789 19.0684C8.194 19.616 8.93612 20.0497 9.73859 20.3492L10.0918 22.2559C10.1182 22.3989 10.1876 22.5304 10.2906 22.633C10.3936 22.7356 10.5254 22.8045 10.6685 22.8304L10.7288 22.8416C11.9026 23.0528 13.1047 23.0528 14.2785 22.8416L14.3388 22.8304C14.4819 22.8045 14.6137 22.7356 14.7167 22.633C14.8197 22.5304 14.889 22.3989 14.9155 22.2559L15.2665 20.3582C16.0756 20.0542 16.8222 19.6227 17.4928 19.0729L19.3079 19.7189C19.4447 19.7673 19.5931 19.7729 19.7333 19.735C19.8734 19.697 19.9987 19.6173 20.0925 19.5065L20.1327 19.4596C20.9106 18.5409 21.5074 17.5059 21.912 16.3816L21.9321 16.3235C22.0282 16.0463 21.9455 15.7356 21.7198 15.5411ZM12.5036 16.7079C10.3332 16.7079 8.574 14.9488 8.574 12.7783C8.574 10.6078 10.3332 8.84864 12.5036 8.84864C14.6741 8.84864 16.4333 10.6078 16.4333 12.7783C16.4333 14.9488 14.6741 16.7079 12.5036 16.7079Z"
                                 fill="currentColor" />
@@ -521,24 +634,33 @@
                     </a>
                 </li>
 
-                <li class="">
+                <li class="mt-6">
                     <a href="{{ route('logout') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                            viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('logout') ? 'active bg-white text-primary' : 'text-white' }}"
+                        data-tab="logout">
+                        <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->routeIs('logout') ? 'text-primary' : 'text-white' }}"
+                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M6.94444 17.4447L2.5 13.0002M2.5 13.0002L6.94444 8.55577M2.5 13.0002H18.0556M11.3889 17.4447V18.5558C11.3889 19.4398 11.7401 20.2877 12.3652 20.9128C12.9903 21.5379 13.8382 21.8891 14.7222 21.8891H19.1667C20.0507 21.8891 20.8986 21.5379 21.5237 20.9128C22.1488 20.2877 22.5 19.4398 22.5 18.5558V7.44466C22.5 6.56061 22.1488 5.71276 21.5237 5.08764C20.8986 4.46252 20.0507 4.11133 19.1667 4.11133H14.7222C13.8382 4.11133 12.9903 4.46252 12.3652 5.08764C11.7401 5.71276 11.3889 6.56061 11.3889 7.44466V8.55577"
-                                stroke="#D9D9D9" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"
-                                fill="currentColor" />
+                                stroke="#D9D9D9" stroke-width="1.66667" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
                         <span class="ms-3 text-custom15">Logout</span>
                     </a>
                 </li>
-                @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
-                    <li class="">
-                        <a href="#"
-                            class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                            <svg width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                @if (
+                    (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer') &&
+                        session('user_details.store_id'))
+                    <li class="mt-6">
+                        <a href="https://hibuy.vercel.app/store/{{ session('user_details.store_id') }}" target="_blank"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'active bg-white text-primary' : 'text-white' }}">
+                            <svg class="w-5 h-5 transition duration-200
+                                    {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_2377_15331)">
                                     <path
@@ -625,15 +747,12 @@
                                 d="M11.1632 24.4999C8.54665 24.4999 6.42554 22.4853 6.42554 20H15.9008C15.9008 22.4853 13.7797 24.4999 11.1632 24.4999Z"
                                 fill="#D9D9D9" />
                         </svg>
+
+                        <!-- Notification dot -->
                         <div
-                            class="absolute block w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900">
+                            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white">
                         </div>
                     </button>
-
-
-
-
-
 
                     <!-- Dropdown menu -->
                     <div id="dropdownNotification"
@@ -684,7 +803,8 @@
                                 </div>
                             @endforeach
                         @endif
-                        <a href="{{ route('allNotifications') }}"
+
+                        <a href="{{ session('user_details.user_role') == 'admin' ? route('notifications') : route('allNotifications') }}"
                             class="block py-2 text-sm font-medium text-center text-white rounded-b-lg  bg-primary">
                             <div class="inline-flex items-center ">
                                 <svg class="w-4 h-4 me-2 text-white" aria-hidden="true"
@@ -702,30 +822,52 @@
                         id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                         data-dropdown-placement="bottom">
                         <span class="sr-only">Open user menu</span>
-                        <img class="w-12 h-12 rounded-full" src="{{ asset('asset/Ellipse 2.png') }}" alt="user photo">
+                        @php
+                            $seller = \App\Models\Seller::where('user_id', session('user_details.user_id'))->first();
+                            $profilePicture = asset('asset/Ellipse 2.png');
+
+                            if ($seller && $seller->personal_info) {
+                                $info = json_decode($seller->personal_info, true);
+
+                                if (
+                                    !empty($info['profile_picture']) &&
+                                    file_exists(public_path($info['profile_picture']))
+                                ) {
+                                    $profilePicture = asset($info['profile_picture']);
+                                }
+                            }
+                        @endphp
+
+                        <img src="{{ $profilePicture }}" class="w-12 h-12 rounded-full object-cover" />
                     </button>
                     <!-- Dropdown menu -->
                     <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
                         id="user-dropdown">
                         <div class="px-4 py-3">
-                            <span class="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
-                            <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
+                            @if (session()->has('user_details') && isset(session('user_details')['user_name']))
+                                <span class="block text-sm text-gray-900 dark:text-white">
+                                    {{ session('user_details')['user_name'] }}
+                                </span>
+                                <span
+                                    class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ session('user_details')['user_email'] }}</span>
+                            @endif
+
                         </div>
                         <ul class="py-2" aria-labelledby="user-menu-button">
-                            <li>
+                            {{-- <li>
                                 <a href="#"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
-                            </li>
+                            </li> --}}
                             <li>
-                                <a href="#"
+                                <a href="{{ route('settings') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <a href="#"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
-                            </li>
+                            </li> --}}
                             <li>
-                                <a href="#"
+                                <a href="{{ route('logout') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
                                     out</a>
                             </li>
@@ -744,4 +886,58 @@
         </div>
     </div>
 
+    <script>
+        (function() {
+            try {
+                const sidebar = document.getElementById('default-sidebar');
+                if (!sidebar) return;
+
+                const tabs = sidebar.querySelectorAll('a[data-tab]');
+
+                // Save scroll on click
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        try {
+                            localStorage.setItem('sidebarScroll', sidebar.scrollTop);
+                        } catch (e) {
+                            console.error('Error saving scroll:', e);
+                        }
+                    });
+                });
+
+                const restoreScrollSmoothly = () => {
+                    try {
+                        const savedScroll = parseInt(localStorage.getItem('sidebarScroll'), 10);
+                        if (!isNaN(savedScroll) && savedScroll > 0) {
+                            sidebar.scrollTo({
+                                top: savedScroll,
+                                behavior: 'smooth'
+                            });
+                        } else {
+                            const activeTab = sidebar.querySelector('a.active');
+                            if (activeTab) {
+                                activeTab.scrollIntoView({
+                                    block: 'center',
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Scroll restore failed:', e);
+                    }
+                };
+
+                // Restore on DOM ready
+                if (document.readyState === 'complete') {
+                    setTimeout(restoreScrollSmoothly, 100);
+                } else {
+                    window.addEventListener('load', () => {
+                        setTimeout(restoreScrollSmoothly, 100);
+                    });
+                }
+            } catch (e) {
+                console.error('Sidebar scroll error:', e);
+            }
+        })();
+    </script>
 @endsection

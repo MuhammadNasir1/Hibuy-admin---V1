@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SellerRegistration;
-use App\Models\Customer;
-use App\Models\Seller;
 use App\Models\User;
+use App\Models\Store;
+use App\Models\Seller;
+use App\Models\Customer;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\ForgotPasswordMail;
+use App\Mail\SellerRegistration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Mail\ForgotPasswordMail;
+use Vinkla\Hashids\Facades\Hashids;
 
 
 class AuthController extends Controller
@@ -29,39 +31,49 @@ class AuthController extends Controller
         return view('Auth.signup', ['role' => $role]);
     }
 
+    public function register(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'user_name' => 'required|string',
+                'user_email' => 'required|string|email|unique:users',
+                'user_password' => 'required|min:8',
+                'user_role' => 'required|string',
+            ]);
 
-    
+            $referralCode = $request->input('referred_by') ?? $request->query('ref');
+            $referredBy = null;
 
-public function register(Request $request)
-{
-    try {
-        $validatedData = $request->validate([
-            'user_name' => 'required|string',
-            'user_email' => 'required|string|email|unique:users',
-            'user_password' => 'required|min:8',
-            'user_role' => 'required|string',
-        ]);
+            if ($referralCode) {
+                $decodedArray = Hashids::decode($referralCode);
+                $decodedId = $decodedArray[0] ?? null;
 
-        $user = User::create([
-            'user_name' => $validatedData['user_name'],
-            'user_email' => $validatedData['user_email'],
-            'user_password' => Hash::make($validatedData['user_password']),
-            'user_role' => $validatedData['user_role'],
-        ]);
+                if ($decodedId && User::where('user_id', $decodedId)->exists()) {
+                    $referredBy = $decodedId;
+                }
+            }
 
-        if ($validatedData['user_role'] == 'customer') {
-            Customer::create(['user_id' => $user->user_id]);
-        } elseif (in_array($validatedData['user_role'], ['seller', 'freelancer'])) {
-            Seller::create(['user_id' => $user->user_id]);
+            $user = User::create([
+                'user_name' => $validatedData['user_name'],
+                'user_email' => $validatedData['user_email'],
+                'user_password' => Hash::make($validatedData['user_password']),
+                'user_role' => $validatedData['user_role'],
+                'referred_by' => $referredBy,
+            ]);
+
+            if ($validatedData['user_role'] === 'customer') {
+                Customer::create(['user_id' => $user->user_id]);
+            } elseif (in_array($validatedData['user_role'], ['seller', 'freelancer'])) {
+                Seller::create(['user_id' => $user->user_id]);
+            }
+
+            return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
-
-        return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
-    } catch (ValidationException $e) {
-        return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
-}
 
     public function login(Request $request)
     {
@@ -96,7 +108,8 @@ public function register(Request $request)
 
         // Get seller KYC status
         $kyc_status = Seller::where('user_id', $user->user_id)->first();
-
+        $store = Store::where('user_id', $user->user_id)->first();
+        $store_id = $store ? $store->store_id : null;
         // Regenerate session to prevent session fixation attacks
         session()->regenerate();
 
@@ -104,7 +117,10 @@ public function register(Request $request)
         session([
             'user_details' => [
                 'user_id' => $user->user_id,
-                'user_role' => $user->user_role
+                'user_role' => $user->user_role,
+                'user_name' => $user->user_name,
+                'user_email' => $user->user_email,
+                'store_id' => $store_id,
             ]
         ]);
         $role = $user->user_role;

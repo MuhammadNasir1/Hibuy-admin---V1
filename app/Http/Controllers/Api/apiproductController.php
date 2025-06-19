@@ -163,13 +163,13 @@ class apiproductController extends Controller
             // Attach reviews
             foreach ($product->reviews as $review) {
                 $response['reviews'][] = [
-                    'review_id' => $review->review_id,
-                    'user_id'   => $review->user_id,
-                    'username'  => $review->user->user_name ?? 'Unknown', // Fetch username
-                    'rating'    => $review->rating,
-                    'review'    => $review->review,
-                    'images'    => $review->images,
-                    'review_date'    => $review->created_at
+                    'review_id'    => $review->review_id,
+                    'user_id'      => $review->user_id,
+                    'username'     => $review->user->user_name ?? 'Unknown',
+                    'rating'       => $review->rating,
+                    'review'       => $review->review,
+                    'images'       => json_decode($review->images, true), // ✅ Decode review images
+                    'review_date'  => $review->created_at
                 ];
             }
 
@@ -251,17 +251,19 @@ class apiproductController extends Controller
                 if (!empty($item->product)) {
                     // Convert images to just the first one
                     $images = json_decode($item->product->product_images, true);
-                    $item->product->product_images = $images[0] ?? null;
+                    $item->product->product_image = $images[0] ?? null;
+                    unset($item->product->product_images); // remove old key if needed
 
                     // Flatten category name
                     $item->product->category_name = $item->product->category->name ?? null;
 
-                    // Optionally remove the full category object if you don't want it
+                    // Remove the full category object
                     unset($item->product->category);
                 }
 
                 return $item;
             });
+
 
         if ($wishlist->isEmpty()) {
             return response()->json([
@@ -359,7 +361,8 @@ class apiproductController extends Controller
                 'product_discounted_price',
                 'product_images'
             )
-                ->with(['category:id,name']);
+                ->with(['category:id,name'])
+                ->where('store_id', '!=', 0);
 
             // Apply filters
             $products->when($query, function ($q) use ($query) {

@@ -9,8 +9,8 @@
         }
 
         /* .active-tab:hover{
-                color: #FE8D2F;
-            } */
+                        color: #FE8D2F;
+                    } */
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <div class="container p-6 mx-auto">
@@ -65,14 +65,14 @@
                     </li>
                     {{-- Referal --}}
                     @if (session('user_details.user_role') !== 'admin')
-                    <li role="presentation">
-                        <button
-                            class="inline-block p-4 border-b-2 rounded-t-lg hover:text-[#FE8D2F] hover:border-gray-300 dark:hover:text-gray-300"
-                            id="referrals-tab" data-tabs-target="#referrals" type="button" role="tab"
-                            aria-controls="referrals" aria-selected="false">
-                            My Referrals
-                        </button>
-                    </li>
+                        <li role="presentation">
+                            <button
+                                class="inline-block p-4 border-b-2 rounded-t-lg hover:text-[#FE8D2F] hover:border-gray-300 dark:hover:text-gray-300"
+                                id="referrals-tab" data-tabs-target="#referrals" type="button" role="tab"
+                                aria-controls="referrals" aria-selected="false">
+                                My Referrals
+                            </button>
+                        </li>
                     @endif
                 </ul>
             </div>
@@ -179,9 +179,9 @@
                             <div class="flex justify-center">
                                 <div class="mt-4 w-60">
                                     <button
-                                        class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
-                                        id="SsubmitBtn" type="submit">
-                                        <div id="SbtnSpinner" class="hidden">
+                                        class="SsubmitBtn w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
+                                        type="submit">
+                                        <div class="SbtnSpinner hidden">
                                             <svg aria-hidden="true"
                                                 class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
                                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -193,7 +193,7 @@
                                                     fill="currentFill" />
                                             </svg>
                                         </div>
-                                        <div id="SbtnText">
+                                        <div class="SbtnText">
                                             Update Profile
                                         </div>
                                     </button>
@@ -305,9 +305,9 @@
                             <div class="flex justify-center">
                                 <div class="mt-4 w-60">
                                     <button
-                                        class="w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
-                                        id="SsubmitBtn" type="submit">
-                                        <div id="SbtnSpinner" class="hidden">
+                                        class="SsubmitBtn w-full px-3 py-2 font-semibold text-white rounded-full shadow-md bg-primary"
+                                        type="submit">
+                                        <div class="SbtnSpinner hidden">
                                             <svg aria-hidden="true"
                                                 class="w-6 h-6 mx-auto text-center text-gray-200 animate-spin fill-customOrangeLight"
                                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -319,7 +319,7 @@
                                                     fill="currentFill" />
                                             </svg>
                                         </div>
-                                        <div id="SbtnText">
+                                        <div class="SbtnText">
                                             Update Password
                                         </div>
                                     </button>
@@ -348,10 +348,23 @@
                                         <div class="mb-4">
                                             <h2
                                                 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                                Referral
-                                                ID</h2>
+                                                Referral ID</h2>
+
+                                            @php
+                                                use Vinkla\Hashids\Facades\Hashids;
+
+                                                $userId = session('user_details.user_id');
+                                                $encodedUserId = Hashids::encode($userId);
+                                                // $referralLink =
+                                                //     'http://127.0.0.1:8000/signup/seller?ref=' . $encodedUserId;
+
+                                                $referralLink = 'https://admin.hibuyo.com/signup/seller?ref=' . $encodedUserId;
+
+                                            @endphp
+
+
                                             <div class="flex">
-                                                <input type="text" id="referral-id" value="ABC12345"
+                                                <input type="text" id="referral-id" value="{{ $encodedUserId }}"
                                                     class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                     readonly>
                                                 <span
@@ -372,11 +385,9 @@
                                         <div class="mb-4">
                                             <h2
                                                 class="text-sm md:text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                                Referral
-                                                Link</h2>
+                                                Referral Link</h2>
                                             <div class="flex">
-                                                <input type="text" id="referral-link"
-                                                    value="https://example.com/referral/ABC12345"
+                                                <input type="text" id="referral-link" value="{{ $referralLink }}"
                                                     class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                     readonly>
                                                 <span
@@ -393,6 +404,7 @@
                                                 </span>
                                             </div>
                                         </div>
+
                                         <button type="button"
                                             class="w-full text-sm md:text-md bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Invite
                                             Friends</button>
@@ -403,22 +415,24 @@
                     </div>
                     <div class="bg-none">
                         <h3 class="text-md md:text-3xl font-bold text-customBlack">
-                            My Referals (5)
+                            My Referrals ({{ $referredCount }})
                         </h3>
                         @php
-                            $headers = ['Sr.', 'ID', 'Name', 'Email Address', 'Date Joined'];
+                            $headers = ['Sr.', 'Name', 'Email Address', 'Date Joined'];
                         @endphp
 
                         <x-table :headers="$headers">
                             <x-slot name="tablebody">
 
-                                <tr>
-                                    <td>1</td>
-                                    <td>A2132</td>
-                                    <td>Noman Ahmad</td>
-                                    <td>email@gmail.com</td>
-                                    <td>Jan 2, 2024</td>
-                                </tr>
+                                @foreach ($referredUsers as $index => $user)
+                                    <tr class="border-t">
+                                        <td>{{ $index + 1 }}</td>
+                                        {{-- <td class="px-4 py-2 border">{{ $currentUser->referral_code ?? 'N/A' }}</td> --}}
+                                        <td>{{ $user->user_name }}</td>
+                                        <td>{{ $user->user_email }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($user->created_at)->format('M d, Y') }}</td>
+                                    </tr>
+                                @endforeach
 
 
                             </x-slot>
@@ -473,7 +487,7 @@
                 }
             });
 
-            $("#passwordForm ,#settingForm").submit(function(e) {
+            $("#settingForm , #passwordForm ").submit(function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
                 var $form = $(this);
@@ -485,14 +499,14 @@
                     processData: false,
                     contentType: false,
                     beforeSend: function() {
-                        $("#SbtnSpinner").removeClass("hidden");
-                        $("#SbtnText").addClass("hidden");
-                        $("#SsubmitBtn").attr("disabled", true);
+                        $(".SbtnSpinner").removeClass("hidden");
+                        $(".SbtnText").addClass("hidden");
+                        $(".SsubmitBtn").attr("disabled", true);
                     },
                     success: function(response) {
-                        $("#SbtnSpinner").addClass("hidden");
-                        $("#SbtnText").removeClass("hidden");
-                        $("#SsubmitBtn").attr("disabled", false);
+                        $(".SbtnSpinner").addClass("hidden");
+                        $(".SbtnText").removeClass("hidden");
+                        $(".SsubmitBtn").attr("disabled", false);
 
                         Swal.fire({
                             position: "center",
@@ -509,9 +523,9 @@
                     },
                     error: function(jqXHR) {
                         let response = JSON.parse(jqXHR.responseText);
-                        $("#SbtnSpinner").addClass("hidden");
-                        $("#SbtnText").removeClass("hidden");
-                        $("#SsubmitBtn").attr("disabled", false);
+                        $(".SbtnSpinner").addClass("hidden");
+                        $(".SbtnText").removeClass("hidden");
+                        $(".SsubmitBtn").attr("disabled", false);
 
                         Swal.fire({
                             position: "center",

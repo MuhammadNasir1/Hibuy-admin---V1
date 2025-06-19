@@ -212,16 +212,19 @@
                                             <div
                                                 class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                                 <label class="md:w-32">Full Name</label>
-                                                <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                                <input
+                                                    class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                     type="text" placeholder="Enter Here" name="full_name"
-                                                    value="{{ $personal_info['full_name'] ?? '' }}" required>
+                                                    value="{{ $personal_info['full_name'] ?? ($user->user_name ?? '') }}"
+                                                    required>
                                             </div>
 
                                             <!-- Address -->
                                             <div
                                                 class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                                 <label class="md:w-32">Address</label>
-                                                <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                                <input
+                                                    class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                     type="text" placeholder="Enter Here" name="address"
                                                     value="{{ $personal_info['address'] ?? '' }}" required>
                                             </div>
@@ -229,23 +232,14 @@
 
                                         <!-- Profile Picture -->
                                         <div class="flex justify-center">
-                                            <div class="flex gap-5 items-center">
-                                                @if (!empty($personal_info['profile_picture']))
-                                                    <div
-                                                        class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
-                                                        <img src="{{ asset($personal_info['profile_picture']) }}"
-                                                            alt="Profile Picture"
-                                                            class="w-full h-full object-cover rounded-full">
-                                                    </div>
-                                                    <input type="hidden" name="profile_picture_path"
-                                                        value="{{ $personal_info['profile_picture'] ?? '' }}">
-                                                @endif
-                                                <div
-                                                    class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
-                                                    <x-image-video-uploader name="profile_picture" id="profile_picture"
-                                                        accept="image/*" />
-                                                </div>
-                                            </div>
+
+                                            @if (!empty($personal_info['profile_picture']))
+                                                <input type="hidden" name="profile_picture_path"
+                                                    value="{{ $personal_info['profile_picture'] }}">
+                                            @endif
+                                            <x-image-video-uploader name="profile_picture" id="profile_picture"
+                                                preview="{{ $personal_info['profile_picture'] ?? '' }}" type="image"
+                                                previewClass="w-24 h-24 md:w-32 md:h-32 rounded-full" />
                                         </div>
                                     </div>
 
@@ -254,7 +248,8 @@
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Phone No.</label>
-                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            <input
+                                                class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                 type="number" placeholder="Enter Here" name="phone_no"
                                                 value="{{ $personal_info['phone_no'] ?? '' }}" required>
                                         </div>
@@ -263,54 +258,51 @@
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Email</label>
-                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            <input
+                                                class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                 type="email" placeholder="Enter Here" name="email"
-                                                value="{{ $personal_info['email'] ?? '' }}" required>
+                                                value="{{ $personal_info['email'] ?? ($user->user_email ?? '') }}"
+                                                required>
                                         </div>
                                     </div>
 
                                     <!-- CNIC -->
                                     <div class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6">
                                         <label class="md:w-32">CNIC</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="number" placeholder="Enter Here" name="cnic"
                                             value="{{ $personal_info['cnic'] ?? '' }}" required>
                                     </div>
 
                                     <!-- CNIC Images -->
                                     <div
-                                        class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-20 text-base font-semibold">
+                                        class="flex flex-col lg:flex-row w-full gap-2 md:gap-12 mt-6 mb-20 text-base font-semibold items-start  justify-center ">
                                         <!-- Front Image -->
                                         <div>
-                                            <h3 class="pb-2">Front Image</h3>
-                                            <div
-                                                class="w-full rounded-lg flex flex-col lg:flex-row gap-2  items-center justify-center">
-                                                @if (!empty($personal_info['front_image']))
-                                                    <img src="{{ asset($personal_info['front_image']) }}"
-                                                        alt="Front Image"
-                                                        class="h-full w-auto lg:w-48 object-contain mr-3">
-                                                    <input type="hidden" name="front_image_path"
-                                                        value="{{ $personal_info['front_image'] ?? '' }}">
-                                                @endif
-                                                <x-image-video-uploader name="front_image" id="front_image"
-                                                    accept="image/*" />
-                                            </div>
+                                            <h3 class="pb-2">CNIC Front Image</h3>
+
+                                            @if (!empty($personal_info['front_image']))
+                                                <input type="hidden" name="front_image_path"
+                                                    value="{{ $personal_info['front_image'] }}">
+                                            @endif
+                                            <x-image-video-uploader name="front_image" id="front_image" type="image"
+                                                previewClass="h-full w-auto object-contain"
+                                                preview="{{ $personal_info['front_image'] ?? '' }}" />
                                         </div>
 
                                         <!-- Back Image -->
                                         <div>
-                                            <h3 class="pb-2">Back Image</h3>
-                                            <div
-                                                class="w-full rounded-lg flex flex-col lg:flex-row gap-2 items-center justify-center">
-                                                @if (!empty($personal_info['back_image']))
-                                                    <img src="{{ asset($personal_info['back_image']) }}" alt="Back Image"
-                                                        class="h-full w-auto lg:w-48 object-contain mr-3">
-                                                    <input type="hidden" name="back_image_path"
-                                                        value="{{ $personal_info['back_image'] ?? '' }}">
-                                                @endif
-                                                <x-image-video-uploader name="back_image" id="back_image"
-                                                    accept="image/*" />
-                                            </div>
+                                            <h3 class="pb-2">CNIC Back Image</h3>
+
+                                            @if (!empty($personal_info['back_image']))
+                                                <input type="hidden" name="back_image_path"
+                                                    value="{{ $personal_info['back_image'] }}">
+                                            @endif
+                                            <x-image-video-uploader name="back_image" id="back_image" type="image"
+                                                previewClass="h-full w-auto object-contain"
+                                                preview="{{ $personal_info['back_image'] ?? '' }}" />
+
                                         </div>
                                     </div>
 
@@ -323,6 +315,7 @@
                                         </button>
                                     </div>
                                 </form>
+
                             </div>
                         </div>
 
@@ -380,23 +373,15 @@
                                         </div>
                                     </div>
                                     <div class="flex justify-center">
-                                        <div class=" flex gap-5">
-                                            @if (!empty($store_info['profile_picture_store']))
-                                                <div
-                                                    class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
-                                                    <img src="{{ asset($store_info['profile_picture_store']) }}"
-                                                        alt="Profile Picture"
-                                                        class="w-full h-full object-cover rounded-full">
-                                                    <input type="text" name="profile_picture_store_path"
-                                                        value="{{ $store_info['profile_picture_store'] }}" hidden>
-                                                </div>
-                                            @endif
-                                            <div
-                                                class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
-                                                <x-image-video-uploader name="profile_picture_store" id="profile_picture2"
-                                                    accept="image/*" />
-                                            </div>
-                                        </div>
+
+                                        @if (!empty($store_info['profile_picture_store']))
+                                            <input type="hidden" name="profile_picture_store_path"
+                                                value="{{ $store_info['profile_picture_store'] }}">
+                                        @endif
+                                        <x-image-video-uploader name="profile_picture_store" id="profile_picture_store"
+                                            preview="{{ $store_info['profile_picture_store'] ?? '' }}" type="image"
+                                            previewClass="w-24 h-24 md:w-32 md:h-32 rounded-full" />
+
                                     </div>
 
                                 </div>
@@ -415,7 +400,7 @@
                                         <label class="md:w-32">Email</label>
                                         <input class="rounded-lg w-full p-2 border border-gray-300 text-[#333]"
                                             type="email" placeholder="Enter Here" name="email"
-                                            value="{{ $store_info['email'] ?? '' }}" required>
+                                            value="{{ $store_info['email'] ?? ($user->user_email ?? '') }}" required>
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
@@ -433,7 +418,8 @@
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
-                                        <label class="md:w-32">Province/Region</label>
+                                        <label class="md:w-32">Province/
+                                            Region</label>
                                         <select name="province" id="province"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#333]" required>
                                             <option value="">Select Province</option>
@@ -476,14 +462,25 @@
                                         value="{{ $store_info['address'] ?? '' }}" required>
                                 </div>
 
-                                <div
-                                    class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 mb-32 gap-2 md:gap-0 relative">
+                                <div class="location-section flex flex-col md:flex-row md:items-center mb-32 md:mb-20 text-sm font-semibold mt-6 gap-2 md:gap-0 relative"
+                                    data-location="store">
                                     <label class="md:w-32">Pin Location</label>
                                     <div class="relative w-full">
-                                        <input class="rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
-                                            type="text" placeholder="Enter Pin Location" name="pin_location"
+                                        <input
+                                            class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
+                                            name="pin_location" placeholder="Enter Pin Location"
                                             value="{{ $store_info['pin_location'] ?? '' }}" required>
-
+                                        <div class="get-location-btn cursor-pointer  absolute inset-y-0 right-3 flex items-center"
+                                            data-target="store">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 10s8-4.5 8-10a8 8 0 10-16 0c0 5.5 8 10 8 10z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="map-container hidden" data-target="store">
+                                        <div class="map" style="height: 400px;"></div>
                                     </div>
                                 </div>
 
@@ -501,9 +498,7 @@
                                     </button>
                                 </div>
                             </form>
-
                         </div>
-
                     </div>
                     {{-- documen --}}
                     <div class="hidden relative p-4 pt-2 rounded-2xl  dark:bg-gray-800" id="document" role="tabpanel"
@@ -529,53 +524,42 @@
                             <form action="{{ route('KYC_Authentication') }}" id="myFormNew" class="myFormNew"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
+                                <input type="hidden" name="step" value="3">
+                                <input type="text" name="status" value="pending" hidden>
 
                                 <div
-                                    class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 items-center justify-center text-base font-semibold">
+                                    class="flex flex-col lg:flex-row gap-6 mt-4 items-start justify-center text-base font-semibold text-left">
                                     <!-- Shop / Home Bill -->
-                                    <div>
+                                    <div class="flex flex-col items-start justify-center w-full lg:w-1/2 px-4">
                                         <h3 class="pb-2">Shop / Home Bill</h3>
-                                        <div
-                                            class="w-full rounded-lg   flex flex-col lg:flex-row gap-2 items-center justify-center">
-                                            @if (!empty($documents_info['home_bill']))
-                                                <img src="{{ asset($documents_info['home_bill']) }}" alt="Home Bill"
-                                                    class="h-full w-auto lg:w-48 object-cover mr-3">
-                                                <input type="text" name="home_bill_path"
-                                                    value="{{ $documents_info['home_bill'] }}" hidden>
-                                            @endif
-                                            <x-image-video-uploader name="home_bill" id="home_bill" accept="image/*" />
-                                        </div>
+
+                                        @if (!empty($documents_info['home_bill']))
+                                            <input type="hidden" name="home_bill_path"
+                                                value="{{ $documents_info['home_bill'] }}">
+                                        @endif
+                                        <x-image-video-uploader name="home_bill" id="home_bill"
+                                            preview="{{ $documents_info['home_bill'] ?? '' }}" type="image"
+                                            previewClass="h-full w-auto object-contain max-h-60" />
                                     </div>
-                                    <input type="hidden" name="step" value="3">
-                                    <input type="text" name="status" value="pending" hidden>
 
                                     <!-- Shop Video (Optional) -->
-                                    <div>
+                                    <div class="flex flex-col items-start justify-center w-full lg:w-1/2 px-4">
                                         <h3 class="pb-2">Shop Video (Optional)</h3>
-                                        <div
-                                            class="w-full rounded-lg flex flex-col lg:flex-row gap-2 items-center justify-center text-center">
-                                            @if (!empty($documents_info['shop_video']))
-                                                <video controls class="h-full w-auto lg:w-48 mr-3">
-                                                    <source src="{{ asset($documents_info['shop_video']) }}"
-                                                        class="w-50" type="video/mp4">
-                                                    <input type="text" name="shop_video_path"
-                                                        value="{{ $documents_info['shop_video'] }}" hidden>
-                                                </video>
-                                            @endif
-                                            <div class="relative flex items-center justify-center w-full h-full">
 
-                                                <x-image-video-uploader name="shop_video" id="shop_video"
-                                                    accept="video/*" />
-                                                <div
-                                                    class="absolute top-0 left-0 hidden w-full h-full rounded-lg  bg-customOrangeDark">
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <x-image-video-uploader name="shop_video" id="shop_video" type="video"
+                                            preview="{{ !empty($documents_info['shop_video']) ? asset($documents_info['shop_video']) : asset('asset/media (1).png') }}"
+                                            previewClass="min-w-[280px] min-h-[200px] w-auto h-full rounded-lg object-contain" />
+
+                                        @if (!empty($documents_info['shop_video']))
+                                            <input type="hidden" name="intro_video_path"
+                                                value="{{ $documents_info['shop_video'] }}">
+                                        @endif
                                     </div>
                                 </div>
 
+
                                 {{-- Select Options --}}
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 mb-32 md:mb-20">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4 mb-32">
                                     <!-- Country -->
 
                                     <div
@@ -863,7 +847,8 @@
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Branch Code</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="number" placeholder="Enter here" id="branch_code" name="branch_code"
                                             value="{{ $bank_info['branch_code'] ?? '' }}" required>
                                     </div>
@@ -871,7 +856,8 @@
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Branch Name</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="text" placeholder="Enter here" id="branch_name" name="branch_name"
                                             value="{{ $bank_info['branch_name'] ?? '' }}" required>
                                     </div>
@@ -879,7 +865,8 @@
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Branch Phone</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="number" placeholder="Enter here" id="branch_phone"
                                             name="branch_phone" value="{{ $bank_info['branch_phone'] ?? '' }}" required>
                                     </div>
@@ -889,7 +876,8 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                     <label class="md:w-32">Account Title</label>
-                                    <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                    <input
+                                        class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                         type="text" placeholder="Enter here" id="account_title" name="account_title"
                                         value="{{ $bank_info['account_title'] ?? '' }}" required>
                                 </div>
@@ -897,7 +885,8 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                     <label class="md:w-32">Account No.</label>
-                                    <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                    <input
+                                        class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                         type="number" placeholder="Enter here" id="account_no" name="account_no"
                                         value="{{ $bank_info['account_no'] ?? '' }}" required>
                                 </div>
@@ -905,43 +894,39 @@
                                 <div
                                     class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                     <label class="md:w-32">IBAN No.</label>
-                                    <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                    <input
+                                        class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                         type="text" placeholder="Enter here" id="iban_no" name="iban_no"
                                         value="{{ $bank_info['iban_no'] ?? '' }}" required>
                                 </div>
 
                                 <!-- File Uploads -->
                                 <div
-                                    class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold items-center justify-center">
+                                    class="flex flex-col lg:flex-row gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold items-atart justify-center">
                                     <div>
                                         <h3 class="pb-2">Canceled Cheque</h3>
-                                        <div
-                                            class="w-full rounded-lg  flex flex-col lg:flex-row gap-2 items-center justify-center">
-                                            @if (!empty($bank_info['canceled_cheque']))
-                                                <img src="{{ asset($bank_info['canceled_cheque']) }}"
-                                                    alt="Canceled Cheque"
-                                                    class="h-full w-auto lg:w-48  object-contain mr-3">
-                                                <input type="text" name="canceled_cheque_path"
-                                                    value="{{ $bank_info['canceled_cheque'] }}" hidden required>
-                                            @endif
-                                            <x-image-video-uploader name="canceled_cheque" id="canceled_cheque"
-                                                accept="image/*" />
-                                        </div>
+
+                                        @if (!empty($bank_info['canceled_cheque']))
+                                            <input type="hidden" name="canceled_cheque_path"
+                                                value="{{ $bank_info['canceled_cheque'] }}">
+                                        @endif
+                                        <x-image-video-uploader name="canceled_cheque" id="canceled_cheque"
+                                            preview="{{ $bank_info['canceled_cheque'] ?? '' }}" type="image"
+                                            previewClass="h-full w-auto object-contain " />
+
                                     </div>
                                     <div>
                                         <h3 class="pb-2">Verification Letter (Optional)</h3>
-                                        <div
-                                            class="w-full rounded-lg   flex flex-col lg:flex-row gap-2 items-center justify-center">
-                                            @if (!empty($bank_info['verification_letter']))
-                                                <img src="{{ asset($bank_info['verification_letter']) }}"
-                                                    alt="Verification Letter"
-                                                    class="h-full w-auto lg:w-48 object-contain mr-3">
-                                                <input type="text" name="verification_letter_path"
-                                                    value="{{ $bank_info['verification_letter'] }}" hidden>
-                                            @endif
-                                            <x-image-video-uploader name="verification_letter" id="verification_letter"
-                                                accept="image/*" />
-                                        </div>
+
+                                        @if (!empty($bank_info['verification_letter']))
+                                            <input type="hidden" name="verification_letter_path"
+                                                value="{{ $bank_info['verification_letter'] }}">
+                                        @endif
+                                        <x-image-video-uploader name="verification_letter" id="verification_letter"
+                                            preview="{{ $bank_info['verification_letter'] ?? '' }}" type="image"
+                                            previewClass="h-full w-auto object-contain " />
+
+
                                     </div>
                                 </div>
 
@@ -991,7 +976,8 @@
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Business Name</label>
-                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            <input
+                                                class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                 type="text" placeholder="Enter Here" name="business_name"
                                                 id="business_name" value="{{ $business_info['business_name'] ?? '' }}"
                                                 required>
@@ -999,7 +985,8 @@
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Owner Name</label>
-                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            <input
+                                                class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                 type="text" placeholder="Enter Here" name="owner_name"
                                                 id="owner_name" value="{{ $business_info['owner_name'] ?? '' }}"
                                                 required>
@@ -1009,93 +996,95 @@
                                         <div
                                             class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                             <label class="md:w-32">Phone No.</label>
-                                            <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                            <input
+                                                class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                                 type="number" placeholder="Enter Here" name="phone_no" id="phone_no"
                                                 value="{{ $business_info['phone_no'] ?? '' }}" required>
                                         </div>
                                     </div>
                                     <div class="flex justify-center">
-                                        <div class=" flex gap-5">
-                                            @if (!empty($business_info['personal_profile']))
-                                                <div
-                                                    class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
-                                                    <img src="{{ asset($business_info['personal_profile']) }}"
-                                                        alt="Profile Picture"
-                                                        class="w-full h-full object-cover rounded-full">
-                                                    <input type="text" name="personal_profile_path"
-                                                        value="{{ $business_info['personal_profile'] }}" hidden>
-                                                </div>
-                                            @endif
-                                            <div
-                                                class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center border border-gray-300">
-                                                <x-image-video-uploader name="personal_profile" id="personal_profile"
-                                                    accept="image/*" />
-                                            </div>
-                                        </div>
+
+                                        @if (!empty($business_info['personal_profile']))
+                                            <input type="hidden" name="personal_profile_path"
+                                                value="{{ $business_info['personal_profile'] }}">
+                                        @endif
+                                        <x-image-video-uploader name="personal_profile" id="personal_profile"
+                                            preview="{{ $business_info['personal_profile'] ?? '' }}" type="image"
+                                            previewClass="w-24 h-24 md:w-32 md:h-32 rounded-full" />
+
                                     </div>
                                 </div>
                                 <div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                         <label class="md:w-32">Reg. No.</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="text" placeholder="Enter here" name="reg_no" id="reg_no"
                                             value="{{ $business_info['reg_no'] ?? '' }}" required>
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                         <label class="md:w-32">Tax. No.</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="text" placeholder="Enter here" name="tax_no" id="tax_no"
                                             value="{{ $business_info['tax_no'] ?? '' }}" required>
                                     </div>
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-0 mt-6 text-sm font-semibold">
                                         <label class="md:w-32">Address</label>
-                                        <input class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]"
+                                        <input
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-gray-700 placeholder-gray-400"
                                             type="text" placeholder="Enter here" name="address" id="address"
                                             value="{{ $business_info['address'] ?? '' }}" required>
                                     </div>
-                                    <div
-                                        class="flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0 relative">
+
+                                    <div class="location-section flex flex-col md:flex-row md:items-center text-sm font-semibold mt-6 gap-2 md:gap-0 relative"
+                                        data-location="business">
                                         <label class="md:w-32">Pin Location</label>
                                         <div class="relative w-full">
                                             <input
-                                                class="rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#B4B4B4]"
-                                                type="text" placeholder="Enter Pin Location" name="pin_location"
-                                                id="pin_location" value="{{ $business_info['pin_location'] ?? '' }}"
-                                                required>
+                                                class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-gray-700 placeholder-gray-400"
+                                                name="pin_location" placeholder="Enter Pin Location"
+                                                value="{{ $business_info['pin_location'] ?? '' }}">
+                                            <div class="get-location-btn absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                                                data-target="business">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 10s8-4.5 8-10a8 8 0 10-16 0c0 5.5 8 10 8 10z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="map-container hidden" data-target="business">
+                                            <div class="map" style="height: 400px;"></div>
                                         </div>
                                     </div>
                                     <div
-                                        class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold items-center justify-center">
+                                        class="flex flex-col lg:flex-row gap-6 mt-6 mb-32 md:mb-20 text-base font-semibold items-start justify-center">
                                         <div>
                                             <h3 class="pb-2">Letter Head</h3>
-                                            <div
-                                                class="w-full rounded-lg  flex flex-col lg:flex-row gap-2 items-center justify-center">
-                                                @if (!empty($business_info['letter_head']))
-                                                    <img src="{{ asset($business_info['letter_head']) }}"
-                                                        alt="Letter Head"
-                                                        class="h-full w-auto lg:w-48   object-contain mr-3">
-                                                    <input type="text" name="letter_head_path"
-                                                        value="{{ $business_info['letter_head'] }}" hidden>
-                                                @endif
-                                                <x-image-video-uploader name="letter_head" id="letter_head"
-                                                    accept="image/*" />
-                                            </div>
+
+                                            @if (!empty($business_info['letter_head']))
+                                                <input type="hidden" name="letter_head_path"
+                                                    value="{{ $business_info['letter_head'] }}">
+                                            @endif
+                                            <x-image-video-uploader name="letter_head" id="letter_head"
+                                                preview="{{ $business_info['letter_head'] ?? '' }}" type="image"
+                                                previewClass="h-full w-auto object-contain " />
+
                                         </div>
                                         <div>
                                             <h3 class="pb-2">Stamp</h3>
-                                            <div
-                                                class="w-full rounded-lg  flex flex-col lg:flex-row gap-2 items-center justify-center">
-                                                @if (!empty($business_info['stamp']))
-                                                    <img src="{{ asset($business_info['stamp']) }}" alt="Stamp"
-                                                        class="h-full w-auto lg:w-48  object-contain mr-3">
-                                                    <input type="text" name="stamp_path"
-                                                        value="{{ $business_info['stamp'] }}" hidden>
-                                                @endif
-                                                <x-image-video-uploader name="stamp" id="stamp" accept="image/*" />
-                                            </div>
+                                            @if (!empty($business_info['stamp']))
+                                                <input type="hidden" name="stamp_path"
+                                                    value="{{ $business_info['stamp'] }}">
+                                            @endif
+                                            <x-image-video-uploader name="stamp" id="stamp"
+                                                preview="{{ $business_info['stamp'] ?? '' }}" type="image"
+                                                previewClass="h-full w-auto object-contain " />
+
                                         </div>
                                     </div>
                                 </div>
@@ -1120,6 +1109,83 @@
     </div>
 @endsection
 @section('js')
+    <script>
+        let maps = {};
+
+        function initMap(section, position = {
+            lat: -33.8688,
+            lng: 151.2195
+        }) {
+            const mapContainer = section.querySelector('.map');
+            const input = section.querySelector('.location-input');
+
+            const map = new google.maps.Map(mapContainer, {
+                center: position,
+                zoom: 13,
+            });
+
+            const marker = new google.maps.Marker({
+                map,
+                position,
+                draggable: true,
+            });
+
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo("bounds", map);
+
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    alert("No details available for input: '" + place.name + "'");
+                    return;
+                }
+                const location = place.geometry.location;
+                map.setCenter(location);
+                map.setZoom(17);
+                marker.setPosition(location);
+                input.value = `${location.lat().toFixed(6)}, ${location.lng().toFixed(6)}`;
+            });
+
+            marker.addListener("dragend", () => {
+                const pos = marker.getPosition();
+                input.value = `${pos.lat().toFixed(6)}, ${pos.lng().toFixed(6)}`;
+            });
+
+            maps[section.dataset.location] = {
+                map,
+                marker
+            };
+        }
+
+        document.querySelectorAll(".get-location-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const target = btn.dataset.target;
+                const section = document.querySelector(`.location-section[data-location="${target}"]`);
+                const mapContainer = section.querySelector('.map-container');
+                const input = section.querySelector('.location-input');
+
+                mapContainer.classList.remove("hidden");
+
+                if (!maps[target]) {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition((pos) => {
+                            const userPos = {
+                                lat: pos.coords.latitude,
+                                lng: pos.coords.longitude,
+                            };
+                            initMap(section, userPos);
+                            input.value = `${userPos.lat.toFixed(6)}, ${userPos.lng.toFixed(6)}`;
+                        }, () => initMap(section));
+                    } else {
+                        initMap(section);
+                    }
+                }
+            });
+        });
+    </script>
+
+
+
 
 
     <script>
@@ -1143,65 +1209,10 @@
                 }
             });
         });
-
-        // function previewImage(event) {
-        //     const reader = new FileReader();
-        //     reader.onload = function() {
-        //         const output = document.getElementById('imagePreview');
-        //         output.src = reader.result;
-        //     };
-        //     reader.readAsDataURL(event.target.files[0]);
-        // }
-
-        // function firstImage(event, previewId) {
-        //     const reader = new FileReader();
-        //     reader.onload = function() {
-        //         let imgElement = document.createElement('img');
-        //         imgElement.src = reader.result;
-        //         imgElement.classList.add('h-full', 'object-contain');
-
-        //         let container = document.getElementById(previewId);
-        //         container.innerHTML = ""; // Purana image hatao
-        //         container.appendChild(imgElement);
-        //     };
-        //     reader.readAsDataURL(event.target.files[0]);
-        // }
-
-
-
-
-        function previewFile(event) {
-            const input = event.target;
-            const file = input.files[0];
-            if (!file) return;
-
-            const wrapper = input.closest('.relative');
-            const previewContainer = wrapper.querySelector('.file-preview');
-
-            previewContainer.innerHTML = '';
-            previewContainer.classList.remove('hidden');
-
-            const reader = new FileReader();
-            reader.onload = function() {
-                if (file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.src = reader.result;
-                    img.classList.add('h-full', 'w-full', 'object-contain', 'rounded-lg');
-                    previewContainer.appendChild(img);
-                } else if (file.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.src = reader.result;
-                    video.controls = true;
-                    video.classList.add('h-full', 'w-full', 'object-contain', 'rounded-lg');
-                    previewContainer.appendChild(video);
-                } else {
-                    previewContainer.innerHTML = '<p class="text-red-600">Unsupported file type</p>';
-                }
-            };
-
-            reader.readAsDataURL(file);
-        }
     </script>
 
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw_TRHWZfahR4yKXWfz11qRjXpx4vIdPA&callback=initMap&libraries=places"
+        async defer></script>
 
 @endsection

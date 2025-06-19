@@ -117,13 +117,51 @@
         #my-dropzone {
             border: 3px dotted blue;
             background-color: lightyellow;
+
+        }
+
+        .boost-checkmark {
+            display: none;
+        }
+
+        .peer:checked~div .boost-checkmark {
+            display: inline-block;
+        }
+
+        .boost-checkmark {
+            color: white;
+            font-size: 1.25rem;
         }
     </style>
     <div class="w-full pt-10 min-h-[86vh] px-5  rounded-lg custom-shadow">
-        <h3 class="text-[20px] font-medium">Add Product</h3>
-        <div>
-            <form id="productForm" action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+
+        <form id="productForm" action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="flex justify-between items-center">
+                <h3 class="text-[20px] font-medium">Add Product</h3>
+
+                {{-- @php
+                    $details = is_array($user->package_detail)
+                        ? $user->package_detail
+                        : json_decode($user->package_detail, true);
+                @endphp
+
+                @if (isset($details['package_status']) && $details['package_status'] === 'approved')
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" id="is_boosted" name="is_boosted" value="1"
+                            @if ($products && $products->is_boosted) checked @endif>
+
+                        <div
+                            class="relative px-4 py-2 rounded-3xl font-semibold bg-gray-200 text-gray-800 peer-checked:bg-blue-500 peer-checked:text-white transition flex items-center gap-2">
+                            <span>Boost Product</span>
+                            <span class="boost-checkmark"><img src="{{ asset('asset/home.svg') }}" alt=""></span>
+                        </div>
+                    </label>
+                @endif --}}
+            </div>
+
+            <div>
+
                 <div class="md:py-5">
                     <div class="mt-5">
                         <label for="images" class="block text-sm font-medium text-gray-700">Upload Product Images</label>
@@ -229,8 +267,8 @@
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+        </form>
+    </div>
     </div>
 
 @endsection
@@ -285,10 +323,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                        <div class="value-item flex items-center mb-2">
-                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                        </div>`).join('')}
+                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                    </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -452,10 +490,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                        <div class="value-item flex items-center mb-2">
-                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                        </div>`).join('')}
+                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                    </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -507,10 +545,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                    <div class="value-item flex items-center mb-2">
-                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                    </div>`).join('')}
+                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -656,7 +694,8 @@
                     type: 'GET',
                     success: function(response) {
                         subCategoryDropdown.html(
-                            '<option value="" disabled selected>Select Sub Category</option>');
+                            '<option value="" disabled selected>Select Sub Category</option>'
+                        );
 
                         if (response.success && response.sub_categories.length > 0) {
                             response.sub_categories.forEach(subCategory => {

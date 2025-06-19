@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Store;
 use App\Models\Seller;
+use App\Models\Inquiry;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class SellerController extends Controller
 {
@@ -19,7 +24,7 @@ class SellerController extends Controller
             ]);
             // $newData = $validatedData['info_type'];
 
-            $seller = Seller::where('user_id', $validatedData['user_id'] )->first();
+            $seller = Seller::where('user_id', $validatedData['user_id'])->first();
             if (!$seller) {
                 return response()->json(['success' => false, 'message' => "Seller Not Found"], 404);
             }
@@ -141,4 +146,298 @@ class SellerController extends Controller
         }
     }
 
+    public function saveTransactionImage(Request $request)
+    {
+        $request->validate([
+            'transaction_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $userId = session('user_details.user_id');
+
+        if (!$userId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Decode existing JSON if it exists
+        $packageDetail = json_decode($user->package_detail, true) ?? [];
+
+        // Delete old image if it exists
+        if (!empty($packageDetail['transaction_image']) && Storage::disk('public')->exists($packageDetail['transaction_image'])) {
+            Storage::disk('public')->delete($packageDetail['transaction_image']);
+        }
+
+        // Store new image
+        $path = $request->file('transaction_image')->store('transactions', 'public');
+
+        // Update package_detail as JSON
+        $packageDetail['package_type'] = 'silver';
+        $packageDetail['transaction_image'] = $path;
+        $packageDetail['package_status'] = 'pending';
+
+        $user->package_detail = json_encode($packageDetail);
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Image submitted successfully.'
+        ]);
+    }
+
+    public function showPromotions()
+    {
+        $users = User::whereNotNull('package_detail->transaction_image')->get();
+        // return $users;
+        return view('admin.promotions', compact('users'));
+    }
+
+    public function updatePackageStatus(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,user_id',
+            'package_status' => 'required|in:approved,rejected,pending'
+        ]);
+
+        $user = User::where('user_id', $request->user_id)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+
+        // Decode package_detail JSON
+        $packageDetail = json_decode($user->package_detail, true) ?? [];
+
+
+        $packageDetail['package_status'] = $request->package_status;
+
+
+        if ($request->package_status === 'approved') {
+            $packageDetail['package_start_date'] = now()->toDateString();
+            $packageDetail['package_end_date'] = now()->addMonth()->toDateString();
+        } else {
+            $packageDetail['package_start_date'] = null;
+            $packageDetail['package_end_date'] = null;
+
+            Products::where('user_id', $user->user_id)
+                ->where('is_boosted', 1)
+                ->update([
+                    'is_boosted' => 0,
+                    'boost_start_date' => null,
+                    'boost_end_date' => null
+                ]);
+        }
+
+        $user->package_detail = json_encode($packageDetail);
+        $user->save();
+
+        return response()->json(['success' => true]);
+    }
+
+
+    public function BoostStatus()
+    {
+        $userId = session('user_details.user_id');
+
+        $user = User::where('user_id', $userId)->first();
+
+        // Decode the JSON package_detail field
+        $packageDetail = json_decode($user->package_detail, true) ?? [];
+
+        $packageStatus = $packageDetail['package_status'] ?? null;
+
+        return view('seller.BoostProducts', compact('user', 'packageStatus', 'packageDetail'));
+    }
+
+
+public function store(Request $request)
+{
+     $buyerId = session('user_details.user_id');
+
+
+    if (!$buyerId) {
+        return response()->json(['success' => false, 'message' => 'User not logged in.'], 401);
+    }
+    $validated = $request->validate([
+        'product_id' => 'required',
+        'seller_userid' => 'required',
+        'category_id' => 'required',
+        'stock' => 'required|integer|min:1',
+        'price' => 'required|numeric',
+        'twenty_percent_amount' => 'required|numeric',
+        'note' => 'nullable|string',
+    ]);
+
+    Inquiry::create([
+        'buyer_id' => $buyerId,
+        'seller_id' => $validated['seller_userid'],
+        'product_id' => $validated['product_id'],
+        'product_category' => $validated['category_id'],
+        'product_stock' => $validated['stock'],
+        'amount' => $validated['price'] * $validated['stock'],
+        'twenty_percent_amount' => $validated['twenty_percent_amount'],
+        'remaining_amount' => ($validated['price'] * $validated['stock']) - $validated['twenty_percent_amount'],
+        'inquiry_date' => now(),
+        'status' => 'pending',
+        'note' => $validated['note'],
+    ]);
+
+    return response()->json(['success' => true]);
+}
+
+public function purchases()
+{
+    $buyerId = session('user_details.user_id');
+
+    $inquiries = Inquiry::where('buyer_id', $buyerId)
+        ->join('products', 'inquiries.product_id', '=', 'products.product_id')
+        ->join('categories', 'inquiries.product_category', '=', 'categories.id')
+        ->join('users', 'inquiries.seller_id', '=', 'users.user_id'
+        )
+        ->select(
+            'inquiries.*',
+            'products.product_name',
+            'products.product_images',
+            'categories.name as category_name',
+            'users.user_name as seller_name'
+        )
+        ->latest()
+        ->get();
+// return $inquiries;
+    return view('seller.Purchases', compact('inquiries'));
+}
+
+
+public function saveInquiryImage(Request $request)
+{
+    try {
+        $request->validate([
+            'transaction_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'inquiry_id' => 'required|exists:inquiries,inquiry_id',
+        ]);
+
+        if ($request->hasFile('transaction_image')) {
+            $path = $request->file('transaction_image')->store('inquiries', 'public');
+
+            Inquiry::where('inquiry_id', $request->inquiry_id)->update([
+                'payment_ss' => $path
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image uploaded successfully',
+                'path' => $path
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No image provided'
+        ], 400);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->validator->errors()->first()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to upload image: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
+public function purchasesWithProductDetails($inquiryId)
+{
+    $inquiry = Inquiry::where('inquiry_id', $inquiryId)
+        ->join('products', 'inquiries.product_id', '=', 'products.product_id')
+        ->join('categories', 'inquiries.product_category', '=', 'categories.id')
+        ->join('users', 'inquiries.seller_id', '=', 'users.user_id')
+        ->select(
+            'inquiries.*',
+            'products.product_name',
+            'products.product_description',
+            'products.product_brand',
+            'products.product_price',
+            'products.product_discount',
+            'products.product_discounted_price',
+            'products.product_variation',
+            'products.product_images',
+            'categories.name as category_name',
+            'users.user_name as seller_name'
+        )
+        ->first();
+
+    if (!$inquiry) {
+        return response()->json(['success' => false, 'message' => 'Inquiry not found'], 404);
+    }
+
+    // Decode JSON fields
+    $inquiry->product_images = json_decode($inquiry->product_images, true);
+    $inquiry->product_variation = json_decode($inquiry->product_variation, true);
+// return $inquiry;
+    return response()->json(['success' => true, 'data' => $inquiry]);
+}
+
+
+public function inquiries()
+{
+    $sellerId = session('user_details.user_id');
+
+    $inquiries = Inquiry::where('seller_id', $sellerId)
+        ->join('products', 'inquiries.product_id', '=', 'products.product_id')
+        ->join('categories', 'inquiries.product_category', '=', 'categories.id')
+        ->join('users', 'inquiries.buyer_id', '=', 'users.user_id')
+        ->select(
+            'inquiries.*',
+            'products.product_name',
+            'products.product_images',
+            'categories.name as category_name',
+            'users.user_name as buyer_name'
+        )
+        ->latest()
+        ->get();
+// return $inquiries;
+    return view('seller.Inquiries', compact('inquiries'));
+}
+
+
+
+ public function updateInquiryStatus(Request $request)
+    {
+        try {
+            $request->validate([
+                'inquiry_id' => 'required|exists:inquiries,inquiry_id',
+                'status' => 'required|in:pending,approved,rejected',
+            ]);
+
+            $inquiry = Inquiry::where('inquiry_id', $request->inquiry_id)->first();
+            $inquiry->status = $request->status;
+            $inquiry->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . implode(', ', array_merge(...array_values($e->errors())))
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

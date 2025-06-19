@@ -123,9 +123,9 @@ Route::middleware(['custom_auth'])->group(function () {
 
 
 
-            Route::get('/Settings', function () {
-                return view('pages.Settings');
-            })->name('editsettings');
+            // Route::get('/Settings', function () {
+            //     return view('pages.Settings');
+            // })->name('editsettings');
 
             Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
             Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
@@ -134,6 +134,9 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::get('/ProductCategory/getforupdate/{id}', [ProductsController::class, 'getForUpdate'])->name('getforupdate');
             Route::post('/ProductCategory/update/{id}', [ProductsController::class, 'update']);
             Route::GET('/SellerProfile/{sellerId}', [SellerController::class, 'getSellerDetail'])->name('SellerProfile');
+            Route::get('/refresh-csrf-token', function () {
+                return response()->json(['csrf_token' => csrf_token()]);
+            });
 
 
             Route::GET('/product/add/{editid?}', [ProductsController::class, 'getProductwithCategories'])->name('product.add');
@@ -142,10 +145,20 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::view('/PurchaseProducts', 'seller.PurchaseProducts')->name('PurchaseProducts');
             Route::view('/all-notifications', 'pages.AllNotifications')->name('allNotifications');
             Route::view('/Purchases', 'seller.Purchases')->name('savePurchases');
-            Route::view('/BoostProducts', 'seller.BoostProducts')->name('BoostProducts');
             Route::view('/Inquiries', 'seller.Inquiries')->name('inquirieslist');
             // Route::view('/BuyerProfile', 'admin.BuyerProfile')->name('BuyerProfile');
             Route::GET('/mystore', [StoreController::class, 'getStoreDetails'])->name('getStoreDetails');
+            Route::post('/save-transaction-image', [SellerController::class, 'saveTransactionImage']);
+            Route::get('/promotions', [SellerController::class, 'showPromotions'])->name('promotions');
+            Route::post('/update-package-status', [SellerController::class, 'updatePackageStatus'])->name('update.package.status');
+            Route::get('/BoostProducts', [SellerController::class, 'BoostStatus'])->name('BoostProducts');
+            Route::post('/product/boost/{id}', [ProductsController::class, 'boost'])->name('product.boost');
+            Route::post('/send-inquiry', [SellerController::class, 'store']);
+            Route::get('/seller/purchases', [SellerController::class, 'purchases'])->name('seller.purchases');
+            Route::get('/seller/inquiries', [SellerController::class, 'inquiries'])->name('seller.inquiries');
+            Route::post('/save-Inquiry-image', [SellerController::class, 'saveInquiryImage'])->name('save.inquiry.image');
+            Route::get('/inquiry-details/{id}', [SellerController::class, 'purchasesWithProductDetails']);
+            Route::post('/update-inquiry-status', [SellerController::class, 'updateInquiryStatus'])->name('update.inquiry.status');
 
             // Credit request
             Route::post('/credit-request', [CreditRequestController::class, 'store'])->name('credit-request.store');
@@ -157,6 +170,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
             Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
             Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
+
         });
     });
 });

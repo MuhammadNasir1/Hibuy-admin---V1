@@ -24,6 +24,7 @@ class Products extends Model
         'product_images',
         'product_variation',
         'product_status',
+        'is_boosted',
     ];
     public function store()
     {
@@ -40,4 +41,10 @@ class Products extends Model
     {
         return $this->hasMany(Reviews::class, 'product_id');
     }
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
 }
+}
+

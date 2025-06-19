@@ -17,7 +17,7 @@
         <div
             class="h-[200px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
             <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center gap-5">
-                <img src="{{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : asset('asset/pic.jpg') }}"
+                <img src="{{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : ($storeData['profile_picture_store']) }}"
                     class="ms-5 h-[80px] w-[80px] rounded-full" alt="">
                 <div>
                     <h3 class="text-lg font-semibold">
@@ -72,13 +72,14 @@
                             </div>
                             <input type="hidden" name="upload-banner" id="upload-banner">
 
-                            <div
-                                class="h-[100px] w-[100px] bg-primary overflow-hidden rounded-full flex items-center justify-center mx-auto -mt-16">
-                                <x-file-uploader name="profile_picture" id="profile_picture_input" />
-                                <img id="profile_picture_preview" class="absolute h-[100px] w-[100px] rounded-full hidden"
-                                    alt="Profile Picture">
-                            </div>
+                            <div class="flex items-center justify-center mx-auto gap-1 -mt-16">
+                                <div id="profile_picture_preview" class=""
+                                    > </div>
+                                <div class="h-[100px] w-[100px] bg-primary overflow-hidden rounded-full">
+                                    <x-file-uploader name="profile_picture" id="profile_picture_input" />
 
+                                </div>
+                            </div>
                             <p id="storeName" class="text-center pt-3 font-medium">My Store</p>
                             <div class="flex justify-center gap-5 mt-3" id="tags">
                                 <!-- Dynamic tags will be inserted here -->
@@ -173,12 +174,17 @@
                             $("#store_name").val(response.data.store_name || "");
                             $("#storeName").text(response.data.store_name || "My Store");
 
-                            // Store Image (Profile Picture)
                             let profileImagePath = response.data.store_image ?
                                 response.data.store_image :
-                                "{{ asset('asset/pic.jpg') }}";
-                            $("#profile_picture_preview").attr("src", profileImagePath);
-
+                                "";
+                                if (profileImagePath) {
+                                $("#profile_picture_preview").html(
+                                    `<img src="${profileImagePath}" class="h-[100px] w-[100px] rounded-full object-cover" alt="Profile Picture">`
+                                );
+                            } else {
+                                $("#profile_picture_preview").html(
+                                    "");
+                            }
                             // Store Banner (Full Width)
                             let bannerPath = response.data.store_banner ? response.data
                                 .store_banner : "";
@@ -188,7 +194,7 @@
                                 );
                             } else {
                                 $("#preview-banner").html(
-                                ""); // Clear the preview if no banner exists
+                                    ""); // Clear the preview if no banner exists
                             }
                             // Store Tags
                             if (Array.isArray(response.data.store_tags) && response.data

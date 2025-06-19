@@ -24,6 +24,9 @@ class UserController extends Controller
         $user = session('user_details')['user_id'];
         $seller = Seller::Where('user_id', $user)->first();
 
+        // Get user name from users table
+        $user = DB::table('users')->where('user_id', $user)->first();
+
         $statusImages = [
             'personal_info' => asset('asset/kyc-pending.png'),
             'store_info' => asset('asset/kyc-pending.png'),
@@ -47,9 +50,11 @@ class UserController extends Controller
                 }
             }
         }
-        return view('Auth.ProfileDetail', compact('seller', 'statusImages'));
+        return view('Auth.ProfileDetail', compact('seller', 'statusImages', 'user'));
         // return response()->json(['success' => true, 'data' => $seller]);
     }
+
+
 
     public function setPassword(Request $request)
     {
@@ -141,7 +146,12 @@ class UserController extends Controller
                     'city' => 'required|string|max:100',
                     'zip_code' => 'required|string|max:10',
                     'address' => 'required|string|max:500',
-                    'pin_location' => 'required|string|max:255',
+                    'pin_location' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        'regex:/^-?\d{1,2}(\.\d+)?,\s*-?\d{1,3}(\.\d+)?$/',
+                    ],
 
                     'profile_picture_store' => 'required_without:profile_picture_store_path|file|mimes:jpg,jpeg,png|max:2048',
                     'profile_picture_store_path' => 'nullable|string',
@@ -183,7 +193,12 @@ class UserController extends Controller
                     'reg_no' => 'required|string|max:100',
                     'tax_no' => 'required|string|max:100',
                     'address' => 'required|string|max:500',
-                    'pin_location' => 'required|string|max:255',
+                    'pin_location' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        'regex:/^-?\d{1,2}(\.\d+)?,\s*-?\d{1,3}(\.\d+)?$/',
+                    ],
 
                     'personal_profile' => 'required_without:personal_profile_path|file|mimes:jpg,jpeg,png|max:2048',
                     'personal_profile_path' => 'nullable|string',
@@ -208,6 +223,8 @@ class UserController extends Controller
                 'home_bill.required_without' => 'The Home Bill is required.',
                 'canceled_cheque.required_without' => 'The Canceled Cheque is required.',
                 'verification_letter.required_without' => 'The Verification Letter is required.',
+
+                'pin_location.regex' => 'Pin location must be a valid "latitude, longitude" coordinate pair.',
             ]);
 
             if ($stepValidator->fails()) {
@@ -417,7 +434,7 @@ class UserController extends Controller
 
         $orders = DB::table('orders')
             ->where('user_id', $user_id)
-            ->select('order_id', 'total', 'created_at')
+            ->select('order_id', 'total', 'created_at','order_status')
             ->get();
 
         $queries = DB::table('queries')
@@ -432,68 +449,31 @@ class UserController extends Controller
     }
 
 
-    public function settings()
-    {
-        $userId = session('user_details.user_id'); // get logged-in user ID from session
+public function settings()
+{
+    $userId = session('user_details.user_id'); // get logged-in user ID from session
 
-        if (session('user_details.user_role') !== 'admin') {
-            $seller = DB::table('seller')->where('user_id', $userId)->first(); // adjust "id" if your primary key is different
+    // Get the current user's info for referral use
+    $currentUser = User::find($userId);
 
-            $personalInfo = json_decode($seller->personal_info, true);
-            return view('pages.Settings', compact('seller', 'personalInfo'));
-        } else {
-            $users = DB::table('users')->where('user_id', $userId)->first();
-            return view('pages.Settings', compact('users'));
-        }
+    // Get users referred by this user
+    $referredUsers = User::where('referred_by', $userId)
+        ->get(['user_name', 'user_email', 'created_at']);
+        $referredCount = $referredUsers->count();
 
+    if (session('user_details.user_role') !== 'admin') {
+        $seller = DB::table('seller')->where('user_id', $userId)->first();
+        $personalInfo = json_decode($seller->personal_info, true);
 
-
-
+        return view('pages.Settings', compact('seller', 'personalInfo', 'referredCount', 'referredUsers'));
+    } else {
+        $users = DB::table('users')->where('user_id', $userId)->first();
+        return view('pages.Settings', compact('users'));
     }
+}
 
 
 
-    // public function updatePersonalInfo(Request $request)
-    // {
-    //     $userId = session('user_details.user_id'); // Get logged-in user ID
-
-    //     // Validate the incoming request
-    //     $validated = $request->validate([
-    //         'full_name' => 'required|string|max:255',
-    //         'phone_no' => 'required|string|max:15',
-    //         'email' => 'required|email|max:255',
-    //         'address' => 'nullable|string|max:500',
-    //         'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-
-    //     // Get the seller's data
-    //     $seller = Seller::where('user_id', $userId)->first();
-
-    //     if (!$seller) {
-    //         return response()->json(['message' => 'Seller not found!'], 404);
-    //     }
-
-    //     // Decode existing personal_info or create new array
-    //     $personalInfo = $seller->personal_info ? json_decode($seller->personal_info, true) : [];
-
-    //     // Update fields
-    //     $personalInfo['full_name'] = $validated['full_name'];
-    //     $personalInfo['phone_no'] = $validated['phone_no'];
-    //     $personalInfo['email'] = $validated['email'];
-    //     $personalInfo['address'] = $validated['address'] ?? ($personalInfo['address'] ?? null);
-
-    //     // Handle profile picture
-    //     if ($request->hasFile('profile_picture')) {
-    //         $imagePath = $request->file('profile_picture')->store('kyc_files', 'public');
-    //         $personalInfo['profile_picture'] = 'storage/' . $imagePath;
-    //     }
-
-    //     // Save back to personal_info column
-    //     $seller->personal_info = json_encode($personalInfo);
-    //     $seller->save();
-
-    //     return response()->json(['message' => 'Personal information updated successfully!']);
-    // }
 
 
     public function updatePersonalInfo(Request $request)
@@ -586,6 +566,5 @@ class UserController extends Controller
             'message' => 'Password updated successfully!',
         ]);
     }
-
 
 }

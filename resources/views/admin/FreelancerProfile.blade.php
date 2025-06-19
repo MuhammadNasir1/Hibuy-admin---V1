@@ -196,7 +196,8 @@
                 <x-table :headers="$headers">
                     <x-slot name="tablebody">
                         @foreach ($storeData['products'] as $product)
-                            <tr>
+                            @if (!empty($product['category_name']))
+                              <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
                                     @php
@@ -278,6 +279,7 @@
                                     </span>
                                 </td>
                             </tr>
+                            @endif
                         @endforeach
                     </x-slot>
                 </x-table>
