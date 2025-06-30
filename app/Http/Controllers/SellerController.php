@@ -192,7 +192,7 @@ class SellerController extends Controller
     {
         $users = User::whereNotNull('package_detail->transaction_image')->get();
         // return $users;
-        return view('admin.promotions', compact('users'));
+        return view('admin.Promotions', compact('users'));
     }
 
     public function updatePackageStatus(Request $request)

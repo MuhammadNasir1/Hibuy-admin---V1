@@ -116,9 +116,9 @@ Route::middleware(['custom_auth'])->group(function () {
             })->name('credit_request');
 
 
-            Route::get('/Promotions', function () {
-                return view('admin.Promotions');
-            })->name('promotion_list');
+            // Route::get('/Promotions', function () {
+            //     return view('admin.Promotions');
+            // })->name('promotion_list');
 
 
 

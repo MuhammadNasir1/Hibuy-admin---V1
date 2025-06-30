@@ -415,7 +415,7 @@
                     </div>
                     <div class="bg-none">
                         <h3 class="text-md md:text-3xl font-bold text-customBlack">
-                            My Referrals ({{ $referredCount }})
+                            My Referrals ({{ $referredCount ?? '0' }})
                         </h3>
                         @php
                             $headers = ['Sr.', 'Name', 'Email Address', 'Date Joined'];

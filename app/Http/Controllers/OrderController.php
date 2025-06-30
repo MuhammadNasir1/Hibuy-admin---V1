@@ -305,50 +305,57 @@ class OrderController extends Controller
             $order->order_items = json_encode($orderItems);
         }
 
-        if ($request->filled('order_status') && $request->order_status === 'shipped') {
-            $orderItems = is_string($order->order_items)
-                ? json_decode($order->order_items, true)
-                : $order->order_items;
+        // if ($request->filled('order_status') && $request->order_status === 'shipped') {
+        //     $orderItems = is_string($order->order_items)
+        //         ? json_decode($order->order_items, true)
+        //         : $order->order_items;
 
-            foreach ($orderItems as $item) {
-                $product = Products::find($item['product_id']);
+        //     foreach ($orderItems as $item) {
+        //         $product = Products::find($item['product_id']);
 
-                if ($product && $product->product_variation) {
-                    $variations = json_decode($product->product_variation, true);
+        //         if ($product && $product->product_variation) {
+        //             $variations = json_decode($product->product_variation, true);
 
-                    // Loop through parent variations
-                    foreach ($variations as &$variation) {
-                        if (
-                            isset($variation['parentname']) &&
-                            $variation['parentname'] === $item['parent_option']['value']
-                        ) {
-                            // Subtract from parent stock
-                            $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
+        //             foreach ($variations as &$variation) {
+        //                 $parentMatched = false;
 
-                            // Now handle child option if it exists
-                            if (!empty($variation['children']) && isset($item['child_option'])) {
-                                foreach ($variation['children'] as &$child) {
-                                    if (
-                                        isset($child['name']) &&
-                                        $child['name'] === $item['child_option']['value']
-                                    ) {
-                                        // Subtract from child stock
-                                        $child['stock'] = max(0, $child['stock'] - $item['quantity']);
-                                        break;
-                                    }
-                                }
-                            }
+        //                 // Check all fields in item (like Color, Size, Storage, etc.)
+        //                 foreach ($item as $key => $value) {
+        //                     if (in_array($key, ['product_id', 'quantity', 'price', 'image', 'delivery_status', 'status_video'])) {
+        //                         continue;
+        //                     }
 
-                            break; // Break parent loop after match
-                        }
-                    }
+        //                     // Parent match
+        //                     if (isset($variation['parentname']) && $variation['parentname'] === $value && !$parentMatched) {
+        //                         $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
+        //                         $parentMatched = true;
+        //                         continue;
+        //                     }
 
-                    // Save updated variations
-                    $product->product_variation = json_encode($variations);
-                    $product->save();
-                }
-            }
-        }
+        //                     // Child match
+        //                     if (!empty($variation['children'])) {
+        //                         foreach ($variation['children'] as &$child) {
+        //                             if (isset($child['name']) && $child['name'] === $value) {
+        //                                 $child['stock'] = max(0, $child['stock'] - $item['quantity']);
+        //                                 break;
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+
+        //                 // Stop looping if parent matched (optional: for performance)
+        //                 if ($parentMatched) {
+        //                     break;
+        //                 }
+        //             }
+
+        //             // Save updated variation back to product
+        //             $product->product_variation = json_encode($variations);
+        //             $product->save();
+        //         }
+        //     }
+        // }
+
 
 
 
