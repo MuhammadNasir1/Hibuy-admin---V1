@@ -28,9 +28,24 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>
-                            <img class="rounded-full w-11 h-11"
-                                src="{{ $inquiry->product->product_images ? asset(json_decode($inquiry->product->product_images)[0]) : asset('asset/Ellipse 2.png') }}"
-                                alt="Product Image">
+                            @php
+                                $images = $inquiry->product->product_images;
+                                $imageUrl = 'asset/Ellipse 2.png';
+
+                                if (!empty($images)) {
+                                    $decoded = json_decode($images);
+                                    if (json_last_error() === JSON_ERROR_NONE && !empty($decoded[0])) {
+                                        $imageUrl = asset($decoded[0]);
+                                    } else {
+                                        $imageUrl = asset('asset/Ellipse 2.png');
+                                    }
+                                } else {
+                                    $imageUrl = asset('asset/Ellipse 2.png');
+                                }
+                            @endphp
+
+                            <img class="rounded-full w-11 h-11" src="{{ $imageUrl }}" alt="Product Image">
+
                         </td>
                         <td>{{ $inquiry->product->product_name ?? 'N/A' }}</td>
                         <td>{{ $inquiry->product->category->name ?? 'N/A' }}</td>

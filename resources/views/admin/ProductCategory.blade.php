@@ -87,7 +87,7 @@
                         </tr>
                     @endforeach
                 @else
-                    <p class="text-gray-500">No categories available.</p>
+                    {{-- <p class="text-gray-500">No categories available.</p> --}}
                 @endif
             </x-slot>
         </x-table>

@@ -182,7 +182,7 @@ class OrderController extends Controller
 
                         return $order;
                     })->filter();
-                    // return $orders;
+                // return $orders;
                 return view('pages.Orders', compact('orders'));
             }
 
@@ -304,6 +304,61 @@ class OrderController extends Controller
             // Save the updated items
             $order->order_items = json_encode($orderItems);
         }
+
+        // if ($request->filled('order_status') && $request->order_status === 'shipped') {
+        //     $orderItems = is_string($order->order_items)
+        //         ? json_decode($order->order_items, true)
+        //         : $order->order_items;
+
+        //     foreach ($orderItems as $item) {
+        //         $product = Products::find($item['product_id']);
+
+        //         if ($product && $product->product_variation) {
+        //             $variations = json_decode($product->product_variation, true);
+
+        //             foreach ($variations as &$variation) {
+        //                 $parentMatched = false;
+
+        //                 // Check all fields in item (like Color, Size, Storage, etc.)
+        //                 foreach ($item as $key => $value) {
+        //                     if (in_array($key, ['product_id', 'quantity', 'price', 'image', 'delivery_status', 'status_video'])) {
+        //                         continue;
+        //                     }
+
+        //                     // Parent match
+        //                     if (isset($variation['parentname']) && $variation['parentname'] === $value && !$parentMatched) {
+        //                         $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
+        //                         $parentMatched = true;
+        //                         continue;
+        //                     }
+
+        //                     // Child match
+        //                     if (!empty($variation['children'])) {
+        //                         foreach ($variation['children'] as &$child) {
+        //                             if (isset($child['name']) && $child['name'] === $value) {
+        //                                 $child['stock'] = max(0, $child['stock'] - $item['quantity']);
+        //                                 break;
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+
+        //                 // Stop looping if parent matched (optional: for performance)
+        //                 if ($parentMatched) {
+        //                     break;
+        //                 }
+        //             }
+
+        //             // Save updated variation back to product
+        //             $product->product_variation = json_encode($variations);
+        //             $product->save();
+        //         }
+        //     }
+        // }
+
+
+
+
 
 
 

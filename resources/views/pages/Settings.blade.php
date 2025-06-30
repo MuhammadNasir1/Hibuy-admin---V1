@@ -9,8 +9,8 @@
         }
 
         /* .active-tab:hover{
-                        color: #FE8D2F;
-                    } */
+                                color: #FE8D2F;
+                            } */
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <div class="container p-6 mx-auto">
@@ -358,7 +358,8 @@
                                                 // $referralLink =
                                                 //     'http://127.0.0.1:8000/signup/seller?ref=' . $encodedUserId;
 
-                                                $referralLink = 'https://admin.hibuyo.com/signup/seller?ref=' . $encodedUserId;
+                                                $referralLink =
+                                                    'https://admin.hibuyo.com/signup/seller?ref=' . $encodedUserId;
 
                                             @endphp
 
@@ -415,28 +416,26 @@
                     </div>
                     <div class="bg-none">
                         <h3 class="text-md md:text-3xl font-bold text-customBlack">
-                            My Referrals ({{ $referredCount }})
+                            My Referrals ({{ $referredCount ?? '0' }})
                         </h3>
                         @php
                             $headers = ['Sr.', 'Name', 'Email Address', 'Date Joined'];
                         @endphp
 
-                        <x-table :headers="$headers">
-                            <x-slot name="tablebody">
-
-                                @foreach ($referredUsers as $index => $user)
-                                    <tr class="border-t">
-                                        <td>{{ $index + 1 }}</td>
-                                        {{-- <td class="px-4 py-2 border">{{ $currentUser->referral_code ?? 'N/A' }}</td> --}}
-                                        <td>{{ $user->user_name }}</td>
-                                        <td>{{ $user->user_email }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($user->created_at)->format('M d, Y') }}</td>
-                                    </tr>
-                                @endforeach
-
-
-                            </x-slot>
-                        </x-table>
+                        @if ($referredUsers && count($referredUsers) > 0)
+                            @foreach ($referredUsers as $index => $user)
+                                <tr class="border-t">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $user->user_name }}</td>
+                                    <td>{{ $user->user_email }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($user->created_at)->format('M d, Y') }}</td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="4" class="text-center py-4">No referred users found.</td>
+                            </tr>
+                        @endif
                     </div>
                 </div>
             </div>
