@@ -279,7 +279,6 @@ class UserController extends Controller
                 'message' => ucfirst(str_replace('_', ' ', $column)) . ' updated successfully',
                 'data' => $finalData
             ]);
-
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
@@ -434,7 +433,7 @@ class UserController extends Controller
 
         $orders = DB::table('orders')
             ->where('user_id', $user_id)
-            ->select('order_id', 'total', 'created_at','order_status')
+            ->select('order_id', 'total', 'created_at', 'order_status')
             ->get();
 
         $queries = DB::table('queries')
@@ -449,28 +448,31 @@ class UserController extends Controller
     }
 
 
-public function settings()
-{
-    $userId = session('user_details.user_id'); // get logged-in user ID from session
+    public function settings()
+    {
+        $userId = session('user_details.user_id'); // get logged-in user ID from session
 
-    // Get the current user's info for referral use
-    $currentUser = User::find($userId);
+        // Get the current user's info for referral use
+        $currentUser = User::find($userId);
 
-    // Get users referred by this user
-    $referredUsers = User::where('referred_by', $userId)
-        ->get(['user_name', 'user_email', 'created_at']);
+        // Get users referred by this user
+        $referredUsers = User::where('referred_by', $userId)
+            ->get(['user_name', 'user_email', 'created_at']);
         $referredCount = $referredUsers->count();
 
-    if (session('user_details.user_role') !== 'admin') {
-        $seller = DB::table('seller')->where('user_id', $userId)->first();
-        $personalInfo = json_decode($seller->personal_info, true);
+        if (session('user_details.user_role') !== 'admin') {
+            $seller = DB::table('seller')->where('user_id', $userId)->first();
+            $personalInfo = json_decode($seller->personal_info, true);
 
-        return view('pages.Settings', compact('seller', 'personalInfo', 'referredCount', 'referredUsers'));
-    } else {
-        $users = DB::table('users')->where('user_id', $userId)->first();
-        return view('pages.Settings', compact('users'));
+            return view('pages.Settings', compact('seller', 'personalInfo', 'referredCount', 'referredUsers'));
+        } else {
+            $users = DB::table('users')->where('user_id', $userId)->first();
+
+            // Pass the referral data even for admin (can be empty if irrelevant)
+            return view('pages.Settings', compact('users', 'referredUsers', 'referredCount'));
+        }
     }
-}
+
 
 
 
@@ -566,5 +568,4 @@ public function settings()
             'message' => 'Password updated successfully!',
         ]);
     }
-
 }

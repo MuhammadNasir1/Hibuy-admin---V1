@@ -57,8 +57,8 @@
             <ul class="space-y-2 font-medium">
                 <li>
                     <a href="#"
-                        class="flex mb-4 relative px-5 py-3 w-[80%] bg-white rounded-tl-[30px] rounded-tr-[10px] rounded-br-[30px] rounded-bl-[3px]">
-                        <img class="" src="{{ asset('asset/logo-black.png') }}" alt="Logo">
+                        class="flex mb-4 relative px-5 py-1 w-[80%] bg-white rounded-tl-[30px] rounded-tr-[10px] rounded-br-[30px] rounded-bl-[3px]">
+                        <img class="" src="{{ asset('asset/HiBuy-New4.png') }}" alt="Logo">
                     </a>
                 </li>
                 <li class="mt-6">
