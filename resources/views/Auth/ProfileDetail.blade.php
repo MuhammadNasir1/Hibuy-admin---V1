@@ -467,9 +467,9 @@
                                     <label class="md:w-32">Pin Location</label>
                                     <div class="relative w-full">
                                         <input id="store-location-input"
-                                        class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
-                                        name="pin_location" placeholder="Enter Pin Location"
-                                        value="{{ $store_info['pin_location'] ?? '' }}" required>
+                                            class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
+                                            name="pin_location" placeholder="Enter Pin Location"
+                                            value="{{ $store_info['pin_location'] ?? '' }}" required>
                                         <div class="get-location-btn cursor-pointer absolute inset-y-0 right-3 flex items-center"
                                             data-target="store">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
@@ -1125,18 +1125,25 @@
                 zoom: 13,
             });
 
-            const marker = new google.maps.Marker({
+            // Use AdvancedMarkerElement instead of Marker
+            const markerEl = document.createElement("div");
+            markerEl.style.background = "red";
+            markerEl.style.width = "20px";
+            markerEl.style.height = "20px";
+            markerEl.style.borderRadius = "50%";
+
+            const marker = new google.maps.marker.AdvancedMarkerElement({
                 map,
                 position,
-                draggable: true,
+                content: markerEl,
+                gmpDraggable: true,
             });
 
-            // Create PlaceAutocompleteElement
+            // Place Autocomplete binding
             const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
-            placeAutocomplete.setAttribute("input", input); // bind to existing input
+            placeAutocomplete.setAttribute("input", input);
             placeAutocomplete.id = "store-place-autocomplete";
 
-            // Only append once
             if (!document.getElementById("store-place-autocomplete")) {
                 document.body.appendChild(placeAutocomplete);
             }
@@ -1150,13 +1157,13 @@
                 const location = place.location;
                 map.setCenter(location);
                 map.setZoom(17);
-                marker.setPosition(location);
+                marker.position = location;
                 input.value = `${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`;
             });
 
-            marker.addListener("dragend", () => {
-                const pos = marker.getPosition();
-                input.value = `${pos.lat().toFixed(6)}, ${pos.lng().toFixed(6)}`;
+            marker.addListener("dragend", (e) => {
+                const pos = marker.position;
+                input.value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
             });
 
             maps[section.dataset.location] = {
@@ -1218,9 +1225,16 @@
             });
         });
     </script>
-
+    <!-- Load Maps API (only once) -->
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw_TRHWZfahR4yKXWfz11qRjXpx4vIdPA&callback=initMap&libraries=places"
-        async defer></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw_TRHWZfahR4yKXWfz11qRjXpx4vIdPA&libraries=maps,places&v=weekly"
+        defer></script>
+
+    <!-- Load Place Autocomplete Element -->
+    <script
+        src="https://maps.googleapis.com/maps/api/place/js/PlaceAutocompleteElement.js?key=AIzaSyCw_TRHWZfahR4yKXWfz11qRjXpx4vIdPA&v=weekly"
+        defer></script>
+
+
 
 @endsection
