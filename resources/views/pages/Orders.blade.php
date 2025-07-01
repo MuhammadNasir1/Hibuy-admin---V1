@@ -435,15 +435,15 @@
                     </td>
                     <td class="p-3">${item.product_name}</td>
                     ${user.user_role == 'admin' ? `
-                            <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                <td class="p-3">
-                                    ${item.status_video ? `
+                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                    <td class="p-3">
+                                        ${item.status_video ? `
                                 <video controls class="w-28 h-16 rounded shadow">
                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>` : 'No video'}
-                                </td>
-                            ` : ''}
+                                    </td>
+                                ` : ''}
                     <td class="p-3 text-center">${item.quantity}</td>
                     <td class="p-3 text-center">Rs ${item.price}</td>
                     <td class="p-3 text-center">Rs ${itemTotal.toFixed(2)}</td>

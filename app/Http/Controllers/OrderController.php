@@ -278,89 +278,81 @@ class OrderController extends Controller
         //  Seller update (update status of a product inside order_items JSON)
 
 
-        if ($request->filled('delivery_status') && $request->filled('product_id')) {
+        if ($request->filled('delivery_status')) {
             $orderItems = json_decode($order->order_items, true);
+            $videoPath = null;
+
+            // Upload the video once if provided
+            if ($request->hasFile('status_video')) {
+                $video = $request->file('status_video');
+                $videoPath = $video->store('orders', 'public');
+            }
 
             foreach ($orderItems as &$item) {
-                if ($item['product_id'] == $request->product_id) {
+                // Fetch product to check seller ownership
+                $product = Products::find($item['product_id']);
+
+                if ($product && $product->seller_id == session('user_details.seller_id')) {
                     $item['delivery_status'] = $request->delivery_status;
 
-                    // Handle status video upload
-                    if ($request->hasFile('status_video')) {
-                        $video = $request->file('status_video');
-
-                        // Delete the old video if it exists
+                    // Set video if uploaded
+                    if ($videoPath) {
                         if (!empty($item['status_video']) && Storage::disk('public')->exists($item['status_video'])) {
                             Storage::disk('public')->delete($item['status_video']);
                         }
-                        // Store the new video in storage/app/public/orders
-                        $videoPath = $video->store('orders', 'public');
-                        // Update the item with the new video path
                         $item['status_video'] = $videoPath;
                     }
                 }
             }
 
-            // Save the updated items
             $order->order_items = json_encode($orderItems);
         }
 
-        // if ($request->filled('order_status') && $request->order_status === 'shipped') {
-        //     $orderItems = is_string($order->order_items)
-        //         ? json_decode($order->order_items, true)
-        //         : $order->order_items;
+        if ($request->filled('order_status') && $request->order_status === 'shipped') {
+            $orderItems = is_string($order->order_items)
+                ? json_decode($order->order_items, true)
+                : $order->order_items;
 
-        //     foreach ($orderItems as $item) {
-        //         $product = Products::find($item['product_id']);
+            foreach ($orderItems as $item) {
+                $product = Products::find($item['product_id']);
 
-        //         if ($product && $product->product_variation) {
-        //             $variations = json_decode($product->product_variation, true);
+                if ($product && $product->product_variation) {
+                    $variations = json_decode($product->product_variation, true);
 
-        //             foreach ($variations as &$variation) {
-        //                 $parentMatched = false;
+                    foreach ($variations as &$variation) {
+                        $parentMatched = false;
 
-        //                 // Check all fields in item (like Color, Size, Storage, etc.)
-        //                 foreach ($item as $key => $value) {
-        //                     if (in_array($key, ['product_id', 'quantity', 'price', 'image', 'delivery_status', 'status_video'])) {
-        //                         continue;
-        //                     }
+                        // Match parent option
+                        if (
+                            isset($item['parent_option']['value'], $variation['parentname']) &&
+                            $variation['parentname'] === $item['parent_option']['value']
+                        ) {
+                            $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
+                            $parentMatched = true;
+                        }
 
-        //                     // Parent match
-        //                     if (isset($variation['parentname']) && $variation['parentname'] === $value && !$parentMatched) {
-        //                         $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
-        //                         $parentMatched = true;
-        //                         continue;
-        //                     }
+                        // Match child option
+                        if (!empty($variation['children']) && isset($item['child_option']['value'])) {
+                            foreach ($variation['children'] as &$child) {
+                                if (isset($child['name']) && $child['name'] === $item['child_option']['value']) {
+                                    $child['stock'] = max(0, $child['stock'] - $item['quantity']);
+                                    break;
+                                }
+                            }
+                        }
 
-        //                     // Child match
-        //                     if (!empty($variation['children'])) {
-        //                         foreach ($variation['children'] as &$child) {
-        //                             if (isset($child['name']) && $child['name'] === $value) {
-        //                                 $child['stock'] = max(0, $child['stock'] - $item['quantity']);
-        //                                 break;
-        //                             }
-        //                         }
-        //                     }
-        //                 }
+                        // Optional: break loop if parent matched
+                        if ($parentMatched) {
+                            break;
+                        }
+                    }
 
-        //                 // Stop looping if parent matched (optional: for performance)
-        //                 if ($parentMatched) {
-        //                     break;
-        //                 }
-        //             }
-
-        //             // Save updated variation back to product
-        //             $product->product_variation = json_encode($variations);
-        //             $product->save();
-        //         }
-        //     }
-        // }
-
-
-
-
-
-
+                    // Save updated variation back to product
+                    $product->product_variation = json_encode($variations);
+                    $product->save();
+                }
+            }
+        }
 
         $order->save();
 

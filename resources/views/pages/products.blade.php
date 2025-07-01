@@ -86,17 +86,18 @@
                                 <td>
 
                                     <span class="flex gap-4 items-center">
-                                        @if (strtolower($packageStatus) == 'approved')
+                                        @if (strtolower($packageStatus) === 'approved' && $package_end_date >= now())
                                             <form action="{{ route('product.boost', $product->product_id) }}"
                                                 method="POST" style="display:inline;">
                                                 @csrf
                                                 <button type="submit"
                                                     class="px-2 py-1 text-white rounded text-sm
-                                            {{ $product->is_boosted ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' }}">
+                                                {{ $product->is_boosted ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' }}">
                                                     {{ $product->is_boosted ? 'Unboost' : 'Boost' }}
                                                 </button>
                                             </form>
                                         @endif
+
 
 
                                         <button viewproducturl="/view-product/{{ $product->product_id }}"

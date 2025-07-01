@@ -11,11 +11,12 @@ use Illuminate\Http\Request;
 use App\Mail\ForgotPasswordMail;
 use App\Mail\SellerRegistration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
-use Vinkla\Hashids\Facades\Hashids;
 
 
 class AuthController extends Controller
@@ -199,7 +200,7 @@ class AuthController extends Controller
             ], 200);
         } catch (\Exception $e) {
             // Log the error for debugging
-            \Log::error('Failed to send password reset email: ' . $e->getMessage());
+            Log::error('Failed to send password reset email: ' . $e->getMessage());
 
             return response()->json([
                 'message' => 'An error occurred. Please try again later.',
