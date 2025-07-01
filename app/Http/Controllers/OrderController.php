@@ -278,30 +278,33 @@ class OrderController extends Controller
         //  Seller update (update status of a product inside order_items JSON)
 
 
-        if ($request->filled('delivery_status') && $request->filled('product_id')) {
+        if ($request->filled('delivery_status')) {
             $orderItems = json_decode($order->order_items, true);
+            $videoPath = null;
+
+            // Upload the video once if provided
+            if ($request->hasFile('status_video')) {
+                $video = $request->file('status_video');
+                $videoPath = $video->store('orders', 'public');
+            }
 
             foreach ($orderItems as &$item) {
-                if ($item['product_id'] == $request->product_id) {
+                // Fetch product to check seller ownership
+                $product = Products::find($item['product_id']);
+
+                if ($product && $product->seller_id == session('user_details.seller_id')) {
                     $item['delivery_status'] = $request->delivery_status;
 
-                    // Handle status video upload
-                    if ($request->hasFile('status_video')) {
-                        $video = $request->file('status_video');
-
-                        // Delete the old video if it exists
+                    // Set video if uploaded
+                    if ($videoPath) {
                         if (!empty($item['status_video']) && Storage::disk('public')->exists($item['status_video'])) {
                             Storage::disk('public')->delete($item['status_video']);
                         }
-                        // Store the new video in storage/app/public/orders
-                        $videoPath = $video->store('orders', 'public');
-                        // Update the item with the new video path
                         $item['status_video'] = $videoPath;
                     }
                 }
             }
 
-            // Save the updated items
             $order->order_items = json_encode($orderItems);
         }
 
