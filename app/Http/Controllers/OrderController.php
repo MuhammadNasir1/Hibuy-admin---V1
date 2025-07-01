@@ -305,62 +305,51 @@ class OrderController extends Controller
             $order->order_items = json_encode($orderItems);
         }
 
-        // if ($request->filled('order_status') && $request->order_status === 'shipped') {
-        //     $orderItems = is_string($order->order_items)
-        //         ? json_decode($order->order_items, true)
-        //         : $order->order_items;
+        if ($request->filled('order_status') && $request->order_status === 'shipped') {
+            $orderItems = is_string($order->order_items)
+                ? json_decode($order->order_items, true)
+                : $order->order_items;
 
-        //     foreach ($orderItems as $item) {
-        //         $product = Products::find($item['product_id']);
+            foreach ($orderItems as $item) {
+                $product = Products::find($item['product_id']);
 
-        //         if ($product && $product->product_variation) {
-        //             $variations = json_decode($product->product_variation, true);
+                if ($product && $product->product_variation) {
+                    $variations = json_decode($product->product_variation, true);
 
-        //             foreach ($variations as &$variation) {
-        //                 $parentMatched = false;
+                    foreach ($variations as &$variation) {
+                        $parentMatched = false;
 
-        //                 // Check all fields in item (like Color, Size, Storage, etc.)
-        //                 foreach ($item as $key => $value) {
-        //                     if (in_array($key, ['product_id', 'quantity', 'price', 'image', 'delivery_status', 'status_video'])) {
-        //                         continue;
-        //                     }
+                        // Match parent option
+                        if (
+                            isset($item['parent_option']['value'], $variation['parentname']) &&
+                            $variation['parentname'] === $item['parent_option']['value']
+                        ) {
+                            $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
+                            $parentMatched = true;
+                        }
 
-        //                     // Parent match
-        //                     if (isset($variation['parentname']) && $variation['parentname'] === $value && !$parentMatched) {
-        //                         $variation['parentstock'] = max(0, $variation['parentstock'] - $item['quantity']);
-        //                         $parentMatched = true;
-        //                         continue;
-        //                     }
+                        // Match child option
+                        if (!empty($variation['children']) && isset($item['child_option']['value'])) {
+                            foreach ($variation['children'] as &$child) {
+                                if (isset($child['name']) && $child['name'] === $item['child_option']['value']) {
+                                    $child['stock'] = max(0, $child['stock'] - $item['quantity']);
+                                    break;
+                                }
+                            }
+                        }
 
-        //                     // Child match
-        //                     if (!empty($variation['children'])) {
-        //                         foreach ($variation['children'] as &$child) {
-        //                             if (isset($child['name']) && $child['name'] === $value) {
-        //                                 $child['stock'] = max(0, $child['stock'] - $item['quantity']);
-        //                                 break;
-        //                             }
-        //                         }
-        //                     }
-        //                 }
+                        // Optional: break loop if parent matched
+                        if ($parentMatched) {
+                            break;
+                        }
+                    }
 
-        //                 // Stop looping if parent matched (optional: for performance)
-        //                 if ($parentMatched) {
-        //                     break;
-        //                 }
-        //             }
-
-        //             // Save updated variation back to product
-        //             $product->product_variation = json_encode($variations);
-        //             $product->save();
-        //         }
-        //     }
-        // }
-
-
-
-
-
-
+                    // Save updated variation back to product
+                    $product->product_variation = json_encode($variations);
+                    $product->save();
+                }
+            }
+        }
 
         $order->save();
 

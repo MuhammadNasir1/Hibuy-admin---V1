@@ -334,7 +334,6 @@ class ProductsController extends Controller
         } catch (\Exception $th) {
             // return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
             return redirect('/product/add')->with('error', $th->getMessage());
-
         }
     }
 
@@ -496,63 +495,63 @@ class ProductsController extends Controller
     }
 
     //     public function showAllProducts()
-//     {
-//         // Retrieve user details from session
-//         $userDetails = session('user_details');
-//         if (!$userDetails) {
-//             return response()->json(['error' => 'User not authenticated'], 401);
-//         }
+    //     {
+    //         // Retrieve user details from session
+    //         $userDetails = session('user_details');
+    //         if (!$userDetails) {
+    //             return response()->json(['error' => 'User not authenticated'], 401);
+    //         }
 
     //         $loggedInUserId = $userDetails['user_id'];
-//         $loggedInUserRole = $userDetails['user_role']; // Get user role
+    //         $loggedInUserRole = $userDetails['user_role']; // Get user role
 
     //         if ($loggedInUserRole == 'admin') {
-//             $p_id = $loggedInUserId;
-//         }
+    //             $p_id = $loggedInUserId;
+    //         }
 
     //         // Base query
-//         $query = DB::table('products')
-//             ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
-//             ->join('users', 'products.user_id', '=', 'users.user_id')
-//             ->select(
-//                 'products.product_id',
-//                 'products.user_id',
-//                 'products.product_name',
-//                 'categories.name as product_category',
-//                 'products.product_discounted_price',
-//                 'products.product_images',
-//                 'products.product_status',
-//                 'products.is_boosted',
-//                 'products.created_at',
-//                 'products.updated_at',
-//                 'users.user_name as user_name'
-//             );
+    //         $query = DB::table('products')
+    //             ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
+    //             ->join('users', 'products.user_id', '=', 'users.user_id')
+    //             ->select(
+    //                 'products.product_id',
+    //                 'products.user_id',
+    //                 'products.product_name',
+    //                 'categories.name as product_category',
+    //                 'products.product_discounted_price',
+    //                 'products.product_images',
+    //                 'products.product_status',
+    //                 'products.is_boosted',
+    //                 'products.created_at',
+    //                 'products.updated_at',
+    //                 'users.user_name as user_name'
+    //             );
 
 
     //         // If not admin, filter by logged-in user_id
-//         if ($loggedInUserRole !== 'admin') {
-//             $query->where('products.user_id', $loggedInUserId);
-//         } else {
-//             $query->where('products.user_id', '!=', $p_id);
-//         }
+    //         if ($loggedInUserRole !== 'admin') {
+    //             $query->where('products.user_id', $loggedInUserId);
+    //         } else {
+    //             $query->where('products.user_id', '!=', $p_id);
+    //         }
 
     //         // Fetch products and format image
-//         $products = $query->get()->map(function ($product) {
-//             $images = json_decode($product->product_images, true);
-//             $product->first_image = $images[0] ?? null;
-//             unset($product->product_images);
-//             return $product;
-//         });
+    //         $products = $query->get()->map(function ($product) {
+    //             $images = json_decode($product->product_images, true);
+    //             $product->first_image = $images[0] ?? null;
+    //             unset($product->product_images);
+    //             return $product;
+    //         });
 
     // // return $products;
-//  $user = User::where('user_id', $loggedInUserId)->first();
-//     $packageDetail = json_decode($user->package_detail, true);
+    //  $user = User::where('user_id', $loggedInUserId)->first();
+    //     $packageDetail = json_decode($user->package_detail, true);
 
     //     $packageStatus = $packageDetail['package_status'] ?? null;
 
     //     // return $products;
-//     return view('pages.products', compact('products', 'packageStatus'));
-// }
+    //     return view('pages.products', compact('products', 'packageStatus'));
+    // }
 
 
     public function showAllProducts(Request $request)
@@ -607,8 +606,9 @@ class ProductsController extends Controller
         $user = User::where('user_id', $loggedInUserId)->first();
         $packageDetail = json_decode($user->package_detail, true);
         $packageStatus = $packageDetail['package_status'] ?? null;
+        $package_end_date = $packageDetail['package_end_date'] ?? null;
 
-        return view('pages.products', compact('products', 'packageStatus'));
+        return view('pages.products', compact('products', 'packageStatus','package_end_date'));
     }
 
 
@@ -875,6 +875,4 @@ class ProductsController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
-
-
 }
