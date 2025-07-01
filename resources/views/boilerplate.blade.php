@@ -32,16 +32,24 @@
 <script>
     $(window).on('load', function() {
         $('#loading').hide();
-    })
+    });
+
     $(document).ready(function() {
-        $('#datatable').DataTable({
+        var table = $('#datatable').DataTable({
             stateSave: true
         });
+
         $('select').select2({
             width: '100%'
         });
+
         $('#Items_dropdown').select2({
             minimumResultsForSearch: Infinity
+        });
+
+        // Reload the page on pagination click
+        table.on('page.dt', function() {
+            location.reload();
         });
     });
 </script>
