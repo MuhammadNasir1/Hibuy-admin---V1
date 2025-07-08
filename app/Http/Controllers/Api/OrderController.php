@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
 use App\Models\Store;
+use App\Models\Reviews;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -201,48 +202,47 @@ class OrderController extends Controller
 
             // Merge product and store details into order items dynamically
             if (is_array($orderItems)) {
+                $reviewedProductIds = Reviews::where('user_id', $loggedInUser->user_id)
+                    ->where('order_id', $order->order_id)
+                    ->pluck('product_id')
+                    ->toArray();
+
                 foreach ($orderItems as &$item) {
                     if (isset($products[$item['product_id']])) {
                         $product = $products[$item['product_id']]->toArray();
 
-                        // Decode JSON and get the first image path
+                        // Decode product images and get the first one
                         $images = json_decode($product['product_images'], true);
                         $product['product_image'] = isset($images[0]) ? $images[0] : null;
-
-                        // Remove full product_images JSON (optional)
                         unset($product['product_images']);
 
-                        // Extract dynamic variant keys (excluding default ones)
-                        $defaultKeys = ['product_id', 'quantity', 'price']; // Default order item fields
-                        $variantKeys = array_values(array_diff(array_keys($item), $defaultKeys)); // Convert to indexed array
+                        // Extract dynamic variant keys
+                        $defaultKeys = ['product_id', 'quantity', 'price'];
+                        $variantKeys = array_values(array_diff(array_keys($item), $defaultKeys));
 
-                        // Assign dynamic variants
-                        $item['parentOptionName'] = isset($variantKeys[0]) ? $variantKeys[0] : null;
-                        $item['selectedParentOption'] = isset($variantKeys[0]) ? $item[$variantKeys[0]] : null;
+                        $item['parentOptionName'] = $variantKeys[0] ?? null;
+                        $item['selectedParentOption'] = $variantKeys[0] ? $item[$variantKeys[0]] : null;
+                        $item['childrenOptionName'] = $variantKeys[1] ?? null;
+                        $item['selectedChildrenOption'] = $variantKeys[1] ? $item[$variantKeys[1]] : null;
 
-                        $item['childrenOptionName'] = isset($variantKeys[1]) ? $variantKeys[1] : null;
-                        $item['selectedChildrenOption'] = isset($variantKeys[1]) ? $item[$variantKeys[1]] : null;
-
-                        // Get store details and extract store_name from JSON
+                        // Get store name
                         $storeName = null;
                         if (isset($stores[$product['store_id']])) {
                             $store = $stores[$product['store_id']];
-
-                            // Try getting store_name from store_profile_detail
                             $storeDetails = json_decode($store->store_profile_detail, true);
-                            if (!empty($storeDetails) && isset($storeDetails['store_name'])) {
-                                $storeName = $storeDetails['store_name'];
-                            } else {
-                                // If store_profile_detail is empty, fallback to store_info
-                                $storeInfo = json_decode($store->store_info, true);
-                                $storeName = isset($storeInfo['store_name']) ? $storeInfo['store_name'] : null;
-                            }
+                            $storeInfo = json_decode($store->store_info, true);
+
+                            $storeName = $storeDetails['store_name'] ?? ($storeInfo['store_name'] ?? null);
                         }
 
-                        // Merge store name and product details into order item
+                        // Merge product + store info
                         $item = array_merge($item, $product, ['store_name' => $storeName]);
+
+                        // ✅ Add review check
+                        $item['has_review'] = in_array($item['product_id'], $reviewedProductIds);
                     }
                 }
+
                 $order->order_items = $orderItems;
             }
 
