@@ -237,11 +237,28 @@ class apiAuthController extends Controller
                 }
             }
 
+            $orderId = $request->order_id;
+
+            if (!$orderId) {
+                // Use latest order as fallback
+                $latestOrder = Order::where('user_id', $User->user_id)
+                    ->latest()
+                    ->first();
+
+                if (!$latestOrder) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No order found for this user',
+                    ], 404);
+                }
+
+                $orderId = $latestOrder->order_id;
+            }
             // Create the review
             $review = Reviews::create([
                 'user_id'    => $User->user_id,
                 'product_id' => $request->product_id,
-                'order_id'   => $request->order_id,
+                'order_id'   => $orderId, // ✅ uses provided or fallback
                 'rating'     => $request->rating,
                 'review'     => $cleanedReview,
                 'images'     => json_encode($imagePaths),
