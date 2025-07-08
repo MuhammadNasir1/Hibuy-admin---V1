@@ -159,14 +159,16 @@ class OrderController extends Controller
                     'status',
                     'order_status',
                     'order_date'
-                ) // Add the columns you need
+                )
                 ->first();
 
             if (!$order) {
                 return response()->json(['success' => false, 'message' => 'Order not found'], 404);
             }
+
             // Ensure second_phone is null if empty
             $order->second_phone = !empty($order->second_phone) ? $order->second_phone : null;
+
             // Decode order items
             $orderItems = json_decode($order->order_items, true);
             $productIds = [];
@@ -177,8 +179,13 @@ class OrderController extends Controller
                 }
             }
 
-            // Remove duplicate product IDs
             $productIds = array_unique($productIds);
+
+            // Fetch reviewed product IDs by this user for this order
+            $reviewedProductIds = Reviews::where('user_id', $loggedInUser->user_id)
+                ->where('order_id', $order->order_id)
+                ->pluck('product_id')
+                ->toArray();
 
             // Fetch product details
             $products = Products::select(
@@ -190,7 +197,7 @@ class OrderController extends Controller
             )
                 ->whereIn('product_id', $productIds)
                 ->get()
-                ->keyBy('product_id'); // Store products as an associative array
+                ->keyBy('product_id');
 
             // Fetch store details
             $storeIds = $products->pluck('store_id')->unique()->toArray();
@@ -198,48 +205,48 @@ class OrderController extends Controller
             $stores = Store::select('store_id', 'store_info', 'store_profile_detail')
                 ->whereIn('store_id', $storeIds)
                 ->get()
-                ->keyBy('store_id'); // Store stores as an associative array
+                ->keyBy('store_id');
 
             // Merge product and store details into order items dynamically
             if (is_array($orderItems)) {
-                $reviewedProductIds = Reviews::where('user_id', $loggedInUser->user_id)
-                    ->where('order_id', $order->order_id)
-                    ->pluck('product_id')
-                    ->toArray();
-
                 foreach ($orderItems as &$item) {
                     if (isset($products[$item['product_id']])) {
                         $product = $products[$item['product_id']]->toArray();
 
-                        // Decode product images and get the first one
+                        // Decode images and get the first image
                         $images = json_decode($product['product_images'], true);
                         $product['product_image'] = isset($images[0]) ? $images[0] : null;
                         unset($product['product_images']);
 
-                        // Extract dynamic variant keys
-                        $defaultKeys = ['product_id', 'quantity', 'price'];
-                        $variantKeys = array_values(array_diff(array_keys($item), $defaultKeys));
+                        // Inject product data
+                        foreach ($product as $key => $value) {
+                            $item[$key] = $value;
+                        }
 
-                        $item['parentOptionName'] = $variantKeys[0] ?? null;
-                        $item['selectedParentOption'] = $variantKeys[0] ? $item[$variantKeys[0]] : null;
-                        $item['childrenOptionName'] = $variantKeys[1] ?? null;
-                        $item['selectedChildrenOption'] = $variantKeys[1] ? $item[$variantKeys[1]] : null;
+                        // Set review status
+                        $item['has_review'] = in_array($item['product_id'], $reviewedProductIds);
 
-                        // Get store name
+                        // Extract variant info (parent_option/child_option)
+                        $item['parentOptionName'] = $item['parent_option']['name'] ?? null;
+                        $item['selectedParentOption'] = $item['parent_option']['value'] ?? null;
+
+                        $item['childrenOptionName'] = $item['child_option']['name'] ?? null;
+                        $item['selectedChildrenOption'] = $item['child_option']['value'] ?? null;
+
+                        // Extract store name
                         $storeName = null;
                         if (isset($stores[$product['store_id']])) {
                             $store = $stores[$product['store_id']];
                             $storeDetails = json_decode($store->store_profile_detail, true);
-                            $storeInfo = json_decode($store->store_info, true);
+                            $storeName = $storeDetails['store_name'] ?? null;
 
-                            $storeName = $storeDetails['store_name'] ?? ($storeInfo['store_name'] ?? null);
+                            if (!$storeName) {
+                                $storeInfo = json_decode($store->store_info, true);
+                                $storeName = $storeInfo['store_name'] ?? null;
+                            }
                         }
 
-                        // Merge product + store info
-                        $item = array_merge($item, $product, ['store_name' => $storeName]);
-
-                        // ✅ Add review check
-                        $item['has_review'] = in_array($item['product_id'], $reviewedProductIds);
+                        $item['store_name'] = $storeName;
                     }
                 }
 
