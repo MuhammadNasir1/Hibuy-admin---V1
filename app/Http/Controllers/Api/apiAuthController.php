@@ -184,10 +184,11 @@ class apiAuthController extends Controller
             // Validate input
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|integer|exists:products,product_id',
+                'order_id'   => 'required|integer',
                 'rating'     => 'required|integer|min:1|max:5',
                 'review'     => 'required|string',
                 'images'     => 'nullable|array',
-                'images.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Optional image validation
+                'images.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             if ($validator->fails()) {
@@ -198,27 +199,57 @@ class apiAuthController extends Controller
                 ], 422);
             }
 
+            // Check if the order belongs to the authenticated user
+            $order = Order::where('order_id', $request->order_id)
+                ->where('user_id', $User->user_id)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid order ID for this user',
+                ], 403);
+            }
+
+            // Prevent duplicate reviews
+            $existingReview = Reviews::where('user_id', $User->user_id)
+                ->where('product_id', $request->product_id)
+                ->where('order_id', $request->order_id)
+                ->first();
+
+            if ($existingReview) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already submitted a review for this product in this order.',
+                ], 409);
+            }
+
+            // Sanitize review text
+            $cleanedReview = strip_tags($request->review);
+
             // Handle image upload
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('review_images', 'public'); // returns: review_images/filename.jpg
-                    $imagePaths[] = 'storage/' . $path; // prepend 'storage/' to make: storage/review_images/filename.jpg
+                    $path = $image->store('review_images', 'public');
+                    $imagePaths[] = Storage::url($path); // e.g., /storage/review_images/file.jpg
                 }
             }
 
             // Create the review
             $review = Reviews::create([
-                'user_id'    => $User->user_id, // Get user_id from authenticated user
+                'user_id'    => $User->user_id,
                 'product_id' => $request->product_id,
+                'order_id'   => $request->order_id,
                 'rating'     => $request->rating,
-                'review'     => $request->review,
-                'images'     => json_encode($imagePaths), // Store image paths as JSON
+                'review'     => $cleanedReview,
+                'images'     => json_encode($imagePaths),
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Review added successfully',
+                'data'    => $review
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -241,30 +272,67 @@ class apiAuthController extends Controller
                 ], 404);
             }
 
-            // Fetch reviews for the authenticated user
+            // Eager load product and order
             $reviews = Reviews::where('user_id', $user->user_id)
-                ->with('product')
+                ->with(['product', 'order'])
                 ->get();
 
             $reviews->each(function ($review) use ($user) {
-                // Decode review images and keep only the first image
-                $images = json_decode($review->images, true);
-                $review->image = $images[0] ?? null; // single image only
-                unset($review->images); // optional: remove original images field
+                // Parse review images (keep full array)
+                $reviewImages = json_decode($review->images, true);
+                $review->images = is_array($reviewImages) ? $reviewImages : [];
 
-                // Add user_name from authenticated user
+                // Attach username
                 $review->user_name = $user->user_name;
-
+                // dd($review->product);
+                // exit;
+                // Format product info: only first image
                 if ($review->product) {
-                    // Decode product images
-                    $productImages = json_decode($review->product->product_images, true);
-                    $review->product = [
+                    $productImagesRaw = $review->product->product_images;
+
+                    $productImages = is_string($productImagesRaw)
+                        ? json_decode($productImagesRaw, true)
+                        : (is_array($productImagesRaw) ? $productImagesRaw : []);
+
+                    $firstImage = is_array($productImages) ? ($productImages[0] ?? null) : null;
+
+                    // Attach clean product_detail
+                    $review->product_detail = [
                         'product_id'    => $review->product->product_id,
                         'product_title' => $review->product->product_name,
-                        'product_image' => $productImages[0] ?? null,
+                        'product_image' => $firstImage,
                     ];
+
+                    // ✅ Properly remove the original relation
+                    $review->unsetRelation('product');
+                }
+
+                // Format order info: only order_date + extract variation
+                if ($review->order) {
+                    // Keep original order before replacing it
+                    $originalOrder = $review->order;
+
+                    // Replace with just specific field(s)
+                    $review->order = [
+                        'order_date' => $originalOrder->order_date,
+                    ];
+
+                    // Decode order_items and extract selected variation
+                    $orderItems = json_decode($originalOrder->order_items, true);
+                    if (is_array($orderItems)) {
+                        foreach ($orderItems as $item) {
+                            if ((int)$item['product_id'] === (int)$review->product_id) {
+                                $review->parent_option_name  = $item['parent_option']['name'] ?? null;
+                                $review->parent_option_value = $item['parent_option']['value'] ?? null;
+                                $review->child_option_name   = $item['child_option']['name'] ?? null;
+                                $review->child_option_value  = $item['child_option']['value'] ?? null;
+                                break;
+                            }
+                        }
+                    }
                 }
             });
+            // dd($reviews);
 
             return response()->json([
                 'success' => true,
@@ -278,6 +346,9 @@ class apiAuthController extends Controller
             ], 422);
         }
     }
+
+
+
 
 
     public function editProfile(Request $request)
@@ -455,6 +526,51 @@ class apiAuthController extends Controller
         }
     }
 
+
+    public function getAddress()
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => "User Not Found"], 404);
+            }
+
+            $customer = Customer::where('user_id', $user->user_id)->first();
+            if (!$customer) {
+                return response()->json(['success' => false, 'message' => "Customer Not Found"], 404);
+            }
+
+            // Decode addresses
+            $addresses = json_decode($customer->customer_addresses, true) ?? [];
+
+            // Sort so default address appears first
+            usort($addresses, function ($a, $b) {
+                return $b['is_default'] <=> $a['is_default'];
+            });
+
+            // Prepare user data
+            $userData = [
+                'user_id'    => $user->user_id,
+                'user_name'  => $user->user_name,
+                'user_email' => $user->user_email,
+                'user_role'  => $user->user_role,
+            ];
+
+            // Merge customer-specific details
+            $customerData = $customer->toArray();
+            $customerData['customer_addresses'] = $addresses;
+
+            $userData = array_merge($userData, $customerData);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Customer addresses fetched successfully",
+                'user'    => $userData,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
 
     public function deleteAddress(Request $request)
     {
