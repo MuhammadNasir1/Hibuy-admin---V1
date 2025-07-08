@@ -11,7 +11,7 @@ class Reviews extends Model
 
     protected $table = 'reviews';
     protected $primaryKey = 'review_id';
-    protected $fillable = ['user_id', 'product_id', 'rating', 'review', 'images'];
+    protected $fillable = ['user_id', 'product_id', 'order_id','rating', 'review', 'images'];
 
     protected $casts = [
         'images' => 'array', // Convert JSON to array automatically
