@@ -51,9 +51,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('storeAddress', [apiAuthController::class, 'storeAddress']);
 
+    Route::GET('getAddress', [apiAuthController::class, 'getAddress']);
+
     Route::POST('DeleteAddress', [apiAuthController::class, 'DeleteAddress']);
 
     Route::POST('KYC_Authentication', [UserController::class, 'KYC_Authentication']);
+
     Route::POST('query/add', [apiAuthController::class, 'addQuery']);
 
     Route::POST('logout', [apiAuthController::class, 'logout']);

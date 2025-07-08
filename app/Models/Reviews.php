@@ -32,4 +32,13 @@ class Reviews extends Model
                 'product_images'
             ]);
     }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'order_id')
+        ->select([
+            'order_id',
+            'order_date'
+        ]);
+    }
 }
