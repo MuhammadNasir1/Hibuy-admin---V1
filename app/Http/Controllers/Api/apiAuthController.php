@@ -247,11 +247,13 @@ class apiAuthController extends Controller
                 ->get();
 
             $reviews->each(function ($review) use ($user) {
-                // Decode review images
-                $review->images = json_decode($review->images, true);
+                // Decode review images and keep only the first image
+                $images = json_decode($review->images, true);
+                $review->image = $images[0] ?? null; // single image only
+                unset($review->images); // optional: remove original images field
 
                 // Add user_name from authenticated user
-                $review->user_name = $user->user_name; // Assuming 'name' is the column for user_name in the users table
+                $review->user_name = $user->user_name;
 
                 if ($review->product) {
                     // Decode product images

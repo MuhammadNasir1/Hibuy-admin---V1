@@ -13,14 +13,6 @@
                         <a href="#" class="inline-block px-4 py-1 text-white bg-primary rounded-3xl active"
                             aria-current="page">All</a>
                     </li>
-                    {{-- <li class="me-2">
-                        <a href="#"
-                            class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Seller</a>
-                    </li>
-                    <li class="me-2">
-                        <a href="#"
-                            class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Freelancer</a>
-                    </li> --}}
                     <li class="me-2">
                         <a href="#"
                             class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Wholesale</a>
@@ -44,6 +36,7 @@
 
         <x-table :headers="$headers">
             <x-slot name="tablebody">
+                @php $displayCounter = 1; @endphp
                 @foreach ($orders as $order)
                     @php
                         $calculatedTotal = 0;
@@ -55,14 +48,15 @@
                     @endphp
 
                     <tr class="border-b hover:bg-gray-100 transition">
-                        <td class="px-4 py-2 text-center font-medium">{{ $order->order_id }}</td>
+                        <td class="px-4 py-2 text-center font-medium">{{ $displayCounter++ }}</td>
                         <td class="px-4 py-2 text-center">
                             <span class="text-gray-700 font-semibold">{{ $order->order_id }}</span> /
                             <span class="text-gray-500">{{ $order->tracking_id }}</span>
                         </td>
-                        <td class="px-4 py-2">{{ $order->customer_name }}</td>
+                        <td class="px-4 py-2">{{ ucwords($order->customer_name) }}</td>
                         <td class="px-4 py-2">{{ $order->phone }}</td>
-                        <td class="px-4 py-2">{{ $order->address }}</td>
+                        <td class="px-4 py-2">{{ ucwords($order->address) }}</td>
+
 
                         {{-- Show Calculated Grand Total --}}
                         <td class="px-4 py-2 font-semibold text-green-600">
@@ -284,6 +278,7 @@
                                                         <th class="p-3 text-left">Video Prove</th>
                                                     @endif
                                                     <th class="p-3 text-center">Qty</th>
+                                                    <th class="p-3 text-center">Variation</th>
                                                     <th class="p-3 text-center">U.Price</th>
                                                     <th class="p-3 text-center">Subtotal</th>
                                                 </tr>
@@ -389,9 +384,16 @@
 
                         $('#tracking_number').val(response.tracking_number);
                         $('#order_status').val(response.order_status).change();
-                        $("#order-status").text(response.order_status);
+                        let status = response.order_status; // e.g., "order_placed"
+                        let formattedStatus = status
+                            .split('_') // ["order", "placed"]
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(
+                            1)) // ["Order", "Placed"]
+                            .join(' '); // "Order Placed"
+
+                        $("#order-status").text(formattedStatus);
                         $("#edit_orderstatus_id").val(response.order_id);
-                        $("#customer-name").text(response.customer_name);
+                        $("#customer-name").text(response.customer_name.toUpperCase());
                         $("#tracking-id").text(response.tracking_id);
                         $("#customer-address").text(response.address);
                         $("#order-date").text(response.order_date);
@@ -429,25 +431,41 @@
                             }
 
                             itemsHtml += `
-                <tr class="border-b">
-                    <td class="p-3">
-                        <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
-                    </td>
-                    <td class="p-3">${item.product_name}</td>
-                    ${user.user_role == 'admin' ? `
-                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                <tr class="border-b">
                                     <td class="p-3">
-                                        ${item.status_video ? `
-                                <video controls class="w-28 h-16 rounded shadow">
-                                    <source src="/storage/${item.status_video}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>` : 'No video'}
+                                        <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
                                     </td>
-                                ` : ''}
-                    <td class="p-3 text-center">${item.quantity}</td>
-                    <td class="p-3 text-center">Rs ${item.price}</td>
-                    <td class="p-3 text-center">Rs ${itemTotal.toFixed(2)}</td>
-                </tr>`;
+                                    <td class="p-3">${item.product_name}</td>
+
+                                    ${user.user_role == 'admin' ? `
+                                                            <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                            <td class="p-3">
+                                                                ${item.status_video ? `
+                                                <video controls class="w-28 h-16 rounded shadow">
+                                                    <source src="/storage/${item.status_video}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>` : 'No video'}
+                                                            </td>
+                                                        ` : ''}
+
+                                    <td class="p-3 text-center">${item.quantity}</td>
+
+                                    <td class="p-3 text-center">
+                                        <div class="inline-block text-sm text-gray-700">
+                                            ${item.parent_option?.name && item.parent_option?.value
+                                                ? `<span class="font-medium text-gray-800">${item.parent_option.name}:</span> ${item.parent_option.value}`
+                                                : ''
+                                            }
+                                            ${item.child_option?.name && item.child_option?.value && item.child_option.value !== 'N/A'
+                                                ? `<br><span class="font-medium text-gray-800">${item.child_option.name}:</span> ${item.child_option.value}`
+                                                : ''
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <td class="p-3 text-center">Rs ${item.price}</td>
+                                    <td class="p-3 text-center">Rs ${itemTotal.toFixed(2)}</td>
+                                </tr>`;
                         });
 
                         $("#order-items-body").html(itemsHtml);

@@ -439,11 +439,14 @@
 
                             const images = response.product.product_images;
                             if (images && images.length > 0) {
-                                $("#main-image").attr("src", images[0]);
-                                $("#sub-image-1").attr("src", images[1] || "");
-                                $("#sub-image-2").attr("src", images[2] || "");
-                                $("#sub-image-3").attr("src", images[3] || "");
-                                $("#sub-image-4").attr("src", images[4] || "");
+                                const defaultImage =
+                                "{{ asset('asset/defualt-image.png') }}"; // Replace with your actual image path
+
+                                $("#main-image").attr("src", images[0] || defaultImage);
+                                $("#sub-image-1").attr("src", images[1] || defaultImage);
+                                $("#sub-image-2").attr("src", images[2] || defaultImage);
+                                $("#sub-image-3").attr("src", images[3] || defaultImage);
+                                $("#sub-image-4").attr("src", images[4] || defaultImage);
                             }
                         } else {
                             alert("Product not found!");
