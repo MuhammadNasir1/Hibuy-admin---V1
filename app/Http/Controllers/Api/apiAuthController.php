@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
+use Google_Client;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Query;
 use App\Models\Reviews;
 use App\Models\Customer;
 use App\Models\Products;
-use App\Models\Query;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Laravel\Socialite\Facades\Socialite;
-use Google_Client;
 
 class apiAuthController extends Controller
 {
