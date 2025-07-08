@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Query;
 use App\Models\Store;
 use App\Models\Seller;
+use App\Models\Reviews;
 use App\Models\Customer;
+use App\Models\Products;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\ForgotPasswordMail;
@@ -21,6 +25,231 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+
+
+    public function dashboard()
+    {
+        if (!session()->has('user_details')) {
+            return redirect()->route('login')->with('error', 'Please log in first.');
+        }
+
+        $userDetails = session('user_details');
+        $userRole = $userDetails['user_role'];
+        $userId = $userDetails['user_id'];
+
+        $data = []; // This will hold role-based dashboard data
+        $topStores = [];
+        $topProducts = [];
+
+        switch ($userRole) {
+            case 'admin':
+                // Revenue, counts
+                $data['revenue'] = Order::where('order_status', '=', 'delivered')->sum('grand_total');
+                $data['totalUsers'] = User::where('user_role', 'seller')->count();
+                $data['totalBuyers'] = User::where('user_role', 'customer')->count();
+                $data['totalOrders'] = Order::count();
+                $data['returnedOrders'] = Order::where('order_status', 'returned')->count();
+                $data['totalProducts'] = Products::count();
+                $data['totalReviews'] = Reviews::count();
+                $data['totalQueries'] = Query::count();
+
+                // Get all orders once
+                $allOrders = Order::all();
+                // 🟡 Total Pending Orders for All Sellers
+                $data['totalPendingOrders'] = $allOrders->where('order_status', 'order_placed')->count();
+
+                $data['pendingAmount'] = $allOrders->where('order_status', 'order_placed')->sum(function ($order) {
+                    $items = json_decode($order->order_items, true);
+                    $total = 0;
+
+                    foreach ($items as $item) {
+                        $total += $item['price'] * $item['quantity'];
+                    }
+
+                    // Add delivery fee (if it exists)
+                    $total += $order->delivery_fee ?? 0;
+
+                    return $total;
+                });
+
+
+
+                $topStores = Store::all()->map(function ($store) use ($allOrders) {
+                    // Decode store name/logo from JSON
+                    $storeProfile = json_decode($store->store_profile_detail, true);
+                    $storeName = $storeProfile['store_name'] ?? 'Unnamed Store';
+                    $storeLogo = $storeProfile['store_image'] ?? asset('asset/Ellipse 2.png');
+
+                    // Get all product IDs of the store
+                    $productIds = Products::where('store_id', $store->store_id)->pluck('product_id')->toArray();
+
+                    $totalSold = 0;
+                    $totalEarning = 0;
+
+                    foreach ($allOrders as $order) {
+                        $items = json_decode($order->order_items, true);
+                        foreach ($items as $item) {
+                            if (in_array($item['product_id'], $productIds)) {
+                                $totalSold += $item['quantity'];
+                                $totalEarning += $item['price'] * $item['quantity'];
+                            }
+                        }
+                    }
+
+                    return (object)[
+                        'store_id'      => $store->store_id,
+                        'store_name'    => $storeName,
+                        'logo'          => $storeLogo,
+                        'items_sold'    => $totalSold,
+                        'total_earning' => $totalEarning,
+                    ];
+                })
+                    ->filter(fn($store) => $store->items_sold > 0) // Optional: remove stores with no sales
+                    ->sortByDesc('total_earning')
+                    ->take(5)
+                    ->values();
+
+
+                // 🧮 Calculate total profit from all delivered orders
+                $allProducts = Products::get()->keyBy('product_id');
+                $data['totalProfit'] = 0;
+
+                foreach ($allOrders as $order) {
+                    if ($order->order_status !== 'delivered') {
+                        continue;
+                    }
+
+                    $items = json_decode($order->order_items, true);
+
+                    foreach ($items as $item) {
+                        $productId = $item['product_id'];
+                        $quantity = $item['quantity'];
+                        $price = $item['price'];
+
+                        $cost = isset($allProducts[$productId]) ? $allProducts[$productId]->purchase_price : 0;
+
+                        $data['totalProfit'] += ($price - $cost) * $quantity;
+                    }
+                }
+                break;
+            case 'seller':
+                $sellerId = Seller::where('user_id', $userId)->value('seller_id');
+                $storeId = Store::where('seller_id', $sellerId)->value('store_id');
+
+                $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
+
+                // Product count
+                $data['totalProducts'] = count($productIds);
+
+                // Orders
+                $orders = Order::get()->filter(function ($order) use ($productIds) {
+                    $items = json_decode($order->order_items, true);
+                    foreach ($items as $item) {
+                        if (in_array($item['product_id'], $productIds)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                $data['totalOrders'] = $orders->count();
+                $data['returnedOrders'] = $orders->where('order_status', 'returned')->count();
+                $data['totalPendingOrders'] = $orders->where('order_status', 'order_placed')->count();
+
+                // ➕ Calculate Pending Amount
+                $pendingOrders = $orders->where('order_status', 'order_placed');
+                $data['pendingAmount'] = $pendingOrders->sum(function ($order) use ($productIds) {
+                    $items = json_decode($order->order_items, true);
+                    $total = 0;
+                    foreach ($items as $item) {
+                        if (in_array($item['product_id'], $productIds)) {
+                            $total += $item['price'] * $item['quantity'];
+                        }
+                    }
+                    return $total;
+                });
+
+                // Load all seller products once to avoid repeated DB queries
+                $products = Products::whereIn('product_id', $productIds)->get()->keyBy('product_id');
+
+                $data['revenue'] = 0;
+                $data['totalProfit'] = 0;
+
+                $data['revenue'] = $orders->sum(function ($order) use ($productIds, $products, &$data) {
+                    // ✅ Only process delivered orders
+                    if ($order->order_status !== 'delivered') {
+                        return 0;
+                    }
+
+                    $items = json_decode($order->order_items, true);
+                    $total = 0;
+                    $profit = 0;
+
+                    foreach ($items as $item) {
+                        if (in_array($item['product_id'], $productIds)) {
+                            $quantity = $item['quantity'];
+                            $price = $item['price']; // unit selling price
+                            $cost = isset($products[$item['product_id']]) ? $products[$item['product_id']]->purchase_price : 0;
+
+                            $total += $price * $quantity;
+                            $profit += ($price - $cost) * $quantity;
+                        }
+                    }
+
+                    $data['totalProfit'] += $profit;
+
+                    return $total;
+                });
+
+
+
+                $data['totalReviews'] = Reviews::whereIn('product_id', $productIds)->count();
+
+                // 🟢 Top Selling Products
+                $topProducts = Products::whereIn('product_id', $productIds)
+                    ->get()
+                    ->map(function ($product) use ($orders) {
+                        $sold = 0;
+                        $earning = 0;
+
+                        // Decode the JSON image array
+                        $images = json_decode($product->product_images, true);
+                        $firstImage = is_array($images) && count($images) > 0 ? $images[0] : null;
+
+                        foreach ($orders as $order) {
+                            $items = json_decode($order->order_items, true);
+                            foreach ($items as $item) {
+                                if ($item['product_id'] == $product->product_id) {
+                                    $sold += $item['quantity'];
+                                    $earning += $item['price'];
+                                }
+                            }
+                        }
+
+                        return (object)[
+                            'product_id' => $product->product_id,
+                            'product_name' => $product->product_name,
+                            'image' => $firstImage,
+                            'total_sold' => $sold,
+                            'total_earning' => $earning,
+                        ];
+                    })
+                    ->sortByDesc('total_sold')
+                    ->take(5)
+                    ->values();
+                break;
+
+            case 'freelancer':
+                // Get freelancer-specific info
+                break;
+
+            default:
+                return redirect()->route('login')->with('error', 'Invalid user role.');
+        }
+
+        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts'));
+    }
+
 
     public function showSignup($role = null)
     {
@@ -279,5 +508,4 @@ class AuthController extends Controller
             'redirect' => route('login')
         ]);
     }
-
 }

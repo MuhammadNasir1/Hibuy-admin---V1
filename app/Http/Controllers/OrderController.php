@@ -162,6 +162,7 @@ class OrderController extends Controller
                     'order_status',
                     'order_date'
                 ])
+                    ->orderBy('order_id', 'desc') // Added order by
                     ->get()
                     ->map(function ($order) use ($productIds) {
                         $orderItems = json_decode($order->order_items, true);
@@ -182,7 +183,7 @@ class OrderController extends Controller
 
                         return $order;
                     })->filter();
-                // return $orders;
+
                 return view('pages.Orders', compact('orders'));
             }
 
@@ -193,9 +194,6 @@ class OrderController extends Controller
             }
 
             $storeId = Store::where('seller_id', $sellerId)->value('store_id');
-            // if (!$storeId) {
-            //     return redirect()->back()->with('error', 'Store not found');
-            // }
 
             $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
 
@@ -213,6 +211,7 @@ class OrderController extends Controller
                 'order_status',
                 'order_date'
             ])
+                ->orderBy('order_id', 'desc') // Added order by
                 ->get()
                 ->map(function ($order) use ($productIds) {
                     $orderItems = json_decode($order->order_items, true);
@@ -238,6 +237,7 @@ class OrderController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 
 
     public function updateOrderStatus(Request $request)

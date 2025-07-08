@@ -583,7 +583,9 @@ class ProductsController extends Controller
                 'products.created_at',
                 'products.updated_at',
                 'users.user_name as user_name'
-            );
+            )
+            ->orderBy('products.product_id', 'desc'); // ⬅️ This adds DESC order
+
 
         if ($loggedInUserRole !== 'admin') {
             $query->where('products.user_id', $loggedInUserId);
@@ -608,7 +610,7 @@ class ProductsController extends Controller
         $packageStatus = $packageDetail['package_status'] ?? null;
         $package_end_date = $packageDetail['package_end_date'] ?? null;
 
-        return view('pages.products', compact('products', 'packageStatus','package_end_date'));
+        return view('pages.products', compact('products', 'packageStatus', 'package_end_date'));
     }
 
 

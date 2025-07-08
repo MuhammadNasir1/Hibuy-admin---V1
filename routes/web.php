@@ -56,9 +56,10 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::post('upload-images', [ProductsController::class, 'getFileName'])->name('upload.images');
 
             Route::post('/submit-product', [ProductsController::class, 'storeProduct'])->name('product.store');
-            Route::get('/', function () {
-                return view('pages.dashboard');
-            })->name('dashboard');
+            Route::GET('/', [AuthController::class, 'dashboard'])->name('dashboard');
+            // Route::get('/', function () {
+            //     return view('pages.dashboard');
+            // })->name('dashboard');
 
             //Product Routes
             Route::controller(ProductsController::class)->group(function () {

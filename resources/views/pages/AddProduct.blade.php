@@ -323,10 +323,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                    </div>`).join('')}
+                                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                        </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -490,10 +490,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                    </div>`).join('')}
+                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                        </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -545,10 +545,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                </div>`).join('')}
+                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                    </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -596,6 +596,7 @@
                     </td>
                     <td class="py-3 px-4">
                         <input type="number" id="parent-stock-${parentIndex}" name="variants[${parentIndex}][parentstock]" value="${parentStock}" class="stock-input w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
+                        <input type="hidden" name="variants[${parentIndex}][parenttotalstock]" id="parent-total-stock-${parentIndex}" value="${parentStock}">
                     </td>
                 </tr>`;
                     tableBody.append(parentRow);
@@ -625,7 +626,10 @@
                             </td>
                             <td class="py-3 px-4">
                                 <input type="number" name="variants[${parentIndex}][children][${childIndex}][stock]" value="${childStock}" class="child-stock-${parentIndex} w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-700" placeholder="0">
+
+                                <input type="hidden" name="variants[${parentIndex}][children][${childIndex}][stock_total]" id="stock-total-hidden-${parentIndex}-${childIndex}" value="${childStock}">
                             </td>
+
                         </tr>`;
                         });
                         childRowContainer += `</tbody>`;
