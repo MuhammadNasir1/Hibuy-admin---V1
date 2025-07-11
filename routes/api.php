@@ -18,14 +18,15 @@ Route::POST('register', [AuthController::class, 'register']);
 Route::POST('login', [apiAuthController::class, 'login']);
 Route::POST('setPassword', [UserController::class, 'setPassword']);
 
-
 Route::GET('getCategories', [apiproductController::class, 'getCategories']);
 Route::match(['get', 'post'], 'getProducts/{categoryid?}', [apiproductController::class, 'getProducts']);
 Route::GET('getProductsDetail', [apiproductController::class, 'getProductsDetail']);
 Route::GET('getStoreDetails', [apiStoreController::class, 'getStoreDetails']);
 Route::GET('getStoreList', [apiStoreController::class, 'getStoreList']);
 Route::GET('searchProducts', [apiproductController::class, 'searchProducts']);
-Route::GET('getSubCategories', [apiproductController::class, 'getSubCategories']);
+Route::GET('getSubCategories', [apiAuthController::class, 'getSubCategories']);
+
+Route::get('/dashboard-banners', [apiproductController::class, 'getDashboardBanners']);
 
 // Route::get('login/google', [apiAuthController::class, 'redirectToGoogle']);
 Route::post('login/google/callback', [apiAuthController::class, 'handleGoogleCallback']);  // Handle Google login callback
