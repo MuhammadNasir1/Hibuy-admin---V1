@@ -10,6 +10,7 @@ use App\Models\Reviews;
 use App\Models\Customer;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -184,6 +185,7 @@ class apiAuthController extends Controller
 
             // Validate input
             $validator = Validator::make($request->all(), [
+                'review_id'  => 'nullable|integer|exists:reviews,review_id',
                 'product_id' => 'required|integer|exists:products,product_id',
                 'order_id'   => 'required|integer',
                 'rating'     => 'required|integer|min:1|max:5',
@@ -200,6 +202,8 @@ class apiAuthController extends Controller
                 ], 422);
             }
 
+            $reviewId = $request->review_id;
+
             // Check if the order belongs to the authenticated user
             $order = Order::where('order_id', $request->order_id)
                 ->where('user_id', $User->user_id)
@@ -210,19 +214,6 @@ class apiAuthController extends Controller
                     'success' => false,
                     'message' => 'Invalid order ID for this user',
                 ], 403);
-            }
-
-            // Prevent duplicate reviews
-            $existingReview = Reviews::where('user_id', $User->user_id)
-                ->where('product_id', $request->product_id)
-                ->where('order_id', $request->order_id)
-                ->first();
-
-            if ($existingReview) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You have already submitted a review for this product in this order.',
-                ], 409);
             }
 
             // Sanitize review text
@@ -254,22 +245,83 @@ class apiAuthController extends Controller
 
                 $orderId = $latestOrder->order_id;
             }
-            // dd($request->order_id);
-            // Create the review
-            $review = Reviews::create([
-                'user_id'    => $User->user_id,
-                'product_id' => $request->product_id,
-                'order_id'   => $orderId, // ✅ uses provided or fallback
-                'rating'     => $request->rating,
-                'review'     => $cleanedReview,
-                'images'     => json_encode($imagePaths),
-            ]);
+
+            if ($reviewId) {
+                // Update existing review
+                $review = Reviews::where('review_id', $reviewId)
+                    ->where('user_id', $User->user_id)
+                    ->first();
+
+                if (!$review) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Review not found for update',
+                    ], 404);
+                }
+
+                // Delete associated old images from storage
+                $images = json_decode($review->images, true);
+                if (!empty($images) && is_array($images)) {
+                    foreach ($images as $imageUrl) {
+                        try {
+                            $relativePath = str_replace('storage/', '', $imageUrl); // note: correct strip
+                            if (Storage::disk('public')->exists($relativePath)) {
+                                Storage::disk('public')->delete($relativePath);
+                            } else {
+                                Log::warning("Image file not found for delete: " . $relativePath);
+                            }
+                        } catch (\Exception $imgEx) {
+                            Log::error("Failed to delete review image: " . $relativePath . " | Error: " . $imgEx->getMessage());
+                        }
+                    }
+                }
+
+                // Update review fields
+                $review->product_id = $request->product_id;
+                $review->order_id   = $orderId;
+                $review->rating     = $request->rating;
+                $review->review     = $cleanedReview;
+
+                // ✅ Always replace images, even if empty
+                $review->images = json_encode($imagePaths);
+
+                $review->save();
+
+                $message = 'Review updated successfully';
+                $statusCode = 200;
+            } else {
+                // Prevent duplicate reviews on create
+                $existingReview = Reviews::where('user_id', $User->user_id)
+                    ->where('product_id', $request->product_id)
+                    ->where('order_id', $request->order_id)
+                    ->first();
+
+                if ($existingReview) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You have already submitted a review for this product in this order.',
+                    ], 409);
+                }
+
+                // Create new review
+                $review = Reviews::create([
+                    'user_id'    => $User->user_id,
+                    'product_id' => $request->product_id,
+                    'order_id'   => $orderId,
+                    'rating'     => $request->rating,
+                    'review'     => $cleanedReview,
+                    'images'     => json_encode($imagePaths),
+                ]);
+
+                $message = 'Review added successfully';
+                $statusCode = 201;
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Review added successfully',
+                'message' => $message,
                 'data'    => $review
-            ], 201);
+            ], $statusCode);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -278,6 +330,75 @@ class apiAuthController extends Controller
             ], 500);
         }
     }
+
+
+    public function deleteReview()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "User Not Found"
+                ], 404);
+            }
+
+            $review = Reviews::where('user_id', $user->user_id)
+                ->where('review_id', request()->review_id)
+                ->first();
+
+            if (!$review) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Review Not Found"
+                ], 404);
+            }
+
+            // ✅ Delete associated images from storage, with backup & logging
+            $images = json_decode($review->images, true);
+            if (!empty($images) && is_array($images)) {
+                foreach ($images as $imageUrl) {
+                    try {
+                        // Convert /storage/review_images/xxx.jpg → review_images/xxx.jpg
+                        $relativePath = str_replace('/storage/', '', $imageUrl);
+
+                        if (Storage::disk('public')->exists($relativePath)) {
+                            // ✅ Optional: backup first
+                            // $backupPath = 'deleted_reviews/' . basename($relativePath);
+                            // Storage::disk('public')->copy($relativePath, $backupPath);
+
+                            // Delete the original
+                            Storage::disk('public')->delete($relativePath);
+                        } else {
+                            // Log missing file
+                            Log::warning("Image file not found for delete: " . $relativePath);
+                        }
+                    } catch (\Exception $imgEx) {
+                        // Log specific image deletion failure
+                        Log::error("Failed to delete review image: " . $relativePath . " | Error: " . $imgEx->getMessage());
+                    }
+                }
+            }
+
+            // Delete the review itself
+            $review->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Review deleted successfully"
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error("Failed to delete review: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong!',
+                'error'   => $e->getMessage()
+            ], 422);
+        }
+    }
+
 
     public function getReviews()
     {
