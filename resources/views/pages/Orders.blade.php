@@ -383,7 +383,11 @@
                         }
 
                         $('#tracking_number').val(response.tracking_number);
-                        $('#order_status').val(response.order_status).change();
+                        if (response.order_status=== 'order_placed' || response.order_status === 'pending') {
+                            $('#order_status').val('processing').change();
+                        } else {
+                            $('#order_status').val(response.order_status).change();
+                        }
                         let status = response.order_status; // e.g., "order_placed"
                         let formattedStatus = status
                             .split('_') // ["order", "placed"]

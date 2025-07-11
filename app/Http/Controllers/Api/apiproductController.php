@@ -9,6 +9,7 @@ use App\Models\Seller;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\DashboardBanner;
 use Illuminate\Support\Facades\Auth;
 
 class apiproductController extends Controller
@@ -405,6 +406,33 @@ class apiproductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function getDashboardBanners()
+    {
+        try {
+            $banners = DashboardBanner::select(
+                'banner_id',
+                'banner_title',
+                'banner_image',
+                'banner_link',
+                'banner_status',
+                'banner_sort_order'
+            )
+                ->where('banner_status', 1) // optional: only active banners
+                ->orderBy('banner_sort_order', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Dashboard banners fetched successfully',
+                'data' => $banners,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
             ], 500);
         }
     }
