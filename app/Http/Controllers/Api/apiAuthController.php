@@ -303,8 +303,7 @@ class apiAuthController extends Controller
 
                 // Attach username
                 $review->user_name = $user->user_name;
-                // dd($review->product);
-                // exit;
+
                 // Format product info: only first image
                 if ($review->product) {
                     $productImagesRaw = $review->product->product_images;
@@ -331,8 +330,11 @@ class apiAuthController extends Controller
                     // Keep original order before replacing it
                     $originalOrder = $review->order;
 
+                    // dd($originalOrder);
                     // Replace with just specific field(s)
-                    $review->order = [
+                    // Start with order date
+                    $orderData = [
+                        'order_id' => $originalOrder->order_id,
                         'order_date' => $originalOrder->order_date,
                     ];
 
@@ -341,14 +343,19 @@ class apiAuthController extends Controller
                     if (is_array($orderItems)) {
                         foreach ($orderItems as $item) {
                             if ((int)$item['product_id'] === (int)$review->product_id) {
-                                $review->parent_option_name  = $item['parent_option']['name'] ?? null;
-                                $review->parent_option_value = $item['parent_option']['value'] ?? null;
-                                $review->child_option_name   = $item['child_option']['name'] ?? null;
-                                $review->child_option_value  = $item['child_option']['value'] ?? null;
+                                $orderData['parent_option_name']  = $item['parent_option']['name'] ?? null;
+                                $orderData['parent_option_value'] = $item['parent_option']['value'] ?? null;
+                                $orderData['child_option_name']   = $item['child_option']['name'] ?? null;
+                                $orderData['child_option_value']  = $item['child_option']['value'] ?? null;
                                 break;
                             }
                         }
                     }
+
+                    // Attach only the clean, formatted order data
+                    $review->orderDetails = $orderData;
+                    // ✅ Properly remove the original relation
+                    $review->unsetRelation('order');
                 }
             });
             // dd($reviews);

@@ -423,6 +423,12 @@ class apiproductController extends Controller
                 ->where('banner_status', 1) // optional: only active banners
                 ->orderBy('banner_sort_order', 'asc')
                 ->get();
+            if ($banners->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No banners found',
+                ], 404);
+            }
 
             return response()->json([
                 'success' => true,

@@ -38,6 +38,7 @@ class Reviews extends Model
         return $this->belongsTo(Order::class, 'order_id', 'order_id')
         ->select([
             'order_id',
+            'order_items',
             'order_date'
         ]);
     }
