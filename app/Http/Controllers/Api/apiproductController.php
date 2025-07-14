@@ -14,6 +14,69 @@ use Illuminate\Support\Facades\Auth;
 
 class apiproductController extends Controller
 {
+
+    public function dashboardProductsList()
+    {
+        try {
+            // Fetch 16 random products (10+6)
+            $allProducts = Products::select(
+                "product_id",
+                "store_id",
+                "product_name",
+                "product_brand",
+                "product_category",
+                "product_subcategory",
+                "product_price",
+                "product_discount",
+                "product_discounted_price",
+                "product_images",
+                "created_at",
+                "updated_at"
+            )
+                ->where('store_id', '!=', 0)
+                ->with(['category:id,name'])
+                ->inRandomOrder()
+                ->limit(18)
+                ->get();
+
+            // Split into products and foryouproducts
+            $products = $allProducts->take(10);
+            $foryouproducts = $allProducts->slice(10); // remaining 6
+
+            // Process both lists
+            $processProducts = function ($items) {
+                foreach ($items as $product) {
+                    $product->product_images = json_decode($product->product_images, true);
+                    $product->product_image = $product->product_images[0] ?? null;
+                    unset($product->product_images);
+
+                    // Generate random rating between 3.5 and 5.0
+                    $product->product_rating = round(mt_rand(35, 50) / 10, 1);
+                    $product->category_name = $product->category->name ?? null;
+                    unset($product->category);
+
+                    $product->is_discounted = $product->product_discount > 0;
+                }
+                return $items->values(); // reset indexes
+            };
+
+            $products = $processProducts($products);
+            $foryouproducts = $processProducts($foryouproducts);
+
+            return response()->json([
+                'success'        => true,
+                'message'        => 'Products fetched successfully',
+                'products'       => $products,
+                'foryouproducts' => $foryouproducts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getProducts(Request $request, $categoryid = null)
     {
         try {
@@ -33,7 +96,8 @@ class apiproductController extends Controller
                 "updated_at"
             )
                 ->where('store_id', '!=', 0)
-                ->with(['category:id,name']);
+                ->with(['category:id,name'])
+                ->inRandomOrder();
 
             // Apply category filter
             if (!empty($categoryid)) {
@@ -64,7 +128,7 @@ class apiproductController extends Controller
                 unset($product->product_images);
 
                 // Default product rating
-                $product->product_rating = 4.5;
+                $product->product_rating = round(mt_rand(35, 50) / 10, 1);
 
                 // Add category name
                 $product->category_name = $product->category->name ?? null;
