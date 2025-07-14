@@ -164,7 +164,7 @@ class apiproductController extends Controller
                 ], 400);
             }
 
-            // Fetch product with store, category, and reviews
+            // Fetch product with store, category, and latest reviews
             $product = Products::select(
                 'product_id',
                 'product_name',
@@ -183,7 +183,10 @@ class apiproductController extends Controller
                 ->with([
                     'store:store_id,store_profile_detail,store_info', // Fetch store details
                     'category:id,name', // Fetch category details
-                    'reviews.user:user_id,user_name' // Fetch reviews along with the user's name
+                    'reviews' => function ($q) {
+                        $q->with('user:user_id,user_name')
+                            ->latest(); // order reviews by created_at descending
+                    }
                 ])
                 ->where('product_id', $product_id)
                 ->where('store_id', '!=', 0)

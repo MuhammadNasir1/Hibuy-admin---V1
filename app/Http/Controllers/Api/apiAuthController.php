@@ -415,6 +415,7 @@ class apiAuthController extends Controller
             // Eager load product and order
             $reviews = Reviews::where('user_id', $user->user_id)
                 ->with(['product', 'order'])
+                ->latest()  // this will order by created_at descending
                 ->get();
 
             $reviews->each(function ($review) use ($user) {
