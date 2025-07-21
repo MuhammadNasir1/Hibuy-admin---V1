@@ -11,6 +11,7 @@ class product_category extends Model
     protected $fillable = [
         'name',
         'image',
+        'category_type',
         'sub_categories',
     ];
     public $timestamps = true;

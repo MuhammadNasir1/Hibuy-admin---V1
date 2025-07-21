@@ -312,7 +312,6 @@ class AuthController extends Controller
             'user_email' => 'required|string|email|max:255',
             'user_password' => 'required|min:6'
         ]);
-
         // Find user by email
         $user = User::where('user_email', $validatedData['user_email'])
             ->whereIn('user_role', ['seller', 'freelancer', 'admin'])

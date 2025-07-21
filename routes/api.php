@@ -30,6 +30,7 @@ Route::get('/dashboard-banners', [apiproductController::class, 'getDashboardBann
 
 Route::get('/dashboardProductsList', [apiproductController::class, 'dashboardProductsList']);
 
+Route::get('getHelpCenterDetails', [apiAuthController::class, 'getHelpCenterDetails']);
 // Route::get('login/google', [apiAuthController::class, 'redirectToGoogle']);
 Route::post('login/google/callback', [apiAuthController::class, 'handleGoogleCallback']);  // Handle Google login callback
 

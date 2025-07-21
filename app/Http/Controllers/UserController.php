@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Faq;
 use App\Models\User;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Customer;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use App\Models\product_category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -285,12 +287,6 @@ class UserController extends Controller
     }
 
 
-
-
-
-
-
-
     public function sellerManagement()
     {
         $userDetails = session('user_details');
@@ -313,6 +309,151 @@ class UserController extends Controller
             });
 
         return view('admin.SellerManagement', compact('sellers'));
+    }
+
+
+    public function viewFaqCategory()
+    {
+        $userDetails = session('user_details');
+        $user_id = $userDetails['user_id'] ?? null;
+        $role = $userDetails['user_role'] ?? null;
+
+        if ($role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access'], 403);
+        }
+
+        $categories = product_category::where('category_type', 'faqs')->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Categories fetched successfully',
+            'data' => $categories
+        ]);
+    }
+
+    public function storeFaqs()
+    {
+        $userDetails = session('user_details');
+        $user_id = $userDetails['user_id'] ?? null;
+        $role = $userDetails['user_role'] ?? null;
+
+        if ($role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+
+        $validated = request()->validate([
+            'faq_question' => 'required|string|max:255',
+            'faq_answer' => 'required|string',
+            'faq_category_id' => 'required|exists:categories,id',
+            'status' => 'required|boolean',
+        ]);
+
+        // Check if the category exists
+        $category = product_category::find($validated['faq_category_id']);
+        if (!$category || $category->category_type !== 'faqs') {
+            return response()->json(['success' => false, 'message' => 'Invalid category'], 400);
+        }
+        // Create the FAQ
+        $faq = Faq::create([
+            'question' => $validated['faq_question'],
+            'answer' => $validated['faq_answer'],
+            'faq_category' => $validated['faq_category_id'],
+            'is_active' => $validated['status'],
+        ]);
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'FAQ created successfully',
+            'data' => $faq
+        ]);
+    }
+
+
+
+
+    public function HelpCenter()
+    {
+        $userDetails = session('user_details');
+        $role = $userDetails['user_role'] ?? null;
+
+        if ($role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+
+        // get all FAQs with related category's name and image
+        $faqs = Faq::with(['category:id,name,image'])->get();
+
+        return view('admin.HelpCenter', compact('faqs'));
+    }
+
+
+    public function storeFaqCategory(Request $request)
+    {
+        // dd($request->all());
+        $validated = $request->validate([
+            'category_name' => 'required|string|max:255',
+            'category_image' => 'required|image|max:2048',
+            'status' => 'required',
+            'category_type' => 'required',
+        ]);
+
+        $imagePath = $request->file('category_image')->store('faq_categories', 'public');
+
+        // Prepend 'storage/' before saving:
+        $publicPath = 'storage/' . $imagePath;
+
+        product_category::create([
+            'name' => $validated['category_name'],
+            'image' => $publicPath,
+            'status' => $validated['status'],
+            'category_type' => $validated['category_type'],
+            'sub_categories' => json_encode([]), // <-- add this line
+        ]);
+
+
+        return response()->json(['success' => true, 'message' => 'Category created successfully']);
+    }
+    public function getFaq($faq_id)
+    {
+        $faq = Faq::with('category:id,name,image')->find($faq_id);
+
+        if (!$faq) {
+            return response()->json([
+                'success' => false,
+                'message' => 'FAQ not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'faq' => $faq
+        ]);
+    }
+
+    public function deleteFaqs($faq_id)
+    {
+        $faq = Faq::find($faq_id);
+
+        if (!$faq) {
+            return response()->json([
+                'success' => false,
+                'message' => 'FAQ not found.'
+            ], 404);
+        }
+
+        try {
+            $faq->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'FAQ deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error occurred while deleting FAQ.'
+            ], 500);
+        }
     }
 
     public function freelancerManagement()
