@@ -393,7 +393,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'category_name' => 'required|string|max:255',
             'category_image' => 'required|image|max:2048',
-            'status' => 'required',
+            'Categorystatus' => 'required',
             'category_type' => 'required',
         ]);
 
@@ -405,7 +405,7 @@ class UserController extends Controller
         product_category::create([
             'name' => $validated['category_name'],
             'image' => $publicPath,
-            'status' => $validated['status'],
+            'status' => $validated['Categorystatus'],
             'category_type' => $validated['category_type'],
             'sub_categories' => json_encode([]), // <-- add this line
         ]);
