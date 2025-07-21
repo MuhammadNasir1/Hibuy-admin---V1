@@ -99,6 +99,7 @@
                 <form action="{{ route('productCategory') }}" class="categoryForm" method="POST" id="categoryForm"
                     enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" name="category_type" id="category_type" value="products">
                     <div class="md:py-5">
                         <!-- Image Upload -->
                         <div class="px-4 sm:px-6 mt-5 w-full max-w-md mb-5 mx-auto">

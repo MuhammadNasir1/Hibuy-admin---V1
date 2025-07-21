@@ -140,7 +140,7 @@
         </x-modal>
 
         <x-modal id="add-faq-modal">
-            <x-slot name="title">Add FAQ</x-slot>
+            <x-slot name="title"><span id="faqTitle">Add FAQ</span></x-slot>
             <x-slot name="modal_width">max-w-lg</x-slot>
             <x-slot name="body">
                 <form id="addFaqForm" method="POST">
@@ -155,6 +155,9 @@
                                 class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 required>
                                 <option value="">Select category</option>
+                                @foreach ($faqsCategories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -199,8 +202,6 @@
                 </form>
             </x-slot>
         </x-modal>
-
-
     </div>
 
 @endsection
@@ -261,38 +262,13 @@
         });
 
         $("#addFaqModalBtn").on("click", function(e) {
-            e.preventDefault(); // prevent default form submission
+            // ✅ Reset form before AJAX
+            $('#addFaqForm')[0].reset();
+        });
+        $("#addModalBtn").on("click", function(e) {
             // ✅ Reset form before AJAX
             $('#addFaqCategoryForm')[0].reset();
-            // $("#add-faq-modal").show(); // show the modal
-            $.ajax({
-                url: "{{ route('faq-category.view') }}", // replace with your actual route
-                type: "GET",
-                success: function(response) {
-                    console.log(response); // log response to console
-                    if (response.success) {
-                        // Populate the category dropdown
-                        let categorySelect = $("#faq_category_id");
-                        categorySelect.empty(); // clear existing options
-                        categorySelect.append(
-                            '<option value="" selected disabled>Select category</option>');
-                        response.data.forEach(function(category) {
-                            categorySelect.append(
-                                `<option value="${category.id}">${category.name}</option>`
-                            );
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: response.message || 'Something went wrong!',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                }
-            });
         });
-
         $("#addFaqForm").on("submit", function(e) {
             e.preventDefault(); // prevent default form submission
 
@@ -366,11 +342,10 @@
                         $('#faq_id').val(faq.faq_id);
                         $('#faq_question').val(faq.question);
                         $('#faq_answer').val(faq.answer);
+                        $('#faqTitle').text('Edit FAQ');
                         $('#status').val(faq.is_active).change();
-
-                        // Select category
-                        $('#faq_category_id').val(faq.faq_category_id);
-
+                        // Select category after small delay to ensure options exist
+                        $('#faq_category_id').val(faq.faq_category).change();
                         // Show modal (Flowbite)
                         const modal = document.getElementById('add-faq-modal');
                         if (modal) {

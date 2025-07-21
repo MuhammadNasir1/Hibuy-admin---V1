@@ -334,7 +334,6 @@ class UserController extends Controller
     public function storeFaqs()
     {
         $userDetails = session('user_details');
-        $user_id = $userDetails['user_id'] ?? null;
         $role = $userDetails['user_role'] ?? null;
 
         if ($role !== 'admin') {
@@ -342,30 +341,51 @@ class UserController extends Controller
         }
 
         $validated = request()->validate([
+            'faq_id' => 'nullable|exists:faqs,faq_id',
             'faq_question' => 'required|string|max:255',
             'faq_answer' => 'required|string',
             'faq_category_id' => 'required|exists:categories,id',
             'status' => 'required|boolean',
         ]);
 
-        // Check if the category exists
+        // Check if category type is valid
         $category = product_category::find($validated['faq_category_id']);
         if (!$category || $category->category_type !== 'faqs') {
             return response()->json(['success' => false, 'message' => 'Invalid category'], 400);
         }
-        // Create the FAQ
-        $faq = Faq::create([
-            'question' => $validated['faq_question'],
-            'answer' => $validated['faq_answer'],
-            'faq_category' => $validated['faq_category_id'],
-            'is_active' => $validated['status'],
-        ]);
-        // Return success response
-        return response()->json([
-            'success' => true,
-            'message' => 'FAQ created successfully',
-            'data' => $faq
-        ]);
+
+        if (!empty($validated['faq_id'])) {
+            // Update
+            $faq = Faq::find($validated['faq_id']);
+            if ($faq) {
+                $faq->update([
+                    'question' => $validated['faq_question'],
+                    'answer' => $validated['faq_answer'],
+                    'faq_category' => $validated['faq_category_id'],
+                    'is_active' => $validated['status'],
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'FAQ updated successfully',
+                    'data' => $faq
+                ]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'FAQ not found'], 404);
+            }
+        } else {
+            // Create
+            $faq = Faq::create([
+                'question' => $validated['faq_question'],
+                'answer' => $validated['faq_answer'],
+                'faq_category' => $validated['faq_category_id'],
+                'is_active' => $validated['status'],
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'FAQ created successfully',
+                'data' => $faq
+            ]);
+        }
     }
 
 
@@ -383,7 +403,14 @@ class UserController extends Controller
         // get all FAQs with related category's name and image
         $faqs = Faq::with(['category:id,name,image'])->get();
 
-        return view('admin.HelpCenter', compact('faqs'));
+        $faqsCategories = product_category::select(
+            'id',
+            'name',
+            'image'
+        )
+            ->where('category_type', 'faqs')->get();
+
+        return view('admin.HelpCenter', compact('faqs', 'faqsCategories'));
     }
 
 

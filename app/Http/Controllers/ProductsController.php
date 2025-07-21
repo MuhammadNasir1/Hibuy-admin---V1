@@ -346,6 +346,7 @@ class ProductsController extends Controller
                 'name' => 'required|string|max:255',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3048',
                 'sub_categories' => 'required|string', // It comes as a JSON string
+                'category_type' => 'required',
             ]);
 
             if ($request->hasFile('image')) {
@@ -361,6 +362,7 @@ class ProductsController extends Controller
             }
             $category = new product_category();
             $category->name = $request->input('name');
+            $category->category_type = $request->input('category_type');
             $category->image = $newpath;
             $category->sub_categories = json_encode($subCategories); // Save as JSON
             $category->save();
