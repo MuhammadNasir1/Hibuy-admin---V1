@@ -98,6 +98,16 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Queries', [StoreController::class, 'getQuery'])->name("queries");
             Route::POST('/query-data/{id}', [StoreController::class, 'updateQuery'])->name("query.update");
 
+            Route::GET('/HelpCenter', [UserController::class, 'HelpCenter'])->name("HelpCenterQuestions");
+
+            Route::post('/faq-category/store', [UserController::class, 'storeFaqCategory'])->name('faq-category.store');
+
+            Route::post('/faqs/store', [UserController::class, 'storeFaqs'])->name('faq.store');
+            Route::get('/faqs/delete/{id}', [UserController::class, 'deleteFaqs'])->name('faq.delete');
+            Route::get('/faqs/edit/{faq_id}', [UserController::class, 'getFaq'])->name('faq.edit');
+
+            Route::GET('/faq-category/view', [UserController::class, 'viewFaqCategory'])->name('faq-category.view');
+
             Route::GET('/SellerManagement', [UserController::class, 'sellerManagement'])->name("manage_seller");
             Route::GET('/FreelancersManagement', [UserController::class, 'freelancerManagement'])->name("manage_freelancer");
             Route::GET('/FreelancerProfile/{id}', [SellerController::class, 'getSellerDetail'])->name("FreelancerProfile");
@@ -171,7 +181,6 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
             Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
             Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
-
         });
     });
 });

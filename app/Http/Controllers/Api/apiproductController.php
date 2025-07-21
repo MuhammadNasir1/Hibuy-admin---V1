@@ -351,6 +351,7 @@ class apiproductController extends Controller
     {
         try {
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')
+                ->where('category_type', 'products')
                 ->get()
                 ->map(function ($category) {
                     $category->sub_categories = json_decode($category->sub_categories, true);

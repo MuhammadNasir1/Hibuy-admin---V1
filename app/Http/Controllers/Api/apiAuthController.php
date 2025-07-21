@@ -12,6 +12,7 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Faq;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -906,6 +907,42 @@ class apiAuthController extends Controller
                 'message' => 'Token verification failed',
                 'error' => $e->getMessage(),
             ], 400);
+        }
+    }
+
+
+    public function getHelpCenterDetails()
+    {
+        try {
+            $faqs = Faq::with('category')
+                ->where('is_active', 1)
+                ->get()
+                ->map(function ($faq) {
+                    return [
+                        'faq_id'         => $faq->faq_id,
+                        'question'       => $faq->question,
+                        'answer'         => $faq->answer,
+                        // 'faq_category'   => $faq->faq_category,
+                        // 'is_active'      => $faq->is_active,
+                        // 'created_at'     => $faq->created_at,
+                        // 'updated_at'     => $faq->updated_at,
+                        // merge category fields outside
+                        'category_name'  => $faq->category->name ?? null,
+                        'category_image' => $faq->category->image ?? null,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Faqs fetched successfully',
+                'Faqs'    => $faqs,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Help Center Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong. Please try again later.'
+            ], 500);
         }
     }
 }

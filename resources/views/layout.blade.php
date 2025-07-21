@@ -616,7 +616,30 @@
                         <span class="ms-3 text-custom15">Notifications</span>
                     </a>
                 </li>
+                @if (session('user_details.user_role') == 'admin')
+                    <li class="mt-6">
+                        <a href="{{ session('user_details.user_role') == 'admin' ? route('HelpCenterQuestions') : route('HelpCenterQuestions') }}"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                              {{ request()->routeIs('HelpCenterQuestions') || request()->routeIs('HelpCenterQuestions') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="notifications">
+                            <svg class="w-5 h-5 transition duration-200" width="25" height="26"
+                                viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+                       10-4.48 10-10S17.52 2 12 2zm0 17
+                       c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                       c-.9.9-1.07 1.25-1.07 2.25h-2
+                       v-.5c0-1.1.45-2.1 1.17-2.83
+                       .59-.59 1.07-1 1.07-1.67
+                       0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                       c0-2.21 1.79-4 4-4s4 1.79 4 4
+                       c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor" stroke="white" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
 
+                            <span class="ms-3 text-custom15">Help Centre</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="mt-6">
                     <a href="{{ route('settings') }}"
                         class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
