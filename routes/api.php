@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::POST('storeReview', [apiAuthController::class, 'storeReview']);
     Route::GET('getReview', [apiAuthController::class, 'getReviews']);
     Route::POST('deleteReview', [apiAuthController::class, 'deleteReview']);
+    Route::POST('AddComplaints', [apiAuthController::class, 'AddComplaints']);
 
     Route::GET('/GetOrders', [OrderController::class, 'GetOrders']);
 
