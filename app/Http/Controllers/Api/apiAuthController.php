@@ -12,6 +12,7 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Complaints;
 use App\Models\Faq;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -820,7 +821,34 @@ class apiAuthController extends Controller
             return response()->json(['sucess' => false, 'message' => $e->getMessage()]);
         }
     }
+    public function AddComplaints(Request $request)
+    {
+        try {
+            $user = Auth::user();
 
+            $request->validate([
+                'user_name' => 'required',
+                'user_email' => 'required|email',
+                'complaintAbout' => 'required',
+                'messageNote' => 'required',
+            ]);
+
+            $complaint = new Complaints();
+
+            $complaint->user_id = $user->user_id;
+            $complaint->user_name = $request->user_name;
+            $complaint->user_email = $request->user_email;
+            $complaint->complaintAbout = $request->complaintAbout;
+            $complaint->messageNote = $request->messageNote;
+            $complaint->status = 'pending';
+
+            $complaint->save();
+
+            return response()->json(['success' => true, 'message' => 'Complaint added successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
     // For google login
 
     // Redirect to Google for authentication
