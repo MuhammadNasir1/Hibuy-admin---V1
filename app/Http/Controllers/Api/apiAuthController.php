@@ -914,31 +914,43 @@ class apiAuthController extends Controller
     public function getHelpCenterDetails()
     {
         try {
+            // Get all active FAQs with their category
             $faqs = Faq::with('category')
                 ->where('is_active', 1)
-                ->get()
-                ->map(function ($faq) {
-                    return [
-                        'faq_id'         => $faq->faq_id,
-                        'question'       => $faq->question,
-                        'answer'         => $faq->answer,
-                        // 'faq_category'   => $faq->faq_category,
-                        // 'is_active'      => $faq->is_active,
-                        // 'created_at'     => $faq->created_at,
-                        // 'updated_at'     => $faq->updated_at,
-                        // merge category fields outside
-                        'category_name'  => $faq->category->name ?? null,
-                        'category_image' => $faq->category->image ?? null,
-                    ];
-                });
+                ->get();
+
+            // Group FAQs by category
+            $grouped = $faqs->groupBy(function ($faq) {
+                return $faq->category->id ?? 'uncategorized';
+            });
+
+            $response = [];
+
+            foreach ($grouped as $categoryId => $faqGroup) {
+                $firstFaq = $faqGroup->first();
+                $category = $firstFaq->category;
+
+                $response[] = [
+                    'category_name'  => $category->name ?? 'Uncategorized',
+                    'category_image' => $category->image ?? null,
+                    'faqs' => $faqGroup->map(function ($faq) {
+                        return [
+                            'faq_id'   => $faq->faq_id,
+                            'question' => $faq->question,
+                            'answer'   => $faq->answer,
+                        ];
+                    })->values(),
+                ];
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Faqs fetched successfully',
-                'Faqs'    => $faqs,
+                'message' => 'FAQs fetched successfully',
+                'categories' => $response,
             ], 200);
         } catch (\Exception $e) {
             Log::error('Help Center Error: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong. Please try again later.'
