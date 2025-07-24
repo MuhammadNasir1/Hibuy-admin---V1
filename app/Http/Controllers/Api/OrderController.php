@@ -282,6 +282,7 @@ class OrderController extends Controller
 
             $order = Order::where('order_id', $request->order_id)
                 ->where('user_id', $loggedInUser->user_id) // ensure this user owns the order
+                ->where('order_status','!=', 'cancelled') // ensure this user owns the order
                 ->first();
 
             if (!$order) {
