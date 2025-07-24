@@ -265,4 +265,46 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    public function cancelOrder(Request $request)
+    {
+        try {
+            $loggedInUser = Auth::user();
+
+            if (!$loggedInUser) {
+                return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+            }
+
+            $request->validate([
+                'order_id' => 'required|integer',
+                'cancel_note' => 'required|string|max:500',
+            ]);
+
+            $order = Order::where('order_id', $request->order_id)
+                ->where('user_id', $loggedInUser->user_id) // ensure this user owns the order
+                ->first();
+
+            if (!$order) {
+                return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+            }
+
+            // Update order status and note
+            $order->order_status = 'cancelled'; // or whatever status you use
+            $order->status = 'cancelled'; // or whatever status you use
+            $order->cancel_note = $request->cancel_note;
+            $order->canceled_at = now();
+            $order->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order cancelled successfully',
+                // 'order'   => $order
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
