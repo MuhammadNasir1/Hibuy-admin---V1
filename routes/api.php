@@ -47,6 +47,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::POST('/placeOrder', [OrderController::class, 'placeOrder']);
 
+    Route::POST('/cancelOrder', [OrderController::class, 'cancelOrder']);
+
     Route::POST('editProfile', [apiAuthController::class, 'editProfile']);
 
     Route::GET('userdetail', [apiAuthController::class, 'userdetail']);
