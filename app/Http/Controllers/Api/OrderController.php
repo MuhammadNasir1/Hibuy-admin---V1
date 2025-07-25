@@ -7,6 +7,7 @@ use App\Models\Store;
 use App\Models\Reviews;
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -282,7 +283,7 @@ class OrderController extends Controller
 
             $order = Order::where('order_id', $request->order_id)
                 ->where('user_id', $loggedInUser->user_id) // ensure this user owns the order
-                ->where('order_status','!=', 'cancelled') // ensure this user owns the order
+                ->where('order_status', '!=', 'cancelled') // ensure this user owns the order
                 ->first();
 
             if (!$order) {
@@ -306,6 +307,96 @@ class OrderController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function createReturn(Request $request)
+    {
+        try {
+            $loggedInUser = Auth::user();
+
+            if (!$loggedInUser) {
+                return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+            }
+
+            // Validate input
+            $validated = $request->validate([
+                'order_id' => 'required|integer',
+                'return_reason' => 'required|string|max:500',
+                'return_note' => 'nullable|string|max:1000',
+                'return_images' => 'nullable|array',
+                'return_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'products' => 'required|array|min:1',
+                'products.*.product_id' => 'required|integer',
+                'products.*.quantity' => 'required|integer|min:1',
+                'products.*.price' => 'required|numeric|min:0',
+                'products.*.product_name' => 'required|string|max:255',
+                'products.*.image' => 'required|url',
+                'products.*.delivery_status' => 'nullable|string',
+                'products.*.status_video' => 'nullable|string',
+                'products.*.parent_option' => 'nullable|array',
+                'products.*.child_option' => 'nullable|array',
+            ]);
+
+            // ✅ Check if order exists and is not cancelled
+            $order = DB::table('orders')
+                ->where('order_id', $validated['order_id'])
+                ->where('user_id', $loggedInUser->user_id)
+                ->where('order_status', '!=', 'cancelled')
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order not found or has been cancelled'
+                ], 404);
+            }
+
+            // ✅ Upload and store return images (if any)
+            $returnImagePaths = [];
+            if (!empty($validated['return_images'])) {
+                foreach ($validated['return_images'] as $imageFile) {
+                    // store in storage/app/public/returns
+                    $path = $imageFile->store('returns', 'public');
+                    $returnImagePaths[] = asset('storage/' . $path);
+                }
+            }
+
+            // ✅ Calculate totals
+            $returnTotal = 0;
+            foreach ($validated['products'] as $product) {
+                $returnTotal += $product['price'] * $product['quantity'];
+            }
+
+            $returnDeliveryFee = 0;
+            $returnGrandTotal = $returnTotal + $returnDeliveryFee;
+
+            // ✅ Save return in DB
+            $returnId = DB::table('returns')->insertGetId([
+                'order_id' => $validated['order_id'],
+                'user_id' => $loggedInUser->user_id,
+                'return_items' => json_encode($validated['products']),
+                'return_total' => $returnTotal,
+                'return_delivery_fee' => $returnDeliveryFee,
+                'return_grand_total' => $returnGrandTotal,
+                'return_status' => 'pending',
+                'return_reason' => $validated['return_reason'],
+                'return_note' => $validated['return_note'] ?? null,
+                'return_recieve_option' => null,
+                'return_address' => null,
+                'return_courier' => null,
+                'return_images' => !empty($returnImagePaths) ? json_encode($returnImagePaths) : null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Return request created successfully',
+                'return_id' => $returnId
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }
