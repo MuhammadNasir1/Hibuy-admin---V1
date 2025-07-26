@@ -318,10 +318,21 @@ class OrderController extends Controller
             if (!$loggedInUser) {
                 return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
             }
-            $products = json_decode($request->input('products'), true);
+            $products = $request->input('products');
 
-            // Replace in request so validator sees it as array
+            // If products is a JSON string → decode it
+            if (is_string($products)) {
+                $products = json_decode($products, true);
+            }
+
+            // If still not array → throw error
+            if (!is_array($products)) {
+                return response()->json(['success' => false, 'message' => 'Invalid products format'], 422);
+            }
+
+            // Merge into request so validator sees array
             $request->merge(['products' => $products]);
+
 
             // ✅ Validate input
             $validated = $request->validate([
