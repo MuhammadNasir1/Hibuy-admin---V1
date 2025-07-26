@@ -398,7 +398,7 @@ class OrderController extends Controller
                 'return_reason' => $validated['return_reason'],
                 'return_note' => $validated['return_note'] ?? null,
                 'return_address' => null,
-                'return_courier' => null,
+                // 'return_courier' => null,
                 'return_images' => !empty($returnImagePaths) ? json_encode($returnImagePaths) : null,
                 'created_at' => now(),
                 'updated_at' => now(),
