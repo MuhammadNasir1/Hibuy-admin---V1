@@ -318,14 +318,18 @@ class OrderController extends Controller
             if (!$loggedInUser) {
                 return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
             }
+            $products = json_decode($request->input('products'), true);
 
-            // Validate input
+            // Replace in request so validator sees it as array
+            $request->merge(['products' => $products]);
+
+            // ✅ Validate input
             $validated = $request->validate([
                 'order_id' => 'required|integer',
                 'return_reason' => 'required|string|max:500',
                 'return_note' => 'nullable|string|max:1000',
                 'return_images' => 'nullable|array',
-                'return_images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'return_images.*' => 'image|max:2048',
                 'products' => 'required|array|min:1',
                 'products.*.product_id' => 'required|integer',
                 'products.*.quantity' => 'required|integer|min:1',
@@ -356,8 +360,8 @@ class OrderController extends Controller
             $returnImagePaths = [];
             if (!empty($validated['return_images'])) {
                 foreach ($validated['return_images'] as $imageFile) {
-                    // store in storage/app/public/returns
                     $path = $imageFile->store('returns', 'public');
+                    // Use full URL
                     $returnImagePaths[] = asset('storage/' . $path);
                 }
             }
@@ -382,7 +386,6 @@ class OrderController extends Controller
                 'return_status' => 'pending',
                 'return_reason' => $validated['return_reason'],
                 'return_note' => $validated['return_note'] ?? null,
-                'return_recieve_option' => null,
                 'return_address' => null,
                 'return_courier' => null,
                 'return_images' => !empty($returnImagePaths) ? json_encode($returnImagePaths) : null,
