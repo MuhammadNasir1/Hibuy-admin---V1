@@ -32,7 +32,9 @@ class ProductsController extends Controller
             }
 
             // Fetch all categories from the database
-            $categories = product_category::select('id', 'name', 'image', 'sub_categories')->get();
+            $categories = product_category::select('id', 'name', 'image', 'sub_categories')
+                ->where('category_type', 'products') // Ensure we only get product categories
+                ->get();
 
             // Initialize products variable
             $products = null;
@@ -380,6 +382,7 @@ class ProductsController extends Controller
             ->leftJoin('products', 'categories.id', '=', 'products.product_category')
             ->select('categories.*', 'products.product_category')
             ->distinct()
+            ->where('categories.category_type', 'products')
             ->get();
         // Loop through each category and count subcategories
         foreach ($categories as $category) {
