@@ -632,8 +632,8 @@
 
         function approveKyc(sellerId, step) {
             // Validate step
-            alert(sellerId);
-            die;
+            // alert(sellerId);
+            // die;
             if (!stepMapping[step]) {
                 Swal.fire({
                     icon: 'error',
