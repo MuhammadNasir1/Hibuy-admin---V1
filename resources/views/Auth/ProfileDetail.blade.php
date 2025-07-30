@@ -405,7 +405,7 @@
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Country</label>
-                                        <select name="country" id="country"
+                                        {{-- <select name="country" id="country"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#333]" required>
                                             <option value="">Select Country</option>
                                             <option value="USA"
@@ -414,35 +414,217 @@
                                             <option value="Canada"
                                                 {{ ($store_info['country'] ?? '') == 'Canada' ? 'selected' : '' }}>Canada
                                             </option>
+                                        </select> --}}
+                                        <select name="country" id="country"
+                                            class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" required>
+                                            <option value="pakistan" selected
+                                                {{ ($store_info['country'] ?? '') == 'pakistan' ? 'selected' : '' }}>
+                                                Pakistan</option>
                                         </select>
                                     </div>
+                                    <!-- Province/ Region -->
+                                    @php
+                                        $province = [
+                                            'Punjab',
+                                            'Sindh',
+                                            'Khyber Pakhtunkhwa',
+                                            'Balochistan',
+                                            'Islamabad',
+                                            'Gilgit-Baltistan',
+                                            'Azad Jammu and Kashmir',
+                                        ];
+                                    @endphp
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">Province/
                                             Region</label>
                                         <select name="province" id="province"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#333]" required>
-                                            <option value="">Select Province</option>
+                                            {{-- <option value="">Select Province</option>
                                             <option value="Ontario"
                                                 {{ ($store_info['province'] ?? '') == 'Ontario' ? 'selected' : '' }}>
                                                 Ontario</option>
                                             <option value="Quebec"
                                                 {{ ($store_info['province'] ?? '') == 'Quebec' ? 'selected' : '' }}>Quebec
-                                            </option>
+                                            </option> --}}
+                                            <option value="">Select Province</option>
+                                            @foreach ($province as $item)
+                                                <option value="{{ $item }}"
+                                                    {{ isset($store_info['province']) && $store_info['province'] == $item ? 'selected' : '' }}>
+                                                    {{ $item }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
+                                    <!-- City -->
+                                    @php
+                                        $cities = [
+                                            'Abbottabad',
+                                            'Ahmedpur East',
+                                            'Ahmadpur Sial',
+                                            'Alipur',
+                                            'Arifwala',
+                                            'Attock',
+                                            'Badin',
+                                            'Bagh',
+                                            'Bahawalnagar',
+                                            'Bahawalpur',
+                                            'Bannu',
+                                            'Barkhan',
+                                            'Batkhela',
+                                            'Bhakkar',
+                                            'Bhalwal',
+                                            'Bhakkar',
+                                            'Bhera',
+                                            'Bhimber',
+                                            'Burewala',
+                                            'Chakwal',
+                                            'Charsadda',
+                                            'Chichawatni',
+                                            'Chiniot',
+                                            'Chishtian',
+                                            'Chitral',
+                                            'Dadu',
+                                            'Daska',
+                                            'Dera Bugti',
+                                            'Dera Ghazi Khan',
+                                            'Dera Ismail Khan',
+                                            'Dhaular',
+                                            'Digri',
+                                            'Dina',
+                                            'Dir',
+                                            'Dipalpur',
+                                            'Faisalabad',
+                                            'Fateh Jang',
+                                            'Ghotki',
+                                            'Gilgit',
+                                            'Gojra',
+                                            'Gujar Khan',
+                                            'Gujranwala',
+                                            'Gujrat',
+                                            'Gwadar',
+                                            'Hafizabad',
+                                            'Hangu',
+                                            'Haripur',
+                                            'Harnai',
+                                            'Hyderabad',
+                                            'Islamabad',
+                                            'Jacobabad',
+                                            'Jaffarabad',
+                                            'Jalalpur Jattan',
+                                            'Jamshoro',
+                                            'Jampur',
+                                            'Jaranwala',
+                                            'Jatoi',
+                                            'Jauharabad',
+                                            'Jhang',
+                                            'Jhelum',
+                                            'Kabirwala',
+                                            'Kahror Pakka',
+                                            'Kalat',
+                                            'Kamalia',
+                                            'Kamoke',
+                                            'Kandhkot',
+                                            'Karachi',
+                                            'Karak',
+                                            'Kasur',
+                                            'Khairpur',
+                                            'Khanewal',
+                                            'Khanpur',
+                                            'Khushab',
+                                            'Khuzdar',
+                                            'Kohat',
+                                            'Kot Addu',
+                                            'Kotli',
+                                            'Lahore',
+                                            'Lakki Marwat',
+                                            'Lalamusa',
+                                            'Larkana',
+                                            'Lasbela',
+                                            'Leiah',
+                                            'Lodhran',
+                                            'Loralai',
+                                            'Malakand',
+                                            'Mandi Bahauddin',
+                                            'Mansehra',
+                                            'Mardan',
+                                            'Mastung',
+                                            'Matiari',
+                                            'Mian Channu',
+                                            'Mianwali',
+                                            'Mingora',
+                                            'Mirpur',
+                                            'Mirpur Khas',
+                                            'Multan',
+                                            'Muridke',
+                                            'Murree',
+                                            'Muzaffargarh',
+                                            'Muzaffarabad',
+                                            'Nankana Sahib',
+                                            'Narowal',
+                                            'Naushahro Feroze',
+                                            'Nawabshah',
+                                            'Nowshera',
+                                            'Okara',
+                                            'Pakpattan',
+                                            'Panjgur',
+                                            'Pattoki',
+                                            'Peshawar',
+                                            'Quetta',
+                                            'Rahim Yar Khan',
+                                            'Rajanpur',
+                                            'Rawalpindi',
+                                            'Sadiqabad',
+                                            'Sahiwal',
+                                            'Sanghar',
+                                            'Sangla Hill',
+                                            'Sargodha',
+                                            'Shahdadkot',
+                                            'Shahkot',
+                                            'Shahpur',
+                                            'Shakargarh',
+                                            'Sheikhupura',
+                                            'Shikarpur',
+                                            'Sialkot',
+                                            'Sibi',
+                                            'Sukkur',
+                                            'Swabi',
+                                            'Swat',
+                                            'Tando Adam',
+                                            'Tando Allahyar',
+                                            'Tando Muhammad Khan',
+                                            'Tank',
+                                            'Taxila',
+                                            'Thatta',
+                                            'Toba Tek Singh',
+                                            'Turbat',
+                                            'Umerkot',
+                                            'Upper Dir',
+                                            'Vehari',
+                                            'Wah Cantt',
+                                            'Wazirabad',
+                                            'Zhob',
+                                            'Ziarat',
+                                        ];
+
+                                    @endphp
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
                                         <label class="md:w-32">City</label>
                                         <select name="city" id="city"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#333]" required>
-                                            <option value="">Select City</option>
+                                            {{-- <option value="">Select City</option>
                                             <option value="New York"
                                                 {{ ($store_info['city'] ?? '') == 'New York' ? 'selected' : '' }}>New York
                                             </option>
                                             <option value="Los Angeles"
                                                 {{ ($store_info['city'] ?? '') == 'Los Angeles' ? 'selected' : '' }}>Los
-                                                Angeles</option>
+                                                Angeles</option> --}}
+                                            <option value="" disabled selected>Select City</option>
+                                            @foreach ($cities as $item)
+                                                <option value="{{ $item }}"
+                                                    {{ isset($store_info['city']) && $store_info['city'] == $item ? 'selected' : '' }}>
+                                                    {{ $item }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div
@@ -467,9 +649,9 @@
                                     <label class="md:w-32">Pin Location</label>
                                     <div class="relative w-full">
                                         <input id="store-location-input"
-                                        class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
-                                        name="pin_location" placeholder="Enter Pin Location"
-                                        value="{{ $store_info['pin_location'] ?? '' }}" required>
+                                            class="location-input rounded-lg w-full p-2 pr-10 border border-gray-300 text-[#333]"
+                                            name="pin_location" placeholder="Enter Pin Location"
+                                            value="{{ $store_info['pin_location'] ?? '' }}" required>
                                         <div class="get-location-btn cursor-pointer absolute inset-y-0 right-3 flex items-center"
                                             data-target="store">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"
@@ -568,7 +750,7 @@
                                         <label class="md:w-32">Country</label>
                                         <select name="country" id="country"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" required>
-                                            <option value="USA" selected> Pakistan</option>
+                                            <option value="pakistan" selected> Pakistan</option>
                                         </select>
                                     </div>
 
@@ -590,14 +772,11 @@
                                         <select name="province" id="province"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" required>
                                             <option value="">Select Province</option>
-                                            {{--    {{ isset($documents_info['province']) && $documents_info['province'] == 'Ontario' ? 'selected' : '' }} --}}
-
                                             @foreach ($province as $item)
                                                 <option value="{{ $item }}"
                                                     {{ isset($documents_info['province']) && $documents_info['province'] == $item ? 'selected' : '' }}>
                                                     {{ $item }}</option>
                                             @endforeach
-
                                         </select>
                                     </div>
 
@@ -759,13 +938,11 @@
                                         <select name="city" id="city"
                                             class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" required>
                                             <option value="" disabled selected>Select City</option>
-                                            {{--   {{ isset($documents_info['city']) && $documents_info['city'] == 'Toronto' ? 'selected' : '' }} --}}
                                             @foreach ($cities as $item)
                                                 <option value="{{ $item }}"
                                                     {{ isset($documents_info['city']) && $documents_info['city'] == $item ? 'selected' : '' }}>
                                                     {{ $item }}</option>
                                             @endforeach
-
                                         </select>
                                     </div>
                                 </div>

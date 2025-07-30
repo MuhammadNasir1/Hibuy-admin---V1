@@ -17,7 +17,11 @@
         <div
             class="h-[200px] shadow-xl bg-gradient-to-r from-[#4A90E2] rounded-xl mx-6 mt-3 via-green-300 to-[#FFCE31] flex justify-center items-center">
             <div class="h-[80%] w-[95%] bg-white rounded-xl flex items-center gap-5">
-                <img src="{{ !empty($storeData['store_image']) ? asset($storeData['store_image']) : ($storeData['profile_picture_store']) }}"
+                <img src="{{ !empty($storeData['store_image'])
+                    ? asset($storeData['store_image'])
+                    : (!empty($storeData['profile_picture_store'])
+                        ? asset($storeData['profile_picture_store'])
+                        : asset('assets/images/defualt-image.png')) }}"
                     class="ms-5 h-[80px] w-[80px] rounded-full" alt="">
                 <div>
                     <h3 class="text-lg font-semibold">
@@ -73,8 +77,7 @@
                             <input type="hidden" name="upload-banner" id="upload-banner">
 
                             <div class="flex items-center justify-center mx-auto gap-1 -mt-16">
-                                <div id="profile_picture_preview" class=""
-                                    > </div>
+                                <div id="profile_picture_preview" class=""> </div>
                                 <div class="h-[100px] w-[100px] bg-primary overflow-hidden rounded-full">
                                     <x-file-uploader name="profile_picture" id="profile_picture_input" />
 
@@ -177,7 +180,7 @@
                             let profileImagePath = response.data.store_image ?
                                 response.data.store_image :
                                 "";
-                                if (profileImagePath) {
+                            if (profileImagePath) {
                                 $("#profile_picture_preview").html(
                                     `<img src="${profileImagePath}" class="h-[100px] w-[100px] rounded-full object-cover" alt="Profile Picture">`
                                 );
