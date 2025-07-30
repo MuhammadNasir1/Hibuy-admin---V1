@@ -20,7 +20,9 @@
                     </div>
                     <h3 class="text-gray-600 font-semibold">Total Sales</h3>
                 </div>
-                <h2 class="text-2xl font-bold mt-2">Rs. {{ $data['revenue'] }}</h2>
+                <h2 class="text-2xl font-bold mt-2">
+                    Rs. {{ !empty($data['revenue']) ? $data['revenue'] : 0 }}
+                </h2>
                 <p class="text-green-500 text-sm">⬆ 5% in the last 1 month</p>
             </div>
 
@@ -40,7 +42,7 @@
                     </div>
                     <h3 class="text-gray-600 font-semibold">Total Profit</h3>
                 </div>
-                <h2 class="text-2xl font-bold mt-2">Rs. {{ $data['totalProfit'] }}</h2>
+                <h2 class="text-2xl font-bold mt-2">Rs. {{ !empty($data['totalProfit']) ? $data['totalProfit'] : 0 }}</h2>
                 <p class="text-green-500 text-sm">⬆ 5% in the last 1 month</p>
             </div>
 
@@ -97,7 +99,7 @@
                     </div>
                     <h3 class="text-gray-600 font-semibold">Total Products</h3>
                 </div>
-                <h2 class="text-2xl font-bold mt-2">{{ $data['totalProducts'] }}</h2>
+                <h2 class="text-2xl font-bold mt-2">{{ $data['totalProducts'] ?? 0 }}</h2>
                 <p class="text-green-500 text-sm">⬆ 2% in the last 1 month</p>
             </div>
 
@@ -139,7 +141,7 @@
                         </div>
                         <h3 class="text-gray-600 font-semibold">Active Sellers</h3>
                     </div>
-                    <h2 class="text-2xl font-bold mt-2">{{ $data['totalUsers'] }}</h2>
+                    <h2 class="text-2xl font-bold mt-2">{{ $data['totalUsers'] ?? 0 }}</h2>
                     <p class="text-green-500 text-sm">⬆ 2% in the last 1 month</p>
                 </div>
 
