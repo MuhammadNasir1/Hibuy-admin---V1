@@ -13,6 +13,7 @@ class product_category extends Model
         'image',
         'category_type',
         'sub_categories',
+        'parent_id',
     ];
     public $timestamps = true;
 
