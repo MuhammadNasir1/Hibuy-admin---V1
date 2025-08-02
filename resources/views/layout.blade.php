@@ -192,7 +192,7 @@
 
     <!-- Seller Link -->
     <a href="{{ route('KYC_auth', ['type' => 'seller']) }}">
-        <div class="bg-white text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md px-4 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7] ">
+        <div class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md px-4 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7] ">
             <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'text-primary' : 'text-primary' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
@@ -236,7 +236,7 @@
 
     <!-- Freelancer Link -->
     <a href="{{ route('KYC_auth', ['type' => 'freelancers']) }}">
-        <div class="bg-white text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md px-4 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7]">
+        <div class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md px-4 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7]">
             <svg class="w-5 h-5 transition duration-200
                                         {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'text-primary' : 'text-primary' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"

@@ -288,7 +288,7 @@
                     <!-- Sub Categories -->
                     <div class="w-full">
                         <label class="block mb-2 text-lg font-semibold text-gray-700">Sub Categories</label>
-                        <ul id="categorySubCategories" class="p-3 bg-gray-100 rounded-lg shadow-sm capitalize"></ul>
+                        <ul id="categorySubCategories" class="p-3 bg-gray-100 rounded-lg shadow-sm capitalize space-y-1"></ul>
                     </div>
                 </div>
 
@@ -457,63 +457,73 @@
 
             // View category details
            $(".viewModalBtn").on("click", function () {
-            let categoryId = $(this).data("id");
+    let categoryId = $(this).data("id");
 
-            $.ajax({
-                url: "/fetch-category/" + categoryId,
-                type: "GET",
-                dataType: "json",
-                success: function (response) {
-                    if (response.status === "success") {
-                        // 1. Category name
-                        $("#categoryName").text(response.data.name);
+    $.ajax({
+        url: "/fetch-category/" + categoryId,
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+            if (response.status === "success") {
+                // 1. Category name
+                $("#categoryName").text(response.data.name);
 
-                        // 2. Category image
-                        let imageUrl = response.data.image
-                            ? "{{ asset('') }}" + response.data.image
-                            : "{{ asset('asset/Ellipse 2.png') }}";
+                // 2. Category image
+                let imageUrl = response.data.image
+                    ? "{{ asset('') }}" + response.data.image
+                    : "{{ asset('asset/Ellipse 2.png') }}";
 
-                        $("#categoryImage")
-                            .attr("src", imageUrl)
-                            .on("error", function () {
-                                $(this).attr("src", "{{ asset('asset/Ellipse 2.png') }}");
-                            });
-
-                        // 3. Subcategories
-                        let subCategories = response.data.sub_categories;
-                        let subCategoryHtml = "";
-
-                        if (Array.isArray(subCategories) && subCategories.length > 0) {
-                            subCategories.forEach(function (sub) {
-                                subCategoryHtml += `<li class="py-1 font-medium text-gray-800">${sub.name}</li>`;
-                            });
-                        } else {
-                            subCategoryHtml = `<li class="py-1 italic text-gray-500">No subcategories</li>`;
-                        }
-
-                        $("#categorySubCategories").html(subCategoryHtml);
-
-                        // 4. Show modal
-                        $("#editproductcategory-modal")
-                            .removeClass("hidden")
-                            .addClass("flex items-center justify-center bg-gray-900 bg-opacity-50");
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error",
-                            text: "Category not found!"
-                        });
-                    }
-                },
-                error: function () {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: "Something went wrong!"
+                $("#categoryImage")
+                    .attr("src", imageUrl)
+                    .on("error", function () {
+                        $(this).attr("src", "{{ asset('asset/Ellipse 2.png') }}");
                     });
+
+                // 3. Recursive subcategory rendering
+                let subCategories = response.data.sub_categories;
+
+                function renderSubCategories(categories) {
+                    if (!Array.isArray(categories) || categories.length === 0) return '';
+
+                    let html = '<ul class="pl-4 list-disc">';
+                    categories.forEach(function (cat) {
+                        html += `<li class="py-1 font-medium text-gray-800">${cat.name}`;
+                        if (cat.sub_categories && cat.sub_categories.length > 0) {
+                            html += renderSubCategories(cat.sub_categories); // Recursive call
+                        }
+                        html += `</li>`;
+                    });
+                    html += '</ul>';
+                    return html;
                 }
+
+                let subCategoryHtml = renderSubCategories(subCategories);
+                $("#categorySubCategories").html(
+                    subCategoryHtml || `<li class="py-1 italic text-gray-500">No subcategories</li>`
+                );
+
+                // 4. Show modal
+                $("#editproductcategory-modal")
+                    .removeClass("hidden")
+                    .addClass("flex items-center justify-center bg-gray-900 bg-opacity-50");
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Category not found!"
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong!"
             });
-        });
+        }
+    });
+});
+
 
 
             // Form submission

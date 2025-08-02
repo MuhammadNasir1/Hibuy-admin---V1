@@ -31,30 +31,33 @@ class ProductsController extends Controller
                 return response()->json(['success' => false, 'message' => 'User not found.'], 404);
             }
 
-            // Fetch all categories from the database
-            $categories = product_category::select('id', 'name', 'image', 'sub_categories')
-                ->where('category_type', 'products') // Ensure we only get product categories
-                ->where('parent_id', '=', NULL)
+            // Fetch only top-level categories (where parent_id is null)
+            $categories = product_category::select('id', 'name', 'image')
+                ->where('category_type', 'products')
+                ->whereNull('parent_id')
                 ->get();
 
-            // Initialize products variable
             $products = null;
+            $categoryIds = [];
 
-            // Fetch product only if editid is provided
             if ($editid !== null) {
                 $products = Products::find($editid);
-            }
 
-            // Decode JSON fields if sub_categories are stored as JSON
-            foreach ($categories as $category) {
-                $category->sub_categories = json_decode($category->sub_categories, true);
+                if ($products) {
+                    $categoryIds = DB::table('product_category_product')
+                        ->where('product_id', $products->product_id)
+                        ->orderBy('category_level')
+                        ->pluck('category_id')
+                        ->toArray();
+                }
             }
-            // Return to the Blade view with compacted data
-            return view('pages.AddProduct', compact('user', 'categories', 'products'));
+            // return $categoryIds;
+            return view('pages.AddProduct', compact('user', 'categories', 'products', 'categoryIds'));
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
+
 
     public function getSubCategories($category_id)
     {
@@ -119,6 +122,7 @@ class ProductsController extends Controller
         try {
             // return $request;
             // exit;
+
             // Retrieve user details from session
             $userDetails = session('user_details');
             if (!$userDetails) {
@@ -135,7 +139,6 @@ class ProductsController extends Controller
                 // Fetch store_id based on seller_id
                 $store = Store::where('seller_id', $seller->seller_id)->first();
                 if (!$store) {
-                    // return response()->json(['error' => 'Store record not found'], 404);
                     return redirect('/products')->with('error', 'Store record not found. Please Create Store First');
                 }
             } else {
@@ -149,27 +152,22 @@ class ProductsController extends Controller
 
             $productId = $request->product_edit_id;
 
-
-
             // Validate request data
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'company' => 'required|string|max:255',
-                'category' => 'required|integer|max:255',
-                'sub_category' => 'required|string|max:255',
+                'category_id' => 'required|integer|max:255',
+                // 'sub_category' => 'required|string|max:255',
                 'purchase_price' => 'required|numeric|min:0',
                 'product_price' => 'required|numeric|min:0',
                 'discount' => 'nullable|numeric|min:0',
                 'discounted_price' => 'nullable|numeric|min:0',
                 'variants' => 'nullable|array',
                 'product_status' => 'nullable|integer|in:0,1',
-                'product_edit_id' => 'nullable|integer', // Add this field for update condition
+                'product_edit_id' => 'nullable|integer',
                 'is_boosted' => 'nullable|in:0,1',
-
-
             ]);
-
 
             if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
                 $user = User::where('user_id', $userDetails['user_id'])->first();
@@ -213,21 +211,18 @@ class ProductsController extends Controller
                         $parentVariant['parentimage'] = $existingParent['parentimage'] ?? null;
                     }
 
-                    // Merge any missing parent fields from existing
                     foreach ($existingParent as $key => $value) {
                         if (!isset($parentVariant[$key]) && $key !== 'children') {
                             $parentVariant[$key] = $value;
                         }
                     }
 
-                    // Ensure children array
                     $parentVariant['children'] = $parentVariant['children'] ?? [];
                     $existingChildren = $existingParent['children'] ?? [];
 
                     foreach ($parentVariant['children'] as $childIndex => &$child) {
                         $existingChild = $existingChildren[$childIndex] ?? [];
 
-                        // Handle child image
                         if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
                             $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
                             $childImagePath = $childImage->store('variants', 'public');
@@ -236,7 +231,6 @@ class ProductsController extends Controller
                             $child['image'] = $existingChild['image'] ?? null;
                         }
 
-                        // Merge any missing child fields
                         foreach ($existingChild as $key => $value) {
                             if (!isset($child[$key]) && $key !== 'image') {
                                 $child[$key] = $value;
@@ -249,32 +243,32 @@ class ProductsController extends Controller
                     $storedImagePaths = json_decode($request->product_images, true) ?? [];
                 }
 
-                // return $productVariants;
-                // Fetch the product that needs to be updated
                 $product = Products::where('product_id', $request->product_edit_id)
                     ->where('user_id', $userDetails['user_id'])
                     ->first();
-                // return $request->product_edit_id;
+
                 if (!$product) {
                     return response()->json(['error' => 'Product not found or unauthorized'], 404);
                 }
-
-                // Prepare update data (excluding specified fields)
+                // calculate total stock before
+                $totalStock = collect($productVariants)->sum(function ($parent) {
+                    return (int) ($parent['parentstock'] ?? 0);
+                });
+                // return $totalStock;
                 $updateData = [
                     'user_id' => $userDetails['user_id'],
                     'store_id' => $store->store_id,
                     'product_name' => $validatedData['title'],
                     'product_description' => $validatedData['description'] ?? null,
                     'product_brand' => $validatedData['company'],
-                    'product_category' => $validatedData['category'],
-                    'product_subcategory' => $validatedData['sub_category'],
+                    'product_category' => $validatedData['category_id'],
+                    // 'product_subcategory' => $validatedData['sub_category'],
                     'purchase_price' => $validatedData['purchase_price'],
                     'product_price' => $validatedData['product_price'],
                     'product_discount' => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
-                    // 'is_boosted' => $isBoosted,
+                    'product_stock' => $totalStock,
                 ];
-                // Conditionally update product_variation
                 if (!empty($productVariants)) {
                     $updateData['product_variation'] = json_encode($productVariants);
                 }
@@ -282,38 +276,55 @@ class ProductsController extends Controller
                 if (!empty($storedImagePaths)) {
                     $updateData['product_images'] = json_encode($storedImagePaths);
                 }
-                // Update the product
+
                 $product->update($updateData);
+
+                // ✅ NEW: update pivot table
+                $categoryIds = [
+                    1 => $request->category_id,
+                    2 => $request->subcategory_id,
+                    3 => $request->sub_subcategory_id,
+                    4 => $request->category_level_3,
+                    5 => $request->category_level_4,
+                    6 => $request->category_level_5,
+                ];
+                DB::table('product_category_product')->where('product_id', $product->product_id)->delete();
+                foreach ($categoryIds as $level => $categoryId) {
+                    if ($categoryId) {
+                        DB::table('product_category_product')->insert([
+                            'product_id' => $product->product_id,
+                            'category_id' => $categoryId,
+                            'category_level' => $level,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+
                 if ($userDetails['user_role'] == 'admin') {
                     return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
                 } else {
                     return redirect()->route('products')->with('success', 'Product updated successfully');
                 }
-                // return redirect()->route('products')->with('success', 'Product updated successfully');
             } else {
-                // Decode product images JSON if it exists
                 $storedImagePaths = [];
                 if ($request->has('product_images')) {
                     $storedImagePaths = json_decode($request->product_images, true) ?? [];
                 }
 
-                // Process Variants
                 $productVariants = $request->variants ?? [];
 
                 foreach ($productVariants as $parentIndex => &$parentVariant) {
-                    // Handle parent image upload
                     if ($request->hasFile("variants.$parentIndex.parentimage")) {
                         $parentImage = $request->file("variants.$parentIndex.parentimage");
                         $parentImagePath = $parentImage->store('variants', 'public');
                         $parentVariant['parentimage'] = "storage/" . $parentImagePath;
                     }
 
-                    // Ensure children key exists
                     if (!isset($parentVariant['children']) || !is_array($parentVariant['children'])) {
-                        $parentVariant['children'] = []; // Ensure it's always an array
+                        $parentVariant['children'] = [];
                     }
 
-                    // Handle child images
                     foreach ($parentVariant['children'] as $childIndex => &$child) {
                         if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
                             $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
@@ -322,16 +333,18 @@ class ProductsController extends Controller
                         }
                     }
                 }
-                // return $productVariants;
-                // Insert new product (including all fields)
+                // calculate total stock before
+                $totalStock = collect($productVariants)->sum(function ($parent) {
+                    return (int) ($parent['parentstock'] ?? 0);
+                });
                 $productData = [
                     'user_id' => $userDetails['user_id'],
                     'store_id' => $store->store_id,
                     'product_name' => $validatedData['title'],
                     'product_description' => $validatedData['description'] ?? null,
                     'product_brand' => $validatedData['company'],
-                    'product_category' => $validatedData['category'],
-                    'product_subcategory' => $validatedData['sub_category'],
+                    'product_category' => $validatedData['category_id'],
+                    // 'product_subcategory' => $validatedData['sub_category'],
                     'purchase_price' => $validatedData['purchase_price'],
                     'product_price' => $validatedData['product_price'],
                     'product_discount' => $validatedData['discount'] ?? 0,
@@ -340,22 +353,43 @@ class ProductsController extends Controller
                     'product_variation' => json_encode($productVariants),
                     'product_status' => $validatedData['product_status'] ?? 0,
                     'is_boosted' => $isBoosted,
+                    'product_stock' => $totalStock, // ✅ added
                 ];
 
-                Products::create($productData);
-                // return $userDetails;
+                $newProduct = Products::create($productData);
+
+                // ✅ NEW: insert pivot data
+                $categoryIds = [
+                    1 => $request->category_id,
+                    2 => $request->subcategory_id,
+                    3 => $request->sub_subcategory_id,
+                    4 => $request->category_level_3,
+                    5 => $request->category_level_4,
+                    6 => $request->category_level_5,
+                ];
+                foreach ($categoryIds as $level => $categoryId) {
+                    if ($categoryId) {
+                        DB::table('product_category_product')->insert([
+                            'product_id' => $newProduct->product_id,
+                            'category_id' => $categoryId,
+                            'category_level' => $level,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+
                 if ($userDetails['user_role'] == 'admin') {
                     return redirect()->route('hibuy_product')->with('success', 'Product added successfully');
                 } else {
                     return redirect()->route('products')->with('success', 'Product added successfully');
                 }
-                // return redirect()->route('products')->with('success', 'Product added successfully');
             }
         } catch (\Exception $th) {
-            // return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
             return redirect('/product/add')->with('error', $th->getMessage());
         }
     }
+
 
 
 
@@ -497,28 +531,29 @@ class ProductsController extends Controller
 
     public function fetchCategory($id)
     {
-        $category = product_category::find($id);
-        // return $category;
+        $category = product_category::with('children')->find($id);
 
-        if ($category) {
-            $subcategories = product_category::where('parent_id', $id)
-                ->select('id', 'name')
-                ->get();
-
+        if (!$category) {
             return response()->json([
-                'status' => 'success',
-                'data' => [
-                    'name' => $category->name,
-                    'image' => $category->image,
-                    'sub_categories' => $subcategories,
-                ]
-            ]);
+                'status' => 'error',
+                'message' => 'No record found!'
+            ], 404);
         }
 
+        // Recursive formatting function
+        $formatCategory = function ($category) use (&$formatCategory) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'image' => $category->image,
+                'sub_categories' => $category->children->map($formatCategory)->toArray(),
+            ];
+        };
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'No record found!'
-        ], 404);
+            'status' => 'success',
+            'data' => $formatCategory($category),
+        ]);
     }
     public function deleteCategoryOrSubcategory(Request $request, $id)
     {

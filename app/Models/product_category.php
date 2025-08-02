@@ -16,5 +16,8 @@ class product_category extends Model
         'parent_id',
     ];
     public $timestamps = true;
+     public function children(){
+        return $this->hasMany(product_category::class, 'parent_id', 'id')->with('children');
+    }
 
 }
