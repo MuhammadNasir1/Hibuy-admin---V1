@@ -150,7 +150,6 @@
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="checkbox" class="sr-only peer" id="is_boosted" name="is_boosted" value="1"
                             @if ($products && $products->is_boosted) checked @endif>
-
                         <div
                             class="relative px-4 py-2 rounded-3xl font-semibold bg-gray-200 text-gray-800 peer-checked:bg-blue-500 peer-checked:text-white transition flex items-center gap-2">
                             <span>Boost Product</span>
@@ -186,16 +185,21 @@
                         </div>
 
                         <div id="category-selects" class="flex gap-4">
-                            <div>
+                            <div class="dynamic-subcategory">
                                 <label class="block mb-1 text-sm font-medium text-gray-700">Category</label>
-                                <select name="category_id" id="category_id" class="dynamic-category block w-full rounded border-gray-300">
+                                <select name="category_id" id="category_id"
+                                    class="dynamic-category block w-full rounded border-gray-300">
                                     <option value="" disabled selected>Select Category</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}"
+                                            @if (!empty($categoryIds) && isset($categoryIds[0]) && $categoryIds[0] == $category->id) selected @endif>
+                                            {{ $category->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+
 
                         <div>
                             <x-input value="{{ $products ? $products->purchase_price : '' }}" type="number"
@@ -311,10 +315,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                </div>`).join('')}
+                                                                                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                        </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -478,10 +482,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                </div>`).join('')}
+                                                                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                        </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -533,10 +537,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                                                            <div class="value-item flex items-center mb-2">
-                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                            </div>`).join('')}
+                                                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                    </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -674,44 +678,70 @@
     @endif
     <script>
         $(document).ready(function() {
-            $(document).on('change', '.dynamic-category', function() {
-                let selectedCategoryId = $(this).val();
+            // Blade passes the selected category IDs for edit; empty [] when adding new
+            const selectedCategoryIds = {!! json_encode($categoryIds ?? []) !!};
 
-                // Count how many existing category selects there are to decide the level
-                let level = $('#category-selects .dynamic-category').length;
-
-                // Remove any subcategories that come after this select
-                $(this).closest('div').nextAll('.dynamic-subcategory').remove();
-
-                if (selectedCategoryId) {
-                    $.ajax({
-                        url: `/get-subcategories/${selectedCategoryId}`,
-                        type: 'GET',
-                        success: function(response) {
-                            if (response.success && response.sub_categories.length > 0) {
-                                let fieldName = '';
-                                if (level === 1) fieldName = 'subcategory_id';
-                                else if (level === 2) fieldName = 'sub_subcategory_id';
-                                else fieldName = `category_level_${level}`;
-
-                                let newSelectHtml = `
-                        <div class="dynamic-subcategory ml-2">
-                            <label class="block mb-1 text-sm font-medium text-gray-700">Sub Category</label>
-                            <select name="${fieldName}" class="dynamic-category block w-full rounded border-gray-300">
-                                <option value="" disabled selected>Select Sub Category</option>
-                                ${response.sub_categories.map(sub => `<option value="${sub.id}">${sub.name}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
-                                $('#category-selects').append(newSelectHtml);
-                            }
-                        },
-                        error: function() {
-                            alert('Error fetching subcategories.');
-                        }
-                    });
+            $(document).ready(function() {
+                if (selectedCategoryIds.length > 0) {
+                    loadCategoriesRecursively(1, selectedCategoryIds);
                 }
             });
+
+            // On change: dynamically load subcategories
+            $(document).on('change', '.dynamic-category', function() {
+                let selectedCategoryId = $(this).val();
+                let level = $('#category-selects .dynamic-category').length;
+                $(this).closest('div').nextAll('.dynamic-subcategory').remove();
+                if (selectedCategoryId) {
+                    loadSubcategories(selectedCategoryId, level);
+                }
+            });
+
+            function loadSubcategories(parentId, level, preselectedId = null) {
+                $.ajax({
+                    url: `/get-subcategories/${parentId}`,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.sub_categories.length > 0) {
+                            let fieldName = (level === 1) ? 'subcategory_id' :
+                                (level === 2) ? 'sub_subcategory_id' :
+                                `category_level_${level}`;
+                            let newSelectHtml = `
+                    <div class="dynamic-subcategory ml-2">
+                        <label class="block mb-1 text-sm font-medium text-gray-700">Sub Category</label>
+                        <select name="${fieldName}" class="dynamic-category block w-full rounded border-gray-300">
+                            <option value="" disabled ${!preselectedId ? 'selected' : ''}>Select Sub Category</option>
+                            ${response.sub_categories.map(sub =>
+                                `<option value="${sub.id}" ${preselectedId == sub.id ? 'selected' : ''}>${sub.name}</option>`
+                            ).join('')}
+                        </select>
+                    </div>`;
+                            $('#category-selects').append(newSelectHtml);
+                            // Load next level if preselected
+                            if (preselectedId) {
+                                let nextLevel = level + 1;
+                                let nextIndex = selectedCategoryIds.indexOf(preselectedId) + 1;
+                                let nextPreselectId = selectedCategoryIds[nextIndex];
+                                if (nextPreselectId) {
+                                    loadSubcategories(preselectedId, nextLevel, nextPreselectId);
+                                }
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert('Error fetching subcategories.');
+                    }
+                });
+            }
+
+            function loadCategoriesRecursively(startIndex, idsArray) {
+                let parentId = idsArray[startIndex - 1];
+                let preselectedId = idsArray[startIndex];
+                let level = startIndex;
+                if (preselectedId) {
+                    loadSubcategories(parentId, level, preselectedId);
+                }
+            }
 
 
 

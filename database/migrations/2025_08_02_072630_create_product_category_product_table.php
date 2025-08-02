@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('product_category_product', function (Blueprint $table) {
+            $table->id('product_subcategoryId'); // custom PK column name
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('category_id'); // no FK constraint, plain column
+            $table->unsignedTinyInteger('category_level'); // level in the tree
+            $table->timestamps(); // created_at & updated_at
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('product_category_product');
+    }
+};
