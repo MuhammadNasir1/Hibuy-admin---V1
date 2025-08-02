@@ -179,57 +179,46 @@
                         <x-textarea type="text" label="Description" placeholder="Description Here" required
                             id="description" name="description" :value="$products->product_description ?? ''" />
                     </div>
-                    <div class="mt-5 grid lg:grid-cols-4 md:grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="mt-5 flex flex-wrap gap-4 items-end">
                         <div>
                             <x-input value="{{ $products ? $products->product_brand : '' }}" type="text"
                                 label="Brand / Company" placeholder="Brand / Company" id="company" name="company" />
                         </div>
-                        <div>
-                            <x-select type="text" label="Category" placeholder="Category Here" id="category"
-                                name="category">
-                                <x-slot name="options">
+
+                        <div id="category-selects" class="flex gap-4">
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Category</label>
+                                <select name="category_id" id="category_id" class="dynamic-category block w-full rounded border-gray-300">
                                     <option value="" disabled selected>Select Category</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            {{ isset($products->product_category) && $products->product_category == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
-                                </x-slot>
-                            </x-select>
+                                </select>
+                            </div>
                         </div>
 
-                        <div>
-                            <x-select type="text" label="Sub Category" placeholder="Sub Category Here" id="sub_category"
-                                name="sub_category">
-                                <x-slot name="options">
-                                    <option value="" disabled selected>Select Sub Category</option>
-                                    @if (isset($products->product_subcategory))
-                                        <option selected value="{{ $products->product_subcategory }}">
-                                            {{ $products->product_subcategory }}
-                                        </option>
-                                    @endif
-                                </x-slot>
-                            </x-select>
-                        </div>
                         <div>
                             <x-input value="{{ $products ? $products->purchase_price : '' }}" type="number"
                                 label="Purchase Price" placeholder="Price Here" id="purchase_price" name="purchase_price" />
                         </div>
+
                         <div>
                             <x-input value="{{ $products ? $products->product_price : '' }}" type="number"
                                 label="Product Price" placeholder="Price Here" id="product_price" name="product_price" />
                         </div>
+
                         <div>
                             <x-input value="{{ $products ? $products->product_discount : '' }}" type="number"
                                 label="Discount (%)" placeholder="Discount Here" id="discount" name="discount" />
                         </div>
+
                         <div>
                             <x-input value="{{ $products ? $products->product_discounted_price : '' }}" type="number"
                                 label="Discounted Price" placeholder="Discounted Price Here" id="discounted_price"
                                 name="discounted_price" />
                         </div>
                     </div>
+
                     {{-- Next Section --}}
                     <div class="grid grid-cols-1 lg:grid-cols-3">
                         <div class="variant-box mt-5 ">
@@ -260,8 +249,7 @@
                     <div class="mt-6 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
-                            <button type="submit" id="add_product_btn"
-                                class="px-6 py-2 text-white bg-primary rounded-3xl">
+                            <button type="submit" id="add_product_btn" class="px-6 py-2 text-white bg-primary rounded-3xl">
                                 Submit
                             </button>
                         </div>
@@ -323,10 +311,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                        <div class="value-item flex items-center mb-2">
-                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                        </div>`).join('')}
+                                                                                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -490,10 +478,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                        <div class="value-item flex items-center mb-2">
-                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                        </div>`).join('')}
+                                                                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -545,10 +533,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                    </div>`).join('')}
+                                                                                                                                            <div class="value-item flex items-center mb-2">
+                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                            </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -686,38 +674,49 @@
     @endif
     <script>
         $(document).ready(function() {
-            $('#category').on('change', function() {
-                let categoryId = $(this).val();
-                let subCategoryDropdown = $('#sub_category');
+            $(document).on('change', '.dynamic-category', function() {
+                let selectedCategoryId = $(this).val();
 
-                // Clear previous options
-                subCategoryDropdown.html('<option value="" disabled selected>Loading...</option>');
+                // Count how many existing category selects there are to decide the level
+                let level = $('#category-selects .dynamic-category').length;
 
-                $.ajax({
-                    url: `/get-subcategories/${categoryId}`,
-                    type: 'GET',
-                    success: function(response) {
-                        subCategoryDropdown.html(
-                            '<option value="" disabled selected>Select Sub Category</option>'
-                        );
+                // Remove any subcategories that come after this select
+                $(this).closest('div').nextAll('.dynamic-subcategory').remove();
 
-                        if (response.success && response.sub_categories.length > 0) {
-                            response.sub_categories.forEach(subCategory => {
-                                subCategoryDropdown.append(
-                                    `<option value="${subCategory}">${subCategory}</option>`
-                                );
-                            });
-                        } else {
-                            subCategoryDropdown.html(
-                                '<option disabled>No Subcategories Found</option>');
+                if (selectedCategoryId) {
+                    $.ajax({
+                        url: `/get-subcategories/${selectedCategoryId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.success && response.sub_categories.length > 0) {
+                                let fieldName = '';
+                                if (level === 1) fieldName = 'subcategory_id';
+                                else if (level === 2) fieldName = 'sub_subcategory_id';
+                                else fieldName = `category_level_${level}`;
+
+                                let newSelectHtml = `
+                        <div class="dynamic-subcategory ml-2">
+                            <label class="block mb-1 text-sm font-medium text-gray-700">Sub Category</label>
+                            <select name="${fieldName}" class="dynamic-category block w-full rounded border-gray-300">
+                                <option value="" disabled selected>Select Sub Category</option>
+                                ${response.sub_categories.map(sub => `<option value="${sub.id}">${sub.name}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                                $('#category-selects').append(newSelectHtml);
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching subcategories.');
                         }
-                    },
-                    error: function() {
-                        subCategoryDropdown.html(
-                            '<option disabled>Error fetching data</option>');
-                    }
-                });
+                    });
+                }
             });
+
+
+
+
+
 
             $("#product_price, #discount").on("input", function() {
                 let price = parseFloat($("#product_price").val()) || 0;
@@ -847,9 +846,4 @@
             }
         });
     </script>
-
-
-
-
-
 @endsection

@@ -34,6 +34,7 @@ class ProductsController extends Controller
             // Fetch all categories from the database
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')
                 ->where('category_type', 'products') // Ensure we only get product categories
+                ->where('parent_id', '=', NULL)
                 ->get();
 
             // Initialize products variable
@@ -48,7 +49,6 @@ class ProductsController extends Controller
             foreach ($categories as $category) {
                 $category->sub_categories = json_decode($category->sub_categories, true);
             }
-            // return $user;
             // Return to the Blade view with compacted data
             return view('pages.AddProduct', compact('user', 'categories', 'products'));
         } catch (\Exception $e) {
@@ -59,20 +59,35 @@ class ProductsController extends Controller
     public function getSubCategories($category_id)
     {
         try {
+            // Find category
             $category = product_category::find($category_id);
 
             if (!$category) {
                 return response()->json(['success' => false, 'message' => 'Category not found'], 404);
             }
 
-            // Decode JSON stored subcategories
-            $subCategories = json_decode($category->sub_categories, true) ?? [];
+            // Decode JSON sub_categories
+            $subCategoriesJson = json_decode($category->sub_categories, true) ?? [];
 
-            return response()->json(['success' => true, 'sub_categories' => $subCategories], 200);
+            $subCategoryIds = array_column($subCategoriesJson, 'id');
+
+            // Get actual subcategories from DB
+            $subCategories = product_category::whereIn('id', $subCategoryIds)
+                ->select('id', 'name')
+                ->get();
+            return response()->json([
+                'success' => true,
+                'sub_categories' => $subCategories
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
+
+
 
     public function getFileName(Request $request)
     {
@@ -103,6 +118,7 @@ class ProductsController extends Controller
     {
         try {
             // return $request;
+            // exit;
             // Retrieve user details from session
             $userDetails = session('user_details');
             if (!$userDetails) {
@@ -153,6 +169,8 @@ class ProductsController extends Controller
 
 
             ]);
+
+
             if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
                 $user = User::where('user_id', $userDetails['user_id'])->first();
 
@@ -471,7 +489,7 @@ class ProductsController extends Controller
                 ->count();
         }
 
-        // return $categories;
+        return $parentcategories;
         // Return both to view
         return view('admin.ProductCategory', compact('parentcategories'));
     }
@@ -481,10 +499,19 @@ class ProductsController extends Controller
     {
         $category = product_category::find($id);
         // return $category;
+
         if ($category) {
+            $subcategories = product_category::where('parent_id', $id)
+                ->select('id', 'name')
+                ->get();
+
             return response()->json([
                 'status' => 'success',
-                'data' => $category,
+                'data' => [
+                    'name' => $category->name,
+                    'image' => $category->image,
+                    'sub_categories' => $subcategories,
+                ]
             ]);
         }
 
