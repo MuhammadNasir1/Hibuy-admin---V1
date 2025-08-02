@@ -351,7 +351,9 @@ class apiproductController extends Controller
     {
         try {
             // Fetch all categories
-            $categories = product_category::select('id', 'name', 'image', 'parent_id')->get();
+            $categories = product_category::select('id', 'name', 'image', 'parent_id')
+            ->where('category_type', 'products')
+            ->get();
 
             // Build tree starting from parent_id = null
             $categoryTree = $categories->where('parent_id', null)->map(function ($category) use ($categories) {
