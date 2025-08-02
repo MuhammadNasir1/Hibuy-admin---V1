@@ -41,8 +41,8 @@
 
                         {{-- top-level row --}}
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
+                            <td style="padding: 8px 10px !important;" >{{ $loop->iteration }}</td>
+                            <td style="padding: 8px 10px !important;">
                                 <img class="rounded-full w-11 h-11" src="{{ $finalImage }}" alt="Product image">
                             </td>
                             <td class="capitalize">
@@ -63,13 +63,13 @@
                                     Lv1
                                 </span>
                                 <span class="ml-1">{{ $categorie->name }}</span>
-                            </td>
-                            <td>{{ $categorie->subcategory_count }}</td>
-                            <td>{{ $categorie->product_count }}</td>
-                            <td>
+                            </td style="padding: 8px 10px !important;">
+                            <td style="padding: 8px 10px !important;">{{ $categorie->subcategory_count }}</td>
+                            <td style="padding: 8px 10px !important;">{{ $categorie->product_count }}</td>
+                            <td style="padding: 8px 10px !important;">
                                 <span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
                             </td>
-                            <td>
+                            <td style="padding: 8px 10px !important;">
                                 <span class='flex gap-4'>
                                     <button class="updateDataBtn" onclick="updateData({{ $categorie->id }})">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
@@ -135,23 +135,23 @@
                                         $levelNumber = $depth + 1;
                             @endphp
                                         <tr>
-                                            <td>—</td>
-                                            <td>
+                                            <td style="padding: 8px 10px !important;">—</td>
+                                            <td style="padding: 8px 10px !important;">
                                                 <img class="rounded-full w-11 h-11" src="{{ $finalImage }}" alt="Product image">
                                             </td>
-                                            <td class="capitalize">
+                                            <td class="capitalize" style="padding: 8px 10px !important;">
                                                 {!! $indent !!}
                                                 <span class="px-2 py-0.5 text-xs font-semibold text-white rounded {{ $badgeColor }}">
                                                     Lv{{ $levelNumber }}
                                                 </span>
                                                 <span class="ml-1">{{ $child->name }}</span>
                                             </td>
-                                            <td>{{ $child->subcategory_count }}</td>
-                                            <td>{{ $child->product_count }}</td>
-                                            <td>
+                                            <td style="padding: 8px 10px !important;">{{ $child->subcategory_count }}</td>
+                                            <td style="padding: 8px 10px !important;">{{ $child->product_count }}</td>
+                                            <td style="padding: 8px 10px !important;">
                                                 <span class="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded">Approved</span>
                                             </td>
-                                            <td>
+                                            <td style="padding: 8px 10px !important;">
                                                 <span class='flex gap-4'>
                                                     <button class="updateDataBtn" onclick="updateData({{ $child->id }})">
                                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
@@ -456,65 +456,65 @@
 
 
             // View category details
-            $(".viewModalBtn").on("click", function() {
-                let categoryId = $(this).data("id");
+           $(".viewModalBtn").on("click", function () {
+            let categoryId = $(this).data("id");
 
-                $.ajax({
-                    url: "/fetch-category/" + categoryId,
-                    type: "GET",
-                    dataType: "json",
-                    success: function(response) {
-                        if (response.status === "success") {
-                            let imageUrl = response.data.image ?
-                                "{{ asset('') }}" + response.data.image :
-                                "{{ asset('asset/Ellipse 2.png') }}";
-                            $("#categoryImage")
-                                .attr("src", imageUrl)
-                                .on("error", function() {
-                                    $(this).attr("src",
-                                        "{{ asset('asset/Ellipse 2.png') }}");
-                                });
+            $.ajax({
+                url: "/fetch-category/" + categoryId,
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === "success") {
+                        // 1. Category name
+                        $("#categoryName").text(response.data.name);
 
-                            $("#categoryName").text(response.data.name);
+                        // 2. Category image
+                        let imageUrl = response.data.image
+                            ? "{{ asset('') }}" + response.data.image
+                            : "{{ asset('asset/Ellipse 2.png') }}";
 
-                            let subCategories = response.data.sub_categories;
-                            if (typeof subCategories === "string") {
-                                try {
-                                    subCategories = JSON.parse(subCategories);
-                                } catch (error) {
-                                    console.error("JSON Parse Error:", error);
-                                    subCategories = [];
-                                }
-                            }
-
-                            let subCategoryHtml = "";
-                            subCategories.forEach(function(sub) {
-                                subCategoryHtml +=
-                                    `<li class="py-1 font-medium text-gray-800">${sub}</li>`;
+                        $("#categoryImage")
+                            .attr("src", imageUrl)
+                            .on("error", function () {
+                                $(this).attr("src", "{{ asset('asset/Ellipse 2.png') }}");
                             });
 
-                            $("#categorySubCategories").html(subCategoryHtml);
-                            $("#editproductcategory-modal").removeClass("hidden").addClass(
-                                "flex items-center justify-center bg-gray-900 bg-opacity-50"
-                            );
+                        // 3. Subcategories
+                        let subCategories = response.data.sub_categories;
+                        let subCategoryHtml = "";
+
+                        if (Array.isArray(subCategories) && subCategories.length > 0) {
+                            subCategories.forEach(function (sub) {
+                                subCategoryHtml += `<li class="py-1 font-medium text-gray-800">${sub.name}</li>`;
+                            });
                         } else {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Error",
-                                text: "Category not found!"
-                            });
+                            subCategoryHtml = `<li class="py-1 italic text-gray-500">No subcategories</li>`;
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error:", error);
+
+                        $("#categorySubCategories").html(subCategoryHtml);
+
+                        // 4. Show modal
+                        $("#editproductcategory-modal")
+                            .removeClass("hidden")
+                            .addClass("flex items-center justify-center bg-gray-900 bg-opacity-50");
+                    } else {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
-                            text: "Something went wrong. Please try again."
+                            text: "Category not found!"
                         });
                     }
-                });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Something went wrong!"
+                    });
+                }
             });
+        });
+
 
             // Form submission
             $(".categoryForm").on("submit", function(e) {

@@ -73,7 +73,7 @@ Route::middleware(['custom_auth'])->group(function () {
 
             // KYC APPROVE
             Route::controller(KYCController::class)->group(function () {
-                Route::get('/KYC', 'kycData')->name('KYC_auth');
+                Route::get('/KYC/{type}', 'kycData')->name('KYC_auth');
                 Route::get('/KYC-data/{id}', 'kycDataSelect')->name('kycDataSelect');
                 Route::post('/approve-kyc', 'approveKyc')->name('approveKyc');
                 Route::post('/reject-kyc', 'rejectKyc')->name('rejectKyc');
