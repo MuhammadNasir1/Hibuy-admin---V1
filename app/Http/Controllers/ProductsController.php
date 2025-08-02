@@ -34,6 +34,7 @@ class ProductsController extends Controller
             // Fetch all categories from the database
             $categories = product_category::select('id', 'name', 'image', 'sub_categories')
                 ->where('category_type', 'products') // Ensure we only get product categories
+                ->where('parent_id', '=', NULL)
                 ->get();
 
             // Initialize products variable
@@ -48,7 +49,6 @@ class ProductsController extends Controller
             foreach ($categories as $category) {
                 $category->sub_categories = json_decode($category->sub_categories, true);
             }
-            // return $user;
             // Return to the Blade view with compacted data
             return view('pages.AddProduct', compact('user', 'categories', 'products'));
         } catch (\Exception $e) {
@@ -59,20 +59,35 @@ class ProductsController extends Controller
     public function getSubCategories($category_id)
     {
         try {
+            // Find category
             $category = product_category::find($category_id);
 
             if (!$category) {
                 return response()->json(['success' => false, 'message' => 'Category not found'], 404);
             }
 
-            // Decode JSON stored subcategories
-            $subCategories = json_decode($category->sub_categories, true) ?? [];
+            // Decode JSON sub_categories
+            $subCategoriesJson = json_decode($category->sub_categories, true) ?? [];
 
-            return response()->json(['success' => true, 'sub_categories' => $subCategories], 200);
+            $subCategoryIds = array_column($subCategoriesJson, 'id');
+
+            // Get actual subcategories from DB
+            $subCategories = product_category::whereIn('id', $subCategoryIds)
+                ->select('id', 'name')
+                ->get();
+            return response()->json([
+                'success' => true,
+                'sub_categories' => $subCategories
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
+
+
 
     public function getFileName(Request $request)
     {
@@ -103,6 +118,7 @@ class ProductsController extends Controller
     {
         try {
             // return $request;
+            // exit;
             // Retrieve user details from session
             $userDetails = session('user_details');
             if (!$userDetails) {
@@ -153,6 +169,8 @@ class ProductsController extends Controller
 
 
             ]);
+
+
             if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
                 $user = User::where('user_id', $userDetails['user_id'])->first();
 
@@ -347,66 +365,153 @@ class ProductsController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3048',
-                'sub_categories' => 'required|string', // It comes as a JSON string
+                'sub_categories' => 'nullable|json', // JSON string representing array
                 'category_type' => 'required',
+                'parent_id' => 'nullable|exists:categories,id' // if adding under existing parent
             ]);
 
+            // Store image if uploaded
+            $newpath = null;
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('categories', 'public');
                 $newpath = "storage/" . $imagePath;
             }
 
-
-            // Convert JSON string to array
-            $subCategories = json_decode($request->input('sub_categories'));
-            if (!is_array($subCategories)) {
-                return response()->json(['error' => 'Invalid sub_categories format'], 400);
-            }
+            // Create new category
             $category = new product_category();
             $category->name = $request->input('name');
             $category->category_type = $request->input('category_type');
             $category->image = $newpath;
-            $category->sub_categories = json_encode($subCategories); // Save as JSON
+            $category->parent_id = $request->input('parent_id'); // can be null
+            $category->sub_categories = json_encode([]); // start empty
             $category->save();
 
-            return response()->json(['success' => true, 'message' => 'Category added successfully', 'category' => $category], 201);
+            // 🪄 If this is added under a parent, update parent's sub_categories JSON
+            if ($category->parent_id) {
+                $parent = product_category::find($category->parent_id);
+                $subCategories = json_decode($parent->sub_categories, true) ?? [];
+                $subCategories[] = [
+                    'id' => $category->id,
+                    'name' => $category->name
+                ];
+                $parent->sub_categories = json_encode($subCategories);
+                $parent->save();
+            }
+
+            // 🪄 If request has nested subcategories, insert them recursively
+            if ($request->filled('sub_categories')) {
+                $subCategories = json_decode($request->input('sub_categories'), true);
+                if (!is_array($subCategories)) {
+                    return response()->json(['error' => 'Invalid sub_categories format'], 400);
+                }
+                foreach ($subCategories as $subCat) {
+                    $this->createCategoryRecursive($subCat, $category->id, $category->category_type);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Category created successfully',
+                'category' => $category
+            ], 201);
         } catch (\Throwable $th) {
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
 
+    private function createCategoryRecursive(array $data, $parentId, $categoryType)
+    {
+        // Create this child category
+        $category = new product_category();
+        $category->name = $data['name'];
+        $category->category_type = $categoryType;
+        $category->parent_id = $parentId;
+        $category->image = $data['image'] ?? null; // optional image path
+        $category->sub_categories = json_encode([]); // start empty
+        $category->save();
+
+        // Update parent's sub_categories JSON
+        $parent = product_category::find($parentId);
+        $subCategories = json_decode($parent->sub_categories, true) ?? [];
+        $subCategories[] = [
+            'id' => $category->id,
+            'name' => $category->name
+        ];
+        $parent->sub_categories = json_encode($subCategories);
+        $parent->save();
+
+        // If this child has its own children, process recursively
+        if (isset($data['children']) && is_array($data['children'])) {
+            foreach ($data['children'] as $child) {
+                $this->createCategoryRecursive($child, $category->id, $categoryType);
+            }
+        }
+    }
+
+
+
+
     public function showcat()
     {
-        // $categories = product_category::all();
+        // Get all product categories
         $categories = DB::table('categories')
-            ->leftJoin('products', 'categories.id', '=', 'products.product_category')
-            ->select('categories.*', 'products.product_category')
-            ->distinct()
-            ->where('categories.category_type', 'products')
+            ->where('category_type', 'products')
+            ->orderBy('id')
             ->get();
-        // Loop through each category and count subcategories
-        foreach ($categories as $category) {
-            $category->subcategory_count = is_array(json_decode($category->sub_categories, true))
-                ? count(json_decode($category->sub_categories, true))
-                : 0;
+
+        // Index by ID
+        $categoriesById = [];
+        foreach ($categories as $cat) {
+            $cat->children = []; // empty array for nested children
+            $categoriesById[$cat->id] = $cat;
         }
+
+        // Build the tree
+        $parentcategories = [];
+        foreach ($categories as $cat) {
+            if ($cat->parent_id) {
+                if (isset($categoriesById[$cat->parent_id])) {
+                    $categoriesById[$cat->parent_id]->children[] = $cat;
+                }
+            } else {
+                $parentcategories[] = $cat;
+            }
+        }
+
+        // Add counts and decode sub_categories if needed
         foreach ($categories as $category) {
+            $category->subcategory_count = count($category->children);
             $category->product_count = DB::table('products')
                 ->where('product_category', $category->id)
                 ->count();
         }
-        // return  $categories;
-        return view('admin.ProductCategory', compact('categories'));
+
+        return $parentcategories;
+        // Return both to view
+        return view('admin.ProductCategory', compact('parentcategories'));
     }
+
 
     public function fetchCategory($id)
     {
         $category = product_category::find($id);
         // return $category;
+
         if ($category) {
+            $subcategories = product_category::where('parent_id', $id)
+                ->select('id', 'name')
+                ->get();
+
             return response()->json([
                 'status' => 'success',
-                'data' => $category,
+                'data' => [
+                    'name' => $category->name,
+                    'image' => $category->image,
+                    'sub_categories' => $subcategories,
+                ]
             ]);
         }
 
@@ -415,22 +520,78 @@ class ProductsController extends Controller
             'message' => 'No record found!'
         ], 404);
     }
-    public function deleteCategory($id)
+    public function deleteCategoryOrSubcategory(Request $request, $id)
+    {
+        try {
+            $childId = $request->input('child_id');
+
+            if ($childId) {
+                // Step 1: find parent category
+                $category = product_category::find($id);
+                if (!$category) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Parent category not found!'
+                    ], 404);
+                }
+
+                // Step 2: remove childId from parent's sub_categories json
+                $subCategories = json_decode($category->sub_categories, true);
+                if (!is_array($subCategories)) $subCategories = [];
+
+                $filtered = array_filter($subCategories, function ($item) use ($childId) {
+                    return $item['id'] != $childId;
+                });
+                $category->sub_categories = json_encode(array_values($filtered)); // reindex
+                $category->save();
+
+                // Step 3: delete the child and its children recursively
+                $this->deleteCategoryRecursively($childId);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Subcategory and its children deleted successfully'
+                ]);
+            } else {
+                // Delete entire parent category (and its children)
+                $this->deleteCategoryRecursively($id);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Category and its children deleted successfully'
+                ]);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server error: ' . $th->getMessage()
+            ], 500);
+        }
+    }
+
+    private function deleteCategoryRecursively($id)
     {
         $category = product_category::find($id);
-        if ($category) {
-            $category->delete();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Category deleted successfully',
-            ]);
+        if (!$category) return;
+
+        // Delete children first
+        $subCategories = json_decode($category->sub_categories, true);
+        if (is_array($subCategories)) {
+            foreach ($subCategories as $sub) {
+                $this->deleteCategoryRecursively($sub['id']);
+            }
         }
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'No record found!'
-        ], 404);
+        // Delete image if exists
+        if ($category->image && Storage::disk('public')->exists(str_replace('storage/', '', $category->image))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $category->image));
+        }
+
+        // Finally delete the category
+        $category->delete();
     }
+
+
     public function getforupdate($id)
     {
         try {
@@ -450,40 +611,46 @@ class ProductsController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            // dd($request->all());
+            // exit;
+            // Validate fields; parent_id can be nullable if it's a top-level category
             $request->validate([
                 'name' => 'required|string|max:255',
-                'sub_categories' => 'required|string', // JSON string of subcategories
+                'sub_categories' => 'nullable|string', // make optional if deep children aren't always updated
+                'parent_id' => 'nullable|integer|exists:categories,id',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
-            // Find the category by ID
+            // Find category
             $category = product_category::find($id);
             if (!$category) {
                 return response()->json(['error' => 'Category not found'], 404);
             }
 
-            // Update category name
+            // Update fields
             $category->name = $request->input('name');
+            $category->parent_id = $request->input('parent_id'); // can be null
 
-            // Handle image upload
+            // Update image if provided
             if ($request->hasFile('image')) {
-                // Optional: Delete old image
-                if ($category->image && Storage::exists(str_replace("storage/", "", $category->image))) {
-                    Storage::delete(str_replace("storage/", "", $category->image));
+                // Delete old image if exists
+                if ($category->image && Storage::disk('public')->exists(str_replace('storage/', '', $category->image))) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $category->image));
                 }
 
                 $imagePath = $request->file('image')->store('categories', 'public');
-                $category->image = "storage/" . $imagePath; // Ensure it's prefixed properly
+                $category->image = 'storage/' . $imagePath;
             }
 
-            // Convert subcategories JSON string to an array and save it
-            $subCategories = json_decode($request->input('sub_categories'));
-            if (!is_array($subCategories)) {
-                return response()->json(['error' => 'Invalid sub_categories format'], 400);
+            // Update sub_categories if provided
+            if ($request->filled('sub_categories')) {
+                $subCategories = json_decode($request->input('sub_categories'), true);
+                if (!is_array($subCategories)) {
+                    return response()->json(['error' => 'Invalid sub_categories format'], 400);
+                }
+                $category->sub_categories = json_encode($subCategories);
             }
-            $category->sub_categories = json_encode($subCategories); // Save as JSON
 
-            // Save updated category
             $category->save();
 
             return response()->json([
@@ -498,6 +665,7 @@ class ProductsController extends Controller
             ], 500);
         }
     }
+
 
     //     public function showAllProducts()
     //     {

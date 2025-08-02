@@ -70,6 +70,8 @@ $(document).ready(function () {
         });
     }
 
+
+
     function delDataFun() {
         $(".deleteDataBtn").click(function () {
             let delurl = $(this).attr("delurl");

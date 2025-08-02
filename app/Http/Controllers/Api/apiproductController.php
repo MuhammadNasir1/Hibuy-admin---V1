@@ -350,18 +350,18 @@ class apiproductController extends Controller
     public function getCategories()
     {
         try {
-            $categories = product_category::select('id', 'name', 'image', 'sub_categories')
-                ->where('category_type', 'products')
-                ->get()
-                ->map(function ($category) {
-                    $category->sub_categories = json_decode($category->sub_categories, true);
-                    return $category;
-                });
+            // Fetch all categories
+            $categories = product_category::select('id', 'name', 'image', 'parent_id')->get();
+
+            // Build tree starting from parent_id = null
+            $categoryTree = $categories->where('parent_id', null)->map(function ($category) use ($categories) {
+                return $this->buildCategoryNode($category, $categories);
+            })->values();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Categories fetched successfully',
-                'data' => $categories,
+                'data' => $categoryTree,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -369,6 +369,20 @@ class apiproductController extends Controller
                 'message' => 'Something went wrong: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function buildCategoryNode($category, $allCategories)
+    {
+        $children = $allCategories->where('parent_id', $category->id)->map(function ($child) use ($allCategories) {
+            return $this->buildCategoryNode($child, $allCategories);
+        })->values();
+
+        return [
+            'id' => $category->id,
+            'name' => $category->name,
+            'image' => $category->image,
+            'children' => $children
+        ];
     }
 
     public function getSubCategories()

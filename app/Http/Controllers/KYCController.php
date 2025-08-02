@@ -10,12 +10,13 @@ use Illuminate\Http\Request;
 class KYCController extends Controller
 {
 
-    public function kycData()
+    public function kycData($type)
 {
     $jsonFields = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
 
     $query = Seller::join('users', 'seller.user_id', '=', 'users.user_id')
-        ->select('seller.*', 'users.*');
+        ->select('seller.*', 'users.*')
+        ->where('users.user_role', $type);
 
     // Add whereNotNull for each JSON field
     foreach ($jsonFields as $field) {
@@ -47,7 +48,7 @@ class KYCController extends Controller
         return $seller;
     });
 
-    return view('admin.KYC', compact('sellers'));
+    return view('admin.KYC', compact('sellers', 'type'));
 }
 
 
