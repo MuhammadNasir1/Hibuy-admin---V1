@@ -489,7 +489,7 @@ class ProductsController extends Controller
                 ->count();
         }
 
-        return $parentcategories;
+        // return $parentcategories;
         // Return both to view
         return view('admin.ProductCategory', compact('parentcategories'));
     }
