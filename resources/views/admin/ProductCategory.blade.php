@@ -241,7 +241,7 @@
 
                         <!-- Category Name -->
                         <div class="px-6 mt-10">
-                            <x-input type="text" label="Category Name" placeholder="Category name..." id="name" name="name" />
+                            <x-input type="text" label="Category Name" placeholder="Category name..." id="name" name="name" value="" />
                         </div>
 
                         <!-- Parent Category Select -->
