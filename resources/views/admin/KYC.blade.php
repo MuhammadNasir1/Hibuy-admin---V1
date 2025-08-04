@@ -489,72 +489,77 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
-                        console.log(response);
-                        let personal_info = response.selectedSeller.personal_info;
-                        $('#full_name').text(' ' + personal_info.full_name);
-                        $('#email').text(' ' + personal_info.email);
-                        $('#number').text(' ' + personal_info.phone_no);
-                        $('#address').text(' ' + personal_info.address);
-                        $('#cnic').text(' ' + personal_info.cnic);
-                        $('#personal_profile_picture').attr("src", personal_info.profile_picture);
-                        $('#personal_front_image').attr("src", personal_info.front_image);
-                        $('#personal_back_image').attr("src", personal_info.back_image);
-                        $('#personal_reason_input').val(personal_info.reason);
+    console.log(response);
 
-                        let store_info = response.selectedSeller.store_info;
-                        $('#store_name').text(' ' + store_info.store_name);
-                        $('#store_type').text(' ' + store_info.type);
-                        $('#store_phone_no').text(' ' + store_info.phone_no);
-                        $('#store_email').text(' ' + store_info.email);
-                        $('#store_country').text(' ' + store_info.country);
-                        $('#store_province').text(' ' + store_info.province);
-                        $('#store_city').text(' ' + store_info.city);
-                        $('#store_zipcode').text(' ' + store_info.zip_code);
-                        $('#store_address').text(' ' + store_info.address);
-                        $('#store_pin_location').text(' ' + store_info.pin_location);
-                        $('#store_profile_image').attr("src", store_info.profile_picture_store);
-                        $('#store_reason_input').val(store_info.reason);
+    const baseUrl = "{{ asset('') }}"; // Set the base path
 
-                        let document_info = response.selectedSeller.documents_info;
-                        $('#document_country').text(' ' + document_info.country);
-                        $('#document_province').text(' ' + document_info.province);
-                        $('#document_city').text(' ' + document_info.city);
-                        $('#document_image').attr("src", document_info.home_bill);
-                        $('#document_video').attr("src", document_info.shop_video);
-                        $('#document_reason_input').val(document_info.reason);
+    let personal_info = response.selectedSeller.personal_info;
+    // alert(personal_info.profile_picture);
 
-                        let business_info = response.selectedSeller.business_info;
-                        $('#business_name').text(' ' + business_info.business_name);
-                        $('#business_owner_name').text(' ' + business_info.owner_name);
-                        $('#business_phone_no').text(' ' + business_info.phone_no);
-                        $('#business_reg_no').text(' ' + business_info.reg_no);
-                        $('#business_tax_no').text(' ' + business_info.tax_no);
-                        $('#business_pin_location').text(' ' + business_info.pin_location);
-                        $('#business_address').text(' ' + business_info.address);
-                        $('#buisness_profile_picture').attr("src", business_info.personal_profile);
-                        $('#buisness_letter_head').attr("src", business_info.letter_head);
-                        $('#buisness_stamp').attr("src", business_info.stamp);
-                        $('#business_reason_input').val(business_info.reason);
+    $('#full_name').text(' ' + personal_info.full_name);
+    $('#email').text(' ' + personal_info.email);
+    $('#number').text(' ' + personal_info.phone_no);
+    $('#address').text(' ' + personal_info.address);
+    $('#cnic').text(' ' + personal_info.cnic);
+    $('#personal_profile_picture').attr("src", baseUrl + personal_info.profile_picture);
+    $('#personal_front_image').attr("src", baseUrl + personal_info.front_image);
+    $('#personal_back_image').attr("src", baseUrl + personal_info.back_image);
+    $('#personal_reason_input').val(personal_info.reason);
 
-                        let bank_info = response.selectedSeller.bank_info;
-                        $('#bank_account_type').text(' ' + bank_info.account_type);
-                        $('#bank_name').text(' ' + bank_info.bank_name);
-                        $('#bank_branch_code').text(' ' + bank_info.branch_code);
-                        $('#bank_branch_name').text(' ' + bank_info.branch_name);
-                        $('#bank_branch_phone').text(' ' + bank_info.branch_phone);
-                        $('#bank_account_title').text(' ' + bank_info.account_title);
-                        $('#bank_account_no').text(' ' + bank_info.account_no);
-                        $('#bank_iban_no').text(' ' + bank_info.iban_no);
-                        $('#bank_cheque_image').attr("src", bank_info.canceled_cheque);
-                        $('#bank_letter_image').attr("src", bank_info.verification_letter);
-                        $('#bank_reason_input').val(bank_info.reason);
+    let store_info = response.selectedSeller.store_info;
+    $('#store_name').text(' ' + store_info.store_name);
+    $('#store_type').text(' ' + store_info.type);
+    $('#store_phone_no').text(' ' + store_info.phone_no);
+    $('#store_email').text(' ' + store_info.email);
+    $('#store_country').text(' ' + store_info.country);
+    $('#store_province').text(' ' + store_info.province);
+    $('#store_city').text(' ' + store_info.city);
+    $('#store_zipcode').text(' ' + store_info.zip_code);
+    $('#store_address').text(' ' + store_info.address);
+    $('#store_pin_location').text(' ' + store_info.pin_location);
+    $('#store_profile_image').attr("src", baseUrl + store_info.profile_picture_store);
+    $('#store_reason_input').val(store_info.reason);
 
-                        // Set seller_id to buttons
-                        $(".approve-button, .reject-button").val(response.selectedSeller.seller_id);
+    let document_info = response.selectedSeller.documents_info;
+    $('#document_country').text(' ' + document_info.country);
+    $('#document_province').text(' ' + document_info.province);
+    $('#document_city').text(' ' + document_info.city);
+    $('#document_image').attr("src", baseUrl + document_info.home_bill);
+    $('#document_video').attr("src", baseUrl + document_info.shop_video);
+    $('#document_reason_input').val(document_info.reason);
 
-                        // Update button states and badges based on step statuses
-                        updateButtonStates(response.selectedSeller);
-                    },
+    let business_info = response.selectedSeller.business_info;
+    $('#business_name').text(' ' + business_info.business_name);
+    $('#business_owner_name').text(' ' + business_info.owner_name);
+    $('#business_phone_no').text(' ' + business_info.phone_no);
+    $('#business_reg_no').text(' ' + business_info.reg_no);
+    $('#business_tax_no').text(' ' + business_info.tax_no);
+    $('#business_pin_location').text(' ' + business_info.pin_location);
+    $('#business_address').text(' ' + business_info.address);
+    $('#buisness_profile_picture').attr("src", baseUrl + business_info.personal_profile);
+    $('#buisness_letter_head').attr("src", baseUrl + business_info.letter_head);
+    $('#buisness_stamp').attr("src", baseUrl + business_info.stamp);
+    $('#business_reason_input').val(business_info.reason);
+
+    let bank_info = response.selectedSeller.bank_info;
+    $('#bank_account_type').text(' ' + bank_info.account_type);
+    $('#bank_name').text(' ' + bank_info.bank_name);
+    $('#bank_branch_code').text(' ' + bank_info.branch_code);
+    $('#bank_branch_name').text(' ' + bank_info.branch_name);
+    $('#bank_branch_phone').text(' ' + bank_info.branch_phone);
+    $('#bank_account_title').text(' ' + bank_info.account_title);
+    $('#bank_account_no').text(' ' + bank_info.account_no);
+    $('#bank_iban_no').text(' ' + bank_info.iban_no);
+    $('#bank_cheque_image').attr("src", baseUrl + bank_info.canceled_cheque);
+    $('#bank_letter_image').attr("src", baseUrl + bank_info.verification_letter);
+    $('#bank_reason_input').val(bank_info.reason);
+
+    // Set seller_id to buttons
+    $(".approve-button, .reject-button").val(response.selectedSeller.seller_id);
+
+    // Update button states and badges based on step statuses
+    updateButtonStates(response.selectedSeller);
+},
                     error: function(xhr, status, error) {
                         console.error('Error fetching data:', error);
                         Swal.fire({

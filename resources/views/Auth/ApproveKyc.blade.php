@@ -5,10 +5,10 @@
     <div class="w-[90vw] max-w-4xl mt-10 bg-white rounded-lg p-5 mx-auto">
         <div class="h-[100px] bg-gradient-to-r from-[#4A90E2] rounded-t-xl via-green-300 to-[#FFCE31]"></div>
         <input type="hidden" name="upload-banner" id="upload-banner">
-        <div
+        {{-- <div
             class="h-[100px] w-[100px] bg-primary overflow-hidden rounded-full flex items-center justify-center mx-auto -mt-16">
             <x-file-uploader name="profile_picture" id="profile_picture" />
-        </div>
+        </div> --}}
 
         <p class="text-center text-lg font-semibold mt-2">My Store</p>
 
