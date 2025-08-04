@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\apiStoreController;
 use App\Http\Controllers\CreditRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DisableReasonController;
 use App\Http\Controllers\KYCController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
@@ -184,3 +185,7 @@ Route::middleware(['custom_auth'])->group(function () {
         });
     });
 });
+
+Route::post('/disable-seller/{id}', [DisableReasonController::class, 'disableSeller'])->name('disable.seller');
+
+// Route::post('/disable-seller/{id}', [UserController::class, 'disableSeller']);

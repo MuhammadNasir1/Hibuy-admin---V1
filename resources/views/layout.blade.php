@@ -179,7 +179,7 @@
                                 </defs>
                             </svg>
     <div class="flex justify-between w-full items-center">
-        <span class="text-[15px] ml-4 font-bold" id="dropdown-text1">KYC</span>
+        <span class="text-[15px] ml-4 hover:font-bold" id="dropdown-text1">KYC</span>
         <span class="text-sm duration-300 transform" id="arrow1">
             <i class="bi bi-chevron-down"></i>
         </span>
@@ -1005,8 +1005,13 @@
                         id="user-dropdown">
                         <div class="px-4 py-3">
                             @if (session()->has('user_details') && isset(session('user_details')['user_name']))
-                                <span class="block text-sm text-gray-900 dark:text-white">
+                                <span class="block text-sm text-gray-900 dark:text-white flex gap-2">
                                     {{ session('user_details')['user_name'] }}
+
+                                    @if (session('user_details')['user_role'] == 'seller')
+                                        <img src="{{asset('asset/check.png')}}" width="20" alt="">
+                                    @endif
+
                                 </span>
                                 <span
                                     class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ session('user_details')['user_email'] }}</span>

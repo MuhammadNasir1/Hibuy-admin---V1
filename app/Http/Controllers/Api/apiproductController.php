@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Store;
-use App\Models\product_category;
-use App\Models\Wishlist;
 use App\Models\Seller;
 use App\Models\Products;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\DashboardBanner;
+use App\Models\product_category;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class apiproductController extends Controller
@@ -80,14 +81,12 @@ class apiproductController extends Controller
     public function getProducts(Request $request, $categoryid = null)
     {
         try {
-            // Fetch products with category name and subcategory
             $query = Products::select(
                 "product_id",
                 "store_id",
                 "product_name",
                 "product_brand",
                 "product_category",
-                "product_subcategory",
                 "product_price",
                 "product_discount",
                 "product_discounted_price",
@@ -96,51 +95,61 @@ class apiproductController extends Controller
                 "updated_at"
             )
                 ->where('store_id', '!=', 0)
+                // ->where('product_status', '=', 1)
                 ->with(['category:id,name'])
                 ->inRandomOrder();
 
-            // Apply category filter
+            // ✅ if $categoryid from URL is provided, get product_ids from pivot table
+            // echo $categoryid;
             if (!empty($categoryid)) {
-                $query->where('product_category', $categoryid);
+                $productIds = DB::table('product_category_product')
+                    ->where('category_id', $categoryid)
+                    ->pluck('product_id')
+                    ->toArray();
+                if (!empty($productIds)) {
+                    $query->whereIn('product_id', $productIds);
+                } else {
+                    return response()->json([
+                        'success'  => true,
+                        'message'  => 'No products found in this category',
+                        'products' => []
+                    ], 200);
+                }
             }
 
-            // Apply subcategory filter if provided
-            if ($request->has('product_subcategory') && !empty($request->product_subcategory)) {
-                $query->where('product_subcategory', $request->product_subcategory);
-            }
-
-            // Apply min_price filter if provided
+            // ✅ Apply price filters if provided
             if ($request->has('min_price') && !empty($request->min_price)) {
                 $query->where('product_discounted_price', '>=', $request->min_price);
             }
-
-            // Apply max_price filter if provided
             if ($request->has('max_price') && !empty($request->max_price)) {
                 $query->where('product_discounted_price', '<=', $request->max_price);
             }
 
             $products = $query->get();
-
-            // Process product images and add category name
+            // If no products found, return success false
+            if ($products->isEmpty()) {
+                return response()->json([
+                    'success'  => false,
+                    'message'  => 'No products found',
+                    'products' => []
+                ], 200);
+            }
+            // Process images, category, rating, is_discounted
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
                 unset($product->product_images);
 
-                // Default product rating
                 $product->product_rating = round(mt_rand(35, 50) / 10, 1);
-
-                // Add category name
                 $product->category_name = $product->category->name ?? null;
-                unset($product->category); // Remove the full category object
+                unset($product->category);
 
-                // Add is_discounted flag
                 $product->is_discounted = $product->product_discount > 0;
             }
 
             return response()->json([
                 'success'  => true,
-                'message'  => 'Products Fetched Successfully',
+                'message'  => 'Products fetched successfully',
                 'products' => $products
             ], 200);
         } catch (\Exception $e) {
@@ -150,6 +159,8 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
+
 
     public function getProductsDetail(Request $request)
     {
@@ -352,8 +363,8 @@ class apiproductController extends Controller
         try {
             // Fetch all categories
             $categories = product_category::select('id', 'name', 'image', 'parent_id')
-            ->where('category_type', 'products')
-            ->get();
+                ->where('category_type', 'products')
+                ->get();
 
             // Build tree starting from parent_id = null
             $categoryTree = $categories->where('parent_id', null)->map(function ($category) use ($categories) {

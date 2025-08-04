@@ -1,5 +1,5 @@
 @extends('Auth.layout')
-@section('title', 'Login')
+@section('title', 'Profile Detail')
 @section('content')
     @php
         // print_r($seller);
@@ -1007,20 +1007,78 @@
                                 <input type="text" name="status" value="pending" hidden>
                                 <!-- Bank Information -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                    <div
-                                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-sm font-semibold">
-                                        <label class="md:w-32">Bank Name</label>
-                                        <select name="bank_name" id="bank_name"
-                                            class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" required>
-                                            <option value="">Option</option>
-                                            <option value="Bank A"
-                                                {{ ($bank_info['bank_name'] ?? '') == 'Bank A' ? 'selected' : '' }}>Bank A
-                                            </option>
-                                            <option value="Bank B"
-                                                {{ ($bank_info['bank_name'] ?? '') == 'Bank B' ? 'selected' : '' }}>Bank B
-                                            </option>
-                                        </select>
-                                    </div>
+                                    <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-sm font-semibold">
+                                    <label class="md:w-32">Bank Name</label>
+                                    <select name="bank_name" id="bank_name"
+                                        class="rounded-lg w-full p-2 border border-gray-300 text-[#B4B4B4]" required>
+                                        <option value="">Select Bank</option>
+                                        <option value="National Bank of Pakistan"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'National Bank of Pakistan' ? 'selected' : '' }}>
+                                            National Bank of Pakistan
+                                        </option>
+                                        <option value="Habib Bank Limited"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Habib Bank Limited' ? 'selected' : '' }}>
+                                            Habib Bank Limited
+                                        </option>
+                                        <option value="United Bank Limited"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'United Bank Limited' ? 'selected' : '' }}>
+                                            United Bank Limited
+                                        </option>
+                                        <option value="MCB Bank Limited"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'MCB Bank Limited' ? 'selected' : '' }}>
+                                            MCB Bank Limited
+                                        </option>
+                                        <option value="Allied Bank Limited"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Allied Bank Limited' ? 'selected' : '' }}>
+                                            Allied Bank Limited
+                                        </option>
+                                        <option value="Bank Alfalah"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Bank Alfalah' ? 'selected' : '' }}>
+                                            Bank Alfalah
+                                        </option>
+                                        <option value="Faysal Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Faysal Bank' ? 'selected' : '' }}>
+                                            Faisal Bank
+                                        </option>
+                                        <option value="Meezan Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Meezan Bank' ? 'selected' : '' }}>
+                                            Meezan Bank
+                                        </option>
+                                        <option value="Askari Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Askari Bank' ? 'selected' : '' }}>
+                                            Askari Bank
+                                        </option>
+                                        <option value="Bank of Punjab"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Bank of Punjab' ? 'selected' : '' }}>
+                                            Bank of Punjab
+                                        </option>
+                                        <option value="Bank Islami"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Bank Islami' ? 'selected' : '' }}>
+                                            Bank Islami
+                                        </option>
+                                        <option value="JS Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'JS Bank' ? 'selected' : '' }}>
+                                            JS Bank
+                                        </option>
+                                        <option value="Dubai Islamic Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Dubai Islamic Bank' ? 'selected' : '' }}>
+                                            Dubai Islamic Bank
+                                        </option>
+                                        <option value="Sindh Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Sindh Bank' ? 'selected' : '' }}>
+                                            Sindh Bank
+                                        </option>
+                                        <option value="Summit Bank"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Summit Bank' ? 'selected' : '' }}>
+                                            Summit Bank
+                                        </option>
+                                        <option value="Zarai Taraqiati Bank Limited"
+                                            {{ ($bank_info['bank_name'] ?? '') == 'Zarai Taraqiati Bank Limited' ? 'selected' : '' }}>
+                                            Zarai Taraqiati Bank Limited
+                                        </option>
+                                    </select>
+                                </div>
+
 
                                     <div
                                         class="flex flex-col md:flex-row md:items-center gap-2 md:gap-5 text-sm font-semibold">
