@@ -57,93 +57,99 @@
     </div>
 @endsection
 @section('js')
-    <script>
-        $(document).ready(function() {
-            $('.fa-eye-slash').on('click', function() {
-                let $icon = $(this);
-                let $input = $icon.closest('div').find('input');
-                if ($input.attr('type') === 'password') {
-                    $input.attr('type', 'text');
-                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
-                } else {
-                    $input.attr('type', 'password');
-                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
-                }
-            });
+<script>
+    $(document).ready(function () {
+        $('.fa-eye-slash').on('click', function () {
+            let $icon = $(this);
+            let $input = $icon.closest('div').find('input');
+            if ($input.attr('type') === 'password') {
+                $input.attr('type', 'text');
+                $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            } else {
+                $input.attr('type', 'password');
+                $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            }
+        });
 
+        $("#loginForm").submit(function (e) {
+            e.preventDefault();
+            let formData = $(this).serialize();
+            const url = "../login";
 
-            $("#loginForm").submit(function(e) {
-                e.preventDefault();
-                let formData = $(this).serialize();
-                const url = "../login";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                dataType: "json",
+                beforeSend: function () {
+                    $("#btnSpinner").removeClass("hidden");
+                    $("#btnText").addClass("hidden");
+                    $("#submitBtn").attr("disabled", true);
+                    $(".error-text").remove();
+                    $("input").removeClass("border-red-500");
+                },
+                success: function (response) {
+                    $("#btnSpinner").addClass("hidden");
+                    $("#btnText").removeClass("hidden");
+                    $("#submitBtn").attr("disabled", false);
 
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: formData,
-                    dataType: "json",
-                    beforeSend: function() {
-                        $("#btnSpinner").removeClass("hidden");
-                        $("#btnText").addClass("hidden");
-                        $("#submitBtn").attr("disabled", true);
-                        $(".error-text").remove();
-                        $("input").removeClass("border-red-500");
-                    },
-                    success: function(response) {
-                        $("#btnSpinner").addClass("hidden");
-                        $("#btnText").removeClass("hidden");
-                        $("#submitBtn").attr("disabled", false);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Login Successful",
+                        text: "Redirecting...",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        if (response.user.user_role === 'admin' || response.seller_status === 'approved') {
+                            window.location.href = "../";
+                        } else {
+                            window.location.href = "../create-profile";
+                        }
+                    });
+                },
+                error: function (jqXHR) {
+                    $("#btnSpinner").addClass("hidden");
+                    $("#btnText").removeClass("hidden");
+                    $("#submitBtn").attr("disabled", false);
+
+                    let response = JSON.parse(jqXHR.responseText);
+
+                    if (response.status === 'disabled') {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Account Disabled",
+                            text: response.message + (response.disabled_reason ? ` (${response.disabled_reason})` : '')
+                        });
+                    } else if (response.errors) {
+                        $.each(response.errors, function (key, value) {
+                            let inputField = $(`input[name=${key}]`);
+                            inputField.addClass("border-red-500");
+                            inputField.after(
+                                `<p class="error-text text-red-500 text-sm mt-1">${value}</p>`
+                            );
+                        });
 
                         Swal.fire({
-                            icon: "success",
-                            title: "Login Successful",
-                            text: "Redirecting...",
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            if (response.user.user_role === 'admin' || response
-                                .seller_status === 'approved') {
-                                window.location.href = "../";
-                            } else {
-                                window.location.href = "../create-profile";
-                            }
+                            icon: "error",
+                            title: "Login Failed",
+                            text: response.message || 'Please check your input.'
                         });
-                    },
-                    error: function(jqXHR) {
-                        $("#btnSpinner").addClass("hidden");
-                        $("#btnText").removeClass("hidden");
-                        $("#submitBtn").attr("disabled", false);
-
-                        let response = JSON.parse(jqXHR.responseText);
-                        if (response.errors) {
-                            $.each(response.errors, function(key, value) {
-                                let inputField = $(`input[name=${key}]`);
-                                inputField.addClass("border-red-500");
-                                inputField.after(
-                                    `<p class="error-text text-red-500 text-sm mt-1">${value}</p>`
-                                );
-                            });
-
-                            Swal.fire({
-                                icon: "error",
-                                title: "Login Failed",
-                                text: response.message || 'Please check your input.'
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Login Failed",
-                                text: "Something went wrong. Please try again!"
-                            });
-                        }
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Login Failed",
+                            text: "Something went wrong. Please try again!"
+                        });
                     }
-                });
-            });
-
-            $("input").on("input", function() {
-                $(this).removeClass("border-red-500");
-                $(this).next(".error-text").remove();
+                }
             });
         });
-    </script>
+
+        $("input").on("input", function () {
+            $(this).removeClass("border-red-500");
+            $(this).next(".error-text").remove();
+        });
+    });
+</script>
 @endsection
+

@@ -50,12 +50,12 @@
                                 </a>
                                 <button data-modal-target="default-modal" data-modal-toggle="default-modal">
                                     <img src="{{asset('asset/delete.png')}}" width="30" alt="">
-                                {{-- </button>
- @if ($seller->user_status == 1)
-    <span class="text-green-600 font-medium">Active</span>
-@else
-    <span class="text-red-600 font-medium">Disabled</span>
-@endif --}}
+                                </button>
+                                @if ($seller->user->user_status == 1)
+                                    <span class="text-green-600 font-medium">Active</span>
+                                @else
+                                    <span class="text-red-600 font-medium">Disabled</span>
+                                @endif
 
                                 {{-- <button id="viewmoreBtn" class="viewmoreModalBtn">
                                     <svg width="35" height="37" viewBox="0 0 35 37" fill="none"
@@ -126,32 +126,64 @@
             </div>
 
             <!-- Form to update seller status -->
-            <form action="{{ route('disable.seller', $seller->user_id) }}" method="POST">
-                @csrf
-                <div class="p-4 md:p-5 space-y-4">
-                    <label for="user_status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Seller Status</label>
-                    <select name="user_status" id="user_status"
-                            class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        <option value="1" {{ $seller->user_status == 1 ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ $seller->user_status == 0 ? 'selected' : '' }}>Disable</option>
-                    </select>
-                </div>
+            <form action="{{ route('disable.seller', $seller->user->user_id) }}" method="POST">
+    @csrf
+    <div class="p-4 md:p-5 space-y-4">
+        <label for="user_status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Seller Status
+        </label>
+        <select name="user_status" id="user_status"
+                class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required onchange="toggleReasonInput(this.value)">
+            <option value="1" {{ $seller->user->user_status == 1 ? 'selected' : '' }}>Active</option>
+            <option value="0" {{ $seller->user->user_status == 0 ? 'selected' : '' }}>Disable</option>
+        </select>
 
-                <!-- Modal footer -->
-                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button type="submit"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Update
-                    </button>
-                    <button type="button" onclick="window.history.back()"
-                            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                        Cancel
-                    </button>
-                </div>
+        <!-- Reason input (hidden by default) -->
+        <div id="reasonField" class="hidden">
+            <label for="disabled_reason" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Reason for Disabling
+            </label>
+            <input type="text" name="disabled_reason" id="disabled_reason"
+                   class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                   placeholder="Enter reason...">
+        </div>
+    </div>
+
+    <!-- Modal footer -->
+    <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            Update
+        </button>
+        <button type="button" onclick="window.history.back()"
+                class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+            Cancel
+        </button>
+    </div>
             </form>
+
         </div>
     </div>
 </div>
+
+
+<script>
+    function toggleReasonInput(value) {
+        const reasonField = document.getElementById('reasonField');
+        if (value === '0') {
+            reasonField.classList.remove('hidden');
+        } else {
+            reasonField.classList.add('hidden');
+        }
+    }
+
+    // Trigger on page load if "Disable" is already selected
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectedStatus = document.getElementById('user_status').value;
+        toggleReasonInput(selectedStatus);
+    });
+</script>
 
 
 @if (session('success'))

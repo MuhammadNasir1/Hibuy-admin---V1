@@ -11,6 +11,7 @@ public function disableSeller(Request $request, $id)
 {
     $request->validate([
         'user_status' => 'required|in:0,1',
+        'disabled_reason' => 'nullable|string|max:255'
     ]);
 
     $user = User::findOrFail($id);
@@ -18,9 +19,8 @@ public function disableSeller(Request $request, $id)
     if ($user->user_role === 'seller') {
         $user->user_status = $request->user_status;
 
-        // Correct column name: disable_reason
         if ($request->user_status == 0) {
-            $user->disabled_reason = 'Disabled manually';
+            $user->disabled_reason = $request->disabled_reason ?? 'Disabled manually';
         } else {
             $user->disabled_reason = null;
         }
@@ -32,8 +32,5 @@ public function disableSeller(Request $request, $id)
 
     return redirect()->back()->with('error', 'User is not a seller.');
 }
-
-
-
 
 }
