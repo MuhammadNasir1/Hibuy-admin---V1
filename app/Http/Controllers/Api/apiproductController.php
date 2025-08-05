@@ -35,6 +35,7 @@ class apiproductController extends Controller
                 "updated_at"
             )
                 ->where('store_id', '!=', 0)
+                ->where('product_status', '=', 1)
                 ->with(['category:id,name'])
                 ->inRandomOrder()
                 ->limit(18)
@@ -95,12 +96,10 @@ class apiproductController extends Controller
                 "updated_at"
             )
                 ->where('store_id', '!=', 0)
-                // ->where('product_status', '=', 1)
+                ->where('product_status', '=', 1)
                 ->with(['category:id,name'])
                 ->inRandomOrder();
 
-            // ✅ if $categoryid from URL is provided, get product_ids from pivot table
-            // echo $categoryid;
             if (!empty($categoryid)) {
                 $productIds = DB::table('product_category_product')
                     ->where('category_id', $categoryid)

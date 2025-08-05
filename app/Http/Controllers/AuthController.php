@@ -335,6 +335,15 @@ class AuthController extends Controller
             ], 401);
         }
 
+     if ($user->user_role === 'seller' && $user->user_status == 0) {
+        return response()->json([
+            'success' => false,
+            'status' => 'disabled',
+            'message' => 'Your account is disabled. Please contact the administrator.',
+            'disabled_reason' => $user->disabled_reason ?? 'Not specified'
+        ], 403);
+    }
+
         // Get seller KYC status
         $kyc_status = Seller::where('user_id', $user->user_id)->first();
         $store = Store::where('user_id', $user->user_id)->first();

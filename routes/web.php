@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\apiStoreController;
 use App\Http\Controllers\CreditRequestController;
+use App\Http\Controllers\RiderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DisableReasonController;
@@ -108,8 +109,17 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::get('/faqs/edit/{faq_id}', [UserController::class, 'getFaq'])->name('faq.edit');
 
             Route::GET('/faq-category/view', [UserController::class, 'viewFaqCategory'])->name('faq-category.view');
-
             Route::GET('/SellerManagement', [UserController::class, 'sellerManagement'])->name("manage_seller");
+
+            Route::post('/disable-seller', [DisableReasonController::class, 'disableSeller'])->name('disable.seller');
+            Route::GET('/getSellerStatus/{sellerId}', [DisableReasonController::class, 'getSellerStatus'])->name('get.seller.status');
+            // for Rider
+            Route::GET('/rider',[RiderController::class, 'riderList'])->name('rider');
+            Route::post('/rider/create', [RiderController::class, 'reiderCreate'])->name('rider.create');
+            Route::get('/viewRider/{id}', [RiderController::class, 'viewRider'])->name('viewRider');
+            Route::delete('/deleteRider/{id}', [RiderController::class, 'deleteRider'])->name('deleteRider');
+            Route::get('/rider/{id}', [RiderController::class, 'getRider']);
+            Route::put('/updateRider/{id}', [RiderController::class, 'updateRider'])->name('updateRider');
             Route::GET('/FreelancersManagement', [UserController::class, 'freelancerManagement'])->name("manage_freelancer");
             Route::GET('/FreelancerProfile/{id}', [SellerController::class, 'getSellerDetail'])->name("FreelancerProfile");
             Route::GET('/BuyersManagement', [UserController::class, 'getBuyerData'])->name("manage_buyer");
@@ -185,7 +195,3 @@ Route::middleware(['custom_auth'])->group(function () {
         });
     });
 });
-
-Route::post('/disable-seller/{id}', [DisableReasonController::class, 'disableSeller'])->name('disable.seller');
-
-// Route::post('/disable-seller/{id}', [UserController::class, 'disableSeller']);

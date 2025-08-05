@@ -103,7 +103,7 @@ class apiStoreController extends Controller
         try {
             // Fetch 6 stores
             $stores = Store::select('store_id', 'store_profile_detail')
-                ->limit(6)
+                // ->limit(6)
                 ->get();
 
             if ($stores->isEmpty()) {

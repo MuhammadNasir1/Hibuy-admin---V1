@@ -30,8 +30,10 @@
                         </td>
                         <td>
                             <span class='flex gap-4'>
-                                <button class="deleteDataBtn" delId="{{ $data->notification_id }}"
-                                    delUrl="{{ route('del_notification', $data->notification_id) }}" name="media_id">
+                                <button class="deleteDataBtn" {{ $rider->rider_id }}  data-id="{{ $rider->rider_id }}"
+                                    data-modal-target="view-notification-modal"
+                                  data-modal-toggle="view-notification-modal">
+
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
