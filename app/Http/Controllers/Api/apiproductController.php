@@ -97,7 +97,11 @@ class apiproductController extends Controller
             )
                 ->where('store_id', '!=', 0)
                 ->where('product_status', '=', 1)
-                ->with(['category:id,name'])
+                ->whereHas('user', function ($q) {
+                    $q->where('user_status', 1); // filter by related user's status
+                })
+                ->with(['user:user_id,user_name,user_status']) // eager load user
+                ->with(['category:id,name']) // eager load category
                 ->inRandomOrder();
 
             if (!empty($categoryid)) {
@@ -198,6 +202,9 @@ class apiproductController extends Controller
                             ->latest(); // order reviews by created_at descending
                     }
                 ])
+                ->whereHas('user', function ($q) {
+                    $q->where('user_status', 1); // filter by related user's status
+                })
                 ->where('product_id', $product_id)
                 ->where('store_id', '!=', 0)
                 ->first();
@@ -278,7 +285,6 @@ class apiproductController extends Controller
         // Validate request
         $request->validate([
             'product_id' => 'required|integer',
-            // |exists:products,product_id
         ]);
 
         $userId = $user->user_id;
@@ -443,13 +449,31 @@ class apiproductController extends Controller
             $query = $request->query('query');
             $categoryId = $request->query('category_id');
 
+            // Step 1: Get matching category IDs based on query (deep search)
+            $matchingCategoryIds = [];
+            if ($query) {
+                $matchingCategoryIds = DB::table('categories')
+                    ->where('name', 'LIKE', "%{$query}%")
+                    ->pluck('id')
+                    ->toArray();
+            }
+
+            // Step 2: Get matching product IDs from pivot table
+            $matchingProductIdsFromCategories = [];
+            if (!empty($matchingCategoryIds)) {
+                $matchingProductIdsFromCategories = DB::table('product_category_product')
+                    ->whereIn('category_id', $matchingCategoryIds)
+                    ->pluck('product_id')
+                    ->toArray();
+            }
+
+            // Step 3: Build base query
             $products = Products::select(
                 'product_id',
                 'product_name',
                 'product_description',
                 'product_brand',
                 'product_category',
-                'product_subcategory',
                 'store_id',
                 'product_price',
                 'product_discount',
@@ -457,28 +481,35 @@ class apiproductController extends Controller
                 'product_images'
             )
                 ->with(['category:id,name'])
+                ->whereHas('user', function ($q) {
+                    $q->where('user_status', 1);
+                })
                 ->where('store_id', '!=', 0);
 
-            // Apply filters
-            $products->when($query, function ($q) use ($query) {
-                $q->where(function ($q2) use ($query) {
+            // Step 4: Apply text search
+            $products->when($query, function ($q) use ($query, $matchingProductIdsFromCategories) {
+                $q->where(function ($q2) use ($query, $matchingProductIdsFromCategories) {
                     $q2->where('product_name', 'LIKE', "%{$query}%")
                         ->orWhere('product_description', 'LIKE', "%{$query}%")
                         ->orWhere('product_brand', 'LIKE', "%{$query}%")
-                        ->orWhere('product_subcategory', 'LIKE', "%{$query}%")
-                        ->orWhereHas('category', function ($catQuery) use ($query) {
-                            $catQuery->where('name', 'LIKE', "%{$query}%");
-                        });
+                        ->orWhere('product_subcategory', 'LIKE', "%{$query}%");
+
+                    // Match via category pivot
+                    if (!empty($matchingProductIdsFromCategories)) {
+                        $q2->orWhereIn('product_id', $matchingProductIdsFromCategories);
+                    }
                 });
             });
 
+            // Step 5: Filter by direct category ID
             $products->when($categoryId, function ($q) use ($categoryId) {
                 $q->where('product_category', $categoryId);
             });
 
+            // Step 6: Fetch result
             $result = $products->limit(20)->get();
 
-            // Post-processing
+            // Step 7: Post-processing
             foreach ($result as $product) {
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
@@ -503,6 +534,7 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
     public function getDashboardBanners()
     {
         try {
