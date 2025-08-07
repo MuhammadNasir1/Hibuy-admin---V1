@@ -21,7 +21,7 @@
                 @if ($riders->count() > 0)
                     @foreach ($riders as $key => $data)
                     <tr style="text-transform: capitalize">
-                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{$data->rider_name}}</td>
                         <td>{{$data->rider_email}}</td>
                         <td>{{$data->phone}}</td>
@@ -30,10 +30,11 @@
                         <td>{{$data->city}}</td>
                         <td>
                             <span class="flex gap-2">
-                                <form action="{{ url('/deleteRider/' . $data->id) }}" method="post">
-                                @csrf
-                                @method('delete')
-                                 <button>
+
+                                    <form id="delete-form-{{ $data->id }}" action="{{ url('/deleteRider/' . $data->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                    <button type="button" onclick="confirmDelete({{ $data->id }})">
                                      <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -109,39 +110,38 @@
             <x-slot name="body">
                 <form class="submitForm" action="{{route('rider.create')}}" method="post">
                     @csrf
-                    <div class="md:py-5">
+                    <div class="md:py-5 grid grid-cols-12 px-2 gap-2 my-2">
                         {{-- Product Category Form --}}
-                        <div class="px-6 mt-5">
+                        <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="Name" placeholder="Name Here" id="notification_title"
                                 name="rider_name" value="" requred />
                         </div>
-                        <div class="px-6 mt-5">
+                        <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="Email" placeholder="Email Here" id="notification_title"
                                 name="rider_email" value="" required/>
                         </div>
-                        <div class="px-6 mt-5">
+                        <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="Phone" placeholder="Phone Here" id="notification_title"
                                 name="phone" value="" required/>
                         </div>
-                        <div class="px-6 mt-5">
+                        <div class="px-6 mt-5 col-span-6">
                             <label for="vehicle_type" class="block text-gray-700 font-medium text-sm mb-2">Vehicle Type</label>
                             <select id="vehicle_type" name="vehicle_type"
                                 class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
-                                <option value="">Select Vehicle Type</option>
+                                <option value="" disabled selected>Select Vehicle Type</option>
                                 <option value="Bike">Bike</option>
-                                <option value="Car">Car</option>
+                                <option value="Car">Loader Richka</option>
                                 <option value="Van">Van</option>
                                 <option value="Truck">Truck</option>
                                 <!-- Add more options as needed -->
                             </select>
                         </div>
 
-                        <div class="px-6 mt-5">
+                        <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="Vehicle Number" placeholder="Vehicle Number Here" id="notification_title"
                                 name="vehicle_number" value="" required/>
                         </div>
-                        <div class="px-6 mt-5">
-                            {{-- <label class="block text-gray-700  font-medium text-sm mb-2 text-center">Title</label> --}}
+                        <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="City" placeholder="City Here" id="notification_title"
                                 name="city" value="" />
                         </div>
@@ -216,32 +216,32 @@
            <div class="grid grid-cols-12 px-4 gap-3 my-4">
                 <input type="hidden" id="edit_rider_id" name="id">
 
-                <div class="mb-4 col-span-4 ">
+                <div class="mb-4 col-span-6 ">
                     <label class="block text-sm font-medium">Name</label>
                     <input type="text" id="edit_rider_name" name="rider_name" class="w-full p-2 border rounded">
                 </div>
 
-                <div class="mb-4 col-span-4">
+                <div class="mb-4 col-span-6">
                     <label class="block text-sm font-medium">Email</label>
                     <input type="email" id="edit_rider_email" name="rider_email" class="w-full p-2 border rounded">
                 </div>
 
-                <div class="mb-4 col-span-4">
+                <div class="mb-4 col-span-6">
                     <label class="block text-sm font-medium">Phone</label>
                     <input type="text" id="edit_phone" name="phone" class="w-full p-2 border rounded">
                 </div>
 
-                <div class="mb-4 col-span-4">
+                <div class="mb-4 col-span-6">
                     <label class="block text-sm font-medium">Vehicle Type</label>
                     <input type="text" id="edit_vehicle_type" name="vehicle_type" class="w-full p-2 border rounded">
                 </div>
 
-                <div class="mb-4 col-span-4">
+                <div class="mb-4 col-span-6">
                     <label class="block text-sm font-medium">Vehicle Number</label>
                     <input type="text" id="edit_vehicle_number" name="vehicle_number" class="w-full p-2 border rounded">
                 </div>
 
-                <div class="mb-4 col-span-4">
+                <div class="mb-4 col-span-6">
                     <label class="block text-sm font-medium">City</label>
                     <input type="text" id="edit_city" name="city" class="w-full p-2 border rounded">
                 </div>
@@ -260,45 +260,37 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.delete-rider-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault(); // stop normal form submission
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'You are about to delete this rider.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit(); // submit if confirmed
-                    }
-                });
-            });
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
         });
+    }
 
-        // Show success alert after redirect if session has success message
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Deleted!',
-                text: '{{ session('success') }}',
-            });
-        @endif
+</script>
+@if (session('success'))
+<script>
 
-        @if ($errors->has('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: '{{ $errors->first('error') }}'
-            });
-        @endif
+    Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: "{{ session('success') }}",
+        timer: 2000,
+        showConfirmButton: true,
+        confirmButtonColor: '#3085d6'
     });
 </script>
+@endif
 
 
 <script>

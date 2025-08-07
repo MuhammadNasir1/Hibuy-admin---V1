@@ -84,7 +84,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::controller(NotificationController::class)->group(function () {
                 Route::post('/send-notification', 'insert')->name('send-notification');
                 Route::get('/Notifications', 'show')->name('notifications');
-                Route::get('/delete-notification/{id}', 'delete')->name('del_notification');
+                Route::DELETE('/delete-notification/{id}', 'delete')->name('del_notification');
             });
 
             // Order Group
