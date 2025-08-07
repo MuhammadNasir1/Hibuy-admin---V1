@@ -30,9 +30,7 @@
                         </td>
                         <td>
                             <span class='flex gap-4'>
-                                <button class="deleteDataBtn" {{ $rider->rider_id }}  data-id="{{ $rider->rider_id }}"
-                                    data-modal-target="view-notification-modal"
-                                  data-modal-toggle="view-notification-modal">
+                                <button class="deleteDataBtn" data-id="{{ $data->notification_id }}">
 
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
@@ -227,4 +225,52 @@
 
 @section('js')
     <script></script>
+    <script>
+        $(document).ready(function () {
+            // Setup CSRF token globally
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('.deleteDataBtn').on('click', function () {
+                let id = $(this).data('id');
+                alert(id);
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/delete-notification/${id}`,
+                            type: 'DELETE',
+                            success: function (response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your notification has been deleted.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an error deleting the notification.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
 @endsection
