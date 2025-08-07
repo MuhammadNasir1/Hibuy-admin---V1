@@ -226,7 +226,7 @@
 @section('js')
     <script></script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             // Setup CSRF token globally
             $.ajaxSetup({
                 headers: {
@@ -234,9 +234,9 @@
                 }
             });
 
-            $('.deleteDataBtn').on('click', function () {
+            $('.deleteDataBtn').on('click', function() {
                 let id = $(this).data('id');
-                alert(id);
+                // alert(id);
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -250,7 +250,7 @@
                         $.ajax({
                             url: `/delete-notification/${id}`,
                             type: 'DELETE',
-                            success: function (response) {
+                            success: function(response) {
                                 Swal.fire(
                                     'Deleted!',
                                     'Your notification has been deleted.',
@@ -259,7 +259,7 @@
                                     location.reload();
                                 });
                             },
-                            error: function (xhr) {
+                            error: function(xhr) {
                                 Swal.fire(
                                     'Error!',
                                     'There was an error deleting the notification.',

@@ -106,7 +106,6 @@ class apiStoreController extends Controller
                 ->whereHas('user',function ($query) {
                     $query->where('user_status', 1); // Ensure the user is active
                 })
-                // ->limit(6)
                 ->get();
 
             if ($stores->isEmpty()) {
