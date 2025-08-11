@@ -23,9 +23,9 @@ class UserController extends Controller
 
     public function showUsers()
     {
+        $userDetails = session('user_details');
 
         $role = $userDetails['user_role'] ?? null;
-
         if ($role !== 'admin') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
@@ -33,7 +33,7 @@ class UserController extends Controller
         // Fetch all users except the admin
         $users = User::where('user_role', '!=', 'admin')->get();
 
-        dd($users);
+        // dd($users);
 
         return view('admin.Users', compact('users'));
     }

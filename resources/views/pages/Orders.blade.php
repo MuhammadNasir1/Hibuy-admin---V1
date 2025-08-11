@@ -117,7 +117,8 @@
                     <!-- Customer Details -->
                     <form id="statusForm" class="w-full">
                         @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end">
+                        <div
+                            class="{{ session('user_details.user_role') == 'admin' ? 'grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end' : '' }}">
                             @if (session('user_details.user_role') == 'admin')
                                 {{-- Order Status --}}
                                 <div>
@@ -164,51 +165,67 @@
                                     </button>
                                 </div>
                             @else
-                                <div class="flex flex-col sm:flex-row gap-2 col-span-2">
-                                    <!-- Video Preview -->
-                                    <video id="videoPreview" controls class="h-[150px] mr-3 hidden">
-                                        <source id="videoSource" src="" type="video/mp4">
-                                        Your browser does not support the video tag.
-                                    </video>
+                                <div class=" gap-2 w-full">
 
                                     <!-- File Input for Video Upload -->
-                                    <div class="flex flex-col">
-                                        <label for="videoInput"
-                                            class="block mb-1 text-sm font-normal text-gray-600">Upload Video (Max
-                                            20MB)</label>
-                                        <input type="file" id="videoInput" name="status_video" accept="video/*"
-                                            class="block" value="">
+                                    <div class="flex gap-2 w-full">
+                                        <div class="flex flex-col mb-3">
+                                            <!-- Video Preview -->
+                                            <video id="videoPreview" controls class="h-[150px] mr-3 hidden">
+                                                <source id="videoSource" src="" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <label for="videoInput"
+                                                class="block mb-1 text-sm mt-3 font-normal text-gray-600">Upload Video (Max
+                                                20MB)</label>
+                                            <input type="file" id="videoInput" name="status_video" accept="video/*"
+                                                class="block" value="">
 
+                                        </div>
+
+                                        <div class=" flex-col gap-5 mb-3 w-full">
+                                            <div>
+                                                <label for="weight_admin"
+                                                    class=" mb-1 text-sm font-normal text-gray-600">Weight
+                                                    (kg)</label>
+                                                <input type="number" id="weight_admin" name="weight_admin"
+                                                    step="0.01" min="0" placeholder="Enter weight in kg"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                            </div>
+                                            {{-- Size feild here --}}
+                                            <div>
+                                                <label for="size_admin"
+                                                    class=" mb-1 text-sm font-normal text-gray-600">Size</label>
+                                                <input type="text" id="size_admin" name="size_admin"
+                                                    placeholder="Enter size"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                            </div>
+
+                                            <div class="w-full col-span-1">
+                                                <label for="order_status_seller"
+                                                    class="block mb-1 text-sm font-normal text-gray-600">Delivery
+                                                    Status</label>
+                                                <input type="hidden" id="editbyseller_orderstatus_id"
+                                                    name="editbyseller_orderstatus_id">
+                                                <input type="hidden" id="edit_orderstatus_id"
+                                                    name="edit_orderstatus_id">
+                                                <select id="order_status_seller" name="order_status_seller"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                                    <option value="" selected>Select Status</option>
+                                                    <option value="pending">Pending</option>
+                                                    <option value="processing">Processing</option>
+                                                    <option value="shipped">Shipped</option>
+                                                    <option value="delivered">Delivered</option>
+                                                    <option value="cancelled">Cancelled</option>
+                                                    <option value="returned">Returned</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                {{-- weight feild herre --}}
-                                <div>
-                                    <label for="weight_admin"
-                                        class="block mb-1 text-sm font-normal text-gray-600">Weight (kg)</label>
-                                    <input type="number" id="weight_admin" name="weight_admin" step="0.01" min="0"
-                                        placeholder="Enter weight in kg"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                                </div>
-{{-- Size feild here --}}
 
-                                <div class="w-full col-span-1">
-                                    <label for="order_status_seller"
-                                        class="block mb-1 text-sm font-normal text-gray-600">Delivery
-                                        Status</label>
-                                    <input type="hidden" id="editbyseller_orderstatus_id"
-                                        name="editbyseller_orderstatus_id">
-                                    <input type="hidden" id="edit_orderstatus_id" name="edit_orderstatus_id">
-                                    <select id="order_status_seller" name="order_status_seller"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                                        <option value="" selected>Select Status</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="processing">Processing</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
-                                        <option value="returned">Returned</option>
-                                    </select>
+                                    {{-- weight feild herre --}}
                                 </div>
+
                                 {{-- Submit Button --}}
                                 <div class="flex justify-end col-span-1">
                                     <button type="submit" id="submitStatusbyseller"
@@ -287,6 +304,8 @@
                                                         <th class="p-3 text-left">Status</th>
                                                         <th class="p-3 text-left">Video Prove</th>
                                                     @endif
+                                                    <th class="p-3 text-center">Qty</th>
+                                                    <th class="p-3 text-center">Weight / Size</th>
                                                     <th class="p-3 text-center">Qty</th>
                                                     <th class="p-3 text-center">Variation</th>
                                                     <th class="p-3 text-center">U.Price</th>
@@ -393,7 +412,8 @@
                         }
 
                         $('#tracking_number').val(response.tracking_number);
-                        if (response.order_status=== 'order_placed' || response.order_status === 'pending') {
+                        if (response.order_status === 'order_placed' || response
+                            .order_status === 'pending') {
                             $('#order_status').val('processing').change();
                         } else {
                             $('#order_status').val(response.order_status).change();
@@ -402,7 +422,7 @@
                         let formattedStatus = status
                             .split('_') // ["order", "placed"]
                             .map(word => word.charAt(0).toUpperCase() + word.slice(
-                            1)) // ["Order", "Placed"]
+                                1)) // ["Order", "Placed"]
                             .join(' '); // "Order Placed"
 
                         $("#order-status").text(formattedStatus);
@@ -413,7 +433,8 @@
                         $("#order-date").text(response.order_date);
                         $("#customer-phone").text(response.phone);
                         $("#total-items").text(response.order_items.length);
-                        $("#order-weight").val(response.order_items.weight);
+                        $("#weight_admin").val(response.order_items[0].order_weight);
+                        $("#size_admin").val(response.order_items[0].order_size);
 
                         let itemsHtml = "";
                         let total = 0;
@@ -453,17 +474,18 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                            <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                            <td class="p-3">
-                                                                ${item.status_video ? `
+                                                                        <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                        <td class="p-3">
+                                                                            ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                            </td>
-                                                        ` : ''}
+                                                                        </td>
+                                                                    ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
+                                    <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
 
                                     <td class="p-3 text-center">
                                         <div class="inline-block text-sm text-gray-700">
@@ -573,6 +595,7 @@
                 formData.append('order_id', $('#edit_orderstatus_id').val());
                 formData.append('product_id', $('#editbyseller_orderstatus_id').val());
                 formData.append('weight_admin', $('#weight_admin').val());
+                formData.append('size_admin', $('#size_admin').val());
                 if (videoFile) {
                     formData.append('status_video', videoFile);
                 }
