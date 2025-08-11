@@ -274,6 +274,7 @@ class OrderController extends Controller
             $order->courier_id = $request->courier_id;
             $order->tracking_number = $request->filled('tracking_number') ? $request->tracking_number : '';
             $order->weight = $request->weight_admin ? $request->weight_admin : '';
+            $order->size = $request->size_admin ? $request->size_admin : '';
         }
 
         //  Seller update (update status of a product inside order_items JSON)
@@ -296,6 +297,7 @@ class OrderController extends Controller
                 if ($product && $product->seller_id == session('user_details.seller_id')) {
                     $item['delivery_status'] = $request->delivery_status;
                     $item['order_weight'] = $request->weight_admin;
+                    $item['order_size'] = $request->size_admin;
 
                     // Set video if uploaded
                     if ($videoPath) {
