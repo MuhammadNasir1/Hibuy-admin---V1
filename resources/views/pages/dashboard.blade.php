@@ -455,63 +455,39 @@
                 <table class="w-full mt-4">
                     <thead>
                         <tr class="text-gray-600 text-sm border-b">
+                            <th class="text-left py-3 px-4">Date</th>
                             <th class="text-left py-3 px-4">Customer</th>
-                            <th class="text-left py-3 px-4">Product</th>
-                            <th class="text-left py-3 px-4">Seller</th>
-                            <th class="text-left py-3 px-4">Qty</th>
+                            <th class="text-left py-3 px-4">Phone</th>
+                            <th class="text-left py-3 px-4">Total</th>
                             <th class="text-left py-3 px-4">Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b">
-                            <td class="px-4 py-3">John Doe</td>
-                            <td class="px-4 py-3 flex items-center space-x-3">
-                                <div>
-                                    <p class="font-semibold">Product A</p>
-                                    <p class="text-sm text-gray-500">Category 1</p>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-blue-500 font-semibold">Seller 1</td>
-                            <td class="px-4 py-3 text-gray-600">10 pcs</td>
-                            <td class="px-4 py-3">
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                    Delivered
-                                </span>
-                            </td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="px-4 py-3">Jane Smith</td>
-                            <td class="px-4 py-3 flex items-center space-x-3">
-                                <div>
-                                    <p class="font-semibold">Product B</p>
-                                    <p class="text-sm text-gray-500">Category 2</p>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-blue-500 font-semibold">Seller 2</td>
-                            <td class="px-4 py-3 text-gray-600">5 pcs</td>
-                            <td class="px-4 py-3">
-                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                    Pending
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-3">Michael Lee</td>
-                            <td class="px-4 py-3 flex items-center space-x-3">
-                                <div>
-                                    <p class="font-semibold">Product C</p>
-                                    <p class="text-sm text-gray-500">Category 3</p>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-blue-500 font-semibold">Seller 3</td>
-                            <td class="px-4 py-3 text-gray-600">20 pcs</td>
-                            <td class="px-4 py-3">
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                    Cancelled
-                                </span>
-                            </td>
-                        </tr>
+                        @foreach ($latestOrders as $order)
+                            <tr class="border-b">
+                                <td class="px-4 py-3">{{ \Carbon\Carbon::parse($order->date)->format('M d') }}
+</td>
+                                <td class="px-4 py-3">{{ $order->customer_name }}</td>
+                                <td class="px-4 py-3">{{ $order->phone }}</td>
+                                <td class="px-4 py-3">{{ number_format($order->total) }}</td>
+                                <td class="px-4 py-3">
+                                    @php
+                                        $statusColors = [
+                                            'delivered' => 'bg-green-100 text-green-700',
+                                            'pending' => 'bg-yellow-100 text-yellow-700',
+                                            'cancelled' => 'bg-red-100 text-red-700',
+                                        ];
+                                        $color =
+                                            $statusColors[strtolower($order->status)] ?? 'bg-gray-100 text-gray-700';
+                                    @endphp
+                                    <span class="{{ $color }} px-3 py-1 rounded-full text-xs font-semibold">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
+
                 </table>
             </div>
 
