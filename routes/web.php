@@ -42,6 +42,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::controller(KYCController::class)->group(function () {
                 Route::get('/Kyc-profile', 'kycView')->name('kycView');
             });
+            Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
                 return view('Auth.CreateProfile');
@@ -115,7 +116,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/getSellerStatus/{sellerId}', [DisableReasonController::class, 'getSellerStatus'])->name('get.seller.status');
             // for Rider
             Route::GET('/rider',[RiderController::class, 'riderList'])->name('rider');
-            Route::post('/rider/create', [RiderController::class, 'reiderCreate'])->name('rider.create');
+            Route::post('/rider/create', [RiderController::class, 'riderCreate'])->name('rider.create');
             Route::get('/viewRider/{id}', [RiderController::class, 'viewRider'])->name('viewRider');
             Route::delete('/deleteRider/{id}', [RiderController::class, 'deleteRider'])->name('deleteRider');
             Route::get('/rider/{id}', [RiderController::class, 'getRider']);
