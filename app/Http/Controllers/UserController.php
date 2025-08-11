@@ -21,6 +21,23 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
 
+    public function showUsers()
+    {
+
+        $role = $userDetails['user_role'] ?? null;
+
+        if ($role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+
+        // Fetch all users except the admin
+        $users = User::where('user_role', '!=', 'admin')->get();
+
+        dd($users);
+
+        return view('admin.Users', compact('users'));
+    }
+
     public function profileDetail()
     {
         $user = session('user_details')['user_id'];
@@ -55,8 +72,6 @@ class UserController extends Controller
         return view('Auth.ProfileDetail', compact('seller', 'statusImages', 'user'));
         // return response()->json(['success' => true, 'data' => $seller]);
     }
-
-
 
     public function setPassword(Request $request)
     {

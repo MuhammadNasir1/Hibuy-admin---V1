@@ -7,10 +7,6 @@ use Illuminate\Http\Request;
 
 class RiderController extends Controller
 {
-    // public function riderIndex()
-    // {
-    //     return view('admin.rider');
-    // }
     public function riderCreate(Request $request)
     {
         try {

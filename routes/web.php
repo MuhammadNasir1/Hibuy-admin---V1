@@ -42,6 +42,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::controller(KYCController::class)->group(function () {
                 Route::get('/Kyc-profile', 'kycView')->name('kycView');
             });
+            Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
                 return view('Auth.CreateProfile');
