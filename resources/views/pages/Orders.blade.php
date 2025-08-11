@@ -181,6 +181,16 @@
 
                                     </div>
                                 </div>
+                                {{-- weight feild herre --}}
+                                <div>
+                                    <label for="weight_admin"
+                                        class="block mb-1 text-sm font-normal text-gray-600">Weight (kg)</label>
+                                    <input type="number" id="weight_admin" name="weight_admin" step="0.01" min="0"
+                                        placeholder="Enter weight in kg"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                                </div>
+{{-- Size feild here --}}
+
                                 <div class="w-full col-span-1">
                                     <label for="order_status_seller"
                                         class="block mb-1 text-sm font-normal text-gray-600">Delivery
@@ -403,6 +413,7 @@
                         $("#order-date").text(response.order_date);
                         $("#customer-phone").text(response.phone);
                         $("#total-items").text(response.order_items.length);
+                        $("#order-weight").val(response.order_items.weight);
 
                         let itemsHtml = "";
                         let total = 0;
@@ -561,6 +572,7 @@
                 formData.append('delivery_status', $('#order_status_seller').val());
                 formData.append('order_id', $('#edit_orderstatus_id').val());
                 formData.append('product_id', $('#editbyseller_orderstatus_id').val());
+                formData.append('weight_admin', $('#weight_admin').val());
                 if (videoFile) {
                     formData.append('status_video', videoFile);
                 }
