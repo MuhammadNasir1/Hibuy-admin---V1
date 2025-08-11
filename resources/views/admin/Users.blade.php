@@ -4,7 +4,7 @@
 @section('content')
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between items-center px-5">
-            <h2 class="text-2xl font-medium  ">Users</h1>
+            <h2 class="text-2xl font-medium  ">Users List</h1>
                 <div>
                     <button id="addUserModalBtn" type="button" data-modal-target="add-user-modal"
                         data-modal-toggle="add-user-modal" class="px-3 py-2 font-semibold text-white rounded-full bg-primary">
@@ -23,17 +23,6 @@
                         <td class="capitalize"></td>
 
                         <td>
-                            @if ($user->user_status == 1)
-                                <span
-                                    class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded bg-green-500">
-                                    Active
-                                </span>
-                            @else
-                                <span
-                                    class="whitespace-nowrap px-2 py-1 text-xs font-semibold text-white rounded bg-red-500">
-                                    Inactive
-                                </span>
-                            @endif
                         </td>
 
                         <td></td>
@@ -42,7 +31,7 @@
 
                         <td>
                             <span class="flex gap-4">
-                                <button editurl="{{ route('users.edit', $user->user_id) }}" class="updateDataBtn">
+                                <button editurl="" class="updateDataBtn">
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#233A85' />
@@ -52,7 +41,7 @@
                                     </svg>
                                 </button>
 
-                                <button delurl="{{ route('users.delete', $user->user_id) }}" class="deleteDataBtn">
+                                <button delurl="" class="deleteDataBtn">
                                     <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                         xmlns='http://www.w3.org/2000/svg'>
                                         <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -64,11 +53,6 @@
                             </span>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" class="text-center py-4">No users found.</td>
-                    </tr>
-                @endforelse
             </x-slot>
         </x-table>
 
@@ -129,59 +113,7 @@
             <x-slot name="body">
                 <form id="addFaqForm" method="POST">
                     @csrf
-                    <input type="hidden" name="faq_id" id="faq_id">
-                    <div class="space-y-5">
-                        <!-- Select Category -->
-                        <div>
-                            <label for="faq_category_id" class="block text-sm font-medium text-gray-700 mb-1">Select
-                                Category</label>
-                            <select name="faq_category_id" id="faq_category_id"
-                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                required>
-                                <option value="">Select category</option>
-                                @foreach ($faqsCategories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
-                        <!-- Question -->
-                        <div>
-                            <label for="faq_question" class="block text-sm font-medium text-gray-700 mb-1">Question</label>
-                            <input type="text" name="faq_question" id="faq_question"
-                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter FAQ question" required>
-                        </div>
-
-                        <!-- Answer -->
-                        <div>
-                            <label for="faq_answer" class="block text-sm font-medium text-gray-700 mb-1">Answer</label>
-                            <textarea name="faq_answer" id="faq_answer" rows="4"
-                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter FAQ answer" required></textarea>
-                        </div>
-
-                        <!-- Status -->
-                        <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select name="status" id="status"
-                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                required>
-                                <option value="">Select status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="pt-2">
-                            <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full">
-                                Submit
-                            </button>
-                        </div>
-
-                    </div>
                 </form>
             </x-slot>
         </x-modal>
