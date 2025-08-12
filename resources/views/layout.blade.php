@@ -130,6 +130,26 @@
                             <span class="ms-3 text-custom15">Product Categories</span>
                         </a>
                     </li>
+                    <li class="mt-6">
+                        <a href="{{ route('approveProducts') }}"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('addProductCategory') ? 'active bg-white text-primary' : 'text-white' }}"
+                            data-tab="addProductCategory">
+                            <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('addProductCategory') ? 'text-primary' : 'text-white' }}"
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.6146 4.04258L7.73959 10.3759C7.3125 11.0634 7.8125 11.9592 8.625 11.9592H16.3646C17.1771 11.9592 17.6771 11.0634 17.25 10.3759L13.3854 4.04258C13.2933 3.89012 13.1634 3.76402 13.0083 3.67649C12.8532 3.58896 12.6781 3.54297 12.5 3.54297C12.3219 3.54297 12.1468 3.58896 11.9917 3.67649C11.8366 3.76402 11.7067 3.89012 11.6146 4.04258Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M18.2292 23.418C20.818 23.418 22.9167 21.3193 22.9167 18.7305C22.9167 16.1416 20.818 14.043 18.2292 14.043C15.6404 14.043 13.5417 16.1416 13.5417 18.7305C13.5417 21.3193 15.6404 23.418 18.2292 23.418Z"
+                                    fill="currentColor" />
+                                <path
+                                    d="M4.16667 22.8958H10.4167C10.9896 22.8958 11.4583 22.4271 11.4583 21.8542V15.6042C11.4583 15.0312 10.9896 14.5625 10.4167 14.5625H4.16667C3.59375 14.5625 3.125 15.0312 3.125 15.6042V21.8542C3.125 22.4271 3.59375 22.8958 4.16667 22.8958Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Approve Products</span>
+                        </a>
+                    </li>
 
 
                     {{-- <li class="">

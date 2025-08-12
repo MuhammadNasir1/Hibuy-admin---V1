@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\apiStoreController;
+use App\Http\Controllers\ApproveProductsController;
 use App\Http\Controllers\CreditRequestController;
 use App\Http\Controllers\RiderController;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,9 @@ Route::middleware(['custom_auth'])->group(function () {
                 Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
                 Route::post('/orders/update-status', [OrderController::class, 'updateOrderStatus'])->name('orders.update.status');
             });
+
+            Route::get('/approve-products', [ApproveProductsController::class, 'view'])->name('approveProducts');
+            Route::post('/admin/products/approve', [ApproveProductsController::class, 'approve'])->name('admin.products.approve');
 
 
             Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile'])->name('editStoreProfile');
