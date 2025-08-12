@@ -16,7 +16,7 @@ class Order extends Model
         'order_items',
         'total',
         'delivery_fee',
-        'grand_total',
+        'grand_total', 
         'customer_name',
         'phone',
         'address',
@@ -29,4 +29,9 @@ class Order extends Model
     protected $casts = [
         'items' => 'array',
     ];
+
+    public function rider()
+    {
+        return $this->belongsTo(RiderModel::class, 'rider_id', 'id');
+    }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Store;
 use App\Models\Seller;
-use App\Models\Courier;
+use App\Models\RiderModel;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -38,7 +38,7 @@ class OrderController extends Controller
                 'address',
                 'status',
                 'order_status',
-                'courier_id',
+                'rider_id',
                 'tracking_number',
                 'order_date'
             ])
@@ -77,20 +77,44 @@ class OrderController extends Controller
                 }
             }
 
-            // Step 3: Fetch product details from the products table
+            // Step 3: Fetch product details from the products table with seller information
             $productDetails = Products::whereIn('product_id', array_column($filteredOrderItems, 'product_id'))
-                ->select('product_id', 'product_name', 'product_brand', 'product_images', 'is_boosted')
+                ->with(['store.seller.user'])
+                ->select('product_id', 'product_name', 'product_brand', 'product_images', 'is_boosted', 'store_id')
                 ->get()
                 ->mapWithKeys(function ($product) {
                     $images = json_decode($product->product_images, true);
                     $firstImage = is_array($images) && count($images) > 0 ? $images[0] : null;
 
-                    return [$product->product_id => [
-                        'product_name'  => $product->product_name,
-                        'product_brand' => $product->product_brand,
-                        'product_image' => $firstImage,
-                        'is_boosted'    => $product->is_boosted,
-                    ]];
+                    // Get seller information (keys align with KYC JSON schema)
+                    $sellerInfo = null;
+                    if ($product->store && $product->store->seller && $product->store->seller->user) {
+                        $personalInfo = json_decode($product->store->seller->personal_info, true) ?? [];
+                        $storeInfo = json_decode($product->store->store_info, true) ?? [];
+
+                        $sellerInfo = [
+                            'seller_name'   => $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A',
+                            'seller_email'  => $personalInfo['email'] ?? $product->store->seller->user->user_email ?? 'N/A',
+                            'seller_phone'  => $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A',
+                            'store_name'    => $storeInfo['store_name'] ?? 'N/A',
+                            'store_address' => $storeInfo['address'] ?? $storeInfo['store_address'] ?? 'N/A',
+                        ];
+
+                        // Debug log
+                        \Log::info('Seller info for product ' . $product->product_id . ':', $sellerInfo);
+                    } else {
+                        \Log::info('No seller info found for product ' . $product->product_id);
+                    }
+
+                    return [
+                        $product->product_id => [
+                            'product_name' => $product->product_name,
+                            'product_brand' => $product->product_brand,
+                            'product_image' => $firstImage,
+                            'is_boosted' => $product->is_boosted,
+                            'seller_info' => $sellerInfo,
+                        ]
+                    ];
                 });
 
             // Step 4: Merge product details into order items
@@ -106,23 +130,33 @@ class OrderController extends Controller
 
             // Step 6: Prepare response
             $response = [
-                'order_id'      => $order->order_id,
-                'tracking_id'   => $order->tracking_id,
+                'order_id' => $order->order_id,
+                'tracking_id' => $order->tracking_id,
                 'customer_name' => $order->customer_name,
-                'phone'         => $order->phone,
-                'address'       => $order->address,
-                'status'        => $order->status,
-                'order_status'  => $order->order_status,
-                'order_date'    => $order->order_date,
-                'total'         => $grandTotal,
-                'delivery_fee'  => $order->delivery_fee,
-                'grand_total'   => $grandTotal + (float) $order->delivery_fee,
-                'order_items'   => array_values($mergedOrderItems),
-                'selected_courier_id' => $order->courier_id ?? null,
+                'phone' => $order->phone,
+                'address' => $order->address,
+                'status' => $order->status,
+                'order_status' => $order->order_status,
+                'order_date' => $order->order_date,
+                'total' => $grandTotal,
+                'delivery_fee' => $order->delivery_fee,
+                'grand_total' => $grandTotal + (float) $order->delivery_fee,
+                'order_items' => array_values($mergedOrderItems),
+                'selected_rider_id' => $order->rider_id ?? null,
                 'tracking_number' => $order->tracking_number ?? null,
             ];
-            // Step 7: Fetch all couriers for dropdown
-            $response['couriers'] = Courier::select('courier_id', 'courier_name')->get();
+            // Step 7: Fetch all riders for dropdown
+            $response['riders'] = RiderModel::select('id', 'rider_name', 'vehicle_type')->get();
+            
+            // Step 8: Add rider details to response if rider is assigned
+            if ($order->rider_id) {
+                $rider = RiderModel::select('id', 'rider_name', 'rider_email', 'phone', 'vehicle_type', 'vehicle_number', 'city')
+                    ->where('id', $order->rider_id)
+                    ->first();
+                $response['rider_details'] = $rider;
+            } else {
+                $response['rider_details'] = null;
+            }
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
@@ -144,10 +178,8 @@ class OrderController extends Controller
             $userId = $userDetails['user_id'];
             $userRole = $userDetails['user_role']; // Assuming 'admin' or 'seller'
 
-            // Step 2: If admin, fetch all orders with products included
+            // Step 2: If admin, fetch all orders and attach seller summary (name/phone) for list view
             if ($userRole === 'admin') {
-                $productIds = Products::pluck('product_id')->toArray(); // All product IDs
-
                 $orders = Order::select([
                     'order_id',
                     'user_id',
@@ -160,30 +192,39 @@ class OrderController extends Controller
                     'address',
                     'status',
                     'order_status',
+                    'rider_id',
+                    'tracking_number',
                     'order_date'
                 ])
-                    ->orderBy('order_id', 'desc') // Added order by
+                    ->with('rider:id,rider_name,vehicle_type')
+                    ->orderBy('order_id', 'desc')
                     ->get()
-                    ->map(function ($order) use ($productIds) {
-                        $orderItems = json_decode($order->order_items, true);
+                    ->map(function ($order) {
+                        $orderItems = json_decode($order->order_items, true) ?? [];
+                        if (empty($orderItems)) {
+                            return $order;
+                        }
+                        // Ensure view receives array not JSON string
+                        $order->order_items = $orderItems;
 
-                        // Filter items that exist in all products
-                        $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
-                            return in_array($item['product_id'], $productIds);
-                        });
-
-                        if (empty($filteredOrderItems)) {
-                            return null;
+                        // Take first product to infer seller/store
+                        $firstProductId = $orderItems[0]['product_id'] ?? null;
+                        if ($firstProductId) {
+                            $product = Products::with(['store.seller.user'])->find($firstProductId);
+                            if ($product && $product->store && $product->store->seller) {
+                                $personalInfo = json_decode($product->store->seller->personal_info, true) ?? [];
+                                $order->seller_name_for_list = $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A';
+                                $order->seller_phone_for_list = $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A';
+                                $storeInfo = json_decode($product->store->store_info, true) ?? [];
+                                $order->store_name_for_list = $storeInfo['store_name'] ?? null; // might be useful client-side later
+                            }
                         }
 
-                        $grandTotal = array_sum(array_column($filteredOrderItems, 'price'));
-
-                        $order->order_items = array_values($filteredOrderItems);
+                        // Compute total from items
+                        $grandTotal = array_sum(array_map(function ($i) { return ($i['quantity'] ?? 1) * ($i['price'] ?? 0); }, $orderItems));
                         $order->grand_total = $grandTotal;
-
                         return $order;
-                    })->filter();
-
+                    });
                 return view('pages.Orders', compact('orders'));
             }
 
@@ -208,10 +249,13 @@ class OrderController extends Controller
                 'phone',
                 'address',
                 'status',
+                'tracking_number',
                 'order_status',
+                'rider_id',
                 'order_date'
             ])
-                ->orderBy('order_id', 'desc') // Added order by
+                ->with('rider:id,rider_name,vehicle_type')
+                ->orderBy('order_id', 'desc')
                 ->get()
                 ->map(function ($order) use ($productIds) {
                     $orderItems = json_decode($order->order_items, true);
@@ -231,7 +275,6 @@ class OrderController extends Controller
 
                     return $order;
                 })->filter();
-
             return view('pages.Orders', compact('orders'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -247,7 +290,7 @@ class OrderController extends Controller
             $request->validate([
                 'order_id' => 'required|exists:orders,order_id',
                 'order_status' => 'required|string',
-                'courier_id' => 'required|exists:couriers,courier_id',
+                'rider_id' => 'required|exists:riders,id',
                 'tracking_number' => 'required|string|max:255',
                 'delivery_status' => 'nullable|string',
                 'product_id' => 'nullable|integer',
@@ -257,7 +300,7 @@ class OrderController extends Controller
             $request->validate([
                 'order_id' => 'required|exists:orders,order_id',
                 'order_status' => 'nullable|string',
-                'courier_id' => 'nullable|exists:couriers,courier_id',
+                'rider_id' => 'nullable|exists:riders,id',
                 'tracking_number' => 'nullable|string|max:255',
                 'delivery_status' => 'required|string',
                 'product_id' => 'required|integer',
@@ -271,10 +314,8 @@ class OrderController extends Controller
         // Admin update
         if ($request->filled('order_status')) {
             $order->order_status = $request->order_status;
-            $order->courier_id = $request->courier_id;
+            $order->rider_id = $request->rider_id;
             $order->tracking_number = $request->filled('tracking_number') ? $request->tracking_number : '';
-            $order->weight = $request->weight_admin ? $request->weight_admin : '';
-            $order->size = $request->size_admin ? $request->size_admin : '';
         }
 
         //  Seller update (update status of a product inside order_items JSON)
