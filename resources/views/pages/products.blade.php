@@ -258,6 +258,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @if (session('user_details.user_role') == 'admin')
                             <form id="statusForm" class="max-w-sm">
                                 @csrf
                                 <div class="flex items-center mt-5 mb-4">
@@ -277,6 +278,7 @@
                                     Submit
                                 </button>
                             </form>
+                            @endif
                         </div>
                     </div>
                 </div>
