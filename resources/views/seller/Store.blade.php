@@ -21,7 +21,7 @@
                     ? asset($storeData['store_image'])
                     : (!empty($storeData['profile_picture_store'])
                         ? asset($storeData['profile_picture_store'])
-                        : asset('assets/images/defualt-image.png')) }}"
+                        : asset('asset/defualt-image.png')) }}"
                     class="ms-5 h-[80px] w-[80px] rounded-full" alt="">
                 <div>
                     <h3 class="text-lg font-semibold">
@@ -39,10 +39,77 @@
             </div>
         </div>
 
-        <div class="mt-5 mx-6 shadow-xl rounded-xl min-h-[100px]">
-            <img src="{{ asset(@$storeData['store_banner'] ? @$storeData['store_banner'] : 'asset/banner.png') }}"
-                alt="Banner Image" class="w-full object-cover rounded-xl">
+        <div id="default-carousel" class="relative w-full " data-carousel="slide">
+            <!-- Carousel wrapper -->
+            <div class="relative h-56 overflow-hidden rounded-lg md:h-96 mx-6 mt-4">
+                @php
+                    // Default banner if nothing is set
+                    $defaultBanners = ['asset/banner.png'];
+
+                    // Get banners array from storeData
+                    $banners = [];
+                    if (!empty($storeData['store_banners']) && is_array($storeData['store_banners'])) {
+                        foreach ($storeData['store_banners'] as $banner) {
+                            if (!empty($banner['image'])) {
+                                $banners[] = $banner['image'];
+                            }
+                        }
+                    }
+
+                    // Use default if none found
+                    if (empty($banners)) {
+                        $banners = $defaultBanners;
+                    }
+                @endphp
+
+                @foreach ($banners as $banner)
+                    <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                        <img src="{{ asset($banner) }}"
+                            class="absolute block w-full -translate-x-1/2 -translate-y-1/2
+                            top-1/2 left-1/2 rounded-xl"
+                            alt="Banner">
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Slider indicators -->
+            <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+                @foreach ($banners as $index => $banner)
+                    <button type="button" class="w-3 h-3 rounded-full" aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                        aria-label="Slide {{ $index + 1 }}" data-carousel-slide-to="{{ $index }}">
+                    </button>
+                @endforeach
+            </div>
+
+            <!-- Slider controls -->
+            <button type="button"
+                class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-prev>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 1 1 5l4 4" />
+                    </svg>
+                    <span class="sr-only">Previous</span>
+                </span>
+            </button>
+            <button type="button"
+                class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-next>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 9 4-4-4-4" />
+                    </svg>
+                    <span class="sr-only">Next</span>
+                </span>
+            </button>
         </div>
+
 
         <div class="flex justify-center px-6 gap-5">
             @php
@@ -114,14 +181,33 @@
                                     </button>
                                 </div>
                             </div>
-
                             <div class="px-6 mt-5">
                                 <label class="block text-gray-700 font-medium text-sm mb-2">Banner</label>
-                                <x-file-uploader type="text" label="Banner" id="banner_input" name="Banner" />
-                                <div class="flex gap-5" id="preview-banner">
+                                <div class="relative flex flex-col items-center justify-center w-full h-full">
+                                    <!-- Preview container -->
+                                    <div id="preview-container"
+                                        class="flex flex-wrap gap-2 p-2 w-full mb-2 border border-gray-200 rounded-lg min-h-20">
+                                    </div>
 
+                                    <!-- Upload area -->
+                                    <label
+                                        class="flex flex-col items-center justify-center w-full min-h-24 bg-gray-100 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer file-upload-label overflow-hidden">
+                                        <!-- Upload prompt -->
+                                        <div id="upload-prompt"
+                                            class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <!-- SVG and text -->
+                                            <span class="font-semibold">Upload Banners</span></p>
+                                            <p class="text-xs text-gray-500">Max 2MB each Size 820*312</p>
+                                        </div>
+                                        <input type="file" class="hidden file-input" id="banner_input"
+                                            name="banners[]" accept="image/*" multiple onchange="previewFiles(event)" />
+                                    </label>
+                                    <div id="error-container" class="text-red-500 text-sm mt-2 hidden"></div>
                                 </div>
                             </div>
+
+
+
 
                             <div class="px-6 mt-5">
                                 <label class="block text-gray-700 font-medium text-sm mb-2">Posts</label>
@@ -152,12 +238,115 @@
     </div>
 
 @endsection
-
 @section('js')
     <script>
+        window.bannerFiles = []; // New files to upload
+        window.removedBannerIds = []; // Existing banner IDs to delete
+
+        // Function to remove a banner
+        function removeBanner(element, file = null, bannerId = null) {
+            // Remove from DOM
+            element.remove();
+
+            // Track what we're removing
+            if (bannerId) {
+                // Existing banner from server - mark for deletion
+                window.removedBannerIds.push(bannerId);
+            } else if (file) {
+                // New file - remove from upload queue
+                window.bannerFiles = window.bannerFiles.filter(f => f !== file);
+            }
+
+            // Show upload prompt if no banners left
+            if (document.getElementById('preview-container').children.length === 0) {
+
+            }
+        }
+
+        // Preview new files
+        function previewFiles(event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('preview-container');
+            const errorContainer = document.getElementById('error-container');
+
+            errorContainer.innerHTML = '';
+            errorContainer.style.display = 'none';
+
+            const maxSizeMB = 2;
+            const maxWidth = 820;
+            const maxHeight = 312;
+
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    // Add size validation check
+                    if (file.size > maxSizeMB * 1024 * 1024) {
+                        errorContainer.innerHTML += `<div>${file.name} is too large (max ${maxSizeMB}MB)</div>`;
+                        errorContainer.style.display = 'block';
+                        return; // Skip this file if too large
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            // Add dimension validation check
+                            if (img.width > maxWidth || img.height > maxHeight) {
+                                errorContainer.innerHTML +=
+                                    `<div>${file.name} must be no larger than ${maxWidth}×${maxHeight} pixels</div>`;
+                                errorContainer.style.display = 'block';
+                                return; // Skip this file if dimensions are wrong
+                            }
+
+                            // Original functionality remains unchanged below
+                            const previewWrapper = document.createElement('div');
+                            previewWrapper.classList.add('banner-wrapper', 'relative', 'w-32', 'h-20',
+                                'inline-block', 'm-2');
+
+                            // Store file reference
+                            previewWrapper._file = file;
+
+                            const previewImg = document.createElement('img');
+                            previewImg.src = e.target.result;
+                            previewImg.classList.add('w-full', 'h-full', 'object-cover', 'rounded');
+
+                            const removeBtn = document.createElement('button');
+                            removeBtn.innerHTML = '✖';
+                            removeBtn.onclick = () => removeBanner(previewWrapper, file);
+                            removeBtn.classList.add('absolute', 'top-0', 'right-0', 'bg-red-500',
+                                'text-white', 'rounded-full', 'w-5', 'h-5', 'flex', 'items-center',
+                                'justify-center', 'text-xs', 'cursor-pointer', 'shadow');
+
+                            previewWrapper.appendChild(previewImg);
+                            previewWrapper.appendChild(removeBtn);
+                            previewContainer.appendChild(previewWrapper);
+
+                            // Add to upload queue
+                            window.bannerFiles.push(file);
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            event.target.value = '';
+        }
+
+        // For existing banners loaded from server
+        function removeExistingBanner(id, btn) {
+            removeBanner(btn.closest('.banner-wrapper'), null, id);
+        }
+
+        // For server-side banners (loaded from DB)
+        function removeExistingBanner(id, btn) {
+            window.removedBannerIds.push(id);
+            removeBanner(btn.closest('.banner-wrapper'), null);
+        }
+
         $(document).ready(function() {
+
+            $("#banner_input").on("change", previewFiles);
             $("#viewModalBtn").on("click", function() {
-                let viewstoreurl = $(this).attr("viewstoreurl"); // Get store details URL
+                let viewstoreurl = $(this).attr("viewstoreurl");
 
                 if (!viewstoreurl) {
                     alert("Invalid store URL!");
@@ -166,84 +355,88 @@
 
                 $("#modal-btn").click(); // Open modal
 
-                // Run AJAX to fetch store details
                 $.ajax({
                     url: viewstoreurl,
                     type: "GET",
                     dataType: "json",
                     success: function(response) {
-                        if (response) {
-                            // Store Name
-                            $("#store_name").val(response.data.store_name || "");
-                            $("#storeName").text(response.data.store_name || "My Store");
-
-                            let profileImagePath = response.data.store_image ?
-                                response.data.store_image :
-                                "";
-                            if (profileImagePath) {
-                                $("#profile_picture_preview").html(
-                                    `<img src="${profileImagePath}" class="h-[100px] w-[100px] rounded-full object-cover" alt="Profile Picture">`
-                                );
-                            } else {
-                                $("#profile_picture_preview").html(
-                                    "");
-                            }
-                            // Store Banner (Full Width)
-                            let bannerPath = response.data.store_banner ? response.data
-                                .store_banner : "";
-                            if (bannerPath) {
-                                $("#preview-banner").html(
-                                    `<img src="${bannerPath}" class="my-3 w-full h-[200px] object-cover rounded-lg" alt="Store Banner">`
-                                );
-                            } else {
-                                $("#preview-banner").html(
-                                    ""); // Clear the preview if no banner exists
-                            }
-                            // Store Tags
-                            if (Array.isArray(response.data.store_tags) && response.data
-                                .store_tags.length > 0) {
-                                $("#tags").html(""); // Clear existing tags
-
-                                setTimeout(() => {
-                                    response.data.store_tags.forEach(tag => {
-                                        $("#tags").append(
-                                            `<div class="rounded-[100px] border flex justify-center items-center text-gray-500 text-sm">
-                                        <p class="px-5 py-1">${tag}</p>
-                                    </div>`
-                                        );
-                                    });
-                                }, 100);
-                            } else {
-                                $("#tags").addClass("hidden");
-                            }
-
-                            // Store Posts (Two-Column Flexbox)
-                            let postContainer = $("#store_posts_container");
-                            postContainer.empty(); // Clear previous images
-
-                            if (response.data.store_posts && response.data.store_posts.length >
-                                0) {
-                                let postHtml =
-                                    `<div class="flex gap-3 my-3">`; // Flex wrap for responsive layout
-
-                                response.data.store_posts.forEach(post => {
-                                    let postImagePath = post.image;
-                                    postHtml += `
-            <div class="w-1/2">
-                <img src="${postImagePath}" class="w-full h-[120px] object-cover rounded-lg" alt="Post Image">
-            </div>
-        `;
-                                });
-
-                                postHtml += `</div>`;
-                                postContainer.append(postHtml);
-                            }
-
-                            // Product Count
-                            $("#product_count").text(response.data.product_count || 0);
-                        } else {
+                        if (!response || !response.data) {
                             alert("Failed to load store data.");
+                            return;
                         }
+
+                        // Store Name
+                        $("#store_name").val(response.data.store_name || "");
+                        $("#storeName").text(response.data.store_name || "My Store");
+
+                        // Profile Image
+                        let profileImagePath = response.data.store_image || "";
+                        $("#profile_picture_preview").html(
+                            profileImagePath ?
+                            `<img src="${profileImagePath}" class="h-[100px] w-[100px] rounded-full object-cover" alt="Profile Picture">` :
+                            ""
+                        );
+
+                        // Store Banners
+                        let previewContainer = $("#preview-container");
+                        previewContainer.empty();
+                        window.removedBannerIds = []; // Reset removed banner IDs
+
+                        if (Array.isArray(response.data.store_banners) && response.data
+                            .store_banners.length > 0) {
+                            response.data.store_banners.forEach(banner => {
+                                previewContainer.append(`
+                                <div class="banner-wrapper relative w-32 h-20 inline-block m-2">
+                                    <img src="${banner.image}" class="w-full h-full object-cover rounded" alt="Store Banner">
+                                    <button type="button"
+                                        onclick="removeExistingBanner('${banner.id}', this)"
+                                        class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs cursor-pointer shadow">
+                                        ✖
+                                    </button>
+                                </div>
+                            `);
+                            });
+                            // $("#upload-prompt").addClass("hidden");
+                        } else {
+                            $("#upload-prompt").removeClass("hidden");
+                        }
+
+                        // Store Tags
+                        if (Array.isArray(response.data.store_tags) && response.data.store_tags
+                            .length > 0) {
+                            $("#tags").html("");
+                            response.data.store_tags.forEach(tag => {
+                                $("#tags").append(
+                                    `<div class="rounded-[100px] border flex justify-center items-center text-gray-500 text-sm">
+                                    <p class="px-5 py-1">${tag}</p>
+                                </div>`
+                                );
+                            });
+                            $("#tags").removeClass("hidden");
+                        } else {
+                            $("#tags").addClass("hidden");
+                        }
+
+                        // Store Posts
+                        let postContainer = $("#store_posts_container");
+                        postContainer.empty();
+
+                        if (Array.isArray(response.data.store_posts) && response.data
+                            .store_posts.length > 0) {
+                            let postHtml = `<div class="flex gap-5 my-3">`;
+                            response.data.store_posts.forEach(post => {
+                                postHtml += `
+                                <div class="w-1/2">
+                                    <img src="${post.image}" class="w-full h-[120px] object-cover rounded-lg" alt="Post Image">
+                                </div>
+                            `;
+                            });
+                            postHtml += `</div>`;
+                            postContainer.append(postHtml);
+                        }
+
+                        // Product Count
+                        $("#product_count").text(response.data.product_count || 0);
                     },
                     error: function() {
                         alert("Failed to fetch store details. Please try again.");
@@ -251,26 +444,35 @@
                 });
             });
 
-
-            //form submission for edit store
+            // Form submission for edit store
             $("#store_form").on("submit", function(e) {
-                e.preventDefault(); // Prevent default form submission
+                e.preventDefault();
 
-                let formData = new FormData(this); // Collect form data including files
-                console.log(formData);
+                let formData = new FormData(this);
+
+                // Add removed server banner IDs
+                formData.append('removed_banners', JSON.stringify(window.removedBannerIds));
+
+                // Add new banner files
+                window.bannerFiles.forEach((file, index) => {
+                    formData.append(`banners[${index}]`, file);
+                });
+
                 $.ajax({
-                    url: "{{ route('editStoreProfile') }}", // Replace with your actual route
+                    url: "{{ route('editStoreProfile') }}",
                     type: "POST",
                     data: formData,
-                    processData: false, // Don't process the files
-                    contentType: false, // Prevent jQuery from setting content type
+                    processData: false,
+                    contentType: false,
                     beforeSend: function() {
-                        $("#submit_store").text("Submitting...").prop("disabled",
-                            true); // Disable button
+                        $("#submit_store").text("Submitting...").prop("disabled", true);
                     },
                     success: function(response) {
-                        console.log(response); // Check response in console
                         if (response.success) {
+                            // Reset files after successful upload
+                            window.bannerFiles = [];
+                            $('#banner_input').val('');
+
                             Swal.fire({
                                 title: 'Success!',
                                 text: response.msg,
@@ -278,12 +480,9 @@
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    location
-                                        .reload(); // Reload page after OK is clicked
+                                    location.reload();
                                 }
                             });
-                            console.log("Request Data:", response
-                                .request_data); // Log request data
                         } else {
                             Swal.fire({
                                 title: 'Error!',
@@ -303,22 +502,27 @@
                         }
                     },
                     complete: function() {
-                        $("#submit_store").text("Submit").prop("disabled",
-                            false); // Re-enable button
+                        $("#submit_store").text("Submit").prop("disabled", false);
                     }
                 });
             });
-        });
-        $(document).ready(function() {
-            let tagsArray = []; // Array to store tags
+            // Store name live update
+            $("#store_name").on("input", function() {
+                $("#storeName").text($(this).val());
+                if (this.value === "") {
+                    $("#storeName").text("My Store");
+                }
+            });
 
+            // Tag management
+            let tagsArray = [];
             $("#add-tag-btn").click(function() {
                 addTag();
             });
 
             $("#tag-input").keypress(function(e) {
-                if (e.which === 13) { // Enter key pressed
-                    e.preventDefault(); // Prevent form submission
+                if (e.which === 13) {
+                    e.preventDefault();
                     addTag();
                 }
             });
@@ -326,17 +530,17 @@
             function addTag() {
                 let tagText = $("#tag-input").val().trim();
                 if (tagText !== "" && !isDuplicateTag(tagText)) {
-                    tagsArray.push(tagText); // Add tag to array
-                    updateTagsHiddenInput(); // Update hidden input
+                    tagsArray.push(tagText);
+                    updateTagsHiddenInput();
 
                     let tag = `
-                <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
-                    <span>${tagText}</span>
-                    <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag" data-tag="${tagText}">&times;</button>
-                </div>
-            `;
-                    $("#tag-container").append(tag).removeClass("hidden"); // Show container
-                    $("#tag-input").val("").focus(); // Clear input & refocus
+                    <div class="flex items-center bg-gray-200 px-3 py-1 rounded-md text-sm">
+                        <span>${tagText}</span>
+                        <button class="ml-2 text-gray-500 hover:text-gray-700 remove-tag" data-tag="${tagText}">&times;</button>
+                    </div>
+                `;
+                    $("#tag-container").append(tag).removeClass("hidden");
+                    $("#tag-input").val("").focus();
                 }
             }
 
@@ -345,27 +549,17 @@
             }
 
             function updateTagsHiddenInput() {
-                $("#tags-hidden").val(tagsArray.join(",")); // Convert array to comma-separated string
+                $("#tags-hidden").val(tagsArray.join(","));
             }
 
             $(document).on("click", ".remove-tag", function() {
                 let tagText = $(this).data("tag");
-                tagsArray = tagsArray.filter(tag => tag !== tagText); // Remove tag from array
-                updateTagsHiddenInput(); // Update hidden input
+                tagsArray = tagsArray.filter(tag => tag !== tagText);
+                updateTagsHiddenInput();
                 $(this).parent().remove();
 
-                if ($("#tag-container").children().length === 0) {
-                    $("#tag-container").addClass("hidden"); // Hide container when empty
-                }
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            $("#store_name").on("input", function() {
-                $("#storeName").text($(this).val());
-                if (this.value === "") {
-                    $("#storeName").text("My Store");
+                if ($("#tag-container").children.length === 0) {
+                    $("#tag-container").addClass("hidden");
                 }
             });
         });
