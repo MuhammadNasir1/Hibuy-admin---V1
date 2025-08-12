@@ -86,7 +86,8 @@
                 <p class="text-green-500 text-sm">⬆ 5% in the last 1 month</p>
             </div>
             <!-- Card 2 -->
-            <div class="bg-white p-4 rounded-lg shadow-md border">
+           <a href="{{ route('products') }}">
+             <div class="bg-white p-4 rounded-lg shadow-md border">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 p-2 rounded-full">
                         <!-- Replace with actual icon -->
@@ -102,10 +103,12 @@
                 <h2 class="text-2xl font-bold mt-2">{{ $data['totalProducts'] ?? 0 }}</h2>
                 <p class="text-green-500 text-sm">⬆ 2% in the last 1 month</p>
             </div>
+           </a>
 
             @if ($userRole !== 'seller')
                 <!-- Card 3 -->
-                <div class="bg-white p-4 rounded-lg shadow-md border">
+               <a href="{{ route('manage_seller') }}">
+                 <div class="bg-white p-4 rounded-lg shadow-md border">
                     <div class="flex items-center gap-3">
                         <div class="bg-blue-100 p-2 rounded-full">
                             <svg width="21" height="26" viewBox="0 0 21 26" fill="none"
@@ -144,9 +147,11 @@
                     <h2 class="text-2xl font-bold mt-2">{{ $data['totalUsers'] ?? 0 }}</h2>
                     <p class="text-green-500 text-sm">⬆ 2% in the last 1 month</p>
                 </div>
+               </a>
 
                 <!-- Card 4 -->
-                <div class="bg-white p-4 rounded-lg shadow-md border">
+               <a href="{{ route('manage_buyer') }}">
+                 <div class="bg-white p-4 rounded-lg shadow-md border">
                     <div class="flex items-center gap-3">
                         <div class="bg-blue-100 p-2 rounded-full">
                             <svg width="25" height="26" viewBox="0 0 25 26" fill="none"
@@ -177,9 +182,11 @@
                     <h2 class="text-2xl font-bold mt-2">{{ $data['totalBuyers'] }}</h2>
                     <p class="text-red-500 text-sm">⬇ 3% in the last 1 month</p>
                 </div>
+               </a>
             @endif
             <!-- Card 5 -->
-            <div class="bg-white p-4 rounded-lg shadow-md border">
+            <a href="{{ route('allorders') }}">
+                <div class="bg-white p-4 rounded-lg shadow-md border">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 p-2 rounded-full">
                         <svg width="25" height="26" viewBox="0 0 25 26" fill="none"
@@ -204,8 +211,10 @@
                 <h2 class="text-2xl font-bold mt-2">{{ $data['totalOrders'] }}</h2>
                 <p class="text-red-500 text-sm">⬇ 3% in the last 1 month</p>
             </div>
+            </a>
 
-            <div class="bg-white p-4 rounded-lg shadow-md border">
+            <a href="{{ route('allorders') }}">
+                <div class="bg-white p-4 rounded-lg shadow-md border">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 p-2 rounded-full">
                         <svg width="25" height="26" viewBox="0 0 25 26" fill="none"
@@ -230,6 +239,7 @@
                 <h2 class="text-2xl font-bold mt-2">{{ $data['totalPendingOrders'] }}</h2>
                 <p class="text-red-500 text-sm">⬇ 3% in the last 1 month</p>
             </div>
+            </a>
 
 
             <div class="bg-white p-4 rounded-lg shadow-md border">
@@ -258,7 +268,8 @@
                 <p class="text-red-500 text-sm">⬇ 3% in the last 1 month</p>
             </div>
             <!-- Card 6 -->
-            <div class="bg-white p-4 rounded-lg shadow-md border">
+           <a href="{{ route('return_orders') }}">
+             <div class="bg-white p-4 rounded-lg shadow-md border">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-100 p-2 rounded-full">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
@@ -274,6 +285,7 @@
                 <h2 class="text-2xl font-bold mt-2">{{ $data['returnedOrders'] }}</h2>
                 <p class="text-green-500 text-sm">⬆ 5% in the last 1 month</p>
             </div>
+           </a>
 
             <!-- Card 7 -->
             <div class="bg-white p-4 rounded-lg shadow-md border">
@@ -452,7 +464,7 @@
 
                     </div>
                 </div>
-                <table class="w-full mt-4">
+                <table class="w-full mt-4 ">
                     <thead>
                         <tr class="text-gray-600 text-sm border-b">
                             <th class="text-left py-3 px-4">Date</th>
