@@ -77,13 +77,34 @@ class OrderController extends Controller
                 }
             }
 
-            // Step 3: Fetch product details from the products table
+            // Step 3: Fetch product details from the products table with seller information
             $productDetails = Products::whereIn('product_id', array_column($filteredOrderItems, 'product_id'))
-                ->select('product_id', 'product_name', 'product_brand', 'product_images', 'is_boosted')
+                ->with(['store.seller.user'])
+                ->select('product_id', 'product_name', 'product_brand', 'product_images', 'is_boosted', 'store_id')
                 ->get()
                 ->mapWithKeys(function ($product) {
                     $images = json_decode($product->product_images, true);
                     $firstImage = is_array($images) && count($images) > 0 ? $images[0] : null;
+
+                    // Get seller information (keys align with KYC JSON schema)
+                    $sellerInfo = null;
+                    if ($product->store && $product->store->seller && $product->store->seller->user) {
+                        $personalInfo = json_decode($product->store->seller->personal_info, true) ?? [];
+                        $storeInfo = json_decode($product->store->store_info, true) ?? [];
+
+                        $sellerInfo = [
+                            'seller_name'   => $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A',
+                            'seller_email'  => $personalInfo['email'] ?? $product->store->seller->user->user_email ?? 'N/A',
+                            'seller_phone'  => $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A',
+                            'store_name'    => $storeInfo['store_name'] ?? 'N/A',
+                            'store_address' => $storeInfo['address'] ?? $storeInfo['store_address'] ?? 'N/A',
+                        ];
+
+                        // Debug log
+                        \Log::info('Seller info for product ' . $product->product_id . ':', $sellerInfo);
+                    } else {
+                        \Log::info('No seller info found for product ' . $product->product_id);
+                    }
 
                     return [
                         $product->product_id => [
@@ -91,6 +112,7 @@ class OrderController extends Controller
                             'product_brand' => $product->product_brand,
                             'product_image' => $firstImage,
                             'is_boosted' => $product->is_boosted,
+                            'seller_info' => $sellerInfo,
                         ]
                     ];
                 });
@@ -156,10 +178,8 @@ class OrderController extends Controller
             $userId = $userDetails['user_id'];
             $userRole = $userDetails['user_role']; // Assuming 'admin' or 'seller'
 
-            // Step 2: If admin, fetch all orders with products included
+            // Step 2: If admin, fetch all orders and attach seller summary (name/phone) for list view
             if ($userRole === 'admin') {
-                $productIds = Products::pluck('product_id')->toArray(); // All product IDs
-
                 $orders = Order::select([
                     'order_id',
                     'user_id',
@@ -179,25 +199,32 @@ class OrderController extends Controller
                     ->with('rider:id,rider_name,vehicle_type')
                     ->orderBy('order_id', 'desc')
                     ->get()
-                    ->map(function ($order) use ($productIds) {
-                        $orderItems = json_decode($order->order_items, true);
+                    ->map(function ($order) {
+                        $orderItems = json_decode($order->order_items, true) ?? [];
+                        if (empty($orderItems)) {
+                            return $order;
+                        }
+                        // Ensure view receives array not JSON string
+                        $order->order_items = $orderItems;
 
-                        // Filter items that exist in all products
-                        $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
-                            return in_array($item['product_id'], $productIds);
-                        });
-
-                        if (empty($filteredOrderItems)) {
-                            return null;
+                        // Take first product to infer seller/store
+                        $firstProductId = $orderItems[0]['product_id'] ?? null;
+                        if ($firstProductId) {
+                            $product = Products::with(['store.seller.user'])->find($firstProductId);
+                            if ($product && $product->store && $product->store->seller) {
+                                $personalInfo = json_decode($product->store->seller->personal_info, true) ?? [];
+                                $order->seller_name_for_list = $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A';
+                                $order->seller_phone_for_list = $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A';
+                                $storeInfo = json_decode($product->store->store_info, true) ?? [];
+                                $order->store_name_for_list = $storeInfo['store_name'] ?? null; // might be useful client-side later
+                            }
                         }
 
-                        $grandTotal = array_sum(array_column($filteredOrderItems, 'price'));
-
-                        $order->order_items = array_values($filteredOrderItems);
+                        // Compute total from items
+                        $grandTotal = array_sum(array_map(function ($i) { return ($i['quantity'] ?? 1) * ($i['price'] ?? 0); }, $orderItems));
                         $order->grand_total = $grandTotal;
-
                         return $order;
-                    })->filter();
+                    });
                 return view('pages.Orders', compact('orders'));
             }
 
@@ -248,7 +275,6 @@ class OrderController extends Controller
 
                     return $order;
                 })->filter();
-            return view('pages.Orders', compact('orders'));
             return view('pages.Orders', compact('orders'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

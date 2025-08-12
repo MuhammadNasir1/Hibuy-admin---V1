@@ -25,7 +25,7 @@
                 'Sr.',
                 'ID / Track Number',
                 'Customer / Phone',
-                'Rider',
+                session('user_details.user_role') == 'admin' ? 'Seller / Phone' : 'Rider',
                 'Bill Amount',
                 'Date',
                 'Status',
@@ -57,13 +57,23 @@
                         </td>
 
                         <td class="px-4 py-2">
-                            @if ($order->rider)
-                                <span class="text-gray-700 font-medium">{{ $order->rider->rider_name }}</span>
-                                @if ($order->rider->vehicle_type)
-                                    <br><span class="text-xs text-gray-500">({{ $order->rider->vehicle_type }})</span>
+                            @if (session('user_details.user_role') == 'admin')
+                                @if (!empty($order->seller_name_for_list))
+                                    <span class="text-gray-700 font-medium">{{ $order->seller_name_for_list }}</span>
+                                    <br>
+                                    <a href="tel:{{ $order->seller_phone_for_list }}" class="text-blue-600 text-sm">{{ $order->seller_phone_for_list }}</a>
+                                @else
+                                    <span class="text-gray-400 text-sm">N/A</span>
                                 @endif
                             @else
-                                <span class="text-gray-400 text-sm">No rider assigned</span>
+                                @if ($order->rider)
+                                    <span class="text-gray-700 font-medium">{{ $order->rider->rider_name }}</span>
+                                    @if ($order->rider->vehicle_type)
+                                        <br><span class="text-xs text-gray-500">({{ $order->rider->vehicle_type }})</span>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400 text-sm">No rider assigned</span>
+                                @endif
                             @endif
                         </td>
 
@@ -303,11 +313,53 @@
                         </table>
                     </div>
 
+                    <!-- Seller Details Section (Admin Only) -->
+                    @if (session('user_details.user_role') == 'admin')
+                    <div class="mb-3 pt-2">
+                        <button id="sellerDropdownButton"
+                            class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
+                            <span>Seller Details</span>
+                            <svg id="sellerDropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                        </button>
+                        <div id="sellerDropdownContent" class="mt-2 hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-3 font-semibold">Seller Name:</td>
+                                            <td class="p-3" id="seller-name"></td>
+                                            <td class="p-3 font-semibold">Store Name:</td>
+                                            <td class="p-3" id="store-name"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-semibold">Seller Email:</td>
+                                            <td class="p-3" id="seller-email"></td>
+                                            <td class="p-3 font-semibold">Store Address:</td>
+                                            <td class="p-3" id="store-address"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-semibold">Seller Phone:</td>
+                                            <td class="p-3" id="seller-phone"></td>
+                                            <td class="p-3 font-semibold"></td>
+                                            <td class="p-3"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Order Items Table -->
                     <div class="mb-3 pt-2">
                         <button id="dropdownButton"
                             class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
-                            <span>Details</span>
+                            <span>Product Details</span>
                             <svg id="dropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -563,6 +615,34 @@
                             $("#rider-phone").text('N/A');
                             $("#rider-email").text('N/A');
                         }
+
+                        // Populate seller details (Admin only)
+                        if (user.user_role === 'admin' && response.order_items && response.order_items.length > 0) {
+                            // Get seller info from the first item (assuming all items are from the same seller)
+                            const firstItem = response.order_items[0];
+                            console.log('First item seller info:', firstItem.seller_info); // Debug log
+                            
+                            if (firstItem.seller_info) {
+                                $("#seller-name").text(firstItem.seller_info.seller_name || 'N/A');
+                                $("#seller-email").text(firstItem.seller_info.seller_email || 'N/A');
+                                $("#seller-phone").text(firstItem.seller_info.seller_phone || 'N/A');
+                                $("#store-name").text(firstItem.seller_info.store_name || 'N/A');
+                                $("#store-address").text(firstItem.seller_info.store_address || 'N/A');
+                            } else {
+                                $("#seller-name").text('N/A');
+                                $("#seller-email").text('N/A');
+                                $("#seller-phone").text('N/A');
+                                $("#store-name").text('N/A');
+                                $("#store-address").text('N/A');
+                            }
+                        } else if (user.user_role === 'admin') {
+                            // Clear seller details if no items
+                            $("#seller-name").text('N/A');
+                            $("#seller-email").text('N/A');
+                            $("#seller-phone").text('N/A');
+                            $("#store-name").text('N/A');
+                            $("#store-address").text('N/A');
+                        }
                     },
                     error: function() {
                         alert("Failed to fetch order details. Please try again.");
@@ -692,6 +772,18 @@
             dropdownContent.classList.toggle('hidden');
             dropdownArrow.classList.toggle('rotate-180');
         });
+
+        // Seller Details Dropdown
+        const sellerDropdownButton = document.getElementById('sellerDropdownButton');
+        const sellerDropdownContent = document.getElementById('sellerDropdownContent');
+        const sellerDropdownArrow = document.getElementById('sellerDropdownArrow');
+
+        if (sellerDropdownButton) {
+            sellerDropdownButton.addEventListener('click', () => {
+                sellerDropdownContent.classList.toggle('hidden');
+                sellerDropdownArrow.classList.toggle('rotate-180');
+            });
+        }
 
         // Add event listener for video input, but only if it exists
         const videoInput = document.getElementById('videoInput');
