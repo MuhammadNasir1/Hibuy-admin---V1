@@ -23,10 +23,9 @@
         @php
             $headers = [
                 'Sr.',
-                'ID / Track Id',
-                'Customer',
-                'Phone Number',
-                'Address',
+                'ID / Track Number',
+                'Customer / Phone',
+                session('user_details.user_role') == 'admin' ? 'Seller / Phone' : 'Rider',
                 'Bill Amount',
                 'Date',
                 'Status',
@@ -51,12 +50,32 @@
                         <td class="px-4 py-2 text-center font-medium">{{ $displayCounter++ }}</td>
                         <td class="px-4 py-2 text-center">
                             <span class="text-gray-700 font-semibold">{{ $order->order_id }}</span> /
-                            <span class="text-gray-500">{{ $order->tracking_id }}</span>
+                            <span class="text-gray-500">{{ $order->tracking_number ?? 'Not Assigned' }}</span>
                         </td>
-                        <td class="px-4 py-2">{{ ucwords($order->customer_name) }}</td>
-                        <td class="px-4 py-2">{{ $order->phone }}</td>
-                        <td class="px-4 py-2">{{ ucwords($order->address) }}</td>
+                        <td class="px-4 py-2">{{ ucwords($order->customer_name) }} <br> <a href="tel:{{ $order->phone }}"
+                                class="font-semibold pt-1 text-blue-600">{{ $order->phone }}</span>
+                        </td>
 
+                        <td class="px-4 py-2">
+                            @if (session('user_details.user_role') == 'admin')
+                                @if (!empty($order->seller_name_for_list))
+                                    <span class="text-gray-700 font-medium">{{ $order->seller_name_for_list }}</span>
+                                    <br>
+                                    <a href="tel:{{ $order->seller_phone_for_list }}" class="text-blue-600 text-sm">{{ $order->seller_phone_for_list }}</a>
+                                @else
+                                    <span class="text-gray-400 text-sm">N/A</span>
+                                @endif
+                            @else
+                                @if ($order->rider)
+                                    <span class="text-gray-700 font-medium">{{ $order->rider->rider_name }}</span>
+                                    @if ($order->rider->vehicle_type)
+                                        <br><span class="text-xs text-gray-500">({{ $order->rider->vehicle_type }})</span>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400 text-sm">No rider assigned</span>
+                                @endif
+                            @endif
+                        </td>
 
                         {{-- Show Calculated Grand Total --}}
                         <td class="px-4 py-2 font-semibold text-green-600">
@@ -137,13 +156,12 @@
                                     </select>
                                 </div>
 
-                                {{-- Courier Selection --}}
+                                {{-- Rider Selection --}}
                                 <div>
-                                    <label for="courier_id"
-                                        class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
-                                    <select id="courier_id" name="courier_id" required
+                                    <label for="rider_id" class="block mb-1 text-sm font-normal text-gray-600">Rider</label>
+                                    <select id="rider_id" name="rider_id" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                                        <option value="" selected>Select Courier</option>
+                                        <option value="" selected>Select Rider</option>
                                     </select>
                                 </div>
 
@@ -273,15 +291,75 @@
                                     <td class="p-3 font-semibold">Grand Total:</td>
                                     <td class="p-3 font-bold text-green-600" id="grand-total"></td>
                                 </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <hr>
+                                        <h3 class="font-bold pl-2 pt-3 text-xl text-primary">Rider Details</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Rider:</td>
+                                    <td class="p-3" id="rider-name"></td>
+                                    <td class="p-3 font-semibold">Vehicle:</td>
+                                    <td class="p-3" id="rider-vehicle"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Rider Phone:</td>
+                                    <td class="p-3" id="rider-phone"></td>
+                                    <td class="p-3 font-semibold">Rider Email:</td>
+                                    <td class="p-3" id="rider-email"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Seller Details Section (Admin Only) -->
+                    @if (session('user_details.user_role') == 'admin')
+                    <div class="mb-3 pt-2">
+                        <button id="sellerDropdownButton"
+                            class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
+                            <span>Seller Details</span>
+                            <svg id="sellerDropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                        </button>
+                        <div id="sellerDropdownContent" class="mt-2 hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-3 font-semibold">Seller Name:</td>
+                                            <td class="p-3" id="seller-name"></td>
+                                            <td class="p-3 font-semibold">Store Name:</td>
+                                            <td class="p-3" id="store-name"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-semibold">Seller Email:</td>
+                                            <td class="p-3" id="seller-email"></td>
+                                            <td class="p-3 font-semibold">Store Address:</td>
+                                            <td class="p-3" id="store-address"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-semibold">Seller Phone:</td>
+                                            <td class="p-3" id="seller-phone"></td>
+                                            <td class="p-3 font-semibold"></td>
+                                            <td class="p-3"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Order Items Table -->
                     <div class="mb-3 pt-2">
                         <button id="dropdownButton"
                             class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
-                            <span>Details</span>
+                            <span>Product Details</span>
                             <svg id="dropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -396,18 +474,19 @@
                         }
 
                         if (user.user_role === 'admin') {
-                            const couriers = response.couriers;
-                            const selectBox = document.getElementById('courier_id');
+                            const riders = response.riders;
+                            const selectBox = document.getElementById('rider_id');
                             selectBox.innerHTML =
-                                '<option value="" selected>Select Courier</option>';
-                            couriers.forEach(courier => {
+                                '<option value="" selected>Select Rider</option>';
+                            riders.forEach(rider => {
                                 const option = document.createElement('option');
-                                option.value = courier.courier_id;
-                                option.textContent = courier.courier_name;
+                                option.value = rider.id;
+                                option.textContent =
+                                    `${rider.rider_name} (${rider.vehicle_type || 'No Vehicle'})`;
                                 selectBox.appendChild(option);
                             });
-                            if (response.selected_courier_id) {
-                                selectBox.value = response.selected_courier_id;
+                            if (response.selected_rider_id) {
+                                selectBox.value = response.selected_rider_id;
                             }
                         }
 
@@ -474,15 +553,15 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                                        <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                                        <td class="p-3">
-                                                                            ${item.status_video ? `
+                                                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                                <td class="p-3">
+                                                                                    ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                                        </td>
-                                                                    ` : ''}
+                                                                                </td>
+                                                                            ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
@@ -520,6 +599,50 @@
                         $("#total-bill").text("Rs " + total.toFixed(2));
                         $("#fee").text("Rs " + deliveryFee.toFixed(2));
                         $("#final-total").text("Rs " + grandTotal.toFixed(2));
+
+                        // Populate rider details
+                        if (response.rider_details) {
+                            $("#rider-name").text(response.rider_details.rider_name);
+                            $("#rider-vehicle").text(response.rider_details.vehicle_type ||
+                                'Not specified');
+                            $("#rider-phone").text(response.rider_details.phone ||
+                                'Not provided');
+                            $("#rider-email").text(response.rider_details.rider_email ||
+                                'Not provided');
+                        } else {
+                            $("#rider-name").text('No rider assigned');
+                            $("#rider-vehicle").text('N/A');
+                            $("#rider-phone").text('N/A');
+                            $("#rider-email").text('N/A');
+                        }
+
+                        // Populate seller details (Admin only)
+                        if (user.user_role === 'admin' && response.order_items && response.order_items.length > 0) {
+                            // Get seller info from the first item (assuming all items are from the same seller)
+                            const firstItem = response.order_items[0];
+                            console.log('First item seller info:', firstItem.seller_info); // Debug log
+                            
+                            if (firstItem.seller_info) {
+                                $("#seller-name").text(firstItem.seller_info.seller_name || 'N/A');
+                                $("#seller-email").text(firstItem.seller_info.seller_email || 'N/A');
+                                $("#seller-phone").text(firstItem.seller_info.seller_phone || 'N/A');
+                                $("#store-name").text(firstItem.seller_info.store_name || 'N/A');
+                                $("#store-address").text(firstItem.seller_info.store_address || 'N/A');
+                            } else {
+                                $("#seller-name").text('N/A');
+                                $("#seller-email").text('N/A');
+                                $("#seller-phone").text('N/A');
+                                $("#store-name").text('N/A');
+                                $("#store-address").text('N/A');
+                            }
+                        } else if (user.user_role === 'admin') {
+                            // Clear seller details if no items
+                            $("#seller-name").text('N/A');
+                            $("#seller-email").text('N/A');
+                            $("#seller-phone").text('N/A');
+                            $("#store-name").text('N/A');
+                            $("#store-address").text('N/A');
+                        }
                     },
                     error: function() {
                         alert("Failed to fetch order details. Please try again.");
@@ -532,7 +655,7 @@
                 let formData = {
                     _token: $('input[name="_token"]').val(),
                     order_status: $('#order_status').val(),
-                    courier_id: $('#courier_id').val(),
+                    rider_id: $('#rider_id').val(),
                     tracking_number: $('#tracking_number').val(),
                     order_id: $('#edit_orderstatus_id').val()
                 };
@@ -649,6 +772,18 @@
             dropdownContent.classList.toggle('hidden');
             dropdownArrow.classList.toggle('rotate-180');
         });
+
+        // Seller Details Dropdown
+        const sellerDropdownButton = document.getElementById('sellerDropdownButton');
+        const sellerDropdownContent = document.getElementById('sellerDropdownContent');
+        const sellerDropdownArrow = document.getElementById('sellerDropdownArrow');
+
+        if (sellerDropdownButton) {
+            sellerDropdownButton.addEventListener('click', () => {
+                sellerDropdownContent.classList.toggle('hidden');
+                sellerDropdownArrow.classList.toggle('rotate-180');
+            });
+        }
 
         // Add event listener for video input, but only if it exists
         const videoInput = document.getElementById('videoInput');
