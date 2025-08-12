@@ -47,4 +47,25 @@ class ApproveProductsController extends Controller
             'product_ids' => $productIds,
         ]);
     }
+
+    public function reject(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|integer',
+            'rejection_note' => 'required|string|max:1000',
+        ]);
+
+        $updated = Products::where('product_id', $validated['product_id'])
+            ->update([
+                'is_approved' => false,
+                'is_rejected' => true,
+                'product_status' => 0,
+                'rejection_note' => $validated['rejection_note'],
+            ]);
+
+        return response()->json([
+            'success' => (bool) $updated,
+            'product_id' => $validated['product_id'],
+        ]);
+    }
 }
