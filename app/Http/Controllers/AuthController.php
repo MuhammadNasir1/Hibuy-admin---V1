@@ -49,7 +49,10 @@ class AuthController extends Controller
                 $data['totalBuyers'] = User::where('user_role', 'customer')->count();
                 $data['totalOrders'] = Order::count();
                 $data['returnedOrders'] = Order::where('order_status', 'returned')->count();
-                $data['totalProducts'] = Products::count();
+                $data['totalProducts'] = $productCount = Products::Join('categories', 'products.product_category', '=', 'categories.id')
+                    ->where('products.product_status', 1)
+                    ->count();
+
                 $data['totalReviews'] = Reviews::count();
                 $data['totalQueries'] = Query::count();
 
@@ -96,11 +99,11 @@ class AuthController extends Controller
                         }
                     }
 
-                    return (object)[
-                        'store_id'      => $store->store_id,
-                        'store_name'    => $storeName,
-                        'logo'          => $storeLogo,
-                        'items_sold'    => $totalSold,
+                    return (object) [
+                        'store_id' => $store->store_id,
+                        'store_name' => $storeName,
+                        'logo' => $storeLogo,
+                        'items_sold' => $totalSold,
                         'total_earning' => $totalEarning,
                     ];
                 })
@@ -131,12 +134,45 @@ class AuthController extends Controller
                         $data['totalProfit'] += ($price - $cost) * $quantity;
                     }
                 }
+
+                $latestOrders = Order::select([
+                    'order_id',
+                    'user_id',
+                    'tracking_id',
+                    'order_items',
+                    'total',
+                    'delivery_fee',
+                    'customer_name',
+                    'phone',
+                    'address',
+                    'status',
+                    'order_status',
+                    'order_date',
+                    'created_at'
+                ])
+                    ->orderBy('order_id', 'desc') // latest first
+                    ->limit(5) // only get 5 rows
+                    ->get()
+                    ->map(function ($order) {
+                        return (object) [
+                            'date' => $order->created_at->format('M d'),
+                            'customer_name' => $order->customer_name,
+                            'status' => $order->status,
+                            'total' => $order->total, // using total directly from DB
+                            'phone' => $order->phone,
+                        ];
+                    });
+
                 break;
             case 'seller':
                 $sellerId = Seller::where('user_id', $userId)->value('seller_id');
                 $storeId = Store::where('seller_id', $sellerId)->value('store_id');
 
-                $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
+                $productIds = $products = Products::where('store_id', $storeId)
+                    ->where('product_status', 1)
+                    ->pluck('product_id')
+                    ->toArray();
+
 
                 // Product count
                 $data['totalProducts'] = count($productIds);
@@ -226,7 +262,7 @@ class AuthController extends Controller
                             }
                         }
 
-                        return (object)[
+                        return (object) [
                             'product_id' => $product->product_id,
                             'product_name' => $product->product_name,
                             'image' => $firstImage,
@@ -237,7 +273,59 @@ class AuthController extends Controller
                     ->sortByDesc('total_sold')
                     ->take(5)
                     ->values();
+
+
+                $storeId = Store::where('seller_id', $sellerId)->value('store_id');
+                $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
+
+                $latestOrders = Order::select([
+                    'order_id',
+                    'user_id',
+                    'tracking_id',
+                    'order_items',
+                    'total',
+                    'delivery_fee',
+                    'customer_name',
+                    'phone',
+                    'address',
+                    'status',
+                    'order_status',
+                    'order_date',
+                    'created_at'
+                ])
+                    ->orderBy('order_id', 'desc')
+                    ->get()
+                    ->map(function ($order) use ($productIds) {
+                        $orderItems = json_decode($order->order_items, true) ?? [];
+
+
+                        $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
+                            return in_array($item['product_id'], $productIds);
+                        });
+
+
+                        if (empty($filteredOrderItems)) {
+                            return null;
+                        }
+
+
+                        $grandTotal = array_sum(array_column($filteredOrderItems, 'price'));
+
+
+                        return (object) [
+                            'date' => $order->created_at->format('M d'),
+                            'customer_name' => $order->customer_name,
+                            'status' => $order->status,
+                            'total' => $order->total,
+                            'phone' => $order->phone,
+                        ];
+                    })
+                    ->filter()
+                    ->take(5)
+                    ->values();
+
                 break;
+
 
             case 'freelancer':
                 // Get freelancer-specific info
@@ -247,7 +335,7 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('error', 'Invalid user role.');
         }
 
-        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts'));
+        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts', 'latestOrders'));
     }
 
 
@@ -335,14 +423,14 @@ class AuthController extends Controller
             ], 401);
         }
 
-     if ($user->user_role === 'seller' && $user->user_status == 0) {
-        return response()->json([
-            'success' => false,
-            'status' => 'disabled',
-            'message' => 'Your account is disabled. Please contact the administrator.',
-            'disabled_reason' => $user->disabled_reason ?? 'Not specified'
-        ], 403);
-    }
+        if ($user->user_role === 'seller' && $user->user_status == 0) {
+            return response()->json([
+                'success' => false,
+                'status' => 'disabled',
+                'message' => 'Your account is disabled. Please contact the administrator.',
+                'disabled_reason' => $user->disabled_reason ?? 'Not specified'
+            ], 403);
+        }
 
         // Get seller KYC status
         $kyc_status = Seller::where('user_id', $user->user_id)->first();

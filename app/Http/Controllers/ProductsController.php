@@ -777,7 +777,7 @@ class ProductsController extends Controller
         }
 
         $query = DB::table('products')
-            ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
+            ->Join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
             ->select(
                 'products.product_id',
