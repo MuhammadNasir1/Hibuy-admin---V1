@@ -98,6 +98,7 @@ Route::middleware(['custom_auth'])->group(function () {
 
             Route::get('/approve-products', [ApproveProductsController::class, 'view'])->name('approveProducts');
             Route::post('/admin/products/approve', [ApproveProductsController::class, 'approve'])->name('admin.products.approve');
+            Route::post('/admin/products/reject', [ApproveProductsController::class, 'reject'])->name('admin.products.reject');
 
 
             Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile'])->name('editStoreProfile');

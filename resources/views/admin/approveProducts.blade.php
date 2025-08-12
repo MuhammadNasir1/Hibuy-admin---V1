@@ -21,17 +21,7 @@
             </div>
         </div>
         @php
-            $headers = [
-                'Sr.',
-                'Store Name',
-                'Seller Name',
-                'Phone Number',
-                'Email',
-                'Address',
-                'Store Type',
-                'Status',
-                'Action',
-            ];
+            $headers = ['Sr.', 'Store Name', 'Seller Name', 'Phone Number', 'Email', 'Store Type', 'Status', 'Action'];
         @endphp
 
         <x-table :headers="$headers">
@@ -47,10 +37,6 @@
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $sellerInfo['full_name'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $storeInfo['phone_no'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $storeInfo['email'] ?? 'N/A' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900">
-                            {{ $storeInfo['address'] ?? 'N/A' }}, {{ $storeInfo['city'] ?? '' }},
-                            {{ $storeInfo['province'] ?? '' }}
-                        </td>
                         <td class="px-6 py-4 text-sm text-gray-900">{{ $storeInfo['type'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4">
                             @if ($store->store_status == 1)
@@ -84,26 +70,24 @@
                         <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
                             <tbody>
                                 <tr>
-                                    <td class="p-3 font-semibold">Store ID:</td>
-                                    <td class="p-3" id="store-id"></td>
                                     <td class="p-3 font-semibold">Store Name:</td>
                                     <td class="p-3" id="store-name"></td>
-                                </tr>
-                                <tr>
                                     <td class="p-3 font-semibold">Seller Name:</td>
                                     <td class="p-3" id="seller-name"></td>
+                                </tr>
+                                <tr>
                                     <td class="p-3 font-semibold">Phone Number:</td>
                                     <td class="p-3" id="store-phone"></td>
-                                </tr>
-                                <tr>
                                     <td class="p-3 font-semibold">Email:</td>
                                     <td class="p-3" id="store-email"></td>
-                                    <td class="p-3 font-semibold">Store Type:</td>
-                                    <td class="p-3" id="store-type"></td>
                                 </tr>
                                 <tr>
+                                    <td class="p-3 font-semibold">Store Type:</td> 
+                                    <td class="p-3" id="store-type"></td>
                                     <td class="p-3 font-semibold">Address:</td>
                                     <td class="p-3" id="store-address" colspan="3"></td>
+                                </tr>
+                                <tr>
                                 </tr>
                                 <tr>
                                     <td class="p-3 font-semibold">Status:</td>
@@ -133,7 +117,9 @@
                     <div id="products-table-section" class="mt-4 hidden">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-lg font-semibold text-gray-700">Store Products</h3>
-                            <button id="approve-selected-btn" class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50" disabled>
+                            <button id="approve-selected-btn"
+                                class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50"
+                                disabled>
                                 Approve Selected
                             </button>
                         </div>
@@ -157,6 +143,34 @@
                                     <!-- Products will be populated here -->
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- Reject Modal -->
+                    <div id="reject-modal" class="fixed inset-0 bg-black bg-opacity-40 hidden z-[60]">
+                        <div class="flex items-center justify-center min-h-screen p-4">
+                            <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                                <div class="flex justify-between items-center p-4 border-b">
+                                    <h3 class="text-lg font-semibold text-gray-700">Reject Product</h3>
+                                    <button id="reject-close" class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="p-4 space-y-3">
+                                    <input type="hidden" id="reject-product-id">
+                                    <label class="block text-sm text-gray-600">Rejection note</label>
+                                    <textarea id="reject-note" class="w-full border rounded p-2 text-sm" rows="4" placeholder="Enter reason..."></textarea>
+                                    <div class="flex justify-end gap-2 pt-2">
+                                        <button id="reject-cancel"
+                                            class="px-3 py-2 rounded border text-gray-700">Cancel</button>
+                                        <button id="reject-submit"
+                                            class="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -250,7 +264,7 @@
                                         </div>
 
                                         <!-- Summary Cards -->
-                             
+
 
                                         <!-- Detailed Table -->
                                         <div id="variations-details" class="hidden">
@@ -296,6 +310,7 @@
         // Track selected products
         let selectedProductIds = new Set();
         const approveEndpoint = "{{ route('admin.products.approve') }}";
+        const rejectEndpoint = "{{ route('admin.products.reject') }}";
 
         function viewStoreDetails(storeId) {
             // Find the store data from the current page data
@@ -307,7 +322,6 @@
                 const sellerInfo = JSON.parse(store.seller.personal_info);
 
                 // Populate modal with store details
-                document.getElementById('store-id').textContent = store.store_id;
                 document.getElementById('store-name').textContent = storeInfo.store_name || 'N/A';
                 document.getElementById('seller-name').textContent = sellerInfo.full_name || 'N/A';
                 document.getElementById('store-phone').textContent = storeInfo.phone_no || 'N/A';
@@ -340,9 +354,17 @@
                     const row = document.createElement('tr');
                     row.className = 'border-b hover:bg-gray-50';
 
-                    const statusBadge = product.product_status == 1 ?
-                        '<span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Active</span>' :
-                        '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Inactive</span>';
+                    let statusBadge = '';
+                    if (product.is_rejected == 1) {
+                        statusBadge =
+                            '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Rejected</span>';
+                    } else if (product.is_approved == 1) {
+                        statusBadge =
+                            '<span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Approved</span>';
+                    } else {
+                        statusBadge =
+                            '<span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Pending</span>';
+                    }
 
                     row.innerHTML = `
                           <td class="p-3 border w-10">
@@ -354,10 +376,14 @@
                           <td class="p-3 border">$${product.product_price || '0'}</td>
                           <td class="p-3 border">${product.product_stock || '0'}</td>
                           <td class="p-3 border">${statusBadge}</td>
-                          <td class="p-3 border">
+                          <td class="p-3 border flex gap-3">
                               <button onclick="viewProductDetails(${product.product_id})" 
                                       class="text-blue-600 hover:text-blue-900 text-sm">
                                   View
+                              </button>
+                              <button onclick="openRejectModal(${product.product_id})" 
+                                      class="text-red-600 hover:text-red-800 text-sm">
+                                  Reject
                               </button>
                           </td>
                       `;
@@ -435,7 +461,9 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     },
-                    body: JSON.stringify({ product_ids: ids })
+                    body: JSON.stringify({
+                        product_ids: ids
+                    })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -456,7 +484,8 @@
                     // If table is empty, render empty row and disable select-all
                     if (tableBody.children.length === 0) {
                         const row = document.createElement('tr');
-                        row.innerHTML = '<td colspan="8" class="p-3 text-center text-gray-500 border">No products found</td>';
+                        row.innerHTML =
+                            '<td colspan="8" class="p-3 text-center text-gray-500 border">No products found</td>';
                         tableBody.appendChild(row);
                         const selectAll = document.getElementById('select-all-products');
                         if (selectAll) selectAll.disabled = true;
@@ -479,9 +508,9 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const base = 'rounded-md shadow px-4 py-3 text-sm flex items-center gap-2 border';
-            const styles = type === 'success'
-                ? 'bg-green-50 text-green-800 border-green-200'
-                : 'bg-red-50 text-red-800 border-red-200';
+            const styles = type === 'success' ?
+                'bg-green-50 text-green-800 border-green-200' :
+                'bg-red-50 text-red-800 border-red-200';
             toast.className = `${base} ${styles}`;
             toast.innerHTML = `
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -607,7 +636,7 @@
                 const avgPrice = variations.reduce((sum, v) => sum + (parseFloat(v.price) || 0), 0) / totalVariations;
 
                 // Summary Card 1: Total Variations
-            
+
                 // Create detailed table rows
                 variations.forEach((variation, index) => {
                     const row = document.createElement('tr');
@@ -616,9 +645,17 @@
                     // Get image for this variation
                     const imageUrl = images && images.length > 0 ? images[0] : '/asset/defualt-image.png';
 
-                    const statusBadge = product.product_status == 1 ?
-                        '<span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Active</span>' :
-                        '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Inactive</span>';
+                    let statusBadge = '';
+                    if (product.is_rejected == 1) {
+                        statusBadge =
+                            '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Rejected</span>';
+                    } else if (product.is_approved == 1) {
+                        statusBadge =
+                            '<span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Approved</span>';
+                    } else {
+                        statusBadge =
+                            '<span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Pending</span>';
+                    }
 
                     const variationPrice = variation.price || product.product_price || '0';
                     const variationStock = variation.stock || product.product_stock || '0';
@@ -645,9 +682,17 @@
             } else {
                 // If no variations, show the main product as a single row
                 const imageUrl = images && images.length > 0 ? images[0] : '/asset/defualt-image.png';
-                const statusBadge = product.product_status == 1 ?
-                    '<span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Active</span>' :
-                    '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Inactive</span>';
+                let statusBadge = '';
+                if (product.is_rejected == 1) {
+                    statusBadge =
+                        '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Rejected</span>';
+                } else if (product.is_approved == 1) {
+                    statusBadge =
+                        '<span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Approved</span>';
+                } else {
+                    statusBadge =
+                        '<span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Pending</span>';
+                }
 
                 // Create summary card for single product
                 const summaryCard = document.createElement('div');
@@ -720,6 +765,69 @@
             document.getElementById('image-modal').classList.add('hidden');
         }
 
+        // Reject handling
+        function openRejectModal(productId) {
+            document.getElementById('reject-product-id').value = productId;
+            document.getElementById('reject-note').value = '';
+            document.getElementById('reject-modal').classList.remove('hidden');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('reject-modal').classList.add('hidden');
+        }
+
+        async function submitReject() {
+            const productId = document.getElementById('reject-product-id').value;
+            const note = document.getElementById('reject-note').value.trim();
+            if (!note) {
+                showToast('Please enter a rejection note.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(rejectEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        product_id: Number(productId),
+                        rejection_note: note
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Update the status in the table instead of removing the row
+                    const tableBody = document.getElementById('products-table-body');
+                    const cb = tableBody.querySelector(`.product-checkbox[value="${productId}"]`);
+                    if (cb) {
+                        const row = cb.closest('tr');
+                        if (row) {
+                            // Update the status cell to show "Rejected"
+                            const statusCell = row.querySelector('td:nth-child(7)'); // Status is in 7th column
+                            if (statusCell) {
+                                statusCell.innerHTML =
+                                    '<span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Rejected</span>';
+                            }
+                            // Disable the checkbox since it's now rejected
+                            cb.disabled = true;
+                            cb.checked = false;
+                            selectedProductIds.delete(String(productId));
+                        }
+                    }
+                    syncSelectAllCheckbox();
+                    toggleApproveBtn();
+                    closeRejectModal();
+                    showToast('Product rejected successfully.', 'success');
+                } else {
+                    showToast('Failed to reject product.', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Error while rejecting product.', 'error');
+            }
+        }
+
         // Add event listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle products table
@@ -773,6 +881,14 @@
             // Approve Selected button
             document.getElementById('approve-selected-btn').addEventListener('click', function() {
                 approveSelectedProducts();
+            });
+
+            // Reject modal events
+            document.getElementById('reject-submit').addEventListener('click', submitReject);
+            document.getElementById('reject-cancel').addEventListener('click', closeRejectModal);
+            document.getElementById('reject-close').addEventListener('click', closeRejectModal);
+            document.getElementById('reject-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeRejectModal();
             });
         });
     </script>
