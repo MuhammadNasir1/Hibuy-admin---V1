@@ -6,15 +6,14 @@ use App\Models\Store;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Query;
-use Carbon\Carbon;
+use App\Models\product_category;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class apiStoreController extends Controller
 {
     public function getStoreDetails(Request $request)
     {
         try {
-            // Get store_id from the request
             $store_id = $request->query('store_id');
 
             if (!$store_id) {
@@ -39,14 +38,10 @@ class apiStoreController extends Controller
             // Decode store details
             $storeProfileDetail = json_decode($store->store_profile_detail, true);
             $storeInfo = json_decode($store->store_info, true);
-
-            // Prioritize store profile details if available
             $storeData = $storeProfileDetail ?: $storeInfo;
+            $storeData['store_rating'] = 4.5;
 
-            // Add static store_rating into the store data
-            $storeData['store_rating'] = 4.5; // You can change 4.5 to any default rating you want
-
-            // Fetch all products of the store
+            // Fetch products
             $products = Products::select(
                 "product_id",
                 "store_id",
@@ -60,35 +55,70 @@ class apiStoreController extends Controller
                 "product_images"
             )
                 ->where('store_id', $store_id)
-                ->with(['category:id,name']) // Fetch category details
+                ->with(['category:id,name'])
                 ->get();
 
-            // Process product images and add category name
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
                 unset($product->product_images);
 
-                // Default product rating
                 $product->product_rating = 4.5;
-
-                // Add category name
                 $product->category_name = $product->category->name ?? null;
-                unset($product->category); // Remove full category object
+                unset($product->category);
 
-                // Add is_discounted flag
                 $product->is_discounted = $product->product_discount > 0;
             }
 
-            // Return success response
+            // Get product IDs
+            $productIds = $products->pluck('product_id');
+
+            // Categories from pivot table (deep child categories)
+            $deepCategoryIds = FacadesDB::table('product_category_product')
+                ->whereIn('product_id', $productIds)
+                ->pluck('category_id')
+                ->toArray();
+
+            // Main categories from products table
+            $mainCategoryIds = $products->pluck('product_category')->toArray();
+
+            // Merge & remove duplicates
+            $allCategoryIds = array_unique(array_merge($mainCategoryIds, $deepCategoryIds));
+
+            // Fetch category details
+            $categories = product_category::whereIn('id', $allCategoryIds)
+                ->select('id', 'name', 'category_type', 'image', 'parent_id')
+                ->get()
+                ->toArray();
+
+            /**
+             * Build category tree recursively
+             */
+            $buildTree = function ($categories, $parentId = null) use (&$buildTree) {
+                $branch = [];
+                foreach ($categories as $category) {
+                    if ($category['parent_id'] == $parentId) {
+                        $children = $buildTree($categories, $category['id']);
+                        if ($children) {
+                            $category['children'] = $children;
+                        }
+                        $branch[] = $category;
+                    }
+                }
+                return $branch;
+            };
+
+            $categoryTree = $buildTree($categories);
+
+            // Return Response
             return response()->json([
-                'success'  => true,
-                'message'  => 'Store details fetched successfully',
-                'store'    => $storeData, // Store object with added store_rating
-                'products' => $products
+                'success'    => true,
+                'message'    => 'Store details fetched successfully',
+                'store'      => $storeData,
+                'products'   => $products,
+                'categories' => $categoryTree
             ], 200);
         } catch (\Exception $e) {
-            // Return error response
             return response()->json([
                 'success'  => false,
                 'message'  => $e->getMessage()
@@ -98,12 +128,14 @@ class apiStoreController extends Controller
 
 
 
+
+
     public function getStoreList(Request $request)
     {
         try {
             // Fetch 6 stores
             $stores = Store::select('store_id', 'store_profile_detail')
-                ->whereHas('user',function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('user_status', 1); // Ensure the user is active
                 })
                 ->get();
