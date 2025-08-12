@@ -23,10 +23,9 @@
         @php
             $headers = [
                 'Sr.',
-                'ID / Track Id',
-                'Customer',
-                'Phone Number',
-                'Address',
+                'ID / Track Number',
+                'Customer / Phone',
+                'Rider',
                 'Bill Amount',
                 'Date',
                 'Status',
@@ -51,12 +50,22 @@
                         <td class="px-4 py-2 text-center font-medium">{{ $displayCounter++ }}</td>
                         <td class="px-4 py-2 text-center">
                             <span class="text-gray-700 font-semibold">{{ $order->order_id }}</span> /
-                            <span class="text-gray-500">{{ $order->tracking_id }}</span>
+                            <span class="text-gray-500">{{ $order->tracking_number ?? 'Not Assigned' }}</span>
                         </td>
-                        <td class="px-4 py-2">{{ ucwords($order->customer_name) }}</td>
-                        <td class="px-4 py-2">{{ $order->phone }}</td>
-                        <td class="px-4 py-2">{{ ucwords($order->address) }}</td>
+                        <td class="px-4 py-2">{{ ucwords($order->customer_name) }} <br> <a href="tel:{{ $order->phone }}"
+                                class="font-semibold pt-1 text-blue-600">{{ $order->phone }}</span>
+                        </td>
 
+                        <td class="px-4 py-2">
+                            @if ($order->rider)
+                                <span class="text-gray-700 font-medium">{{ $order->rider->rider_name }}</span>
+                                @if ($order->rider->vehicle_type)
+                                    <br><span class="text-xs text-gray-500">({{ $order->rider->vehicle_type }})</span>
+                                @endif
+                            @else
+                                <span class="text-gray-400 text-sm">No rider assigned</span>
+                            @endif
+                        </td>
 
                         {{-- Show Calculated Grand Total --}}
                         <td class="px-4 py-2 font-semibold text-green-600">
@@ -137,13 +146,12 @@
                                     </select>
                                 </div>
 
-                                {{-- Courier Selection --}}
+                                {{-- Rider Selection --}}
                                 <div>
-                                    <label for="courier_id"
-                                        class="block mb-1 text-sm font-normal text-gray-600">Courier</label>
-                                    <select id="courier_id" name="courier_id" required
+                                    <label for="rider_id" class="block mb-1 text-sm font-normal text-gray-600">Rider</label>
+                                    <select id="rider_id" name="rider_id" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                                        <option value="" selected>Select Courier</option>
+                                        <option value="" selected>Select Rider</option>
                                     </select>
                                 </div>
 
@@ -273,6 +281,24 @@
                                     <td class="p-3 font-semibold">Grand Total:</td>
                                     <td class="p-3 font-bold text-green-600" id="grand-total"></td>
                                 </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <hr>
+                                        <h3 class="font-bold pl-2 pt-3 text-xl text-primary">Rider Details</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Rider:</td>
+                                    <td class="p-3" id="rider-name"></td>
+                                    <td class="p-3 font-semibold">Vehicle:</td>
+                                    <td class="p-3" id="rider-vehicle"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Rider Phone:</td>
+                                    <td class="p-3" id="rider-phone"></td>
+                                    <td class="p-3 font-semibold">Rider Email:</td>
+                                    <td class="p-3" id="rider-email"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -396,18 +422,19 @@
                         }
 
                         if (user.user_role === 'admin') {
-                            const couriers = response.couriers;
-                            const selectBox = document.getElementById('courier_id');
+                            const riders = response.riders;
+                            const selectBox = document.getElementById('rider_id');
                             selectBox.innerHTML =
-                                '<option value="" selected>Select Courier</option>';
-                            couriers.forEach(courier => {
+                                '<option value="" selected>Select Rider</option>';
+                            riders.forEach(rider => {
                                 const option = document.createElement('option');
-                                option.value = courier.courier_id;
-                                option.textContent = courier.courier_name;
+                                option.value = rider.id;
+                                option.textContent =
+                                    `${rider.rider_name} (${rider.vehicle_type || 'No Vehicle'})`;
                                 selectBox.appendChild(option);
                             });
-                            if (response.selected_courier_id) {
-                                selectBox.value = response.selected_courier_id;
+                            if (response.selected_rider_id) {
+                                selectBox.value = response.selected_rider_id;
                             }
                         }
 
@@ -474,15 +501,15 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                                        <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                                        <td class="p-3">
-                                                                            ${item.status_video ? `
+                                                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                                <td class="p-3">
+                                                                                    ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                                        </td>
-                                                                    ` : ''}
+                                                                                </td>
+                                                                            ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
@@ -520,6 +547,22 @@
                         $("#total-bill").text("Rs " + total.toFixed(2));
                         $("#fee").text("Rs " + deliveryFee.toFixed(2));
                         $("#final-total").text("Rs " + grandTotal.toFixed(2));
+
+                        // Populate rider details
+                        if (response.rider_details) {
+                            $("#rider-name").text(response.rider_details.rider_name);
+                            $("#rider-vehicle").text(response.rider_details.vehicle_type ||
+                                'Not specified');
+                            $("#rider-phone").text(response.rider_details.phone ||
+                                'Not provided');
+                            $("#rider-email").text(response.rider_details.rider_email ||
+                                'Not provided');
+                        } else {
+                            $("#rider-name").text('No rider assigned');
+                            $("#rider-vehicle").text('N/A');
+                            $("#rider-phone").text('N/A');
+                            $("#rider-email").text('N/A');
+                        }
                     },
                     error: function() {
                         alert("Failed to fetch order details. Please try again.");
@@ -532,7 +575,7 @@
                 let formData = {
                     _token: $('input[name="_token"]').val(),
                     order_status: $('#order_status').val(),
-                    courier_id: $('#courier_id').val(),
+                    rider_id: $('#rider_id').val(),
                     tracking_number: $('#tracking_number').val(),
                     order_id: $('#edit_orderstatus_id').val()
                 };
