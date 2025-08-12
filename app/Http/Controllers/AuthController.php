@@ -49,7 +49,10 @@ class AuthController extends Controller
                 $data['totalBuyers'] = User::where('user_role', 'customer')->count();
                 $data['totalOrders'] = Order::count();
                 $data['returnedOrders'] = Order::where('order_status', 'returned')->count();
-                $data['totalProducts'] = Products::count();
+                $data['totalProducts'] = $productCount = Products::Join('categories', 'products.product_category', '=', 'categories.id')
+                    ->where('products.product_status', 1)
+                    ->count();
+
                 $data['totalReviews'] = Reviews::count();
                 $data['totalQueries'] = Query::count();
 
@@ -131,6 +134,35 @@ class AuthController extends Controller
                         $data['totalProfit'] += ($price - $cost) * $quantity;
                     }
                 }
+
+                $latestOrders = Order::select([
+                    'order_id',
+                    'user_id',
+                    'tracking_id',
+                    'order_items',
+                    'total',
+                    'delivery_fee',
+                    'customer_name',
+                    'phone',
+                    'address',
+                    'status',
+                    'order_status',
+                    'order_date',
+                    'created_at'
+                ])
+                    ->orderBy('order_id', 'desc') // latest first
+                    ->limit(5) // only get 5 rows
+                    ->get()
+                    ->map(function ($order) {
+                        return (object) [
+                            'date' => $order->created_at->format('M d'),
+                            'customer_name' => $order->customer_name,
+                            'status' => $order->status,
+                            'total' => $order->total, // using total directly from DB
+                            'phone' => $order->phone,
+                        ];
+                    });
+
                 break;
             case 'seller':
                 $sellerId = Seller::where('user_id', $userId)->value('seller_id');
@@ -284,13 +316,13 @@ class AuthController extends Controller
                             'date' => $order->created_at->format('M d'),
                             'customer_name' => $order->customer_name,
                             'status' => $order->status,
-                            'total' => $grandTotal,
+                            'total' => $order->total,
                             'phone' => $order->phone,
                         ];
                     })
                     ->filter()
                     ->take(5)
-                    ->values(); 
+                    ->values();
 
                 break;
 

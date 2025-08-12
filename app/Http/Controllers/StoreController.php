@@ -9,6 +9,7 @@ use App\Models\Query;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class StoreController extends Controller
 {
@@ -70,7 +71,6 @@ class StoreController extends Controller
             }
 
             $user_id = $userDetails['user_id'];
-
             // Find the seller record for the authenticated user
             $seller = Seller::where('user_id', $user_id)->first();
             if (!$seller) {
@@ -93,19 +93,54 @@ class StoreController extends Controller
             // Get existing values
             $existingProfileDetail = $store ? json_decode($store->store_profile_detail, true) : [];
             $storeImagePath = $existingProfileDetail['store_image'] ?? null;
-            $storeBannerPath = $existingProfileDetail['store_banner'] ?? null;
             $existingStoreTags = $existingProfileDetail['store_tags'] ?? [];
             $storePosts = $existingProfileDetail['store_posts'] ?? [];
+            $existingBanners = $existingProfileDetail['store_banners'] ?? [];
 
             // Handle profile picture update only if provided
             if ($request->hasFile('profile_picture')) {
                 $storeImagePath = 'storage/' . $request->file('profile_picture')->store('store_images', 'public');
             }
 
-            // Handle banner update only if provided
-            if ($request->hasFile('Banner')) {
-                $storeBannerPath = 'storage/' . $request->file('Banner')->store('store_banners', 'public');
+
+
+            // Remove banners IDs sent from frontend
+            $removedBannerIds = $request->input('removed_banners', []);
+            if (!is_array($removedBannerIds)) {
+                $removedBannerIds = json_decode($removedBannerIds, true) ?: [];
             }
+
+            if (!empty($removedBannerIds)) {
+                // Filter out banners that are removed by user
+                $existingBanners = array_filter($existingBanners, function ($banner) use ($removedBannerIds) {
+                    return !in_array($banner['id'], $removedBannerIds);
+                });
+                // Re-index array keys after filtering (optional but cleaner)
+                $existingBanners = array_values($existingBanners);
+            }
+
+            // Handle profile picture update only if provided
+            if ($request->hasFile('profile_picture')) {
+                $storeImagePath = 'storage/' . $request->file('profile_picture')->store('store_images', 'public');
+            }
+
+            // Handle multiple banners (merge with old)
+            if ($request->hasFile('banners')) {
+                $currentMaxId = !empty($existingBanners)
+                    ? max(array_column($existingBanners, 'id'))
+                    : 0;
+
+                foreach ($request->file('banners') as $index => $bannerFile) {
+                    $path = 'storage/' . $bannerFile->store('store_banners', 'public');
+
+                    $existingBanners[] = [
+                        'id' => $currentMaxId + $index + 1,
+                        'image' => $path
+                    ];
+                }
+            }
+
+
 
             // Merge new tags with existing ones if provided
             $newTags = $request->input('tags', []);
@@ -128,7 +163,7 @@ class StoreController extends Controller
                 'store_name' => $request->input('store_name', $storeData['store_name'] ?? null),
                 'store_image' => $storeImagePath,
                 'store_tags' => $storeTags,
-                'store_banner' => $storeBannerPath,
+                'store_banners' => $existingBanners,
                 'store_posts' => $storePosts,
             ];
 
@@ -159,6 +194,7 @@ class StoreController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
+
 
     public function GetStoreInfo($store_id)
     {

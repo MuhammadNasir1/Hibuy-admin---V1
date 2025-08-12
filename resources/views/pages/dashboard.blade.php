@@ -466,7 +466,7 @@
                         @foreach ($latestOrders as $order)
                             <tr class="border-b">
                                 <td class="px-4 py-3">{{ \Carbon\Carbon::parse($order->date)->format('M d') }}
-</td>
+                                </td>
                                 <td class="px-4 py-3">{{ $order->customer_name }}</td>
                                 <td class="px-4 py-3">{{ $order->phone }}</td>
                                 <td class="px-4 py-3">{{ number_format($order->total) }}</td>
