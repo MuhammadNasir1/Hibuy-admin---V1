@@ -139,37 +139,26 @@
             @csrf
             <div class="flex justify-between items-center">
                 <h3 class="text-[20px] font-medium">Add Product</h3>
-
-                {{-- @php
-                    $details = is_array($user->package_detail)
-                        ? $user->package_detail
-                        : json_decode($user->package_detail, true);
-                @endphp
-
-                @if (isset($details['package_status']) && $details['package_status'] === 'approved')
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer" id="is_boosted" name="is_boosted" value="1"
-                            @if ($products && $products->is_boosted) checked @endif>
-                        <div
-                            class="relative px-4 py-2 rounded-3xl font-semibold bg-gray-200 text-gray-800 peer-checked:bg-blue-500 peer-checked:text-white transition flex items-center gap-2">
-                            <span>Boost Product</span>
-                            <span class="boost-checkmark"><img src="{{ asset('asset/home.svg') }}" alt=""></span>
-                        </div>
-                    </label>
-                @endif --}}
             </div>
 
             <div>
 
                 <div class="md:py-5">
                     <div class="mt-5">
-                        <label for="images" class="block text-sm font-medium text-gray-700">Upload Product Images</label>
+                        <label for="images" class="block text-sm font-medium text-gray-700">
+                            Upload Product Images
+                        </label>
+                        <p class="text-xs text-red-500 mt-1">
+                            Please upload images of resolution 1080 × 1080 pixels for best quality.
+                        </p>
+
                         <div id="dropzone" class="dropzone p-0" style="min-height: auto !important;"></div>
                         <!-- Dropzone container -->
                         <input type="hidden" name="product_images" id="product_images">
                         <input value="{{ $products ? $products->product_id : '' }}" type="hidden" name="product_edit_id"
                             id="product_edit_id">
                     </div>
+
                     <div class=" mt-5">
                         <x-input value="{{ $products ? $products->product_name : '' }}" type="text" label="Title"
                             placeholder="Title Here" id="title" name="title" />
@@ -315,10 +304,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                                                                        <div class="value-item flex items-center mb-2">
-                                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                        </div>`).join('')}
+                                                                                                                                                                                            <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                            </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -482,10 +471,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                                                                        <div class="value-item flex items-center mb-2">
-                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                        </div>`).join('')}
+                                                                                                                                                                            <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                            </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -537,10 +526,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                    </div>`).join('')}
+                                                                                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                        </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -668,6 +657,25 @@
             if (productVariation.length > 0) {
                 initializeVariants();
             }
+
+
+            $("#description").on("input", function() {
+                let maxLength = 150;
+                let currentLength = $(this).val().length;
+
+                if (currentLength > maxLength) {
+                    // Trim the extra characters
+                    $(this).val($(this).val().substring(0, maxLength));
+
+                    // SweetAlert message
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Limit Exceeded',
+                        text: 'Description can only be up to 150 characters.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
         });
     </script>
     @if ($products && $products->product_images)
@@ -743,11 +751,6 @@
                 }
             }
 
-
-
-
-
-
             $("#product_price, #discount").on("input", function() {
                 let price = parseFloat($("#product_price").val()) || 0;
                 let discount = parseFloat($("#discount").val()) || 0;
@@ -783,7 +786,6 @@
         });
 
 
-        // dropzone code
         Dropzone.autoDiscover = false;
         var filenames = []; // Array to store file paths
         var myDropzone = new Dropzone("#dropzone", {
@@ -806,71 +808,84 @@
                 // Populate existing images from the database
                 if (window.existingImages && Array.isArray(window.existingImages)) {
                     window.existingImages.forEach(function(imagePath) {
-                        // Extract the filename from the path for display
-                        var filename = imagePath.split('/').pop(); // e.g., "1744197333_blue.jpeg"
-
-                        // Create a mock file object
+                        var filename = imagePath.split('/').pop();
                         var mockFile = {
-                            name: filename, // Use filename for display
-                            size: 12345, // Dummy size (adjust if you store actual sizes)
+                            name: filename,
+                            size: 12345,
                             accepted: true,
                             status: Dropzone.SUCCESS
                         };
 
-                        // Emit the "addedfile" event to display the file in Dropzone
                         dropzoneInstance.emit("addedfile", mockFile);
-
-                        // Set the thumbnail using the full image path
                         dropzoneInstance.emit("thumbnail", mockFile, "{{ url('/') }}/" +
                             imagePath);
-
-                        // Mark the file as successfully uploaded
                         dropzoneInstance.emit("complete", mockFile);
-
-                        // Add the full path to the filenames array
                         filenames.push(imagePath);
                     });
 
-                    // Update the hidden input with the existing images
                     document.getElementById("product_images").value = JSON.stringify(filenames);
-
-                    // Enable submit button if there are files
                     submitButton.disabled = filenames.length === 0;
                 }
 
                 // Handle new file uploads
                 this.on("addedfile", function(file) {
-                    submitButton.disabled = true; // Disable when file is added
+                    submitButton.disabled = true; // Disable until validation is done
+
+                    // Validate resolution
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var img = new Image();
+                        img.onload = function() {
+                            var width = img.width;
+                            var height = img.height;
+
+                            // REQUIRED DIMENSIONS (change as needed)
+                            var requiredWidth = 1080;
+                            var requiredHeight = 1080;
+
+                            if (width !== requiredWidth || height !== requiredHeight) {
+                                dropzoneInstance.removeFile(file);
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Invalid Image Size',
+                                    text: 'Image must be exactly ' + requiredWidth +
+                                        'x' + requiredHeight + ' pixels.',
+                                    confirmButtonColor: '#d33'
+                                });
+
+                                return;
+                            }
+
+                            // If valid size, re-enable button when ready
+                            submitButton.disabled = false;
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
                 });
 
                 this.on("success", function(file, response) {
                     if (Array.isArray(response)) {
-                        filenames = filenames.concat(response); // Merge response array
+                        filenames = filenames.concat(response);
                     } else {
-                        filenames.push(response); // Add single filename
+                        filenames.push(response);
                     }
-
                     document.getElementById("product_images").value = JSON.stringify(filenames);
                     submitButton.disabled = false;
                 });
 
                 this.on("removedfile", function(file) {
-                    // Remove the corresponding path from filenames
-                    // Match based on filename or full path
                     var pathToRemove = filenames.find(path => path.endsWith(file.name));
                     if (pathToRemove) {
                         filenames = filenames.filter(path => path !== pathToRemove);
                     }
-
-                    // Update hidden input
                     document.getElementById("product_images").value = JSON.stringify(filenames);
-
-                    // Disable button if no files left
                     submitButton.disabled = filenames.length === 0;
                 });
 
                 this.on("error", function(file, errorMessage) {
-                    submitButton.disabled = true; // Keep disabled on error
+                    submitButton.disabled = true;
                     console.error("Upload error:", errorMessage);
                 });
             }

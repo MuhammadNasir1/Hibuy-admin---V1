@@ -98,12 +98,18 @@ class apiproductController extends Controller
                 ->where('store_id', '!=', 0)
                 ->where('product_status', '=', 1)
                 ->whereHas('user', function ($q) {
-                    $q->where('user_status', 1); // filter by related user's status
+                    $q->where('user_status', 1);
                 })
-                ->with(['user:user_id,user_name,user_status']) // eager load user
-                ->with(['category:id,name']) // eager load category
+                ->with(['user:user_id,user_name,user_status'])
+                ->with(['category:id,name'])
                 ->inRandomOrder();
 
+            // ✅ Store filter (optional)
+            if ($request->has('store_id') && !empty($request->store_id)) {
+                $query->where('store_id', $request->store_id);
+            }
+
+            // ✅ Category filter
             if (!empty($categoryid)) {
                 $productIds = DB::table('product_category_product')
                     ->where('category_id', $categoryid)
@@ -120,7 +126,7 @@ class apiproductController extends Controller
                 }
             }
 
-            // ✅ Apply price filters if provided
+            // ✅ Price filters
             if ($request->has('min_price') && !empty($request->min_price)) {
                 $query->where('product_discounted_price', '>=', $request->min_price);
             }
@@ -129,7 +135,7 @@ class apiproductController extends Controller
             }
 
             $products = $query->get();
-            // If no products found, return success false
+
             if ($products->isEmpty()) {
                 return response()->json([
                     'success'  => false,
@@ -137,7 +143,8 @@ class apiproductController extends Controller
                     'products' => []
                 ], 200);
             }
-            // Process images, category, rating, is_discounted
+
+            // ✅ Process product data
             foreach ($products as $product) {
                 $product->product_images = json_decode($product->product_images, true);
                 $product->product_image = $product->product_images[0] ?? null;
@@ -162,6 +169,7 @@ class apiproductController extends Controller
             ], 500);
         }
     }
+
 
 
 
