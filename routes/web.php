@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\apiStoreController;
 use App\Http\Controllers\ApproveProductsController;
 use App\Http\Controllers\CreditRequestController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\RiderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -120,7 +121,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::post('/disable-seller', [DisableReasonController::class, 'disableSeller'])->name('disable.seller');
             Route::GET('/getSellerStatus/{sellerId}', [DisableReasonController::class, 'getSellerStatus'])->name('get.seller.status');
             // for Rider
-            Route::GET('/rider',[RiderController::class, 'riderList'])->name('rider');
+            Route::GET('/rider', [RiderController::class, 'riderList'])->name('rider');
             Route::post('/rider/create', [RiderController::class, 'riderCreate'])->name('rider.create');
             Route::get('/viewRider/{id}', [RiderController::class, 'viewRider'])->name('viewRider');
             Route::delete('/deleteRider/{id}', [RiderController::class, 'deleteRider'])->name('deleteRider');
@@ -198,6 +199,8 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
             Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
             Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
+
+            Route::get('/send-email', [EmailController::class, 'sendMail'])->name('sendEmail');
         });
     });
 });
