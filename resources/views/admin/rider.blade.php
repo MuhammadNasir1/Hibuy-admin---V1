@@ -58,8 +58,7 @@
                                     </form>
 
                                     {{-- Edit Button --}}
-                                    <button type="button" class="editRiderBtn" data-id="{{ $data->id }}"
-                                        data-modal-target="edit-rider-modal" data-modal-toggle="edit-rider-modal">
+                                    <button type="button" class="editRiderBtn" data-id="{{ $data->id }}">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                             xmlns='http://www.w3.org/2000/svg'>
                                             <circle opacity='0.1' cx='18' cy='18' r='18' fill='#233A85' />
@@ -108,22 +107,38 @@
             <x-slot name="title">Rider Details</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
             <x-slot name="body">
-                <form id="addRider"  method="post">
+                <form id="addRider" method="post" enctype="multipart/form-data">
                     @csrf
-                    <div class="md:py-5 grid grid-cols-12 px-2 gap-2 my-2">
-                        {{-- Product Category Form --}}
-                        <div class="px-6 mt-5 col-span-6">
-                            <x-input type="text" label="Name" placeholder="Name Here" id="notification_title"
-                                name="rider_name" value="" requred />
+                    <input type="hidden" name="rider_id" id="rider_id">
+                    <div class="md:py-5 grid grid-cols-12 px-2 gap-4 my-2">
+
+                        {{-- Profile Picture --}}
+                        <div class="col-span-12 px-6 flex flex-col items-center">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Profile Picture</h3>
+                            <label class="block text-gray-700 font-medium text-sm mb-2">Upload your profile photo</label>
+                            <x-file-uploader type="file" label="Profile Picture" placeholder="Upload Profile Picture"
+                                id="profile_picture" name="profile_picture" />
                         </div>
+
+                        {{-- Rider Name --}}
                         <div class="px-6 mt-5 col-span-6">
-                            <x-input type="text" label="Email" placeholder="Email Here" id="notification_title"
+                            <x-input type="text" label="Rider Name" placeholder="Rider Name Here" id="rider_name"
+                                name="rider_name" value="" required />
+                        </div>
+
+                        {{-- Rider Email --}}
+                        <div class="px-6 mt-5 col-span-6">
+                            <x-input type="email" label="Rider Email" placeholder="Rider Email Here" id="rider_email"
                                 name="rider_email" value="" required />
                         </div>
+
+                        {{-- Phone --}}
                         <div class="px-6 mt-5 col-span-6">
-                            <x-input type="text" label="Phone" placeholder="Phone Here" id="notification_title"
-                                name="phone" value="" required />
+                            <x-input type="text" label="Phone" placeholder="Phone Here" id="phone"
+                                name="phone" required />
                         </div>
+
+                        {{-- Vehicle Type --}}
                         <div class="px-6 mt-5 col-span-6">
                             <label for="vehicle_type" class="block text-gray-700 font-medium text-sm mb-2">Vehicle
                                 Type</label>
@@ -131,24 +146,77 @@
                                 class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring focus:border-blue-300">
                                 <option value="" disabled selected>Select Vehicle Type</option>
                                 <option value="Bike">Bike</option>
-                                <option value="Car">Loader Richka</option>
+                                <option value="Car">Loader Rickshaw</option>
                                 <option value="Van">Van</option>
                                 <option value="Truck">Truck</option>
-                                <!-- Add more options as needed -->
                             </select>
                         </div>
 
+                        {{-- Vehicle Number --}}
                         <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="Vehicle Number" placeholder="Vehicle Number Here"
-                                id="notification_title" name="vehicle_number" value="" required />
+                                id="vehicle_number" name="vehicle_number" value="" required />
                         </div>
+
+                        {{-- City --}}
                         <div class="px-6 mt-5 col-span-6">
-                            <x-input type="text" label="City" placeholder="City Here" id="notification_title"
+                            <x-input type="text" label="City" placeholder="City Here" id="city"
                                 name="city" value="" />
                         </div>
+
+                        {{-- ID Card --}}
+                        <div class="col-span-12 mt-6 px-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">National ID Card</h3>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {{-- ID Card Front --}}
+                                <div>
+                                    <label for="id_card_front" class="block text-gray-700 font-medium text-sm mb-2">Front
+                                        Side</label>
+                                    <x-file-uploader type="file" label="ID Card (Front)"
+                                        placeholder="Upload ID Card Front" id="id_card_front" name="id_card_front" />
+                                </div>
+
+                                {{-- ID Card Back --}}
+                                <div>
+                                    <label for="id_card_back" class="block text-gray-700 font-medium text-sm mb-2">Back
+                                        Side</label>
+                                    <x-file-uploader type="file" label="ID Card (Back)"
+                                        placeholder="Upload ID Card Back" id="id_card_back" name="id_card_back" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Driving Licence --}}
+                        <div class="col-span-12 my-6 px-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Driving Licence</h3>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {{-- Driving Licence Front --}}
+                                <div>
+                                    <label for="driving_licence_front"
+                                        class="block text-gray-700 font-medium text-sm mb-2">Front Side</label>
+                                    <x-file-uploader type="file" label="Licence (Front)"
+                                        placeholder="Upload Licence Front" id="driving_licence_front"
+                                        name="driving_licence_front" />
+                                </div>
+
+                                {{-- Driving Licence Back --}}
+                                <div>
+                                    <label for="driving_licence_back"
+                                        class="block text-gray-700 font-medium text-sm mb-2">Back Side</label>
+                                    <x-file-uploader type="file" label="Licence (Back)"
+                                        placeholder="Upload Licence Back" id="driving_licence_back"
+                                        name="driving_licence_back" />
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
+
                     <!-- Buttons -->
-                    <div class="mt-6 bg-gray-300 rounded-b-lg">
+                    <div class="mt-6 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
                             <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl" id="addRiderForm">
@@ -207,58 +275,6 @@
             </x-slot>
         </x-modal>
 
-        {{-- Modal --}}
-        <x-modal id="edit-rider-modal">
-            <x-slot name="title">Edit Rider</x-slot>
-            <x-slot name="modal_width">max-w-3xl</x-slot>
-            <x-slot name="body">
-                <form id="editRiderForm" method="POST" action="#">
-                    @csrf
-                    @method('PUT')
-                    <div class="grid grid-cols-12 px-4 gap-3 my-4">
-                        <input type="hidden" id="edit_rider_id" name="id">
-
-                        <div class="mb-4 col-span-6 ">
-                            <label class="block text-sm font-medium">Name</label>
-                            <input type="text" id="edit_rider_name" name="rider_name"
-                                class="w-full p-2 border rounded">
-                        </div>
-
-                        <div class="mb-4 col-span-6">
-                            <label class="block text-sm font-medium">Email</label>
-                            <input type="email" id="edit_rider_email" name="rider_email"
-                                class="w-full p-2 border rounded">
-                        </div>
-
-                        <div class="mb-4 col-span-6">
-                            <label class="block text-sm font-medium">Phone</label>
-                            <input type="text" id="edit_phone" name="phone" class="w-full p-2 border rounded">
-                        </div>
-
-                        <div class="mb-4 col-span-6">
-                            <label class="block text-sm font-medium">Vehicle Type</label>
-                            <input type="text" id="edit_vehicle_type" name="vehicle_type"
-                                class="w-full p-2 border rounded">
-                        </div>
-
-                        <div class="mb-4 col-span-6">
-                            <label class="block text-sm font-medium">Vehicle Number</label>
-                            <input type="text" id="edit_vehicle_number" name="vehicle_number"
-                                class="w-full p-2 border rounded">
-                        </div>
-
-                        <div class="mb-4 col-span-6">
-                            <label class="block text-sm font-medium">City</label>
-                            <input type="text" id="edit_city" name="city" class="w-full p-2 border rounded">
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
-                    </div>
-                </form>
-            </x-slot>
-        </x-modal>
-
     @endsection
 
 
@@ -298,18 +314,18 @@
 
 
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
 
                 // Submit form log
-                $('.submitForm').on('submit', function () {
+                $('.submitForm').on('submit', function() {
                     console.log('Form submitted');
                 });
 
                 // View Modal Button
-                $('.viewModalBtn').on('click', function () {
+                $('.viewModalBtn').on('click', function() {
                     let riderId = $(this).data('id');
 
-                    $.getJSON(`/rider/${riderId}`, function (data) {
+                    $.getJSON(`/rider/${riderId}`, function(data) {
                         if (data.rider) {
                             $('#modal_rider_name').text(data.rider.rider_name);
                             $('#modal_rider_email').text(data.rider.rider_email);
@@ -318,31 +334,74 @@
                             $('#modal_vehicle_number').text(data.rider.vehicle_number);
                             $('#modal_city').text(data.rider.city);
                         }
-                    }).fail(function () {
+                    }).fail(function() {
                         // alert("Error loading rider details");
                     });
                 });
 
                 // Edit Rider Button
-                $('.editRiderBtn').on('click', function () {
+                // Edit Rider Button Click
+                $(document).on('click', '.editRiderBtn', function() {
                     let riderId = $(this).data('id');
 
-                    $.getJSON(`/rider/${riderId}`, function (data) {
-                        const rider = data.rider;
-                        $('#edit_rider_id').val(rider.id);
-                        $('#edit_rider_name').val(rider.rider_name);
-                        $('#edit_rider_email').val(rider.rider_email);
-                        $('#edit_phone').val(rider.phone ?? '');
-                        $('#edit_vehicle_type').val(rider.vehicle_type ?? '');
-                        $('#edit_vehicle_number').val(rider.vehicle_number ?? '');
-                        $('#edit_city').val(rider.city ?? '');
-                    }).fail(function () {
-                        alert('Failed to load rider info.');
+                    $.ajax({
+                        url: `/rider/${riderId}`, // endpoint to get rider
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(response) {
+                            const rider = response.rider;
+
+                            // Fill form fields
+                            $('#rider_name').val(rider.rider_name);
+                            $('#rider_email').val(rider.rider_email);
+                            $('#phone').val(rider.phone ?? '');
+                            $('#vehicle_type').val(rider.vehicle_type ?? '').change();
+                            $('#vehicle_number').val(rider.vehicle_number ?? '');
+                            $('#city').val(rider.city ?? '');
+                            $('#rider_id').val(rider.id);
+
+                            // Change submit button text
+                            $('#addRiderForm').text('Update Rider');
+
+                            // Optional: Preview existing images
+                            if (rider.profile_picture) {
+                                $('#profile_picture').after(
+                                    `<img src="${rider.profile_picture}" class="mt-2 w-24 h-24 object-cover rounded">`
+                                    );
+                            }
+                            if (rider.id_card_front) {
+                                $('#id_card_front').after(
+                                    `<img src="${rider.id_card_front}" class="mt-2 w-24 h-24 object-cover rounded">`
+                                    );
+                            }
+                            if (rider.id_card_back) {
+                                $('#id_card_back').after(
+                                    `<img src="${rider.id_card_back}" class="mt-2 w-24 h-24 object-cover rounded">`
+                                    );
+                            }
+                            if (rider.driving_license_front) {
+                                $('#driving_licence_front').after(
+                                    `<img src="${rider.driving_license_front}" class="mt-2 w-24 h-24 object-cover rounded">`
+                                    );
+                            }
+                            if (rider.driving_license_back) {
+                                $('#driving_licence_back').after(
+                                    `<img src="${rider.driving_license_back}" class="mt-2 w-24 h-24 object-cover rounded">`
+                                    );
+                            }
+
+                            // Open the modal
+                            $('[data-modal-target="add_rider-modal"]').click();
+                        },
+                        error: function() {
+                            alert('Failed to load rider info.');
+                        }
                     });
                 });
 
+
                 // Submit Edit Form via AJAX
-                $('#editRiderForm').on('submit', function (e) {
+                $('#editRiderForm').on('submit', function(e) {
                     e.preventDefault();
 
                     let riderId = $('#edit_rider_id').val();
@@ -358,7 +417,7 @@
                         headers: {
                             'X-CSRF-TOKEN': $('input[name="_token"]').val()
                         },
-                        success: function (data) {
+                        success: function(data) {
                             if (data.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -376,7 +435,7 @@
                                 });
                             }
                         },
-                        error: function (err) {
+                        error: function(err) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
@@ -389,56 +448,60 @@
             });
 
             $("#addRider").on("submit", function(e) {
-            e.preventDefault(); // prevent default form submission
+                e.preventDefault(); // prevent default form submission
 
-            let formData = $(this).serialize(); // serialize form data
-            // console.log(formData); // log form data to console for debugging
-            $.ajax({
-                url: "{{ route('rider.create') }}", // replace with your actual route
-                type: "POST",
-                data: formData,
-                beforeSend: function() {
-                    $("#addRiderForm button[type='submit']").text("Submitting...").prop(
-                        "disabled", true);
-                },
-                success: function(response) {
-                    console.log(response); // log response to console
-                    if (response.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload(); // reload page
-                            }
-                        });
-                    } else {
+                let formData = new FormData(this); // formData will include files
+
+                $.ajax({
+                    url: "{{ route('rider.create') }}", // your route
+                    type: "POST",
+                    data: formData,
+                    contentType: false, // important for file upload
+                    processData: false, // important for file upload
+                    beforeSend: function() {
+                        $("#addRiderForm button[type='submit']")
+                            .text("Submitting...")
+                            .prop("disabled", true);
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Something went wrong!',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                         Swal.fire({
                             title: 'Error!',
-                            text: response.message || 'Something went wrong!',
+                            text: 'An unexpected error occurred.',
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
+                    },
+                    complete: function() {
+                        $("#addRiderForm button[type='submit']")
+                            .text("Submit")
+                            .prop("disabled", false);
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'An unexpected error occurred.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                },
-                complete: function() {
-                    $("#addRiderForm button[type='submit']").text("Submit").prop("disabled",
-                        false);
-                }
+                });
             });
-        });
-            </script>
+        </script>
 
 
     @endsection

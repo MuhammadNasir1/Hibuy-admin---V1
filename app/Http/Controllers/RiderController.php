@@ -10,11 +10,21 @@ class RiderController extends Controller
     public function riderCreate(Request $request)
     {
         try {
-
+            // Validation
             $validate = $request->validate([
-                'rider_email' => 'required|email|unique:riders,rider_email',
-            ]);
+                'rider_name'         => 'required|string|max:255',
+                'rider_email'        => 'required|email|unique:riders,rider_email',
+                'phone'              => 'required|string|max:20',
+                'vehicle_type'       => 'required|string|max:50',
+                'vehicle_number'     => 'required|string|max:50',
+                'city'               => 'required|string|max:100',
 
+                // File validations
+                'id_card_front'      => 'required|image|mimes:jpg,jpeg,png|max:2048',
+                'id_card_back'       => 'required|image|mimes:jpg,jpeg,png|max:2048',
+                'driving_licence_front' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'driving_licence_back'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ]);
 
             $rider = new RiderModel();
             $rider->rider_name = $request->rider_name;
@@ -23,6 +33,33 @@ class RiderController extends Controller
             $rider->vehicle_type = $request->vehicle_type;
             $rider->vehicle_number = $request->vehicle_number;
             $rider->city = $request->city;
+
+            if ($request->hasFile('profile_picture')) {
+                $path = $request->file('profile_picture')->store('riders/profile_pictures', 'public');
+                $rider->profile_picture = 'storage/' . $path;
+            }
+
+            if ($request->hasFile('id_card_front')) {
+                $path = $request->file('id_card_front')->store('riders/id_cards/front', 'public');
+                $rider->id_card_front = 'storage/' . $path;
+            }
+
+            if ($request->hasFile('id_card_back')) {
+                $path = $request->file('id_card_back')->store('riders/id_cards/back', 'public');
+                $rider->id_card_back = 'storage/' . $path;
+            }
+
+            if ($request->hasFile('driving_licence_front')) {
+                $path = $request->file('driving_licence_front')->store('riders/licences/front', 'public');
+                $rider->driving_license_front = 'storage/' . $path;
+            }
+
+            if ($request->hasFile('driving_licence_back')) {
+                $path = $request->file('driving_licence_back')->store('riders/licences/back', 'public');
+                $rider->driving_license_back = 'storage/' . $path;
+            }
+
+
             $rider->save();
 
             return response()->json([
@@ -36,6 +73,7 @@ class RiderController extends Controller
             ], 500);
         }
     }
+
     public function riderList()
     {
         try {
@@ -45,14 +83,7 @@ class RiderController extends Controller
             return redirect()->back()->withErrors(['error' => 'Failed to retrieve riders: ' . $e->getMessage()]);
         }
     }
-    // public function viewRider($id){
-    //     try {
-    //         $rider = RiderModel::findOrFail($id);
-    //         return response()->json(['rider' => $rider]);
-    //     } catch (\Exception $e) {
-    //         return redirect()->back()->withErrors(['error' => 'Failed to retrieve rider: ' . $e->getMessage()]);
-    //     }
-    // }
+
     public function deleteRider($id)
     {
         try {
