@@ -13,12 +13,7 @@
                         <a href="#" class="inline-block px-4 py-1 text-white bg-primary rounded-3xl active"
                             aria-current="page">All</a>
                     </li>
-                    <li class="me-2">
-                        <a href="#"
-                            class="inline-block border px-4 py-1 rounded-3xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white">Wholesale</a>
-                    </li>
-                </ul>
-            </div>
+                 
         </div>
         @php
             $headers = ['Sr.', 'Store Name', 'Seller Name', 'Phone Number', 'Email', 'Store Type', 'Status', 'Action'];
@@ -373,7 +368,7 @@
                           <td class="p-3 border">${index + 1}</td>
                           <td class="p-3 border">${product.product_name || 'N/A'}</td>
                           <td class="p-3 border">${product.product_brand || 'N/A'}</td>
-                          <td class="p-3 border">$${product.product_price || '0'}</td>
+                          <td class="p-3 border">Rs.  ${product.product_price || '0'}</td>
                           <td class="p-3 border">${product.product_stock || '0'}</td>
                           <td class="p-3 border">${statusBadge}</td>
                           <td class="p-3 border flex gap-3">
@@ -541,7 +536,7 @@
                 // Populate basic product info
                 document.getElementById('modal-product-name').textContent = selectedProduct.product_name || 'N/A';
                 document.getElementById('modal-product-brand').textContent = selectedProduct.product_brand || 'N/A';
-                document.getElementById('modal-product-price').textContent = `$${selectedProduct.product_price || '0'}`;
+                document.getElementById('modal-product-price').textContent = `Rs. ${selectedProduct.product_price || '0'}`;
                 document.getElementById('modal-product-stock').textContent = selectedProduct.product_stock || '0';
                 document.getElementById('modal-product-status').textContent = selectedProduct.product_status == 1 ?
                     'Active' : 'Inactive';
@@ -674,8 +669,8 @@
                             <td class="p-3 border">${statusBadge}</td>
                             <td class="p-3 border text-center">${variationStock}</td>
                             <td class="p-3 border text-center">${variation.weight || '0'} / ${variation.size || 'Default'}</td>
-                            <td class="p-3 border text-right">$${variationPrice}</td>
-                            <td class="p-3 border text-right font-medium">$${subtotal}</td>
+                            <td class="p-3 border text-right">Rs. ${variationPrice}</td>
+                            <td class="p-3 border text-right font-medium">Rs .${subtotal}</td>
                         `;
                     variationsBody.appendChild(row);
                 });

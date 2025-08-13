@@ -199,7 +199,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
             Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
             Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
-
+            Route::get('/print-slip/{orderId}', [OrderController::class, 'printSlip'])->name('print.slip');
             Route::get('/send-email', [EmailController::class, 'sendMail'])->name('sendEmail');
         });
     });

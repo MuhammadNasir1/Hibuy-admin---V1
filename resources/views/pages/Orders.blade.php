@@ -61,7 +61,8 @@
                                 @if (!empty($order->seller_name_for_list))
                                     <span class="text-gray-700 font-medium">{{ $order->seller_name_for_list }}</span>
                                     <br>
-                                    <a href="tel:{{ $order->seller_phone_for_list }}" class="text-blue-600 text-sm">{{ $order->seller_phone_for_list }}</a>
+                                    <a href="tel:{{ $order->seller_phone_for_list }}"
+                                        class="text-blue-600 text-sm">{{ $order->seller_phone_for_list }}</a>
                                 @else
                                     <span class="text-gray-400 text-sm">N/A</span>
                                 @endif
@@ -93,7 +94,7 @@
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
-                        <td class="px-4 py-2 text-center">
+                        <td class="px-4 py-2 text-center flex">
                             <button vieworderurl="/view-order/{{ $order->order_id }}"
                                 class="viewModalBtn p-2 rounded-md transition">
                                 <svg width="24" height="24" viewBox="0 0 37 36" fill="none"
@@ -117,6 +118,13 @@
                                     </defs>
                                 </svg>
                             </button>
+                            <a href="{{ route('print.slip', $order->order_id) }}" id="printBtn" class=" p-2 rounded-md"
+                                target="_blank">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="w-6 h-6 fill-primary">
+                                    <path
+                                        d="M128 128C128 92.7 156.7 64 192 64L405.5 64C422.5 64 438.8 70.7 450.8 82.7L493.3 125.2C505.3 137.2 512 153.5 512 170.5L512 208L128 208L128 128zM64 320C64 284.7 92.7 256 128 256L512 256C547.3 256 576 284.7 576 320L576 416C576 433.7 561.7 448 544 448L512 448L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 448L96 448C78.3 448 64 433.7 64 416L64 320zM192 480L192 512L448 512L448 416L192 416L192 480zM520 336C520 322.7 509.3 312 496 312C482.7 312 472 322.7 472 336C472 349.3 482.7 360 496 360C509.3 360 520 349.3 520 336z" />
+                                </svg>
+                            </a>
                         </td>
                     </tr>
                 @endforeach
@@ -140,6 +148,7 @@
                             class="{{ session('user_details.user_role') == 'admin' ? 'grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end' : '' }}">
                             @if (session('user_details.user_role') == 'admin')
                                 {{-- Order Status --}}
+
                                 <div>
                                     <label for="order_status" class="block mb-1 text-sm font-normal text-gray-600">Order
                                         Status</label>
@@ -315,44 +324,45 @@
 
                     <!-- Seller Details Section (Admin Only) -->
                     @if (session('user_details.user_role') == 'admin')
-                    <div class="mb-3 pt-2">
-                        <button id="sellerDropdownButton"
-                            class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
-                            <span>Seller Details</span>
-                            <svg id="sellerDropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                </path>
-                            </svg>
-                        </button>
-                        <div id="sellerDropdownContent" class="mt-2 hidden">
-                            <div class="overflow-x-auto">
-                                <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
-                                    <tbody>
-                                        <tr>
-                                            <td class="p-3 font-semibold">Seller Name:</td>
-                                            <td class="p-3" id="seller-name"></td>
-                                            <td class="p-3 font-semibold">Store Name:</td>
-                                            <td class="p-3" id="store-name"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-3 font-semibold">Seller Email:</td>
-                                            <td class="p-3" id="seller-email"></td>
-                                            <td class="p-3 font-semibold">Store Address:</td>
-                                            <td class="p-3" id="store-address"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="p-3 font-semibold">Seller Phone:</td>
-                                            <td class="p-3" id="seller-phone"></td>
-                                            <td class="p-3 font-semibold"></td>
-                                            <td class="p-3"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="mb-3 pt-2">
+                            <button id="sellerDropdownButton"
+                                class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
+                                <span>Seller Details</span>
+                                <svg id="sellerDropdownArrow" class="w-5 h-5 transform transition-transform duration-300"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7">
+                                    </path>
+                                </svg>
+                            </button>
+                            <div id="sellerDropdownContent" class="mt-2 hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
+                                        <tbody>
+                                            <tr>
+                                                <td class="p-3 font-semibold">Seller Name:</td>
+                                                <td class="p-3" id="seller-name"></td>
+                                                <td class="p-3 font-semibold">Store Name:</td>
+                                                <td class="p-3" id="store-name"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3 font-semibold">Seller Email:</td>
+                                                <td class="p-3" id="seller-email"></td>
+                                                <td class="p-3 font-semibold">Store Address:</td>
+                                                <td class="p-3" id="store-address"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-3 font-semibold">Seller Phone:</td>
+                                                <td class="p-3" id="seller-phone"></td>
+                                                <td class="p-3 font-semibold"></td>
+                                                <td class="p-3"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     @endif
 
                     <!-- Order Items Table -->
@@ -546,22 +556,22 @@
                             }
 
                             itemsHtml += `
-                                <tr class="border-b">
+                             <tr class="border-b">
                                     <td class="p-3">
                                         <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
                                     </td>
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                                                <td class="p-3">
-                                                                                    ${item.status_video ? `
+                                                                                                        <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                                                        <td class="p-3">
+                                                                                                            ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                                                </td>
-                                                                            ` : ''}
+                                                                                                        </td>
+                                                                                                    ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
@@ -617,17 +627,24 @@
                         }
 
                         // Populate seller details (Admin only)
-                        if (user.user_role === 'admin' && response.order_items && response.order_items.length > 0) {
+                        if (user.user_role === 'admin' && response.order_items && response
+                            .order_items.length > 0) {
                             // Get seller info from the first item (assuming all items are from the same seller)
                             const firstItem = response.order_items[0];
-                            console.log('First item seller info:', firstItem.seller_info); // Debug log
-                            
+                            console.log('First item seller info:', firstItem
+                                .seller_info); // Debug log
+
                             if (firstItem.seller_info) {
-                                $("#seller-name").text(firstItem.seller_info.seller_name || 'N/A');
-                                $("#seller-email").text(firstItem.seller_info.seller_email || 'N/A');
-                                $("#seller-phone").text(firstItem.seller_info.seller_phone || 'N/A');
-                                $("#store-name").text(firstItem.seller_info.store_name || 'N/A');
-                                $("#store-address").text(firstItem.seller_info.store_address || 'N/A');
+                                $("#seller-name").text(firstItem.seller_info.seller_name ||
+                                    'N/A');
+                                $("#seller-email").text(firstItem.seller_info.seller_email ||
+                                    'N/A');
+                                $("#seller-phone").text(firstItem.seller_info.seller_phone ||
+                                    'N/A');
+                                $("#store-name").text(firstItem.seller_info.store_name ||
+                                    'N/A');
+                                $("#store-address").text(firstItem.seller_info.store_address ||
+                                    'N/A');
                             } else {
                                 $("#seller-name").text('N/A');
                                 $("#seller-email").text('N/A');
