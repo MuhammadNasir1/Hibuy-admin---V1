@@ -110,12 +110,13 @@
                 <form id="addRider" method="post" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="rider_id" id="rider_id">
-                    <div class="md:py-5 grid grid-cols-12 px-2 gap-4 my-2">
+                    <div class="md:py-5 grid grid-cols-12 px-2 gap-4  my-2">
 
                         {{-- Profile Picture --}}
                         <div class="col-span-12 px-6 flex flex-col items-center">
                             <h3 class="text-lg font-semibold text-gray-800 mb-3">Profile Picture</h3>
                             <label class="block text-gray-700 font-medium text-sm mb-2">Upload your profile photo</label>
+                            <div id="profile_picture_preview" class="mt-2"></div>
                             <x-file-uploader type="file" label="Profile Picture" placeholder="Upload Profile Picture"
                                 id="profile_picture" name="profile_picture" />
                         </div>
@@ -167,12 +168,12 @@
                         {{-- ID Card --}}
                         <div class="col-span-12 mt-6 px-6">
                             <h3 class="text-lg font-semibold text-gray-800 mb-3">National ID Card</h3>
-
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {{-- ID Card Front --}}
                                 <div>
                                     <label for="id_card_front" class="block text-gray-700 font-medium text-sm mb-2">Front
                                         Side</label>
+                                    <div id="id_card_front_preview" class="mt-2"></div>
                                     <x-file-uploader type="file" label="ID Card (Front)"
                                         placeholder="Upload ID Card Front" id="id_card_front" name="id_card_front" />
                                 </div>
@@ -181,6 +182,7 @@
                                 <div>
                                     <label for="id_card_back" class="block text-gray-700 font-medium text-sm mb-2">Back
                                         Side</label>
+                                    <div id="id_card_back_preview" class="mt-2"></div>
                                     <x-file-uploader type="file" label="ID Card (Back)"
                                         placeholder="Upload ID Card Back" id="id_card_back" name="id_card_back" />
                                 </div>
@@ -196,6 +198,7 @@
                                 <div>
                                     <label for="driving_licence_front"
                                         class="block text-gray-700 font-medium text-sm mb-2">Front Side</label>
+                                    <div id="driving_licence_front_preview" class="mt-2"></div>
                                     <x-file-uploader type="file" label="Licence (Front)"
                                         placeholder="Upload Licence Front" id="driving_licence_front"
                                         name="driving_licence_front" />
@@ -205,23 +208,25 @@
                                 <div>
                                     <label for="driving_licence_back"
                                         class="block text-gray-700 font-medium text-sm mb-2">Back Side</label>
+                                    <div id="driving_licence_back_preview" class="mt-2"></div>
                                     <x-file-uploader type="file" label="Licence (Back)"
                                         placeholder="Upload Licence Back" id="driving_licence_back"
                                         name="driving_licence_back" />
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
                     <!-- Buttons -->
                     <div class="mt-6 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
-                            <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl" id="addRiderForm">
-                                Submit
-                            </button>
+                            <div class="mt-11">
+                                <button type="submit" class="px-6 py-2 mt-2 text-white bg-primary rounded-3xl"
+                                    id="addRiderForm">
+                                    Submit
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -363,31 +368,35 @@
                             // Change submit button text
                             $('#addRiderForm').text('Update Rider');
 
-                            // Optional: Preview existing images
+                            // Clear previous previews
+                            $('#profile_picture_preview, #id_card_front_preview, #id_card_back_preview, #driving_licence_front_preview, #driving_licence_back_preview')
+                                .html('');
+
+                            // Add previews
                             if (rider.profile_picture) {
-                                $('#profile_picture').after(
-                                    `<img src="${rider.profile_picture}" class="mt-2 w-24 h-24 object-cover rounded">`
-                                    );
+                                $('#profile_picture_preview').html(
+                                    `<img src="${rider.profile_picture}" class="w-24 h-24 object-cover rounded border">`
+                                );
                             }
                             if (rider.id_card_front) {
-                                $('#id_card_front').after(
-                                    `<img src="${rider.id_card_front}" class="mt-2 w-24 h-24 object-cover rounded">`
-                                    );
+                                $('#id_card_front_preview').html(
+                                    `<img src="${rider.id_card_front}" class="w-24 h-24 object-cover rounded border">`
+                                );
                             }
                             if (rider.id_card_back) {
-                                $('#id_card_back').after(
-                                    `<img src="${rider.id_card_back}" class="mt-2 w-24 h-24 object-cover rounded">`
-                                    );
+                                $('#id_card_back_preview').html(
+                                    `<img src="${rider.id_card_back}" class="w-24 h-24 object-cover rounded border">`
+                                );
                             }
                             if (rider.driving_license_front) {
-                                $('#driving_licence_front').after(
-                                    `<img src="${rider.driving_license_front}" class="mt-2 w-24 h-24 object-cover rounded">`
-                                    );
+                                $('#driving_licence_front_preview').html(
+                                    `<img src="${rider.driving_license_front}" class="w-24 h-24 object-cover rounded border">`
+                                );
                             }
                             if (rider.driving_license_back) {
-                                $('#driving_licence_back').after(
-                                    `<img src="${rider.driving_license_back}" class="mt-2 w-24 h-24 object-cover rounded">`
-                                    );
+                                $('#driving_licence_back_preview').html(
+                                    `<img src="${rider.driving_license_back}" class="w-24 h-24 object-cover rounded border">`
+                                );
                             }
 
                             // Open the modal
