@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Store;
 use App\Models\Seller;
-use App\Models\RiderModel;
 use App\Models\Products;
+use App\Models\RiderModel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
@@ -93,10 +94,10 @@ class OrderController extends Controller
                         $storeInfo = json_decode($product->store->store_info, true) ?? [];
 
                         $sellerInfo = [
-                            'seller_name'   => $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A',
-                            'seller_email'  => $personalInfo['email'] ?? $product->store->seller->user->user_email ?? 'N/A',
-                            'seller_phone'  => $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A',
-                            'store_name'    => $storeInfo['store_name'] ?? 'N/A',
+                            'seller_name' => $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A',
+                            'seller_email' => $personalInfo['email'] ?? $product->store->seller->user->user_email ?? 'N/A',
+                            'seller_phone' => $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A',
+                            'store_name' => $storeInfo['store_name'] ?? 'N/A',
                             'store_address' => $storeInfo['address'] ?? $storeInfo['store_address'] ?? 'N/A',
                         ];
 
@@ -147,7 +148,7 @@ class OrderController extends Controller
             ];
             // Step 7: Fetch all riders for dropdown
             $response['riders'] = RiderModel::select('id', 'rider_name', 'vehicle_type')->get();
-            
+
             // Step 8: Add rider details to response if rider is assigned
             if ($order->rider_id) {
                 $rider = RiderModel::select('id', 'rider_name', 'rider_email', 'phone', 'vehicle_type', 'vehicle_number', 'city')
@@ -221,7 +222,9 @@ class OrderController extends Controller
                         }
 
                         // Compute total from items
-                        $grandTotal = array_sum(array_map(function ($i) { return ($i['quantity'] ?? 1) * ($i['price'] ?? 0); }, $orderItems));
+                        $grandTotal = array_sum(array_map(function ($i) {
+                            return ($i['quantity'] ?? 1) * ($i['price'] ?? 0);
+                        }, $orderItems));
                         $order->grand_total = $grandTotal;
                         return $order;
                     });
@@ -403,4 +406,206 @@ class OrderController extends Controller
 
         return response()->json(['message' => 'Order updated successfully']);
     }
+
+    //  public function printSlip($orderId)
+    // {
+    //     // Get the order with customer details
+    //     $order = DB::table('orders')
+    //         ->where('order_id', $orderId)
+    //         ->first();
+
+    //     if (!$order) {
+    //         abort(404, 'Order not found');
+    //     }
+
+    //     // Decode order_items JSON
+    //     $orderItems = json_decode($order->order_items, true);
+    //     if (json_last_error() !== JSON_ERROR_NONE || !is_array($orderItems)) {
+    //         abort(500, 'Invalid order items format');
+    //     }
+
+    //     // Collect products and identify the first store_id
+    //     $products = [];
+    //     $targetStoreId = null;
+    //     foreach ($orderItems as $item) {
+    //         $productId = $item['product_id'] ?? null;
+    //         if (!$productId) {
+    //             continue;
+    //         }
+
+    //         // Fetch product details to get store_id and user_id
+    //         $product = DB::table('products')
+    //             ->where('product_id', $productId)
+    //             ->select('product_id', 'store_id', 'user_id', 'product_name', 'product_price', 'product_discounted_price')
+    //             ->first();
+
+    //         if ($product) {
+    //             // Set the target store_id from the first valid product
+    //             if ($targetStoreId === null) {
+    //                 $targetStoreId = $product->store_id;
+    //             }
+
+    //             // Only include products from the target store
+    //             if ($product->store_id === $targetStoreId) {
+    //                 $products[] = [
+    //                     'product_id' => $product->product_id,
+    //                     'product_name' => $item['product_name'],
+    //                     'quantity' => $item['quantity'],
+    //                     'price' => $item['price'],
+    //                     'store_id' => $product->store_id,
+    //                 ];
+    //             }
+    //         }
+    //     }
+
+    //     // If no products found for the target store, abort
+    //     if (empty($products)) {
+    //         abort(404, 'No products found for the selected store');
+    //     }
+
+    //     // Fetch store details for the target store_id
+    //     $seller = DB::table('stores')
+    //         ->where('store_id', $targetStoreId)
+    //         ->select(
+    //             'store_id',
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.store_name")) AS store_name'),
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.phone_no")) AS store_phone'),
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.email")) AS store_email'),
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.address")) AS store_address')
+    //         )
+    //         ->first();
+
+    //     if (!$seller) {
+    //         abort(404, 'Store not found');
+    //     }
+
+    //     // Prepare data for the view
+    //     $data = [
+    //         'order' => $order,
+    //         'products' => $products,
+    //         'seller' => $seller,
+    //     ];
+
+    //     return view('pages/slip', $data);
+    // }
+
+     public function printSlip($orderId)
+    {
+        // Get user role from session
+        $userDetails = Session('user_details');
+        $userRole = $userDetails['user_role'] ?? null;
+        $isAdmin = $userRole === 'admin';
+
+        // Get the order with customer details
+        $order = DB::table('orders')
+            ->where('order_id', $orderId)
+            ->first();
+
+        if (!$order) {
+            abort(404, 'Order not found');
+        }
+
+        // Decode order_items JSON
+        $orderItems = json_decode($order->order_items, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($orderItems)) {
+            abort(500, 'Invalid order items format');
+        }
+
+        // Initialize variables
+        $products = [];
+        $storeIds = [];
+        $targetStoreId = null;
+
+        // Collect products and store IDs
+        foreach ($orderItems as $item) {
+            $productId = $item['product_id'] ?? null;
+            if (!$productId) {
+                continue;
+            }
+
+            // Fetch product details
+            $product = DB::table('products')
+                ->where('product_id', $productId)
+                ->select('product_id', 'store_id', 'user_id', 'product_name', 'product_price', 'product_discounted_price')
+                ->first();
+
+            if ($product) {
+                $storeIds[] = $product->store_id;
+                if ($targetStoreId === null) {
+                    $targetStoreId = $product->store_id;
+                }
+
+                $productData = [
+                    'product_id' => $product->product_id,
+                    'product_name' => $item['product_name'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'store_id' => $product->store_id,
+                ];
+
+                if (!$isAdmin) {
+                    if ($product->store_id === $targetStoreId) {
+                        $products[] = $productData;
+                    }
+                } else {
+                    $products[] = $productData;
+                }
+            }
+        }
+
+        if (empty($products)) {
+            abort(404, 'No products found for the selected store');
+        }
+
+        // Fetch store details
+        $storeIds = array_unique($storeIds);
+        $sellers = DB::table('stores')
+            ->whereIn('store_id', $storeIds)
+            ->select(
+                'store_id',
+                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.store_name")) AS store_name'),
+                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.phone_no")) AS store_phone'),
+                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.email")) AS store_email'),
+                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.address")) AS store_address')
+            )
+            ->get()
+            ->keyBy('store_id')
+            ->toArray();
+
+        // Prepare data
+        $data = ['order' => $order, 'isAdmin' => $isAdmin];
+
+        if (!$isAdmin) {
+            $seller = $sellers[$targetStoreId] ?? null;
+            if (!$seller) {
+                abort(404, 'Store not found');
+            }
+            $data['products'] = $products;
+            $data['seller'] = $seller;
+        } else {
+            foreach ($products as &$product) {
+                $storeId = $product['store_id'];
+                $product['store'] = $sellers[$storeId] ?? null;
+            }
+
+            $groupedProducts = [];
+            foreach ($products as $product) {
+                $storeId = $product['store_id'];
+                if (!isset($groupedProducts[$storeId])) {
+                    $groupedProducts[$storeId] = [
+                        'store' => $sellers[$storeId] ?? null,
+                        'products' => [],
+                    ];
+                }
+                $groupedProducts[$storeId]['products'][] = $product;
+            }
+            // Debug the grouped products
+            // dd($groupedProducts); // Uncomment to inspect
+            $data['grouped_products'] = $groupedProducts;
+        }
+// return $data;
+        return view('pages.slip', $data);
+    }
+
+
 }
