@@ -136,7 +136,7 @@
                         {{-- Phone --}}
                         <div class="px-6 mt-5 col-span-6">
                             <x-input type="text" label="Phone" placeholder="Phone Here" id="phone"
-                                name="phone" required />
+                                name="phone" value="" required />
                         </div>
 
                         {{-- Vehicle Type --}}
