@@ -39,6 +39,7 @@ class ProductsController extends Controller
 
             $products = null;
             $categoryIds = [];
+            $vehicleTypes = []; // default empty
 
             if ($editid !== null) {
                 $products = Products::find($editid);
@@ -49,14 +50,20 @@ class ProductsController extends Controller
                         ->orderBy('category_level')
                         ->pluck('category_id')
                         ->toArray();
+
+                    // Fetch vehicle types only when editing
+                    $vehicleTypes = DB::table('vehicle_types')
+                        ->select('id', 'vehicle_type', 'delivery_charge', 'min_weight', 'max_weight', 'max_length', 'max_width', 'max_height', 'created_at')
+                        ->get();
                 }
             }
-            // return $categoryIds;
-            return view('pages.AddProduct', compact('user', 'categories', 'products', 'categoryIds'));
+// return $products;
+            return view('pages.AddProduct', compact('user', 'categories', 'products', 'categoryIds', 'vehicleTypes'));
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
+
 
 
     public function getSubCategories($category_id)
@@ -120,8 +127,6 @@ class ProductsController extends Controller
     public function storeProduct(Request $request)
     {
         try {
-            // return $request;
-            // exit;
 
             // Retrieve user details from session
             $userDetails = session('user_details');
@@ -167,6 +172,12 @@ class ProductsController extends Controller
                 'product_status' => 'nullable|integer|in:0,1',
                 'product_edit_id' => 'nullable|integer',
                 'is_boosted' => 'nullable|in:0,1',
+                // ✅ new fields
+                'weight' => 'required|numeric|min:0.01',
+                'length' => 'required|numeric|min:0.01',
+                'width' => 'required|numeric|min:0.01',
+                'height' => 'required|numeric|min:0.01',
+                'vehicleType' => 'required|string|max:255',
             ]);
 
             if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
@@ -268,6 +279,12 @@ class ProductsController extends Controller
                     'product_discount' => $validatedData['discount'] ?? 0,
                     'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
                     'product_stock' => $totalStock,
+                    // ✅ new fields
+                    'weight' => $validatedData['weight'] ?? 0,
+                    'length' => $validatedData['length'] ?? 0,
+                    'width' => $validatedData['width'] ?? 0,
+                    'height' => $validatedData['height'] ?? 0,
+                    'vehicle_type_id' => $validatedData['vehicleType'],
                 ];
                 if (!empty($productVariants)) {
                     $updateData['product_variation'] = json_encode($productVariants);
@@ -354,6 +371,12 @@ class ProductsController extends Controller
                     'product_status' => $validatedData['product_status'] ?? 0,
                     'is_boosted' => $isBoosted,
                     'product_stock' => $totalStock, // ✅ added
+                    // ✅ new fields
+                    'weight' => $validatedData['weight'] ?? 0,
+                    'length' => $validatedData['length'] ?? 0,
+                    'width' => $validatedData['width'] ?? 0,
+                    'height' => $validatedData['height'] ?? 0,
+                    'vehicle_type_id' => $validatedData['vehicleType'],
                 ];
 
                 $newProduct = Products::create($productData);
@@ -1084,5 +1107,23 @@ class ProductsController extends Controller
         $product->save();
 
         return redirect()->back()->with('success', $message);
+    }
+
+    public function getVehicleType(Request $request)
+    {
+        $weight = $request->weight;
+        $length = $request->length;
+        $width  = $request->width;
+        $height = $request->height;
+
+        // Example: match by size & weight from vehicle_types table
+        $vehicleTypes = DB::table('vehicle_types')
+            ->where('max_weight', '>=', $weight)
+            ->where('max_length', '>=', $length)
+            ->where('max_width', '>=', $width)
+            ->where('max_height', '>=', $height)
+            ->get(['id', 'vehicle_type']);
+
+        return response()->json($vehicleTypes);
     }
 }

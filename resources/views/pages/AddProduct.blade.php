@@ -210,6 +210,47 @@
                                 label="Discounted Price" placeholder="Discounted Price Here" id="discounted_price"
                                 name="discounted_price" />
                         </div>
+                        {{-- These are for product size --}}
+                        <div>
+                            <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01"
+                                label="Estimated Weight (kg)" placeholder="Weight in kg" id="weight" name="weight" />
+                        </div>
+
+                        <div>
+                            <x-input value="{{ $products ? $products->length : '' }}" type="number" step="0.01"
+                                label="Estimated Length (inches)" placeholder="Length in inches" id="length" name="length" />
+                        </div>
+
+                        <div>
+                            <x-input value="{{ $products ? $products->width : '' }}" type="number" step="0.01"
+                                label="Estimated Width (inches)" placeholder="Width in inches" id="width" name="width" />
+                        </div>
+
+                        <div>
+                            <x-input value="{{ $products ? $products->height : '' }}" type="number" step="0.01"
+                                label="Estimated Height (inches)" placeholder="Height in inches" id="height" name="height" />
+                        </div>
+
+                        <div id="vehicleType-selects" class="flex gap-4">
+                            <div class="dynamic-vehicleType">
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Vehicle Type {{ $products ? $products->vehicle_type_id : '' }}</label>
+                                <select name="vehicleType" id="vehicleType"
+                                    class="dynamic-vehicleType block w-full rounded border-gray-300">
+                                    <option value="" disabled {{ empty($products) ? 'selected' : '' }}>Select
+                                        Vehicle Type</option>
+
+                                    @if (!empty($products) && !empty($vehicleTypes))
+                                        @foreach ($vehicleTypes as $type)
+                                            <option value="{{ $type->id }}"
+                                                {{ !empty($products->vehicle_type_id) && $products->vehicle_type_id == $type->id ? 'selected' : '' }}>
+                                                {{ $type->vehicle_type }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
 
                     {{-- Next Section --}}
@@ -242,7 +283,8 @@
                     <div class="mt-6 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
-                            <button type="submit" id="add_product_btn" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                            <button type="submit" id="add_product_btn"
+                                class="px-6 py-2 text-white bg-primary rounded-3xl">
                                 Submit
                             </button>
                         </div>
@@ -304,10 +346,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                                                                                            <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                            </div>`).join('')}
+                                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                    </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -471,10 +513,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                                                                                            <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                            </div>`).join('')}
+                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                    </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -526,10 +568,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                                                                                        <div class="value-item flex items-center mb-2">
-                                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                        </div>`).join('')}
+                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -782,6 +824,66 @@
                     confirmButtonColor: '#d33'
                 });
             @endif
+
+
+            function fetchVehicleType() {
+                let weight = $("#weight").val();
+                let length = $("#length").val();
+                let width = $("#width").val();
+                let height = $("#height").val();
+
+                // Only call if all values are filled
+                if (weight && length && width && height) {
+                    $.ajax({
+                        url: "/get-vehicle-type", // Laravel route
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}", // CSRF protection
+                            weight: weight,
+                            length: length,
+                            width: width,
+                            height: height
+                        },
+                        success: function(response) {
+                            $("#vehicleType").empty().append(
+                                '<option disabled selected>Select Vehicle Type</option>');
+                            if (response.length > 0) {
+                                $.each(response, function(key, value) {
+                                    $("#vehicleType").append(
+                                        '<option value="' + value.id + '">' + value
+                                        .vehicle_type +
+                                        '</option>'
+                                    );
+                                });
+                            } else {
+                                $("#vehicleType").append('<option disabled>No match found</option>');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Trigger when size fields change
+            $("#weight, #length, #width, #height").on("keyup change", function() {
+                let weight = $("#weight").val();
+                let length = $("#length").val();
+                let width = $("#width").val();
+                let height = $("#height").val();
+
+                if (weight && length && width && height) {
+                    fetchVehicleType();
+                }
+            });
+
+            // // ✅ On edit page load: if values already exist, call once
+            // let weight = $("#weight").val();
+            // let length = $("#length").val();
+            // let width = $("#width").val();
+            // let height = $("#height").val();
+
+            // // if (weight && length && width && height) {
+            // //     fetchVehicleType();
+            // // }
 
         });
 
