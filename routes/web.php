@@ -157,6 +157,7 @@ Route::middleware(['custom_auth'])->group(function () {
             // })->name('editsettings');
 
             Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
+            Route::post('/get-vehicle-type', [ProductsController::class, 'getVehicleType']);
             Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
             Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
             Route::DELETE('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategoryOrSubcategory']);
