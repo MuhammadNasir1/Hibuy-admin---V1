@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use DB;
 use Illuminate\Http\Request;
 use App\Models\CreditRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 
 class CreditRequestController extends Controller
@@ -192,6 +192,25 @@ class CreditRequestController extends Controller
         } catch (\Exception $e) {
             // In case of error, return failure response
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    public function creditCount(){
+        try {
+            $userId = session('user_details.user_id');
+            $userRole = session('user_details.user_role');
+
+            $query = DB::table('credit_request');
+
+            if ($userRole === 'freelancer') {
+                $query->where('user_id', $userId);
+            }
+
+            $count = $query->where('request_status', 'pending')->count();
+
+            return response()->json(['count' => $count]);
+        } catch (\Exception $e) {
+            Log::error('Credit Count Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to retrieve credit count'], 500);
         }
     }
 

@@ -751,4 +751,30 @@ class UserController extends Controller
             'message' => 'Password updated successfully!',
         ]);
     }
+
+    public function sellerCount(){
+        $sellerCount = Seller::whereHas('user', function ($query) {
+            $query->where('user_role', 'seller')
+                ->where('status', 'pending');
+        })->count();
+
+        return response()->json(['count' => $sellerCount]);
+    }
+
+    public function freelancerCount(){
+        $freelancerCount = Seller::whereHas('user', function ($query) {
+            $query->where('user_role', 'freelancer')
+                ->where('status', 'pending');
+        })->count();
+
+        return response()->json(['count' => $freelancerCount]);
+    }
+
+    public function sumSellerFreelaner(){
+        $sumSF = Seller::whereHas('user', function ($query) {
+            $query->whereIn('user_role', ['seller', 'freelancer'])
+                ->where('status', 'pending');
+        })->count();
+        return response()->json(['sum' => $sumSF]);
+    }
 }
