@@ -244,9 +244,8 @@ class apiproductController extends Controller
                 'category_name'            => $product->category->name ?? null,
                 'review_count'             => $product->reviews->count(), // Count total reviews
                 'store_id'                 => $product->store_id,
-                'vehicle_type'     => $product->vehicleType->vehicle_type ?? null,
-                'delivery_charges' => $product->vehicleType->delivery_charge ?? null,
-
+                'vehicle_type'             => $product->vehicleType->vehicle_type ?? null,
+                'delivery_charges'         => $product->vehicleType->delivery_charge ?? null,
                 'reviews'                  => []
             ];
 
