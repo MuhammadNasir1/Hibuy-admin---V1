@@ -28,6 +28,7 @@
                 session('user_details.user_role') == 'admin' ? 'Seller / Phone' : 'Rider',
                 'Bill Amount',
                 'Date',
+                'Delivery Status',
                 'Status',
                 'Action',
             ];
@@ -85,6 +86,13 @@
 
                         <td class="px-4 py-2">
                             {{ \Carbon\Carbon::parse($order->order_date)->format('d M, Y') }}
+                        </td>
+                        <td class="px-4 py-2">
+                            <span
+                                class="px-3 py-1 text-xs font-semibold text-white
+                            rounded-md shadow bg-green-500">
+                                {{ ucwords(str_replace('_', ' ', $order->order_status)) }}
+                            </span>
                         </td>
                         <td class="px-4 py-2">
                             <span
@@ -563,15 +571,15 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                                                                        <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                                                                        <td class="p-3">
-                                                                                                            ${item.status_video ? `
+                                                                                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                                                                <td class="p-3">
+                                                                                                                    ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                                                                        </td>
-                                                                                                    ` : ''}
+                                                                                                                </td>
+                                                                                                            ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
