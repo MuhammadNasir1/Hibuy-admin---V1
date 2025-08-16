@@ -93,6 +93,7 @@ Route::middleware(['custom_auth'])->group(function () {
             // Order Group
             Route::controller(OrderController::class)->group(function () {
                 Route::GET('/Orders', 'GetOrders')->name('allorders');
+                Route::get('/orders-ledger', 'GetOrders')->name('sellerReport');
                 Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
                 Route::post('/orders/update-status', [OrderController::class, 'updateOrderStatus'])->name('orders.update.status');
             });
