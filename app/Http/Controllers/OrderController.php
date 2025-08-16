@@ -170,18 +170,37 @@ class OrderController extends Controller
     public function GetOrders()
     {
         try {
-            // Step 1: Get logged-in user details
+            // 1. Authentication and user role check
             $userDetails = session('user_details');
             if (!$userDetails) {
                 return redirect()->back()->with('error', 'User not authenticated');
             }
 
             $userId = $userDetails['user_id'];
-            $userRole = $userDetails['user_role']; // Assuming 'admin' or 'seller'
+            $userRole = $userDetails['user_role']; // 'admin' or 'seller'
 
-            // Step 2: If admin, fetch all orders and attach seller summary (name/phone) for list view
-            if ($userRole === 'admin') {
-                $orders = Order::select([
+            // 2. Determine view type
+            $routeName = optional(request()->route())->getName();
+            $isLedgerView = in_array($routeName, ['sellerReport', 'orders-ledger']);
+
+            // 3. Date filtering setup
+            $today = now()->format('Y-m-d');
+            $fromDate = request('from_date');
+            $toDate = request('to_date');
+
+            if ($isLedgerView && !$fromDate && !$toDate) {
+                $fromDate = $today;
+                $toDate = $today;
+            }
+
+            if ($fromDate && $toDate && $toDate < $fromDate) {
+                [$fromDate, $toDate] = [$toDate, $fromDate];
+            }
+
+            // 4. Base query
+            $query = Order::with('rider:id,rider_name,vehicle_type')
+                ->orderBy('order_id', 'desc')
+                ->select([
                     'order_id',
                     'user_id',
                     'tracking_id',
@@ -195,90 +214,129 @@ class OrderController extends Controller
                     'order_status',
                     'rider_id',
                     'tracking_number',
-                    'order_date'
-                ])
-                    ->with('rider:id,rider_name,vehicle_type')
-                    ->orderBy('order_id', 'desc')
-                    ->get()
-                    ->map(function ($order) {
-                        $orderItems = json_decode($order->order_items, true) ?? [];
-                        if (empty($orderItems)) {
-                            return $order;
-                        }
-                        // Ensure view receives array not JSON string
-                        $order->order_items = $orderItems;
+                    'order_date',
+                ]);
 
-                        // Take first product to infer seller/store
+            // 5. Date filtering
+            if ($fromDate && $toDate) {
+                if ($fromDate === $toDate) {
+                    $query->whereRaw("STR_TO_DATE(order_date, '%b %e, %Y') = ?", [$fromDate]);
+                } else {
+                    $query->whereRaw("STR_TO_DATE(order_date, '%b %e, %Y') BETWEEN ? AND ?", [$fromDate, $toDate]);
+                }
+            }
+
+            // 6. Role-specific processing
+            if ($userRole === 'admin') {
+                $selectedStoreId = request('store_id');
+
+                $orders = $query->get()->map(function ($order) use ($selectedStoreId) {
+                    $orderItems = json_decode($order->order_items, true) ?? [];
+
+                    // If store is selected, filter items by store
+                    if ($selectedStoreId) {
+                        $filteredItems = [];
+                        foreach ($orderItems as $item) {
+                            $product = Products::with('store')->find($item['product_id'] ?? null);
+                            if ($product && $product->store_id == $selectedStoreId) {
+                                $filteredItems[] = $item;
+                                $storeInfo = json_decode($product->store->store_info, true) ?? [];
+                                $order->store_name_for_list = $storeInfo['store_name'] ?? null;
+                                $order->store_id = $product->store_id;
+                            }
+                        }
+                        $orderItems = $filteredItems;
+                    }
+
+                    $order->order_items = $orderItems;
+
+                    // If no items left after filtering, drop this order
+                    if (empty($orderItems)) {
+                        return null;
+                    }
+
+                    // Seller info (only first product used for metadata)
+                    if (!empty($orderItems)) {
                         $firstProductId = $orderItems[0]['product_id'] ?? null;
                         if ($firstProductId) {
                             $product = Products::with(['store.seller.user'])->find($firstProductId);
                             if ($product && $product->store && $product->store->seller) {
                                 $personalInfo = json_decode($product->store->seller->personal_info, true) ?? [];
-                                $order->seller_name_for_list = $personalInfo['full_name'] ?? $product->store->seller->user->user_name ?? 'N/A';
-                                $order->seller_phone_for_list = $personalInfo['phone_no'] ?? $personalInfo['phone'] ?? 'N/A';
-                                $storeInfo = json_decode($product->store->store_info, true) ?? [];
-                                $order->store_name_for_list = $storeInfo['store_name'] ?? null; // might be useful client-side later
+                                $order->seller_name_for_list = $personalInfo['full_name'] ??
+                                    $product->store->seller->user->user_name ?? 'N/A';
+                                $order->seller_phone_for_list = $personalInfo['phone_no'] ??
+                                    $personalInfo['phone'] ?? 'N/A';
                             }
                         }
-
-                        // Compute total from items
-                        $grandTotal = array_sum(array_map(function ($i) {
-                            return ($i['quantity'] ?? 1) * ($i['price'] ?? 0);
-                        }, $orderItems));
-                        $order->grand_total = $grandTotal;
-                        return $order;
-                    });
-                return view('pages.Orders', compact('orders'));
-            }
-
-            // Step 3: If not admin, treat as seller
-            $sellerId = Seller::where('user_id', $userId)->value('seller_id');
-            if (!$sellerId) {
-                return redirect()->back()->with('error', 'Seller not found');
-            }
-
-            $storeId = Store::where('seller_id', $sellerId)->value('store_id');
-
-            $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
-
-            $orders = Order::select([
-                'order_id',
-                'user_id',
-                'tracking_id',
-                'order_items',
-                'total',
-                'delivery_fee',
-                'customer_name',
-                'phone',
-                'address',
-                'status',
-                'tracking_number',
-                'order_status',
-                'rider_id',
-                'order_date'
-            ])
-                ->with('rider:id,rider_name,vehicle_type')
-                ->orderBy('order_id', 'desc')
-                ->get()
-                ->map(function ($order) use ($productIds) {
-                    $orderItems = json_decode($order->order_items, true);
-
-                    $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
-                        return in_array($item['product_id'], $productIds);
-                    });
-
-                    if (empty($filteredOrderItems)) {
-                        return null;
                     }
 
-                    $grandTotal = array_sum(array_column($filteredOrderItems, 'price'));
+                    // Totals based on filtered items
+                    $productTotal = array_sum(array_map(function ($item) {
+                        return ($item['quantity'] ?? 1) * ($item['price'] ?? 0);
+                    }, $orderItems));
 
-                    $order->order_items = array_values($filteredOrderItems);
-                    $order->grand_total = $grandTotal;
+                    $order->grand_total = $productTotal + (float) $order->delivery_fee;
+                    $order->grand_discount = $productTotal * 0.05;
+                    $order->net_total = $order->grand_total - $order->grand_discount;
 
                     return $order;
                 })->filter();
-            return view('pages.Orders', compact('orders'));
+
+                // Fetch all stores for dropdown
+                $stores = DB::table('stores')->get()->map(function ($store) {
+                    $info = json_decode($store->store_info, true);
+                    $store->store_name = $info['store_name'] ?? 'Unnamed Store';
+                    return $store;
+                });
+            } else {
+                $sellerId = Seller::where('user_id', $userId)->value('seller_id');
+                if (!$sellerId) {
+                    return redirect()->back()->with('error', 'Seller not found');
+                }
+
+                $storeId = Store::where('seller_id', $sellerId)->value('store_id');
+                $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
+
+                $orders = $query->get()->map(function ($order) use ($productIds) {
+                    $orderItems = json_decode($order->order_items, true) ?? [];
+                    $filteredItems = array_filter($orderItems, function ($item) use ($productIds) {
+                        return in_array($item['product_id'] ?? null, $productIds);
+                    });
+
+                    if (empty($filteredItems)) {
+                        return null;
+                    }
+
+                    $order->order_items = array_values($filteredItems);
+
+                    $productTotal = array_sum(array_map(function ($item) {
+                        return ($item['quantity'] ?? 1) * ($item['price'] ?? 0);
+                    }, $filteredItems));
+
+                    $order->grand_total = $productTotal + (float) $order->delivery_fee;
+                    $order->grand_discount = $productTotal * 0.05;
+                    $order->net_total = $order->grand_total - $order->grand_discount;
+
+                    return $order;
+                })->filter();
+
+                $stores = null; // sellers don’t get all stores
+            }
+
+            // 7. View data
+            $viewData = [
+                'orders' => $orders,
+                'fromDate' => $fromDate,
+                'toDate' => $toDate,
+                'isLedgerView' => $isLedgerView,
+                'defaultDate' => $today,
+                'stores' => $stores, // ✅ pass stores to view (null if seller)
+            ];
+
+            return $isLedgerView
+                ? view('pages.orders_ledger', $viewData)
+                : view('pages.Orders', $viewData);
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -489,12 +547,13 @@ class OrderController extends Controller
     //     return view('pages/slip', $data);
     // }
 
-     public function printSlip($orderId)
+    public function printSlip($orderId)
     {
         // Get user role from session
         $userDetails = Session('user_details');
         $userRole = $userDetails['user_role'] ?? null;
         $isAdmin = $userRole === 'admin';
+        $userStoreId = $userDetails['store_id'] ?? null;
 
         // Get the order with customer details
         $order = DB::table('orders')
@@ -514,7 +573,6 @@ class OrderController extends Controller
         // Initialize variables
         $products = [];
         $storeIds = [];
-        $targetStoreId = null;
 
         // Collect products and store IDs
         foreach ($orderItems as $item) {
@@ -531,30 +589,19 @@ class OrderController extends Controller
 
             if ($product) {
                 $storeIds[] = $product->store_id;
-                if ($targetStoreId === null) {
-                    $targetStoreId = $product->store_id;
-                }
 
-                $productData = [
+                $products[] = [
                     'product_id' => $product->product_id,
-                    'product_name' => $item['product_name'],
+                    'product_name' => $item['product_name'] ?? $product->product_name,
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                     'store_id' => $product->store_id,
                 ];
-
-                if (!$isAdmin) {
-                    if ($product->store_id === $targetStoreId) {
-                        $products[] = $productData;
-                    }
-                } else {
-                    $products[] = $productData;
-                }
             }
         }
 
         if (empty($products)) {
-            abort(404, 'No products found for the selected store');
+            abort(404, 'No products found');
         }
 
         // Fetch store details
@@ -572,38 +619,48 @@ class OrderController extends Controller
             ->keyBy('store_id')
             ->toArray();
 
-        // Prepare data
-        $data = ['order' => $order, 'isAdmin' => $isAdmin];
+        // Prepare the response data - consistent structure for both admin and non-admin
+        $data = [
+            'order' => $order,
+            'isAdmin' => $isAdmin,
+            'products' => [],  // This will contain all products for the current view
+            'seller' => null,  // This will contain the store details for non-admin
+            'grouped_products' => []  // This will contain grouped products for admin
+        ];
 
+        // For non-admin users, filter products by their store
         if (!$isAdmin) {
-            $seller = $sellers[$targetStoreId] ?? null;
-            if (!$seller) {
-                abort(404, 'Store not found');
-            }
-            $data['products'] = $products;
-            $data['seller'] = $seller;
-        } else {
-            foreach ($products as &$product) {
-                $storeId = $product['store_id'];
-                $product['store'] = $sellers[$storeId] ?? null;
+            if (!$userStoreId) {
+                abort(403, 'You don\'t have permission to view this order');
             }
 
-            $groupedProducts = [];
+            $filteredProducts = array_filter($products, function ($product) use ($userStoreId) {
+                return $product['store_id'] == $userStoreId;
+            });
+
+            if (empty($filteredProducts)) {
+                abort(403, 'No products found for your store in this order');
+            }
+
+            $data['products'] = array_values($filteredProducts);
+            $data['seller'] = $sellers[$userStoreId] ?? null;
+        }
+        // For admin users, group products by store
+        else {
             foreach ($products as $product) {
                 $storeId = $product['store_id'];
-                if (!isset($groupedProducts[$storeId])) {
-                    $groupedProducts[$storeId] = [
+
+                if (!isset($data['grouped_products'][$storeId])) {
+                    $data['grouped_products'][$storeId] = [
                         'store' => $sellers[$storeId] ?? null,
-                        'products' => [],
+                        'products' => []
                     ];
                 }
-                $groupedProducts[$storeId]['products'][] = $product;
+
+                $data['grouped_products'][$storeId]['products'][] = $product;
             }
-            // Debug the grouped products
-            // dd($groupedProducts); // Uncomment to inspect
-            $data['grouped_products'] = $groupedProducts;
         }
-// return $data;
+
         return view('pages.slip', $data);
     }
 

@@ -51,7 +51,7 @@
                         <td class="px-4 py-2 text-center font-medium">{{ $displayCounter++ }}</td>
                         <td class="px-4 py-2 text-center">
                             <span class="text-gray-700 font-semibold">{{ $order->order_id }}</span> /
-                            <span class="text-gray-500">{{ $order->tracking_number ?? 'Not Assigned' }}</span>
+                            <span class="text-gray-500">{{ $order->tracking_id ?? 'Not Assigned' }}</span>
                         </td>
                         <td class="px-4 py-2">{{ ucwords($order->customer_name) }} <br> <a href="tel:{{ $order->phone }}"
                                 class="font-semibold pt-1 text-blue-600">{{ $order->phone }}</span>
@@ -90,18 +90,36 @@
                         <td class="px-4 py-2">
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
-                            rounded-md shadow bg-green-500">
+                                rounded-md shadow
+                                @switch($order->order_status)
+                                    @case('shipped') bg-blue-500 @break
+                                    @case('delivered') bg-green-500 @break
+                                    @case('cancelled') bg-red-500 @break
+                                    @case('returned') bg-purple-500 @break
+                                    @default bg-yellow-500
+                                @endswitch
+                                ">
                                 {{ ucwords(str_replace('_', ' ', $order->order_status)) }}
                             </span>
                         </td>
+
                         <td class="px-4 py-2">
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
-                            {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
-                            rounded-md shadow">
+                                rounded-md shadow
+                                @switch($order->status)
+                                    @case('pending') bg-yellow-500 @break
+                                    @case('on the way') bg-blue-500 @break
+                                    @case('completed') bg-green-500 @break
+                                    @case('cancelled') bg-red-500 @break
+                                    @case('returned') bg-purple-500 @break
+                                    @default bg-gray-500
+                                @endswitch
+                                ">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
+
                         <td class="px-4 py-2 text-center flex">
                             <button vieworderurl="/view-order/{{ $order->order_id }}"
                                 class="viewModalBtn p-2 rounded-md transition">
@@ -249,7 +267,7 @@
                                                     <option value="" selected>Select Status</option>
                                                     <option value="pending">Pending</option>
                                                     <option value="processing">Processing</option>
-                                                    <option value="shipped">Shipped</option>
+                                                    <option value="ready">Ready to Pick</option>
                                                     <option value="delivered">Delivered</option>
                                                     <option value="cancelled">Cancelled</option>
                                                     <option value="returned">Returned</option>
@@ -257,7 +275,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     {{-- weight feild herre --}}
                                 </div>
 
@@ -402,7 +419,7 @@
                                                     @endif
                                                     <th class="p-3 text-center">Qty</th>
                                                     <th class="p-3 text-center">Weight / Size</th>
-                                                    <th class="p-3 text-center">Qty</th>
+                                                    {{-- <th class="p-3 text-center">Qty</th> --}}
                                                     <th class="p-3 text-center">Variation</th>
                                                     <th class="p-3 text-center">U.Price</th>
                                                     <th class="p-3 text-center">Subtotal</th>
@@ -571,15 +588,15 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                                                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                                                                                <td class="p-3">
-                                                                                                                    ${item.status_video ? `
+                                                                                                                    <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                                                                    <td class="p-3">
+                                                                                                                        ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                                                                                </td>
-                                                                                                            ` : ''}
+                                                                                                                    </td>
+                                                                                                                ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
