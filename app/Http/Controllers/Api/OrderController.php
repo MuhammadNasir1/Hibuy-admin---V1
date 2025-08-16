@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\EmailController;
 use App\Models\Order;
+use App\Models\Seller;
 use App\Models\Store;
 use App\Models\Reviews;
 use App\Models\Products;
@@ -18,54 +20,52 @@ class OrderController extends Controller
         try {
             // Ensure the user is authenticated
             $loggedInUser = Auth::user();
-            // return $request->items;
             if (!$loggedInUser) {
                 return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
             }
 
             // Validate request data
             $validatedData = $request->validate([
-                'items'        => 'required|array',
-                'total'        => 'required|numeric',
+                'items' => 'required|array',
+                'total' => 'required|numeric',
                 'delivery_fee' => 'nullable|numeric',
-                'grand_total'  => 'required|numeric',
-                'address'      => 'required|array',
+                'grand_total' => 'required|numeric',
+                'address' => 'required|array',
             ]);
-            // return $validatedData['items'];
+
             // Generate a tracking ID
             $trackingId = 'TRK-' . strtoupper(uniqid());
             $items = is_array($validatedData['items']) ? $validatedData['items'] : json_decode($validatedData['items'], true);
-            // return $items;
 
             // Create the order
             $order = Order::create([
-                'user_id'       => $loggedInUser->user_id,
-                'tracking_id'   => $trackingId,
-                'order_items'   => json_encode($items), // Convert items to JSON
-                'total'         => $validatedData['total'],
-                'delivery_fee'  => $validatedData['delivery_fee'] ?? 0,
-                'grand_total'   => $validatedData['grand_total'],
+                'user_id' => $loggedInUser->user_id,
+                'tracking_id' => $trackingId,
+                'order_items' => json_encode($items),
+                'total' => $validatedData['total'],
+                'delivery_fee' => $validatedData['delivery_fee'] ?? 0,
+                'grand_total' => $validatedData['grand_total'],
                 'customer_name' => $validatedData['address']['name'],
-                'phone'         => $validatedData['address']['phone'],
-                'address'       => $validatedData['address']['address'],
-                'second_phone'  => $validatedData['address']['second_phone'] ?? null,
-                'order_date'    => now()->format('M d, Y'), // Example: "Mar 15, 2025"
-                'status'        => 'pending',
-                'order_status'  => 'order_placed',
+                'phone' => $validatedData['address']['phone'],
+                'address' => $validatedData['address']['address'],
+                'second_phone' => $validatedData['address']['second_phone'] ?? null,
+                'order_date' => now()->format('M d, Y'),
+                'status' => 'pending',
+                'order_status' => 'order_placed',
             ]);
 
             // Decode order_items
             $orderItems = json_decode($order->order_items, true);
 
-            // Extract product IDs from order_items
+            // Extract product IDs
             $productIds = array_column($orderItems, 'product_id');
-
             $products = Products::select(
                 'product_id',
                 'product_name',
                 'product_brand',
                 'product_price',
-                'product_discounted_price'
+                'product_discounted_price',
+                'user_id'
             )
                 ->whereIn('product_id', $productIds)
                 ->get()
@@ -75,19 +75,147 @@ class OrderController extends Controller
             foreach ($orderItems as &$item) {
                 $item['product_details'] = $products[$item['product_id']] ?? null;
             }
-
-            // Update order items with detailed product info
             $order->order_items = $orderItems;
+
+            /**
+             * ---------------------
+             * EMAIL 1: Customer
+             * ---------------------
+             */
+            $customerSubject = "Order Confirmation - Tracking ID: {$trackingId}";
+
+            // Build order items table for customer
+            $customerTable = "
+                <table border='1' cellpadding='8' cellspacing='0' 
+                       style='border-collapse:collapse;width:100%;font-family:Arial,sans-serif;'>
+                    <thead style='background:#f4f4f4;'>
+                        <tr>
+                            <th>Product</th>
+                            <th>Brand</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>";
+            foreach ($orderItems as $item) {
+                $p = $item['product_details'];
+                $customerTable .= "
+                        <tr>
+                            <td>{$p->product_name}</td>
+                            <td>{$p->product_brand}</td>
+                            <td>{$item['quantity']}</td>
+                            <td>{$p->product_price}</td>
+                        </tr>";
+            }
+            $customerTable .= "
+                    </tbody>
+                </table>";
+
+            $customerBody = "
+                <h3>Hello {$validatedData['address']['name']},</h3>
+                <p>Thank you for your order!</p>
+                <p><b>Tracking ID:</b> {$trackingId}<br>
+                   <b>Order Date:</b> " . now()->format('M d, Y') . "</p>
+                <h4>Order Details:</h4>
+                {$customerTable}
+                <p><b>Total:</b> {$validatedData['total']}<br>
+                   <b>Delivery Fee:</b> {$validatedData['delivery_fee']}<br>
+                   <b>Grand Total:</b> {$validatedData['grand_total']}</p>
+                <p>We will notify you once your order is shipped.</p>
+                <p>Thank you for shopping with us!</p>
+            ";
+
+            (new EmailController)->sendMail($loggedInUser->user_email, $customerSubject, $customerBody);
+
+            /**
+             * ---------------------
+             * EMAIL 2: Sellers
+             * ---------------------
+             */
+
+            // Group products by seller_id
+            $sellerProducts = [];
+            foreach ($orderItems as $item) {
+                $p = $item['product_details'];
+                if ($p) {
+                    $sellerProducts[$p->user_id][] = $p;
+                }
+            }
+
+            $sellers = Seller::whereIn('user_id', array_keys($sellerProducts))->get()->keyBy('user_id');
+
+            // return response()->json(['seller', $sellers]);
+            foreach ($sellerProducts as $sellerId => $productsList) {
+                if (!isset($sellers[$sellerId])) {
+                    continue;
+                }
+
+                $seller = $sellers[$sellerId];
+
+                // Decode seller personal info
+                $personalInfo = json_decode($seller->personal_info, true);
+                $sellerEmail = $personalInfo['email'] ?? null;
+                $sellerName = $personalInfo['full_name'] ?? 'Seller';
+
+                if (!$sellerEmail) {
+                    continue; // Skip if no email found
+                }
+
+                // Build seller's product table
+                $sellerTable = "
+                    <table border='1' cellpadding='8' cellspacing='0' 
+                           style='border-collapse:collapse;width:100%;font-family:Arial,sans-serif;'>
+                        <thead style='background:#f4f4f4;'>
+                            <tr>
+                                <th>Product</th>
+                                <th>Brand</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+
+                foreach ($productsList as $prod) {
+                    $sellerTable .= "
+                            <tr>
+                                <td>{$prod->product_name}</td>
+                                <td>{$prod->product_brand}</td>
+                                <td>{$prod->product_price}</td>
+                            </tr>";
+                }
+                $sellerTable .= "
+                        </tbody>
+                    </table>";
+
+                $sellerSubject = "New Order Received - Tracking ID: {$trackingId}";
+                $sellerBody = "
+                    <h3>Hello {$sellerName},</h3>
+                    <p>You have received a new order.</p>
+                    <p><b>Customer:</b> {$validatedData['address']['name']}<br>
+                       <b>Phone:</b> {$validatedData['address']['phone']}<br>
+                       <b>Address:</b> {$validatedData['address']['address']}</p>
+                    <h4>Ordered Items:</h4>
+                    {$sellerTable}
+                    <p>Please process the order promptly.</p>
+                    <p>Thank you.</p>
+                ";
+
+                (new EmailController)->sendMail($sellerEmail, $sellerSubject, $sellerBody);
+            }
+
 
             return response()->json([
                 'success' => true,
                 'message' => 'Order placed successfully',
-                'order'   => $order
+                'order' => $order
             ], 201);
+
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+
+
 
 
     public function GetOrders()
@@ -117,7 +245,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Orders fetched successfully',
-                'orders'  => $orders
+                'orders' => $orders
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -257,7 +385,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Order details fetched successfully',
-                'order'   => $order
+                'order' => $order
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

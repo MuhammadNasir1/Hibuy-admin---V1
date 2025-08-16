@@ -385,6 +385,8 @@ class AuthController extends Controller
                 Seller::create(['user_id' => $user->user_id]);
             }
 
+            $mailSend = (new EmailController())->sendMail($user->user_email, "Welcome To Hibuy", "User Registered Succesfully");
+
             return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
         } catch (ValidationException $e) {
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
