@@ -96,7 +96,6 @@ Route::middleware(['custom_auth'])->group(function () {
             // Order Group
             Route::controller(OrderController::class)->group(function () {
                 Route::GET('/Orders', 'GetOrders')->name('allorders');
-                Route::get('/orders-ledger', 'GetOrders')->name('sellerReport');
                 Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
                 Route::post('/orders/update-status', [OrderController::class, 'updateOrderStatus'])->name('orders.update.status');
 
@@ -163,7 +162,6 @@ Route::middleware(['custom_auth'])->group(function () {
             // })->name('editsettings');
 
             Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
-            Route::post('/get-vehicle-type', [ProductsController::class, 'getVehicleType']);
             Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
             Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
             Route::DELETE('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategoryOrSubcategory']);

@@ -192,7 +192,6 @@ class apiproductController extends Controller
                 'product_name',
                 'product_description',
                 'product_price',
-                'vehicle_type_id',
                 'product_brand',
                 'product_discount',
                 'product_discounted_price',
@@ -200,23 +199,24 @@ class apiproductController extends Controller
                 'product_variation',
                 'store_id',
                 'created_at',
-                'product_category',
-                'product_subcategory'
+                'product_category', // Category ID
+                'product_subcategory' // Subcategory ID
             )
                 ->with([
-                    'store:store_id,store_profile_detail,store_info',
-                    'category:id,name',
-                    'vehicleType:id,vehicle_type,delivery_charge', // 👈 Include vehicle type
+                    'store:store_id,store_profile_detail,store_info', // Fetch store details
+                    'category:id,name', // Fetch category details
                     'reviews' => function ($q) {
-                        $q->with('user:user_id,user_name')->latest();
+                        $q->with('user:user_id,user_name')
+                            ->latest(); // order reviews by created_at descending
                     }
                 ])
                 ->whereHas('user', function ($q) {
-                    $q->where('user_status', 1);
+                    $q->where('user_status', 1); // filter by related user's status
                 })
                 ->where('product_id', $product_id)
                 ->where('store_id', '!=', 0)
                 ->first();
+
             if (!$product) {
                 return response()->json([
                     'success' => false,
@@ -244,8 +244,6 @@ class apiproductController extends Controller
                 'category_name'            => $product->category->name ?? null,
                 'review_count'             => $product->reviews->count(), // Count total reviews
                 'store_id'                 => $product->store_id,
-                'vehicle_type'             => $product->vehicleType->vehicle_type ?? null,
-                'delivery_charges'         => $product->vehicleType->delivery_charge ?? null,
                 'reviews'                  => []
             ];
 

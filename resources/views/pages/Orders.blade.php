@@ -28,7 +28,6 @@
                 session('user_details.user_role') == 'admin' ? 'Seller / Phone' : 'Rider',
                 'Bill Amount',
                 'Date',
-                'Delivery Status',
                 'Status',
                 'Action',
             ];
@@ -90,13 +89,30 @@
                         <td class="px-4 py-2">
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
+<<<<<<< HEAD
+                            {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
+                            rounded-md shadow">
+                                =======
                                 rounded-md shadow
                                 @switch($order->order_status)
-                                    @case('shipped') bg-blue-500 @break
-                                    @case('delivered') bg-green-500 @break
-                                    @case('cancelled') bg-red-500 @break
-                                    @case('returned') bg-purple-500 @break
-                                    @default bg-yellow-500
+                                    @case('shipped')
+                                        bg-blue-500
+                                    @break
+
+                                    @case('delivered')
+                                        bg-green-500
+                                    @break
+
+                                    @case('cancelled')
+                                        bg-red-500
+                                    @break
+
+                                    @case('returned')
+                                        bg-purple-500
+                                    @break
+
+                                    @default
+                                        bg-yellow-500
                                 @endswitch
                                 ">
                                 {{ ucwords(str_replace('_', ' ', $order->order_status)) }}
@@ -116,6 +132,7 @@
                                     @default bg-gray-500
                                 @endswitch
                                 ">
+                                >>>>>>> b2d9cb4e6cd4eb01f2822263835b2d880cd2e3d7
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
@@ -588,15 +605,21 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
+
+                                                                                                            <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                                                                            <td class="p-3">
+                                                                                                                ${item.status_video ? `
                                                                                                                     <td class="p-3">${item?.delivery_status || 'N/A'}</td>
                                                                                                                     <td class="p-3">
                                                                                                                         ${item.status_video ? `
-                                                <video controls class="w-28 h-16 rounded shadow">
-                                                    <source src="/storage/${item.status_video}" type="video/mp4">
-                                                    Your browser does not support the video tag.
-                                                </video>` : 'No video'}
-                                                                                                                    </td>
-                                                                                                                ` : ''}
+                                                    <video controls class="w-28 h-16 rounded shadow">
+                                                        <source src="/storage/${item.status_video}" type="video/mp4">
+                                                        Your browser does not support the video tag.
+                                                    </video>` : 'No video'}
+                                                                                                        </td>
+                                                                                                    ` : ''}
+                                                                                                                        </td>
+                                                                                                                    ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>

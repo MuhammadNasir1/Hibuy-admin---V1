@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\EmailController;
 
 class apiAuthController extends Controller
 {
@@ -68,6 +69,8 @@ class apiAuthController extends Controller
                 // Merge with user data
                 $userData = array_merge($userData, $customerData);
             }
+
+            $mailSend = (new EmailController())->sendMail($user->user_email, "Welcome To Hibuy", "User Logged In Succesfully");
 
             return response()->json([
                 'success' => true,
@@ -187,20 +190,20 @@ class apiAuthController extends Controller
 
             // Validate input
             $validator = Validator::make($request->all(), [
-                'review_id'  => 'nullable|integer|exists:reviews,review_id',
+                'review_id' => 'nullable|integer|exists:reviews,review_id',
                 'product_id' => 'required|integer|exists:products,product_id',
-                'order_id'   => 'required|integer',
-                'rating'     => 'required|integer|min:1|max:5',
-                'review'     => 'required|string',
-                'images'     => 'nullable|array',
-                'images.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'order_id' => 'required|integer',
+                'rating' => 'required|integer|min:1|max:5',
+                'review' => 'required|string',
+                'images' => 'nullable|array',
+                'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors'  => $validator->errors()
+                    'errors' => $validator->errors()
                 ], 422);
             }
 
@@ -280,9 +283,9 @@ class apiAuthController extends Controller
 
                 // Update review fields
                 $review->product_id = $request->product_id;
-                $review->order_id   = $orderId;
-                $review->rating     = $request->rating;
-                $review->review     = $cleanedReview;
+                $review->order_id = $orderId;
+                $review->rating = $request->rating;
+                $review->review = $cleanedReview;
 
                 // ✅ Always replace images, even if empty
                 $review->images = json_encode($imagePaths);
@@ -307,12 +310,12 @@ class apiAuthController extends Controller
 
                 // Create new review
                 $review = Reviews::create([
-                    'user_id'    => $User->user_id,
+                    'user_id' => $User->user_id,
                     'product_id' => $request->product_id,
-                    'order_id'   => $orderId,
-                    'rating'     => $request->rating,
-                    'review'     => $cleanedReview,
-                    'images'     => json_encode($imagePaths),
+                    'order_id' => $orderId,
+                    'rating' => $request->rating,
+                    'review' => $cleanedReview,
+                    'images' => json_encode($imagePaths),
                 ]);
 
                 $message = 'Review added successfully';
@@ -322,13 +325,13 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data'    => $review
+                'data' => $review
             ], $statusCode);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong!',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -396,7 +399,7 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong!',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 422);
         }
     }
@@ -440,7 +443,7 @@ class apiAuthController extends Controller
 
                     // Attach clean product_detail
                     $review->product_detail = [
-                        'product_id'    => $review->product->product_id,
+                        'product_id' => $review->product->product_id,
                         'product_title' => $review->product->product_name,
                         'product_image' => $firstImage,
                     ];
@@ -466,11 +469,11 @@ class apiAuthController extends Controller
                     $orderItems = json_decode($originalOrder->order_items, true);
                     if (is_array($orderItems)) {
                         foreach ($orderItems as $item) {
-                            if ((int)$item['product_id'] === (int)$review->product_id) {
-                                $orderData['parent_option_name']  = $item['parent_option']['name'] ?? null;
+                            if ((int) $item['product_id'] === (int) $review->product_id) {
+                                $orderData['parent_option_name'] = $item['parent_option']['name'] ?? null;
                                 $orderData['parent_option_value'] = $item['parent_option']['value'] ?? null;
-                                $orderData['child_option_name']   = $item['child_option']['name'] ?? null;
-                                $orderData['child_option_value']  = $item['child_option']['value'] ?? null;
+                                $orderData['child_option_name'] = $item['child_option']['name'] ?? null;
+                                $orderData['child_option_value'] = $item['child_option']['value'] ?? null;
                                 break;
                             }
                         }
@@ -700,10 +703,10 @@ class apiAuthController extends Controller
 
             // Prepare user data
             $userData = [
-                'user_id'    => $user->user_id,
-                'user_name'  => $user->user_name,
+                'user_id' => $user->user_id,
+                'user_name' => $user->user_name,
                 'user_email' => $user->user_email,
-                'user_role'  => $user->user_role,
+                'user_role' => $user->user_role,
             ];
 
             // Merge customer-specific details
@@ -715,7 +718,7 @@ class apiAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Customer addresses fetched successfully",
-                'user'    => $userData,
+                'user' => $userData,
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
@@ -959,13 +962,13 @@ class apiAuthController extends Controller
                 $category = $firstFaq->category;
 
                 $response[] = [
-                    'category_name'  => $category->name ?? 'Uncategorized',
+                    'category_name' => $category->name ?? 'Uncategorized',
                     'category_image' => $category->image ?? null,
                     'faqs' => $faqGroup->map(function ($faq) {
                         return [
-                            'faq_id'   => $faq->faq_id,
+                            'faq_id' => $faq->faq_id,
                             'question' => $faq->question,
-                            'answer'   => $faq->answer,
+                            'answer' => $faq->answer,
                         ];
                     })->values(),
                 ];
