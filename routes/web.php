@@ -46,7 +46,7 @@ Route::middleware(['custom_auth'])->group(function () {
             });
             Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
             Route::get('/dashboard/counts', [UserController::class, 'dashboardCounts'])
-            ->name('dashboard.counts');
+                ->name('dashboard.counts');
 
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
@@ -96,9 +96,10 @@ Route::middleware(['custom_auth'])->group(function () {
             // Order Group
             Route::controller(OrderController::class)->group(function () {
                 Route::GET('/Orders', 'GetOrders')->name('allorders');
+                Route::post('/orders/{orderId}/mark-paid', [OrderController::class, 'markAsPaid'])->name('orders.markPaid');
+                Route::get('/orders-ledger', 'GetOrders')->name('sellerReport');
                 Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
                 Route::post('/orders/update-status', [OrderController::class, 'updateOrderStatus'])->name('orders.update.status');
-
             });
 
             Route::get('/approve-products', [ApproveProductsController::class, 'view'])->name('approveProducts');
