@@ -51,7 +51,7 @@
                         <td class="px-4 py-2 text-center font-medium">{{ $displayCounter++ }}</td>
                         <td class="px-4 py-2 text-center">
                             <span class="text-gray-700 font-semibold">{{ $order->order_id }}</span> /
-                            <span class="text-gray-500">{{ $order->tracking_number ?? 'Not Assigned' }}</span>
+                            <span class="text-gray-500">{{ $order->tracking_id ?? 'Not Assigned' }}</span>
                         </td>
                         <td class="px-4 py-2">{{ ucwords($order->customer_name) }} <br> <a href="tel:{{ $order->phone }}"
                                 class="font-semibold pt-1 text-blue-600">{{ $order->phone }}</span>
@@ -90,18 +90,51 @@
                         <td class="px-4 py-2">
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
-                            rounded-md shadow bg-green-500">
+                            {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
+                            rounded-md shadow
+
+                                @switch($order->order_status)
+                                    @case('shipped')
+                                        bg-blue-500
+                                    @break
+
+                                    @case('delivered')
+                                        bg-green-500
+                                    @break
+
+                                    @case('cancelled')
+                                        bg-red-500
+                                    @break
+
+                                    @case('returned')
+                                        bg-purple-500
+                                    @break
+
+                                    @default
+                                        bg-yellow-500
+                                @endswitch
+                                ">
                                 {{ ucwords(str_replace('_', ' ', $order->order_status)) }}
                             </span>
                         </td>
+
                         <td class="px-4 py-2">
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
-                            {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
-                            rounded-md shadow">
+                                rounded-md shadow
+                                @switch($order->status)
+                                    @case('pending') bg-yellow-500 @break
+                                    @case('on the way') bg-blue-500 @break
+                                    @case('completed') bg-green-500 @break
+                                    @case('cancelled') bg-red-500 @break
+                                    @case('returned') bg-purple-500 @break
+                                    @default bg-gray-500
+                                @endswitch
+                                ">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
+
                         <td class="px-4 py-2 text-center flex">
                             <button vieworderurl="/view-order/{{ $order->order_id }}"
                                 class="viewModalBtn p-2 rounded-md transition">
@@ -133,6 +166,14 @@
                                         d="M128 128C128 92.7 156.7 64 192 64L405.5 64C422.5 64 438.8 70.7 450.8 82.7L493.3 125.2C505.3 137.2 512 153.5 512 170.5L512 208L128 208L128 128zM64 320C64 284.7 92.7 256 128 256L512 256C547.3 256 576 284.7 576 320L576 416C576 433.7 561.7 448 544 448L512 448L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 448L96 448C78.3 448 64 433.7 64 416L64 320zM192 480L192 512L448 512L448 416L192 416L192 480zM520 336C520 322.7 509.3 312 496 312C482.7 312 472 322.7 472 336C472 349.3 482.7 360 496 360C509.3 360 520 349.3 520 336z" />
                                 </svg>
                             </a>
+                            @if (session('user_details.user_role') === 'admin')
+                                <a href="#" id=""
+                                    class="paidBtn p-2 rounded-md transition-colors duration-200
+                                 {{ $order->paid ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-primary text-white' }}"
+                                    data-order-id="{{ $order->order_id }}" {{ $order->paid ? 'disabled' : '' }}>
+                                    {{ $order->paid ? 'Paid' : 'Pay' }}
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
@@ -175,7 +216,8 @@
 
                                 {{-- Rider Selection --}}
                                 <div>
-                                    <label for="rider_id" class="block mb-1 text-sm font-normal text-gray-600">Rider</label>
+                                    <label for="rider_id"
+                                        class="block mb-1 text-sm font-normal text-gray-600">Rider</label>
                                     <select id="rider_id" name="rider_id" required
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
                                         <option value="" selected>Select Rider</option>
@@ -249,7 +291,7 @@
                                                     <option value="" selected>Select Status</option>
                                                     <option value="pending">Pending</option>
                                                     <option value="processing">Processing</option>
-                                                    <option value="shipped">Shipped</option>
+                                                    <option value="ready">Ready to Pick</option>
                                                     <option value="delivered">Delivered</option>
                                                     <option value="cancelled">Cancelled</option>
                                                     <option value="returned">Returned</option>
@@ -257,7 +299,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     {{-- weight feild herre --}}
                                 </div>
 
@@ -331,7 +372,7 @@
                     </div>
 
                     <!-- Seller Details Section (Admin Only) -->
-                    @if (session('user_details.user_role') == 'admin')
+                    {{-- @if (session('user_details.user_role') == 'admin')
                         <div class="mb-3 pt-2">
                             <button id="sellerDropdownButton"
                                 class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
@@ -371,7 +412,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
 
                     <!-- Order Items Table -->
                     <div class="mb-3 pt-2">
@@ -396,13 +437,15 @@
                                                 <tr class="bg-gray-200">
                                                     <th class="p-3 text-left">Image</th>
                                                     <th class="p-3 text-left">Product</th>
+                                                    @if (session('user_details.user_role') === 'admin')
+                                                        <th class="p-3 text-left">Store / Seller</th>
+                                                    @endif
                                                     @if (session('user_details.user_role') == 'admin')
                                                         <th class="p-3 text-left">Status</th>
                                                         <th class="p-3 text-left">Video Prove</th>
                                                     @endif
                                                     <th class="p-3 text-center">Qty</th>
                                                     <th class="p-3 text-center">Weight / Size</th>
-                                                    <th class="p-3 text-center">Qty</th>
                                                     <th class="p-3 text-center">Variation</th>
                                                     <th class="p-3 text-center">U.Price</th>
                                                     <th class="p-3 text-center">Subtotal</th>
@@ -571,15 +614,20 @@
                                     <td class="p-3">${item.product_name}</td>
 
                                     ${user.user_role == 'admin' ? `
-                                                                                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                                                                                <td class="p-3">
-                                                                                                                    ${item.status_video ? `
+
+
+                                                <td class="p-3">${item.seller_info.store_name} / ${item.seller_info.seller_name}</td>
+
+                                                  <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                  <td class="p-3">
+                                                    ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
-                                                                                                                </td>
-                                                                                                            ` : ''}
+
+                                                 </td>
+                                                 ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
@@ -787,7 +835,70 @@
                     }
                 });
             });
+
+
+            $('.paidBtn').on('click', function(e) {
+                e.preventDefault();
+
+                const orderId = $(this).data('order-id');
+                const btn = $(this);
+
+                if (!orderId || btn.hasClass('cursor-not-allowed')) {
+                    return; // Do nothing if already paid or invalid
+                }
+
+                $.ajax({
+                    url: `/orders/${orderId}/mark-paid`,
+                    type: 'POST',
+                    data: JSON.stringify({
+                        paid: true
+                    }),
+                    contentType: 'application/json',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                btn.text('Paid')
+                                    .removeClass('bg-primary')
+                                    .addClass('bg-gray-400 cursor-not-allowed')
+                                    .prop('disabled', true);
+                            });
+                        } else {
+                            // If already paid, just show info instead of error
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Already Paid',
+                                text: response.message,
+                                confirmButtonText: 'OK'
+                            });
+
+                            btn.text('Paid')
+                                .removeClass('bg-primary')
+                                .addClass('bg-gray-400 cursor-not-allowed')
+                                .prop('disabled', true);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while updating the paid status. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
         });
+
 
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownContent = document.getElementById('dropdownContent');

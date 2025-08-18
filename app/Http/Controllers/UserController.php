@@ -8,9 +8,11 @@ use App\Models\User;
 use App\Models\Store;
 use App\Models\Seller;
 use App\Models\Customer;
+use App\Models\Order;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use App\Models\product_category;
+use App\Models\Query;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -750,5 +752,55 @@ class UserController extends Controller
             'status' => 'success',
             'message' => 'Password updated successfully!',
         ]);
+    }
+
+    public function dashboardCounts(){
+        try {
+            $userId   = session('user_details.user_id');
+            $userRole = session('user_details.user_role');
+
+            // counts
+            $orders = Order::where('status', 'pending')->count();
+
+            $approved = Products::where('is_approved', 0)
+                ->where('product_status', 0)
+                ->count();
+
+            $queries = Query::where('user_id', $userId)
+                ->where('status', 'pending')
+                ->count();
+
+            $creditQuery = DB::table('credit_request');
+            if ($userRole === 'freelancer') {
+                $creditQuery->where('user_id', $userId);
+            }
+            $credit = $creditQuery->where('request_status', 'pending')->count();
+
+            $seller = Seller::whereHas('user', fn($q) =>
+                $q->where('user_role', 'seller')->where('status', 'pending')
+            )->count();
+
+            $freelancer = Seller::whereHas('user', fn($q) =>
+                $q->where('user_role', 'freelancer')->where('status', 'pending')
+            )->count();
+
+            $sumSF = Seller::whereHas('user', fn($q) =>
+                $q->whereIn('user_role', ['seller','freelancer'])->where('status','pending')
+            )->count();
+
+            return response()->json([
+                'orders'     => $orders,
+                'approved'   => $approved,
+                'queries'    => $queries,
+                'credit'     => $credit,
+                'seller'     => $seller,
+                'freelancer' => $freelancer,
+                'sumSF'      => $sumSF,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Dashboard counts error: '.$e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to load counts'], 500);
+        }
     }
 }

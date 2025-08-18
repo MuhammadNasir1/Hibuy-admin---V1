@@ -272,4 +272,6 @@ class StoreController extends Controller
             return response()->json(['success' => false, 'message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
         }
     }
+
+
 }

@@ -45,6 +45,9 @@ Route::middleware(['custom_auth'])->group(function () {
                 Route::get('/Kyc-profile', 'kycView')->name('kycView');
             });
             Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
+            Route::get('/dashboard/counts', [UserController::class, 'dashboardCounts'])
+                ->name('dashboard.counts');
+
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
                 return view('Auth.CreateProfile');
@@ -93,6 +96,8 @@ Route::middleware(['custom_auth'])->group(function () {
             // Order Group
             Route::controller(OrderController::class)->group(function () {
                 Route::GET('/Orders', 'GetOrders')->name('allorders');
+                Route::post('/orders/{orderId}/mark-paid', [OrderController::class, 'markAsPaid'])->name('orders.markPaid');
+                Route::get('/orders-ledger', 'GetOrders')->name('sellerReport');
                 Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
                 Route::post('/orders/update-status', [OrderController::class, 'updateOrderStatus'])->name('orders.update.status');
             });
@@ -105,6 +110,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile'])->name('editStoreProfile');
             Route::GET('view-store/{userId}', [StoreController::class, 'GetStoreInfo']);
             Route::GET('/Queries', [StoreController::class, 'getQuery'])->name("queries");
+
             Route::POST('/query-data/{id}', [StoreController::class, 'updateQuery'])->name("query.update");
 
             Route::GET('/HelpCenter', [UserController::class, 'HelpCenter'])->name("HelpCenterQuestions");
@@ -157,7 +163,6 @@ Route::middleware(['custom_auth'])->group(function () {
             // })->name('editsettings');
 
             Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
-            Route::post('/get-vehicle-type', [ProductsController::class, 'getVehicleType']);
             Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
             Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
             Route::DELETE('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategoryOrSubcategory']);

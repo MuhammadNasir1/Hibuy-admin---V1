@@ -23,59 +23,35 @@
             box-sizing: border-box;
         }
 
-        .section {
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
             margin-bottom: 10px;
         }
 
-        h2 {
-            margin: 0;
-            font-size: 18px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .info {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .box {
+        td,
+        th {
             border: 1px solid #000;
-            padding: 5px;
-            width: 48%;
+            padding: 4px;
+            vertical-align: top;
         }
 
-        .box strong {
-            display: block;
-            margin-bottom: 5px;
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            font-weight: bold;
         }
 
         .capitalize {
             text-transform: capitalize;
         }
 
-        .second {
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .flex {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .w-1/2 {
-            width: 50%;
-        }
-
-        .space-y-1 > * + * {
-            margin-top: 0.25rem;
-        }
-
-        strong {
-            font-weight: bold;
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            text-align: center;
+            text-transform: uppercase;
         }
     </style>
 
@@ -96,9 +72,10 @@
                 <div class="w-1/2 space-y-1">
                     <p><strong>Products:</strong></p>
                     @foreach ($group['products'] as $product)
-                        <p>{{ $product['quantity'] }}x {{ $product['product_name'] }} - Rs {{ number_format($product['price']) }}</p>
+                        <p>{{ $product['quantity'] }}x {{ $product['product_name'] }} - Rs
+                            {{ $product['price'] * $product['quantity'] }}</p>
                     @endforeach
-            </div>
+                </div>
             </div>
         @endforeach
     @else
@@ -106,39 +83,78 @@
         <div class="label">
             <h2>Shipping Label</h2>
 
-            <!-- Seller & Customer -->
-            <div class="info">
-                <div class="box">
-                    <strong>From (Seller):</strong>
-                    <p class="capitalize"><strong>Store:</strong> {{ $seller->store_name ?? 'N/A' }}</p>
-                    <p><strong>Phone:</strong> {{ $seller->store_phone ?? 'N/A' }}</p>
-                    <p><strong>Email:</strong> {{ $seller->store_email ?? 'N/A' }}</p>
-                    <p class="capitalize"><strong>Address:</strong> {{ $seller->store_address ?? 'N/A' }}</p>
-                </div>
-                <div class="box">
-                    <strong>To (Customer):</strong>
-                    <p class="capitalize"><strong>Name:</strong> {{ $order->customer_name ?? 'N/A' }}</p>
-                    <p><strong>Phone 1:</strong> {{ $order->phone ?? 'N/A' }}</p>
-                    <p><strong>Phone 2:</strong> {{ $order->second_phone ?? 'N/A' }}</p>
-                    <p class="capitalize"><strong>Address:</strong> {{ $order->address ?? 'N/A' }}</p>
-                </div>
-            </div>
+            <!-- Main Information Table -->
+            <table style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px;" border="1">
+                <tr>
+                    <th style="width: 33%; text-align: left; padding: 6px;">Customer Information</th>
+                    <th style="width: 33%; text-align: left; padding: 6px;">Shipment Information</th>
+                    <th style="width: 34%; text-align: left; padding: 6px;"></th>
+                </tr>
+                <tr>
+                    <td style="padding: 6px;">
+                        <strong>Name:</strong> {{ $order->customer_name ?? 'N/A' }}<br>
+                        <strong>Contact 1:</strong> {{ $order->phone ?? 'N/A' }}<br>
+                        {{-- <strong>Contact 2:</strong> {{ $order->second_phone ?? 'N/A' }}<br> --}}
+                        <strong>Delivery Address:</strong> {{ $order->address ?? 'N/A' }}
+                    </td>
+                    <td style="padding: 6px;">
+                        {{-- <strong>Pieces:</strong> {{ count($products) }}<br> --}}
+                        <strong>Order Ref:</strong> #{{ $order->order_id ?? 'N/A' }}<br>
+                        <strong>Tracking No:</strong> {{ $order->tracking_id ?? 'N/A' }}<br>
+                        {{-- <strong>Origin:</strong> {{ $seller->store_address ?? 'N/A' }}<br> --}}
+                        <strong>Destination:</strong> {{ $order->address ?? 'N/A' }}<br>
+                        {{-- <strong>Return City:</strong> {{ $seller->store_address ?? 'N/A' }} --}}
+                    </td>
+                    <td style="padding: 6px;">
 
-            <!-- Order Details -->
-            <div class="section">
-                <strong>Order ID:</strong> {{ $order->order_id ?? 'N/A' }} <br>
-                <strong>Tracking ID:</strong> {{ $order->tracking_id ?? 'N/A' }}<br>
-                <strong>Date:</strong> {{ $order->order_date ?? 'N/A' }}<br>
-                <strong>Payment Method:</strong> Cash on Delivery
-            </div>
+                    </td>
+                </tr>
+            </table>
 
-            <!-- Product Summary -->
-            <div class="section">
-                <strong>Products:</strong><br>
-                @foreach ($products as $product)
-                    {{ $product['quantity'] }}x {{ $product['product_name'] }} - Rs {{ number_format($product['price'], 2) }}<br>
-                @endforeach
-            </div>
+            <!-- Shipper Information Table -->
+            <table style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px;" border="1">
+                <tr>
+                    <th style="width: 33%; text-align: left; padding: 6px;">Shipper Information</th>
+                    <th style="width: 33%; text-align: left; padding: 6px;">Remarks</th>
+                    <th style="width: 34%; text-align: left; padding: 6px;">Order Information</th>
+                </tr>
+                <tr>
+                    <td style="padding: 6px;">
+                        <strong>Name:</strong> {{ $seller->store_name ?? 'N/A' }}<br>
+                        <strong>Contact:</strong> {{ $seller->store_email ?? 'N/A' }}<br>
+                        {{-- <strong>Pickup Address:</strong> {{ $seller->store_address ?? 'N/A' }}<br> --}}
+                        {{-- <strong>Return Address:</strong> {{ $seller->store_address ?? 'N/A' }} --}}
+                    </td>
+                    <td style="padding: 6px;">
+                        Please call before delivering.
+                    </td>
+                    <td style="padding: 6px;">
+                        @php
+                            $totalAmount = 0;
+                            foreach ($products as $product) {
+                                $totalAmount += $product['quantity'] * $product['price'];
+                            }
+                        @endphp
+                        <strong>Amount:</strong> {{ number_format($totalAmount, 2) }}/-<br>
+                        <strong>Date:</strong> {{ $order->order_date ?? 'N/A' }}<br>
+                        <strong>Order Type:</strong> Cash On Delivery
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Order Details Table -->
+            <table style="width:100%; border-collapse: collapse; font-size: 13px;" border="1">
+                <tr>
+                    <td style="padding: 6px;">
+                        <strong>Order Details:</strong>
+                        @foreach ($products as $product)
+                            [ {{ $product['quantity'] }} x {{ $product['product_name'] }} - Rs
+                            {{ $product['price'] * $product['quantity'] }} ]
+                        @endforeach
+                    </td>
+                </tr>
+            </table>
         </div>
+
     @endif
 @endsection
