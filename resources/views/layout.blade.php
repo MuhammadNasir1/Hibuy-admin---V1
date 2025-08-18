@@ -145,7 +145,7 @@
                                 <span class="ms-3 text-custom15">Approve Products</span>
                             </div>
                             <span id="approveProductCount"
-                                class="me-3 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                         </a>
                     </li>
 
@@ -203,7 +203,7 @@
                             <i class="bi bi-chevron-down"></i>
                         </span>
                         <span id="sumSF"
-                            class="me-3 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                     </div>
 
                     <!-- Dropdown Menu -->
@@ -374,7 +374,7 @@
                                 <span class="ms-3 text-custom15">Orders</span>
                             </div>
                             <span id="orderCount"
-                                class="me-3 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                         </a>
                     </li>
 
@@ -616,7 +616,7 @@
                                 <span class="ms-3 text-custom15">Credits Requests</span>
                             </div>
                             <span id="creditCount"
-                                class="me-3 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                         </a>
                     </li>
                 @endif
@@ -763,7 +763,7 @@
                             <span class="ms-3 text-custom15">Queries</span>
                         </div>
                         <span id="queriesCount"
-                            class="me-3 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                     </a>
                 </li>
                 @if (session('user_details.user_role') == 'seller')
@@ -867,15 +867,15 @@
                             <svg class="w-5 h-5 transition duration-200" width="25" height="26"
                                 viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                                       10-4.48 10-10S17.52 2 12 2zm0 17
-                                       c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
-                                       c-.9.9-1.07 1.25-1.07 2.25h-2
-                                       v-.5c0-1.1.45-2.1 1.17-2.83
-                                       .59-.59 1.07-1 1.07-1.67
-                                       0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
-                                       c0-2.21 1.79-4 4-4s4 1.79 4 4
-                                       c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor" stroke="white" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                                               10-4.48 10-10S17.52 2 12 2zm0 17
+                                               c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                                               c-.9.9-1.07 1.25-1.07 2.25h-2
+                                               v-.5c0-1.1.45-2.1 1.17-2.83
+                                               .59-.59 1.07-1 1.07-1.67
+                                               0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                                               c0-2.21 1.79-4 4-4s4 1.79 4 4
+                                               c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor" stroke="white"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
 
                             <span class="ms-3 text-custom15">Help Centre</span>
@@ -1311,139 +1311,33 @@
         }
     </script>
     <script>
-        function fetchOrderCount() {
-            fetch("{{ route('order.count') }}")
-                .then(response => response.json())
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch("{{ route('dashboard.counts') }}")
+                .then(res => res.json())
                 .then(data => {
-                    let count = data.count;
-                    let displayCount = data.count > 99 ? '99+' : data.count;
-                    let spanShow = document.getElementById('orderCount');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
+                    updateBadge('orderCount', data.orders);
+                    updateBadge('approveProductCount', data.approved);
+                    updateBadge('queriesCount', data.queries);
+                    updateBadge('creditCount', data.credit);
+                    updateBadge('sellerCount', data.seller);
+                    updateBadge('freelancerCount', data.freelancer);
+                    updateBadge('sumSF', data.sumSF);
                 });
-        }
-        fetchOrderCount();
-        setInterval(fetchOrderCount, 5000); // Update every 5 seconds
+        });
 
-
-        function approveProductCount() {
-            fetch("{{ route('approveProducts.count') }}")
-                .then(response => response.json())
-                .then(data => {
-                    let count = data.count;
-                    let displayCount = count > 99 ? '99+' : count;
-                    let spanShow = document.getElementById('approveProductCount');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
-                });
+        function updateBadge(id, count) {
+            let displayCount = count > 99 ? '99+' : count;
+            let el = document.getElementById(id);
+            if (el) {
+                if (count > 0) {
+                    el.textContent = displayCount;
+                    el.style.display = 'flex';
+                } else {
+                    el.textContent = '';
+                    el.style.display = 'none';
+                }
+            }
         }
-        approveProductCount();
-        setInterval(approveProductCount, 5000);
-
-        function queriesCount() {
-            fetch("{{ route('queries.count') }}")
-                .then(response => response.json())
-                .then(data => {
-                    let count = data.count;
-                    let displayCount = count > 99 ? '99+' : count;
-                    let spanShow = document.getElementById('queriesCount');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
-                });
-        }
-        queriesCount();
-        setInterval(queriesCount, 5000);
-
-        function creditRequestCount() {
-            fetch("{{ route('creditCount') }}")
-                .then(response => response.json())
-                .then(data => {
-                    let count = data.count;
-                    let displayCount = count > 99 ? '99+' : count;
-                    let spanShow = document.getElementById('creditCount');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
-                });
-        }
-        creditRequestCount();
-        setInterval(creditRequestCount, 5000);
-
-        function sellerCount() {
-            fetch("{{ route('sellerCount') }}")
-                .then(response => response.json())
-                .then(data => {
-                    let count = data.count;
-                    let displayCount = count > 99 ? '99+' : count;
-                    let spanShow = document.getElementById('sellerCount');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
-                });
-        }
-        sellerCount();
-        setInterval(sellerCount, 5000);
-
-        function freelancerCount() {
-            fetch("{{ route('freelancerCount') }}")
-                .then(response => response.json())
-                .then(data => {
-                    let count = data.count;
-                    let displayCount = count > 99 ? '99+' : count;
-                    let spanShow = document.getElementById('freelancerCount');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
-                });
-        }
-        freelancerCount();
-        setInterval(freelancerCount, 5000);
-
-        function sumSellerFreelaner() {
-            fetch("{{ route('sumSellerFreelaner') }}")
-                .then(response => response.json())
-                .then(data => {
-                    let count = data.sum;
-                    let displayCount = count > 99 ? '99+' : count;
-                    let spanShow = document.getElementById('sumSF');
-                    if (count > 0) {
-                        spanShow.textContent = displayCount;
-                        spanShow.style.display = 'flex';
-                    } else {
-                        spanShow.textContent = '';
-                        spanShow.style.display = 'none';
-                    }
-                });
-        }
-        sumSellerFreelaner();
-        setInterval(sumSellerFreelaner, 5000);
     </script>
 
 

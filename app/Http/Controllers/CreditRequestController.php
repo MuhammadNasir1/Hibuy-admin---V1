@@ -194,25 +194,7 @@ class CreditRequestController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
-    public function creditCount(){
-        try {
-            $userId = session('user_details.user_id');
-            $userRole = session('user_details.user_role');
 
-            $query = DB::table('credit_request');
-
-            if ($userRole === 'freelancer') {
-                $query->where('user_id', $userId);
-            }
-
-            $count = $query->where('request_status', 'pending')->count();
-
-            return response()->json(['count' => $count]);
-        } catch (\Exception $e) {
-            Log::error('Credit Count Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Failed to retrieve credit count'], 500);
-        }
-    }
 
 
 }
