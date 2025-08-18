@@ -155,7 +155,8 @@
                                 <a href="#" id=""
                                     class="paidBtn p-2 rounded-md transition-colors duration-200
                                  {{ $order->paid ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-primary text-white' }}"
-                                    data-order-id="{{ $order->order_id }}" {{ $order->paid ? 'disabled' : '' }}>
+                                    data-order-id="{{ $order->order_id }}" data-order-status="{{ $order->order_status }}"
+                                    {{ $order->paid ? 'disabled' : '' }}>
                                     {{ $order->paid ? 'Paid' : 'Pay' }}
                                 </a>
                             @endif
@@ -600,18 +601,18 @@
 
                                     ${user.user_role == 'admin' ? `
 
-                                            <td class="p-3">${item.seller_info.store_name} / ${item.seller_info.seller_name}</td>
+                                                    <td class="p-3">${item.seller_info.store_name} / ${item.seller_info.seller_name}</td>
 
-                                              <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                              <td class="p-3">
-                                                ${item.status_video ? `
+                                                      <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                      <td class="p-3">
+                                                        ${item.status_video ? `
                                                 <video controls class="w-28 h-16 rounded shadow">
                                                     <source src="/storage/${item.status_video}" type="video/mp4">
                                                     Your browser does not support the video tag.
                                                 </video>` : 'No video'}
 
-                                             </td>
-                                             ` : ''}
+                                                     </td>
+                                                     ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
@@ -825,10 +826,20 @@
                 e.preventDefault();
 
                 const orderId = $(this).data('order-id');
+                const orderStatus = $(this).data('order-status');
                 const btn = $(this);
 
-                if (!orderId || btn.hasClass('cursor-not-allowed')) {
-                    return; // Do nothing if already paid or invalid
+                // Check if the button is disabled or order status is not delivered
+                if (!orderId || btn.hasClass('cursor-not-allowed') || orderStatus !== 'delivered') {
+                    if (orderStatus !== 'delivered') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Status',
+                            text: 'Payment can only be processed if orders status "Delivered".',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                    return; // Do nothing if already paid, invalid, or status is not delivered
                 }
 
                 $.ajax({
@@ -855,7 +866,7 @@
                                     .prop('disabled', true);
                             });
                         } else {
-                            // If already paid, just show info instead of error
+                            // If already paid, show info instead of error
                             Swal.fire({
                                 icon: 'info',
                                 title: 'Already Paid',
@@ -880,7 +891,6 @@
                     }
                 });
             });
-
         });
 
 
