@@ -467,6 +467,11 @@
                     return;
                 }
 
+                let storeId = $("#store_id").val();
+                if (storeId) {
+                    // append ?store_id=xxx if not exists, else add &store_id=xxx
+                    vieworderurl += (vieworderurl.includes("?") ? "&" : "?") + "store_id=" + storeId;
+                }
                 $("#modal-btn").click(); // Open modal
 
                 $.ajax({
@@ -507,13 +512,13 @@
                             </td>
                             <td class="p-3">${item.product_name}</td>
                             ${user.user_role == 'admin' ? `
-                                                <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                <td class="p-3">
-                                                    ${item.status_video ? `
+                                                    <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                    <td class="p-3">
+                                                        ${item.status_video ? `
                                         <video controls class="w-28 h-16 rounded shadow">
                                             <source src="/storage/${item.status_video}" type="video/mp4">
                                         </video>` : 'No video'}
-                                                </td>` : ''}
+                                                    </td>` : ''}
                             <td class="p-3 text-center">${item.quantity}</td>
                             <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'}</td>
                             <td class="p-3 text-center">

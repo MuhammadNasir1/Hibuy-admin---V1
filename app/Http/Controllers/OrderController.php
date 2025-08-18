@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
-    public function GetOrderWithProducts($Order_id)
+    public function GetOrderWithProducts(Request $request, $Order_id)
     {
         try {
             // Step 1: Get logged-in user details
@@ -24,9 +24,10 @@ class OrderController extends Controller
             }
 
             $userId = $userDetails['user_id'];
-            $userRole = $userDetails['user_role']; // e.g. "admin" or "seller"
+            $userRole = $userDetails['user_role']; // "admin" or "seller"
+            $requestedStoreId = $request->query('store_id'); // ✅ get store_id from URL
 
-            // Step 2: Fetch the order with the specific Order_id
+            // Step 2: Fetch the order
             $order = Order::select([
                 'order_id',
                 'user_id',
@@ -52,11 +53,22 @@ class OrderController extends Controller
 
             $orderItems = json_decode($order->order_items, true);
 
+            // Step 3: Filter logic
             if ($userRole === 'admin') {
-                // Admin: Don't filter order items
-                $filteredOrderItems = $orderItems;
+                if ($requestedStoreId) {
+                    // Admin + specific store_id → only that store’s products
+                    $productIds = Products::where('store_id', $requestedStoreId)
+                        ->pluck('product_id')->toArray();
+
+                    $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
+                        return in_array($item['product_id'], $productIds);
+                    });
+                } else {
+                    // Admin + no store_id → all items
+                    $filteredOrderItems = $orderItems;
+                }
             } else {
-                // Seller: Continue with filtering
+                // Seller → only their store’s products (ignore store_id param)
                 $sellerId = Seller::where('user_id', $userId)->value('seller_id');
                 if (!$sellerId) {
                     return response()->json(['error' => 'Seller not found'], 404);
@@ -72,13 +84,13 @@ class OrderController extends Controller
                 $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
                     return in_array($item['product_id'], $productIds);
                 });
-
-                if (empty($filteredOrderItems)) {
-                    return response()->json(['error' => 'No matching products found in this order'], 404);
-                }
             }
 
-            // Step 3: Fetch product details from the products table with seller information
+            if (empty($filteredOrderItems)) {
+                return response()->json(['error' => 'No matching products found in this order'], 404);
+            }
+
+            // Step 4: Fetch product details (with seller + store info)
             $productDetails = Products::whereIn('product_id', array_column($filteredOrderItems, 'product_id'))
                 ->with(['store.seller.user'])
                 ->select('product_id', 'product_name', 'product_brand', 'product_images', 'is_boosted', 'store_id')
@@ -87,7 +99,6 @@ class OrderController extends Controller
                     $images = json_decode($product->product_images, true);
                     $firstImage = is_array($images) && count($images) > 0 ? $images[0] : null;
 
-                    // Get seller information (keys align with KYC JSON schema)
                     $sellerInfo = null;
                     if ($product->store && $product->store->seller && $product->store->seller->user) {
                         $personalInfo = json_decode($product->store->seller->personal_info, true) ?? [];
@@ -100,11 +111,6 @@ class OrderController extends Controller
                             'store_name' => $storeInfo['store_name'] ?? 'N/A',
                             'store_address' => $storeInfo['address'] ?? $storeInfo['store_address'] ?? 'N/A',
                         ];
-
-                        // Debug log
-                        \Log::info('Seller info for product ' . $product->product_id . ':', $sellerInfo);
-                    } else {
-                        \Log::info('No seller info found for product ' . $product->product_id);
                     }
 
                     return [
@@ -118,7 +124,7 @@ class OrderController extends Controller
                     ];
                 });
 
-            // Step 4: Merge product details into order items
+            // Step 5: Merge product details into order items
             $mergedOrderItems = array_map(function ($item) use ($productDetails) {
                 if (isset($productDetails[$item['product_id']])) {
                     return array_merge($item, $productDetails[$item['product_id']]);
@@ -126,10 +132,13 @@ class OrderController extends Controller
                 return $item;
             }, $filteredOrderItems);
 
-            // Step 5: Calculate totals
-            $grandTotal = array_sum(array_column($mergedOrderItems, 'price'));
+            // Step 6: Calculate totals (using quantity × price)
+            $grandTotal = 0;
+            foreach ($mergedOrderItems as $item) {
+                $grandTotal += ($item['quantity'] ?? 1) * ($item['price'] ?? 0);
+            }
 
-            // Step 6: Prepare response
+            // Step 7: Prepare response
             $response = [
                 'order_id' => $order->order_id,
                 'tracking_id' => $order->tracking_id,
@@ -146,26 +155,22 @@ class OrderController extends Controller
                 'selected_rider_id' => $order->rider_id ?? null,
                 'tracking_number' => $order->tracking_number ?? null,
             ];
-            // Step 7: Fetch all riders for dropdown
+
+            // Step 8: Riders for dropdown
             $response['riders'] = RiderModel::select('id', 'rider_name', 'vehicle_type')->get();
 
-            // Step 8: Add rider details to response if rider is assigned
-            if ($order->rider_id) {
-                $rider = RiderModel::select('id', 'rider_name', 'rider_email', 'phone', 'vehicle_type', 'vehicle_number', 'city')
-                    ->where('id', $order->rider_id)
-                    ->first();
-                $response['rider_details'] = $rider;
-            } else {
-                $response['rider_details'] = null;
-            }
+            // Step 9: Rider details if assigned
+            $response['rider_details'] = $order->rider_id
+                ? RiderModel::select('id', 'rider_name', 'rider_email', 'phone', 'vehicle_type', 'vehicle_number', 'city')
+                ->where('id', $order->rider_id)
+                ->first()
+                : null;
 
             return response()->json($response, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
 
     public function GetOrders()
     {
@@ -212,6 +217,7 @@ class OrderController extends Controller
                     'address',
                     'status',
                     'order_status',
+                    'paid',
                     'rider_id',
                     'tracking_number',
                     'order_date',
@@ -277,7 +283,9 @@ class OrderController extends Controller
 
                     $order->grand_total = $productTotal + (float) $order->delivery_fee;
                     $order->grand_discount = $productTotal * 0.05;
-                    $order->net_total = $order->grand_total - $order->grand_discount;
+
+                    $order->net_total = $productTotal - $order->grand_discount;
+
 
                     return $order;
                 })->filter();
@@ -315,7 +323,8 @@ class OrderController extends Controller
 
                     $order->grand_total = $productTotal + (float) $order->delivery_fee;
                     $order->grand_discount = $productTotal * 0.05;
-                    $order->net_total = $order->grand_total - $order->grand_discount;
+
+                    $order->net_total = $productTotal - $order->grand_discount;
 
                     return $order;
                 })->filter();
@@ -332,17 +341,13 @@ class OrderController extends Controller
                 'defaultDate' => $today,
                 'stores' => $stores, // ✅ pass stores to view (null if seller)
             ];
-
             return $isLedgerView
                 ? view('pages.orders_ledger', $viewData)
                 : view('pages.Orders', $viewData);
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
-
 
     public function updateOrderStatus(Request $request)
     {
@@ -465,88 +470,6 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order updated successfully']);
     }
 
-    //  public function printSlip($orderId)
-    // {
-    //     // Get the order with customer details
-    //     $order = DB::table('orders')
-    //         ->where('order_id', $orderId)
-    //         ->first();
-
-    //     if (!$order) {
-    //         abort(404, 'Order not found');
-    //     }
-
-    //     // Decode order_items JSON
-    //     $orderItems = json_decode($order->order_items, true);
-    //     if (json_last_error() !== JSON_ERROR_NONE || !is_array($orderItems)) {
-    //         abort(500, 'Invalid order items format');
-    //     }
-
-    //     // Collect products and identify the first store_id
-    //     $products = [];
-    //     $targetStoreId = null;
-    //     foreach ($orderItems as $item) {
-    //         $productId = $item['product_id'] ?? null;
-    //         if (!$productId) {
-    //             continue;
-    //         }
-
-    //         // Fetch product details to get store_id and user_id
-    //         $product = DB::table('products')
-    //             ->where('product_id', $productId)
-    //             ->select('product_id', 'store_id', 'user_id', 'product_name', 'product_price', 'product_discounted_price')
-    //             ->first();
-
-    //         if ($product) {
-    //             // Set the target store_id from the first valid product
-    //             if ($targetStoreId === null) {
-    //                 $targetStoreId = $product->store_id;
-    //             }
-
-    //             // Only include products from the target store
-    //             if ($product->store_id === $targetStoreId) {
-    //                 $products[] = [
-    //                     'product_id' => $product->product_id,
-    //                     'product_name' => $item['product_name'],
-    //                     'quantity' => $item['quantity'],
-    //                     'price' => $item['price'],
-    //                     'store_id' => $product->store_id,
-    //                 ];
-    //             }
-    //         }
-    //     }
-
-    //     // If no products found for the target store, abort
-    //     if (empty($products)) {
-    //         abort(404, 'No products found for the selected store');
-    //     }
-
-    //     // Fetch store details for the target store_id
-    //     $seller = DB::table('stores')
-    //         ->where('store_id', $targetStoreId)
-    //         ->select(
-    //             'store_id',
-    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.store_name")) AS store_name'),
-    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.phone_no")) AS store_phone'),
-    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.email")) AS store_email'),
-    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.address")) AS store_address')
-    //         )
-    //         ->first();
-
-    //     if (!$seller) {
-    //         abort(404, 'Store not found');
-    //     }
-
-    //     // Prepare data for the view
-    //     $data = [
-    //         'order' => $order,
-    //         'products' => $products,
-    //         'seller' => $seller,
-    //     ];
-
-    //     return view('pages/slip', $data);
-    // }
-
     public function printSlip($orderId)
     {
         // Get user role from session
@@ -665,4 +588,26 @@ class OrderController extends Controller
     }
 
 
+    public function markAsPaid($orderId)
+    {
+        $order = Order::find($orderId);
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
+        }
+
+        if ($order->paid) {
+            return response()->json([
+                'success' => true,
+                'already_paid' => true,
+                'message' => 'Order is already paid.'
+            ]);
+        }
+
+        $order->paid = true;
+        $order->updated_at = now();
+        $order->save();
+
+        return response()->json(['success' => true, 'message' => 'Order paid.']);
+    }
 }
