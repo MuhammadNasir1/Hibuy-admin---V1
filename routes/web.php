@@ -45,6 +45,9 @@ Route::middleware(['custom_auth'])->group(function () {
                 Route::get('/Kyc-profile', 'kycView')->name('kycView');
             });
             Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
+            Route::get('/sellerCount', [UserController::class, 'sellerCount'])->name('sellerCount');
+            Route::get('/freelancerCount', [UserController::class, 'freelancerCount'])->name('freelancerCount');
+            Route::get('/sumSellerFreelaner', [UserController::class, 'sumSellerFreelaner'])->name('sumSellerFreelaner');
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
                 return view('Auth.CreateProfile');
@@ -95,9 +98,11 @@ Route::middleware(['custom_auth'])->group(function () {
                 Route::GET('/Orders', 'GetOrders')->name('allorders');
                 Route::GET('/view-order/{Order_id}', 'GetOrderWithProducts');
                 Route::post('/orders/update-status', [OrderController::class, 'updateOrderStatus'])->name('orders.update.status');
+                Route::get('/order-count', [OrderController::class, 'OrderCount'])->name('order.count');
             });
 
             Route::get('/approve-products', [ApproveProductsController::class, 'view'])->name('approveProducts');
+            Route::get('/approve-products/count', [ApproveProductsController::class, 'approveProductCount'])->name('approveProducts.count');
             Route::post('/admin/products/approve', [ApproveProductsController::class, 'approve'])->name('admin.products.approve');
             Route::post('/admin/products/reject', [ApproveProductsController::class, 'reject'])->name('admin.products.reject');
 
@@ -105,6 +110,7 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::POST('editStoreProfile', [StoreController::class, 'editStoreProfile'])->name('editStoreProfile');
             Route::GET('view-store/{userId}', [StoreController::class, 'GetStoreInfo']);
             Route::GET('/Queries', [StoreController::class, 'getQuery'])->name("queries");
+            Route::GET('/QueriesCount', [StoreController::class, 'QueriesCount'])->name("queries.count");
             Route::POST('/query-data/{id}', [StoreController::class, 'updateQuery'])->name("query.update");
 
             Route::GET('/HelpCenter', [UserController::class, 'HelpCenter'])->name("HelpCenterQuestions");
@@ -192,6 +198,7 @@ Route::middleware(['custom_auth'])->group(function () {
             // Credit request
             Route::post('/credit-request', [CreditRequestController::class, 'store'])->name('credit-request.store');
             Route::get('/credit_request', [CreditRequestController::class, 'index'])->name('credit-requests');
+            Route::get('/creditCount',[CreditRequestController::class, 'creditCount'])->name('creditCount');
             Route::get('/credit-request/{id}', [CreditRequestController::class, 'show'])->name('credit-request.show');
             Route::post('/credit/update-status', [CreditRequestController::class, 'updateStatus'])->name('credit.updateStatus');
 

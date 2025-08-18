@@ -272,4 +272,15 @@ class StoreController extends Controller
             return response()->json(['success' => false, 'message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function QueriesCount(){
+        try {
+            $user = session('user_details')['user_id'];
+            $count = Query::where('user_id', $user)->where('status', 'pending')->count();
+
+            return response()->json(['success' => true, 'count' => $count]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
+        }
+    }
 }

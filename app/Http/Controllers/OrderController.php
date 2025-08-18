@@ -470,6 +470,91 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order updated successfully']);
     }
 
+<<<<<<< HEAD
+=======
+    //  public function printSlip($orderId)
+    // {
+    //     // Get the order with customer details
+    //     $order = DB::table('orders')
+    //         ->where('order_id', $orderId)
+    //         ->first();
+
+    //     if (!$order) {
+    //         abort(404, 'Order not found');
+    //     }
+
+    //     // Decode order_items JSON
+    //     $orderItems = json_decode($order->order_items, true);
+    //     if (json_last_error() !== JSON_ERROR_NONE || !is_array($orderItems)) {
+    //         abort(500, 'Invalid order items format');
+    //     }
+
+    //     // Collect products and identify the first store_id
+    //     $products = [];
+    //     $targetStoreId = null;
+    //     foreach ($orderItems as $item) {
+    //         $productId = $item['product_id'] ?? null;
+    //         if (!$productId) {
+    //             continue;
+    //         }
+
+    //         // Fetch product details to get store_id and user_id
+    //         $product = DB::table('products')
+    //             ->where('product_id', $productId)
+    //             ->select('product_id', 'store_id', 'user_id', 'product_name', 'product_price', 'product_discounted_price')
+    //             ->first();
+
+    //         if ($product) {
+    //             // Set the target store_id from the first valid product
+    //             if ($targetStoreId === null) {
+    //                 $targetStoreId = $product->store_id;
+    //             }
+
+    //             // Only include products from the target store
+    //             if ($product->store_id === $targetStoreId) {
+    //                 $products[] = [
+    //                     'product_id' => $product->product_id,
+    //                     'product_name' => $item['product_name'],
+    //                     'quantity' => $item['quantity'],
+    //                     'price' => $item['price'],
+    //                     'store_id' => $product->store_id,
+    //                 ];
+    //             }
+    //         }
+    //     }
+
+    //     // If no products found for the target store, abort
+    //     if (empty($products)) {
+    //         abort(404, 'No products found for the selected store');
+    //     }
+
+    //     // Fetch store details for the target store_id
+    //     $seller = DB::table('stores')
+    //         ->where('store_id', $targetStoreId)
+    //         ->select(
+    //             'store_id',
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.store_name")) AS store_name'),
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.phone_no")) AS store_phone'),
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.email")) AS store_email'),
+    //             DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.address")) AS store_address')
+    //         )
+    //         ->first();
+
+    //     if (!$seller) {
+    //         abort(404, 'Store not found');
+    //     }
+
+    //     // Prepare data for the view
+    //     $data = [
+    //         'order' => $order,
+    //         'products' => $products,
+    //         'seller' => $seller,
+    //     ];
+
+    //     return view('pages/slip', $data);
+    // }
+
+>>>>>>> b2d9cb4e6cd4eb01f2822263835b2d880cd2e3d7
     public function printSlip($orderId)
     {
         // Get user role from session
