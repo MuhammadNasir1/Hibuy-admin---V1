@@ -28,6 +28,7 @@
                 session('user_details.user_role') == 'admin' ? 'Seller / Phone' : 'Rider',
                 'Bill Amount',
                 'Date',
+                'Delivery Status',
                 'Status',
                 'Action',
             ];
@@ -90,7 +91,7 @@
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
                             {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
-                            rounded-md shadow">
+                            rounded-md shadow
 
                                 @switch($order->order_status)
                                     @case('shipped')
@@ -130,7 +131,6 @@
                                     @default bg-gray-500
                                 @endswitch
                                 ">
-                                >>>>>>> b2d9cb4e6cd4eb01f2822263835b2d880cd2e3d7
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>
