@@ -73,7 +73,7 @@
                     <p><strong>Products:</strong></p>
                     @foreach ($group['products'] as $product)
                         <p>{{ $product['quantity'] }}x {{ $product['product_name'] }} - Rs
-                            {{ number_format($product['price']) }}</p>
+                            {{ $product['price'] * $product['quantity'] }}</p>
                     @endforeach
                 </div>
             </div>
@@ -149,7 +149,7 @@
                         <strong>Order Details:</strong>
                         @foreach ($products as $product)
                             [ {{ $product['quantity'] }} x {{ $product['product_name'] }} - Rs
-                            {{ number_format($product['price'], 2) }} ]
+                            {{ $product['price'] * $product['quantity'] }} ]
                         @endforeach
                     </td>
                 </tr>
