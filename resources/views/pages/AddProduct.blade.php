@@ -161,7 +161,7 @@
 
                     <div class=" mt-5">
                         <x-input value="{{ $products ? $products->product_name : '' }}" type="text" label="Title"
-                            placeholder="Title Here" required id="title" name="title" />
+                            placeholder="Title Here" id="title" name="title" />
                     </div>
                     <div class=" mt-5">
                         <x-textarea type="text" label="Description" placeholder="Description Here" required
@@ -170,14 +170,14 @@
                     <div class="mt-5 flex flex-wrap gap-4 items-end">
                         <div>
                             <x-input value="{{ $products ? $products->product_brand : '' }}" type="text"
-                                label="Brand / Company" placeholder="Brand / Company" required id="company" name="company" />
+                                label="Brand / Company" placeholder="Brand / Company" id="company" name="company" />
                         </div>
 
                         <div id="category-selects" class="flex gap-4">
                             <div class="dynamic-subcategory">
                                 <label class="block mb-1 text-sm font-medium text-gray-700">Category</label>
                                 <select name="category_id" id="category_id"
-                                    class="dynamic-category block w-full rounded border-gray-300" required>
+                                    class="dynamic-category block w-full rounded border-gray-300">
                                     <option value="" disabled selected>Select Category</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}"
@@ -192,48 +192,54 @@
 
                         <div>
                             <x-input value="{{ $products ? $products->purchase_price : '' }}" type="number"
-                                label="Purchase Price" requiredk placeholder="Price Here" id="purchase_price" name="purchase_price" />
+                                label="Purchase Price" placeholder="Price Here" id="purchase_price" name="purchase_price" />
                         </div>
 
                         <div>
-                            <x-input value="{{ $products ? $products->product_price : '0' }}" type="number"
-                                label="Product Price" required placeholder="Price Here" id="product_price" name="product_price" />
+                            <x-input value="{{ $products ? $products->product_price : '' }}" type="number"
+                                label="Product Price" placeholder="Price Here" id="product_price" name="product_price" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->product_discount : '' }}" type="number"
-                                label="Discount (%)" required placeholder="Discount Here" id="discount" name="discount" />
+                                label="Discount (%)" placeholder="Discount Here" id="discount" name="discount" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->product_discounted_price : '' }}" type="number"
-                                label="Discounted Price" required placeholder="Discounted Price Here" id="discounted_price"
+                                label="Discounted Price" placeholder="Discounted Price Here" id="discounted_price"
                                 name="discounted_price" />
                         </div>
+
                         {{-- These are for product size --}}
                         <div>
                             <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01"
-                                label="Estimated Weight (kg)" required placeholder="Weight in kg" id="weight" name="weight" />
+                                label="Estimated Weight (kg)" required placeholder="Weight in kg" id="weight"
+                                name="weight" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->length : '' }}" type="number" step="0.01"
-                                label="Estimated Length (inches)" required placeholder="Length in inches" id="length" name="length" />
+                                label="Estimated Length (inches)" required placeholder="Length in inches" id="length"
+                                name="length" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->width : '' }}" type="number" step="0.01"
-                                label="Estimated Width (inches)" required placeholder="Width in inches" id="width" name="width" />
+                                label="Estimated Width (inches)" required placeholder="Width in inches" id="width"
+                                name="width" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->height : '' }}" type="number" step="0.01"
-                                label="Estimated Height (inches)" required placeholder="Height in inches" id="height" name="height" />
+                                label="Estimated Height (inches)" required placeholder="Height in inches" id="height"
+                                name="height" />
                         </div>
 
                         <div id="vehicleType-selects" class="flex gap-4">
                             <div class="dynamic-vehicleType">
-                                <label class="block mb-1 text-sm font-medium text-gray-700">Vehicle Type {{ $products ? $products->vehicle_type_id : '' }}</label>
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Vehicle Type
+                                    {{ $products ? $products->vehicle_type_id : '' }}</label>
                                 <select name="vehicleType" id="vehicleType" required
                                     class="dynamic-vehicleType block w-full rounded border-gray-300">
                                     <option value="" disabled {{ empty($products) ? 'selected' : '' }}>Select
@@ -250,7 +256,6 @@
                                 </select>
                             </div>
                         </div>
-
                     </div>
 
                     {{-- Next Section --}}
@@ -346,10 +351,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                                    </div>`).join('')}
+                                                                                                                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                        </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -513,10 +518,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                    </div>`).join('')}
+                                                                                                                                                                                        <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                            <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                            <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                        </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -568,10 +573,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                </div>`).join('')}
+                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                    </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -825,7 +830,6 @@
                 });
             @endif
 
-
             function fetchVehicleType() {
                 let weight = $("#weight").val();
                 let length = $("#length").val();
@@ -838,7 +842,7 @@
                         url: "/get-vehicle-type", // Laravel route
                         type: "POST",
                         data: {
-                            _token: "{{ csrf_token() }}", // CSRF protection
+                            _token: "{{ csrf_token() }}", // CSRF protections
                             weight: weight,
                             length: length,
                             width: width,
@@ -846,7 +850,7 @@
                         },
                         success: function(response) {
                             $("#vehicleType").empty().append(
-                                '<option disabled selected>Select Vehicle Type</option>');
+                                '<option disabled selected> Select Vehicle Type</option>');
                             if (response.length > 0) {
                                 $.each(response, function(key, value) {
                                     $("#vehicleType").append(
@@ -856,7 +860,8 @@
                                     );
                                 });
                             } else {
-                                $("#vehicleType").append('<option disabled>No match found</option>');
+                                $("#vehicleType").append(
+                                    '<option disabled> No match found</option>');
                             }
                         }
                     });
@@ -872,6 +877,7 @@
 
                 if (weight && length && width && height) {
                     fetchVehicleType();
+
                 }
             });
 
@@ -884,7 +890,6 @@
             // // if (weight && length && width && height) {
             // //     fetchVehicleType();
             // // }
-
         });
 
 

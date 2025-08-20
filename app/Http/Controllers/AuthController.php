@@ -47,7 +47,7 @@ class AuthController extends Controller
                 $data['revenue'] = Order::where('order_status', '=', 'delivered')->sum('grand_total');
                 $data['totalUsers'] = User::where('user_role', 'seller')->count();
                 $data['totalBuyers'] = User::where('user_role', 'customer')->count();
-                $data['totalOrders'] = Order::count();
+                $data['totalOrders'] = Order::whereNotIn('order_status', ['shipped', 'delivered', 'cancelled', 'returned'])->count();
                 $data['returnedOrders'] = Order::where('order_status', 'returned')->count();
                 $data['totalProducts'] = $productCount = Products::Join('categories', 'products.product_category', '=', 'categories.id')
                     ->where('products.product_status', 1)
@@ -61,7 +61,7 @@ class AuthController extends Controller
                 // 🟡 Total Pending Orders for All Sellers
                 $data['totalPendingOrders'] = $allOrders->where('order_status', 'order_placed')->count();
 
-                $data['pendingAmount'] = $allOrders->where('order_status', 'order_placed')->sum(function ($order) {
+                $data['pendingAmount'] = $allOrders->where('order_status', 'shipped')->sum(function ($order) {
                     $items = json_decode($order->order_items, true);
                     $total = 0;
 
@@ -172,8 +172,6 @@ class AuthController extends Controller
                     ->where('product_status', 1)
                     ->pluck('product_id')
                     ->toArray();
-
-
                 // Product count
                 $data['totalProducts'] = count($productIds);
 
@@ -188,7 +186,7 @@ class AuthController extends Controller
                     return false;
                 });
 
-                $data['totalOrders'] = $orders->count();
+                $data['totalOrders'] = $orders->whereNotIn('order_status', ['shipped', 'delivered', 'cancelled', 'returned'])->count();
                 $data['returnedOrders'] = $orders->where('order_status', 'returned')->count();
                 $data['totalPendingOrders'] = $orders->where('order_status', 'order_placed')->count();
 
@@ -238,10 +236,13 @@ class AuthController extends Controller
                 });
 
 
-
+                //  Calculate Total Expense (purchase_price * stock)
+                $data['totalExpense'] = $products->sum(function ($product) {
+                    return $product->purchase_price * $product->product_stock;
+                });
                 $data['totalReviews'] = Reviews::whereIn('product_id', $productIds)->count();
 
-                // 🟢 Top Selling Products
+                //  Top Selling Products
                 $topProducts = Products::whereIn('product_id', $productIds)
                     ->get()
                     ->map(function ($product) use ($orders) {
@@ -385,6 +386,8 @@ class AuthController extends Controller
                 Seller::create(['user_id' => $user->user_id]);
             }
 
+            $mailSend = (new EmailController())->sendMail($user->user_email, "Welcome To Hibuy", "User Registered Succesfully");
+
             return response()->json(['success' => true, 'message' => "Register Successfully"], 201);
         } catch (ValidationException $e) {
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
@@ -436,6 +439,24 @@ class AuthController extends Controller
         $kyc_status = Seller::where('user_id', $user->user_id)->first();
         $store = Store::where('user_id', $user->user_id)->first();
         $store_id = $store ? $store->store_id : null;
+        $store_name = null;
+        // Extract store_name from JSON column if available
+        if ($store && !empty($store->store_profile_detail)) {
+            $profileDetail = json_decode($store->store_profile_detail, true);
+            $store_name = $profileDetail['store_name'] ?? null;
+        }
+        if ($store) {
+            $store_info = json_decode($store->store_info, true);
+            $store_name = $store_info['store_name'] ?? null;
+
+            if ($store_name) {
+                // make lowercase and replace spaces with -
+                $store_name = strtolower(str_replace(' ', '-', $store_name));
+            }
+        }
+
+
+        $url = 'store/' . $store_name . '?i=' . base64_encode($store_id);
         // Regenerate session to prevent session fixation attacks
         session()->regenerate();
 
@@ -447,6 +468,8 @@ class AuthController extends Controller
                 'user_name' => $user->user_name,
                 'user_email' => $user->user_email,
                 'store_id' => $store_id,
+                'store_url' => $url,
+                'store_name' => $store_name,
             ]
         ]);
         $role = $user->user_role;

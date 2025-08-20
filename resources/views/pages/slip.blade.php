@@ -73,7 +73,7 @@
                     <p><strong>Products:</strong></p>
                     @foreach ($group['products'] as $product)
                         <p>{{ $product['quantity'] }}x {{ $product['product_name'] }} - Rs
-                            {{ number_format($product['price']) }}</p>
+                            {{ $product['price'] * $product['quantity'] }}</p>
                     @endforeach
                 </div>
             </div>
@@ -81,7 +81,7 @@
     @else
         <!-- Non-Admin View -->
         <div class="label">
-            <h2>Shipping Label</h2>
+            {{-- <h2>Shipping Label</h2> --}}
 
             <!-- Main Information Table -->
             <table style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px;" border="1">
@@ -102,6 +102,7 @@
                         <strong>Order Ref:</strong> #{{ $order->order_id ?? 'N/A' }}<br>
                         <strong>Tracking No:</strong> {{ $order->tracking_id ?? 'N/A' }}<br>
                         {{-- <strong>Origin:</strong> {{ $seller->store_address ?? 'N/A' }}<br> --}}
+                        <strong>Ship Date:</strong> {{ $order->updated_at ? \Carbon\Carbon::parse($order->updated_at)->format('d M Y') : 'N/A' }}<br>
                         <strong>Destination:</strong> {{ $order->address ?? 'N/A' }}<br>
                         {{-- <strong>Return City:</strong> {{ $seller->store_address ?? 'N/A' }} --}}
                     </td>
@@ -121,9 +122,9 @@
                 <tr>
                     <td style="padding: 6px;">
                         <strong>Name:</strong> {{ $seller->store_name ?? 'N/A' }}<br>
-                        <strong>Contact:</strong> {{ $seller->store_email ?? 'N/A' }}<br>
-                        {{-- <strong>Pickup Address:</strong> {{ $seller->store_address ?? 'N/A' }}<br> --}}
-                        {{-- <strong>Return Address:</strong> {{ $seller->store_address ?? 'N/A' }} --}}
+                        <strong>Email:</strong> {{ $seller->store_email ?? 'N/A' }}<br>
+                        <strong>Contact:</strong> {{ $seller->store_phone ?? 'N/A' }}<br>
+                        <strong>Return Address:</strong> {{ $seller->store_address ?? 'N/A' }}
                     </td>
                     <td style="padding: 6px;">
                         Please call before delivering.
@@ -136,7 +137,7 @@
                             }
                         @endphp
                         <strong>Amount:</strong> {{ number_format($totalAmount, 2) }}/-<br>
-                        <strong>Date:</strong> {{ $order->order_date ?? 'N/A' }}<br>
+                        <strong>Order Date:</strong> {{ $order->order_date ?? 'N/A' }}<br>
                         <strong>Order Type:</strong> Cash On Delivery
                     </td>
                 </tr>
@@ -149,7 +150,7 @@
                         <strong>Order Details:</strong>
                         @foreach ($products as $product)
                             [ {{ $product['quantity'] }} x {{ $product['product_name'] }} - Rs
-                            {{ number_format($product['price'], 2) }} ]
+                            {{ $product['price'] * $product['quantity'] }} ]
                         @endforeach
                     </td>
                 </tr>

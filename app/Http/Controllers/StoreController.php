@@ -62,138 +62,140 @@ class StoreController extends Controller
     }
 
 
-    public function editStoreProfile(Request $request)
-    {
-        try {
-            $userDetails = session('user_details');
-            if (!$userDetails) {
-                return redirect()->back()->with('error', 'User not authenticated');
-            }
-
-            $user_id = $userDetails['user_id'];
-            // Find the seller record for the authenticated user
-            $seller = Seller::where('user_id', $user_id)->first();
-            if (!$seller) {
-                return response()->json(['error' => 'Seller record not found'], 404);
-            }
-
-            // Decode store_info JSON from seller table
-            $storeData = json_decode($seller->store_info, true);
-            if (!$storeData) {
-                return response()->json(['error' => 'Invalid store data'], 400);
-            }
-
-            // Check if the store entry exists for the user and seller
-            $store = Store::where('user_id', $user_id)
-                ->where('seller_id', $seller->seller_id)
-                ->first();
-
-            $isNew = false; // Flag to check if a new record is inserted
-
-            // Get existing values
-            $existingProfileDetail = $store ? json_decode($store->store_profile_detail, true) : [];
-            $storeImagePath = $existingProfileDetail['store_image'] ?? null;
-            $existingStoreTags = $existingProfileDetail['store_tags'] ?? [];
-            $storePosts = $existingProfileDetail['store_posts'] ?? [];
-            $existingBanners = $existingProfileDetail['store_banners'] ?? [];
-
-            // Handle profile picture update only if provided
-            if ($request->hasFile('profile_picture')) {
-                $storeImagePath = 'storage/' . $request->file('profile_picture')->store('store_images', 'public');
-            }
-
-
-
-            // Remove banners IDs sent from frontend
-            $removedBannerIds = $request->input('removed_banners', []);
-            if (!is_array($removedBannerIds)) {
-                $removedBannerIds = json_decode($removedBannerIds, true) ?: [];
-            }
-
-            if (!empty($removedBannerIds)) {
-                // Filter out banners that are removed by user
-                $existingBanners = array_filter($existingBanners, function ($banner) use ($removedBannerIds) {
-                    return !in_array($banner['id'], $removedBannerIds);
-                });
-                // Re-index array keys after filtering (optional but cleaner)
-                $existingBanners = array_values($existingBanners);
-            }
-
-            // Handle profile picture update only if provided
-            if ($request->hasFile('profile_picture')) {
-                $storeImagePath = 'storage/' . $request->file('profile_picture')->store('store_images', 'public');
-            }
-
-            // Handle multiple banners (merge with old)
-            if ($request->hasFile('banners')) {
-                $currentMaxId = !empty($existingBanners)
-                    ? max(array_column($existingBanners, 'id'))
-                    : 0;
-
-                foreach ($request->file('banners') as $index => $bannerFile) {
-                    $path = 'storage/' . $bannerFile->store('store_banners', 'public');
-
-                    $existingBanners[] = [
-                        'id' => $currentMaxId + $index + 1,
-                        'image' => $path
-                    ];
-                }
-            }
-
-
-
-            // Merge new tags with existing ones if provided
-            $newTags = $request->input('tags', []);
-            if (!is_array($newTags)) {
-                $newTags = explode(',', $newTags);
-            }
-            $storeTags = array_unique(array_merge($existingStoreTags, $newTags));
-
-            // Update store posts only if two new images are provided
-            if ($request->hasFile('store_posts') && count($request->file('store_posts')) === 2) {
-                $storePosts = []; // Reset store posts
-                foreach ($request->file('store_posts') as $postImage) {
-                    $postImagePath = 'storage/' . $postImage->store('store_posts', 'public');
-                    $storePosts[] = ['image' => $postImagePath];
-                }
-            }
-
-            // Store Profile Details
-            $storeProfileDetail = [
-                'store_name' => $request->input('store_name', $storeData['store_name'] ?? null),
-                'store_image' => $storeImagePath,
-                'store_tags' => $storeTags,
-                'store_banners' => $existingBanners,
-                'store_posts' => $storePosts,
-            ];
-
-            // If store exists, update it; otherwise, create a new store record
-            if ($store) {
-                $store->store_info = json_encode($storeData, JSON_UNESCAPED_UNICODE);
-                $store->store_profile_detail = json_encode($storeProfileDetail, JSON_UNESCAPED_UNICODE);
-                $store->save();
-                $message = 'Store profile updated successfully';
-            } else {
-                $store = new Store();
-                $store->user_id = $user_id;
-                $store->seller_id = $seller->seller_id;
-                $store->store_info = json_encode($storeData, JSON_UNESCAPED_UNICODE);
-                $store->store_profile_detail = json_encode($storeProfileDetail, JSON_UNESCAPED_UNICODE);
-                $store->save();
-                $isNew = true;
-                $message = 'Store profile created successfully';
-            }
-
-            return response()->json([
-                'success' => true,
-                'msg' => $message,
-                'is_new' => $isNew,
-                'data' => json_decode($store->store_profile_detail, true)
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+   public function editStoreProfile(Request $request)
+{
+    try {
+        $userDetails = session('user_details');
+        if (!$userDetails) {
+            return redirect()->back()->with('error', 'User not authenticated');
         }
+
+        $user_id = $userDetails['user_id'];
+
+        // Find seller record
+        $seller = Seller::where('user_id', $user_id)->first();
+        if (!$seller) {
+            return response()->json(['error' => 'Seller record not found'], 404);
+        }
+
+        // Decode seller store_info
+        $sellerStoreData = json_decode($seller->store_info, true);
+        if (!$sellerStoreData) {
+            return response()->json(['error' => 'Invalid store data'], 400);
+        }
+
+        // Find store
+        $store = Store::where('user_id', $user_id)
+            ->where('seller_id', $seller->seller_id)
+            ->first();
+
+        $isNew = false;
+        $existingProfileDetail = $store ? json_decode($store->store_profile_detail, true) : [];
+
+        // Existing details
+        $storeImagePath   = $existingProfileDetail['store_image']   ?? null;
+        $existingStoreTags = $existingProfileDetail['store_tags']   ?? [];
+        $storePosts       = $existingProfileDetail['store_posts']   ?? [];
+        $existingBanners  = $existingProfileDetail['store_banners'] ?? [];
+
+        // Profile picture
+        if ($request->hasFile('profile_picture')) {
+            $storeImagePath = 'storage/' . $request->file('profile_picture')->store('store_images', 'public');
+        }
+
+        // Remove banners
+        $removedBannerIds = $request->input('removed_banners', []);
+        if (!is_array($removedBannerIds)) {
+            $removedBannerIds = json_decode($removedBannerIds, true) ?: [];
+        }
+        if (!empty($removedBannerIds)) {
+            $existingBanners = array_values(array_filter($existingBanners, function ($banner) use ($removedBannerIds) {
+                return !in_array($banner['id'], $removedBannerIds);
+            }));
+        }
+
+        // New banners
+        if ($request->hasFile('banners')) {
+            $currentMaxId = !empty($existingBanners) ? max(array_column($existingBanners, 'id')) : 0;
+            foreach ($request->file('banners') as $index => $bannerFile) {
+                $path = 'storage/' . $bannerFile->store('store_banners', 'public');
+                $existingBanners[] = [
+                    'id' => $currentMaxId + $index + 1,
+                    'image' => $path
+                ];
+            }
+        }
+
+        // Tags
+        $newTags = $request->input('tags', []);
+        if (!is_array($newTags)) {
+            $newTags = explode(',', $newTags);
+        }
+        $storeTags = array_unique(array_merge($existingStoreTags, $newTags));
+
+        // Store posts (only if exactly 2 new ones provided)
+        if ($request->hasFile('store_posts') && count($request->file('store_posts')) === 2) {
+            $storePosts = [];
+            foreach ($request->file('store_posts') as $postImage) {
+                $postImagePath = 'storage/' . $postImage->store('store_posts', 'public');
+                $storePosts[] = ['image' => $postImagePath];
+            }
+        }
+
+        // ✅ Always update store_name across all JSON
+        $newStoreName = $request->input('store_name', $sellerStoreData['store_name'] ?? null);
+
+        // Update seller.store_info
+        $sellerStoreData['store_name'] = $newStoreName;
+        $seller->store_info = json_encode($sellerStoreData, JSON_UNESCAPED_UNICODE);
+        $seller->save();
+
+        // Prepare store profile detail
+        $storeProfileDetail = [
+            'store_name'    => $newStoreName,
+            'store_image'   => $storeImagePath,
+            'store_tags'    => $storeTags,
+            'store_banners' => $existingBanners,
+            'store_posts'   => $storePosts,
+        ];
+
+        // If store exists, update; otherwise create
+        if ($store) {
+            $storeData = json_decode($store->store_info, true) ?? [];
+            $storeData['store_name'] = $newStoreName;
+
+            $store->store_info = json_encode($storeData, JSON_UNESCAPED_UNICODE);
+            $store->store_profile_detail = json_encode($storeProfileDetail, JSON_UNESCAPED_UNICODE);
+            $store->save();
+
+            $message = 'Store profile updated successfully';
+        } else {
+            $store = new Store();
+            $store->user_id = $user_id;
+            $store->seller_id = $seller->seller_id;
+
+            $storeData = $sellerStoreData; // use updated seller data
+            $storeData['store_name'] = $newStoreName;
+
+            $store->store_info = json_encode($storeData, JSON_UNESCAPED_UNICODE);
+            $store->store_profile_detail = json_encode($storeProfileDetail, JSON_UNESCAPED_UNICODE);
+            $store->save();
+
+            $isNew = true;
+            $message = 'Store profile created successfully';
+        }
+
+        return response()->json([
+            'success' => true,
+            'msg'     => $message,
+            'is_new'  => $isNew,
+            'data'    => json_decode($store->store_profile_detail, true)
+        ]);
+    } catch (\Throwable $th) {
+        return response()->json(['error' => $th->getMessage()], 500);
     }
+}
+
 
 
     public function GetStoreInfo($store_id)

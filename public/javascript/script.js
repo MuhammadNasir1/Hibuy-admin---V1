@@ -334,3 +334,46 @@ $(document).ready(function () {
         });
     });
 });
+
+
+function blockDecimalsForClassJQ(className = 'only-integers') {
+    const sel = '.' + className;
+  
+    $(document).on('keydown', sel, function(e) {
+      const k = e.key, code = e.keyCode || e.which;
+  
+      // block dot/comma & numpad decimal
+      if (k === '.' || k === ',' || code === 190 || code === 110) return e.preventDefault();
+  
+      // allow control/navigation keys
+      if ($.inArray(k, ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','Tab','Enter','Escape']) !== -1) return;
+  
+      // digits only
+      if (!/^[0-9]$/.test(k)) return e.preventDefault();
+    });
+  
+    $(document).on('input', sel, function() {
+      const cleaned = this.value.replace(/[^\d]/g, '');
+      if (this.value !== cleaned) this.value = cleaned;
+    });
+  
+    $(document).on('paste', sel, function(e) {
+      const text = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+      if (/[^0-9]/.test(text)) {
+        e.preventDefault();
+        const only = text.replace(/[^\d]/g, '');
+        const start = this.selectionStart, end = this.selectionEnd, val = this.value;
+        this.value = val.slice(0, start) + only + val.slice(end);
+        const pos = start + only.length;
+        this.setSelectionRange(pos, pos);
+        $(this).trigger('input');
+      }
+    });
+  
+    // hint for mobile keyboards
+    $(sel).attr('inputmode', 'numeric');
+  }
+  
+  // init
+  $(function(){ blockDecimalsForClassJQ('only-integers'); });
+  

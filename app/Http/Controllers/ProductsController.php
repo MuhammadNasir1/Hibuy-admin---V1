@@ -31,7 +31,7 @@ class ProductsController extends Controller
                 return response()->json(['success' => false, 'message' => 'User not found.'], 404);
             }
 
-            // Fetch only top-level categories (where parent_id is null)
+            // Fetch only top-level categories (where parent_id is null )
             $categories = product_category::select('id', 'name', 'image')
                 ->where('category_type', 'products')
                 ->whereNull('parent_id')
@@ -39,7 +39,6 @@ class ProductsController extends Controller
 
             $products = null;
             $categoryIds = [];
-            $vehicleTypes = []; // default empty
 
             if ($editid !== null) {
                 $products = Products::find($editid);
@@ -50,20 +49,14 @@ class ProductsController extends Controller
                         ->orderBy('category_level')
                         ->pluck('category_id')
                         ->toArray();
-
-                    // Fetch vehicle types only when editing
-                    $vehicleTypes = DB::table('vehicle_types')
-                        ->select('id', 'vehicle_type', 'delivery_charge', 'min_weight', 'max_weight', 'max_length', 'max_width', 'max_height', 'created_at')
-                        ->get();
                 }
             }
-// return $products;
-            return view('pages.AddProduct', compact('user', 'categories', 'products', 'categoryIds', 'vehicleTypes'));
+            // return $categoryIds;
+            return view('pages.AddProduct', compact('user', 'categories', 'products', 'categoryIds'));
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
-
 
 
     public function getSubCategories($category_id)
@@ -128,20 +121,21 @@ class ProductsController extends Controller
     {
         try {
 
-            // Retrieve user details from session
+            // Retrieve user details from sessions
             $userDetails = session('user_details');
             if (!$userDetails) {
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
             if ($userDetails['user_role'] !== 'admin') {
-                // Find the seller record for the authenticated user
+                // Find the seller record for the authenticated users
                 $seller = Seller::where('user_id', $userDetails['user_id'])->first();
                 if (!$seller) {
                     return response()->json(['error' => 'Seller record not found'], 404);
                 }
 
-                // Fetch store_id based on seller_id
+                // Fetch store_id based on  seller_id
+
                 $store = Store::where('seller_id', $seller->seller_id)->first();
                 if (!$store) {
                     return redirect('/products')->with('error', 'Store record not found. Please Create Store First');
@@ -381,6 +375,33 @@ class ProductsController extends Controller
 
                 $newProduct = Products::create($productData);
 
+                // ✅ Send email to Seller
+                $personalInfo = json_decode($seller->personal_info, true);
+                $sellerEmail = $personalInfo['email'] ?? null;
+                $sellerName = $personalInfo['full_name'] ?? 'Seller';
+
+                if ($sellerEmail) {
+                    $subject = "Your product is under review";
+                    $body = "
+                        <h3>Hello {$sellerName},</h3>
+                        <p>Your product <b>{$newProduct->product_name}</b> has been submitted and is now under review by the admin team.</p>
+                        <p>You will be notified once it is approved.</p>
+                        <p>Thanks,</p>
+                    ";
+                    (new EmailController)->sendMail($sellerEmail, $subject, $body);
+                }
+
+                // ✅ Send email to Admin
+                $adminEmail = "info.arham.org@gmail.com";
+                $subjectAdmin = "New product submitted for review";
+                $bodyAdmin = "
+                    <h3>Hello Admin,</h3>
+                    <p>Seller <b>{$sellerName}</b> has added a new product for review.</p>
+                    <p><b>Product:</b> {$newProduct->product_name}<br>
+                       <b>Brand:</b> {$newProduct->product_brand}<br>
+                    <p>Please review it in the admin panel.</p>
+                ";
+                (new EmailController)->sendMail($adminEmail, $subjectAdmin, $bodyAdmin);
                 // ✅ NEW: insert pivot data
                 $categoryIds = [
                     1 => $request->category_id,
@@ -595,7 +616,8 @@ class ProductsController extends Controller
 
                 // Step 2: remove childId from parent's sub_categories json
                 $subCategories = json_decode($category->sub_categories, true);
-                if (!is_array($subCategories)) $subCategories = [];
+                if (!is_array($subCategories))
+                    $subCategories = [];
 
                 $filtered = array_filter($subCategories, function ($item) use ($childId) {
                     return $item['id'] != $childId;
@@ -630,7 +652,8 @@ class ProductsController extends Controller
     private function deleteCategoryRecursively($id)
     {
         $category = product_category::find($id);
-        if (!$category) return;
+        if (!$category)
+            return;
 
         // Delete children first
         $subCategories = json_decode($category->sub_categories, true);
@@ -1108,15 +1131,15 @@ class ProductsController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
-
     public function getVehicleType(Request $request)
     {
         $weight = $request->weight;
         $length = $request->length;
         $width  = $request->width;
+
         $height = $request->height;
 
-        // Example: match by size & weight from vehicle_types table
+        // Example: match by size & weight from vehicle_types
         $vehicleTypes = DB::table('vehicle_types')
             ->where('max_weight', '>=', $weight)
             ->where('max_length', '>=', $length)
