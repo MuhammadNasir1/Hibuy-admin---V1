@@ -540,7 +540,7 @@ class OrderController extends Controller
             ->whereIn('store_id', $storeIds)
             ->select(
                 'store_id',
-                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.store_name")) AS store_name'),
+                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_profile_detail, "$.store_name")) AS store_name'),
                 DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.phone_no")) AS store_phone'),
                 DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.email")) AS store_email'),
                 DB::raw('JSON_UNQUOTE(JSON_EXTRACT(store_info, "$.address")) AS store_address')

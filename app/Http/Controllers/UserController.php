@@ -709,10 +709,21 @@ class UserController extends Controller
             $imagePath = $request->file('profile_picture')->store('kyc_files', 'public');
             $personalInfo['profile_picture'] = 'storage/' . $imagePath;
         }
-
+        $storeInfo = $seller->store_info ? json_decode($seller->store_info, true) : [];
+        $storeInfo['address'] = $validated['address'];
+        $seller->store_info = json_encode($storeInfo);
         $seller->personal_info = json_encode($personalInfo);
         $seller->save();
 
+        $store = Store::where('user_id', $userId)->first(); // assuming relation
+
+        if ($store) {
+            $storeDetails = $store->store_info ? json_decode($store->store_info, true) : [];
+            $storeDetails['address'] = $validated['address'];
+
+            $store->store_info = json_encode($storeDetails);
+            $store->save();
+        }
         return response()->json(['message' => 'Personal information updated successfully!']);
     }
 
@@ -754,9 +765,10 @@ class UserController extends Controller
         ]);
     }
 
-    public function dashboardCounts(){
+    public function dashboardCounts()
+    {
         try {
-            $userId   = session('user_details.user_id');
+            $userId = session('user_details.user_id');
             $userRole = session('user_details.user_role');
 
             // counts
@@ -776,30 +788,36 @@ class UserController extends Controller
             }
             $credit = $creditQuery->where('request_status', 'pending')->count();
 
-            $seller = Seller::whereHas('user', fn($q) =>
+            $seller = Seller::whereHas(
+                'user',
+                fn($q) =>
                 $q->where('user_role', 'seller')->where('status', 'pending')
             )->count();
 
-            $freelancer = Seller::whereHas('user', fn($q) =>
+            $freelancer = Seller::whereHas(
+                'user',
+                fn($q) =>
                 $q->where('user_role', 'freelancer')->where('status', 'pending')
             )->count();
 
-            $sumSF = Seller::whereHas('user', fn($q) =>
-                $q->whereIn('user_role', ['seller','freelancer'])->where('status','pending')
+            $sumSF = Seller::whereHas(
+                'user',
+                fn($q) =>
+                $q->whereIn('user_role', ['seller', 'freelancer'])->where('status', 'pending')
             )->count();
 
             return response()->json([
-                'orders'     => $orders,
-                'approved'   => $approved,
-                'queries'    => $queries,
-                'credit'     => $credit,
-                'seller'     => $seller,
+                'orders' => $orders,
+                'approved' => $approved,
+                'queries' => $queries,
+                'credit' => $credit,
+                'seller' => $seller,
                 'freelancer' => $freelancer,
-                'sumSF'      => $sumSF,
+                'sumSF' => $sumSF,
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Dashboard counts error: '.$e->getMessage());
+            \Log::error('Dashboard counts error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to load counts'], 500);
         }
     }
