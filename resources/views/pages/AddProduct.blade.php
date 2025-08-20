@@ -212,7 +212,7 @@
                         </div>
                         {{-- These are for product size --}}
                         <div>
-                            <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01"
+                            <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01" 
                                 label="Estimated Weight (kg)" required placeholder="Weight in kg" id="weight" name="weight" />
                         </div>
 
