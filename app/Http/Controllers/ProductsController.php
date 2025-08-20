@@ -250,7 +250,6 @@ class ProductsController extends Controller
                     return redirect()->route('products')->with('success', 'Product added successfully');
                 }
             }
-
         } catch (\Exception $th) {
             return redirect('/product/add')->with('error', $th->getMessage());
         }
@@ -952,5 +951,23 @@ class ProductsController extends Controller
         $product->save();
 
         return redirect()->back()->with('success', $message);
+    }
+    public function getVehicleType(Request $request)
+    {
+        $weight = $request->weight;
+        $length = $request->length;
+        $width  = $request->width;
+
+        $height = $request->height;
+
+        // Example: match by size & weight from vehicle_types
+        $vehicleTypes = DB::table('vehicle_types')
+            ->where('max_weight', '>=', $weight)
+            ->where('max_length', '>=', $length)
+            ->where('max_width', '>=', $width)
+            ->where('max_height', '>=', $height)
+            ->get(['id', 'vehicle_type']);
+
+        return response()->json($vehicleTypes);
     }
 }
