@@ -1114,9 +1114,10 @@ class ProductsController extends Controller
         $weight = $request->weight;
         $length = $request->length;
         $width  = $request->width;
+        
         $height = $request->height;
 
-        // Example: match by size & weight from vehicle_types table
+        // Example: match by size & weight from vehicle_types
         $vehicleTypes = DB::table('vehicle_types')
             ->where('max_weight', '>=', $weight)
             ->where('max_length', '>=', $length)
