@@ -46,7 +46,7 @@ Route::middleware(['custom_auth'])->group(function () {
             });
             Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
             Route::get('/dashboard/counts', [UserController::class, 'dashboardCounts'])
-            ->name('dashboard.counts');
+                ->name('dashboard.counts');
 
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
@@ -163,7 +163,6 @@ Route::middleware(['custom_auth'])->group(function () {
             // })->name('editsettings');
 
             Route::post('/ProductCategory', [ProductsController::class, 'categories'])->name('productCategory');
-            Route::post('/get-vehicle-type', [ProductsController::class, 'getVehicleType']);
             Route::get('/ProductCategory', [ProductsController::class, 'showcat'])->name('addProductCategory');
             Route::get('/fetch-category/{id}', [ProductsController::class, 'fetchCategory']);
             Route::DELETE('/deleteProductCategory/{id}', [ProductsController::class, 'deleteCategoryOrSubcategory']);

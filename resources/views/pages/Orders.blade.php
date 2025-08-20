@@ -90,13 +90,28 @@
                         <td class="px-4 py-2">
                             <span
                                 class="px-3 py-1 text-xs font-semibold text-white
-                                rounded-md shadow
+                            {{ $order->status === 'Completed' ? 'bg-green-500' : 'bg-red-500' }}
+                            rounded-md shadow
+
                                 @switch($order->order_status)
-                                    @case('shipped') bg-blue-500 @break
-                                    @case('delivered') bg-green-500 @break
-                                    @case('cancelled') bg-red-500 @break
-                                    @case('returned') bg-purple-500 @break
-                                    @default bg-yellow-500
+                                    @case('shipped')
+                                        bg-blue-500
+                                    @break
+
+                                    @case('delivered')
+                                        bg-green-500
+                                    @break
+
+                                    @case('cancelled')
+                                        bg-red-500
+                                    @break
+
+                                    @case('returned')
+                                        bg-purple-500
+                                    @break
+
+                                    @default
+                                        bg-yellow-500
                                 @endswitch
                                 ">
                                 {{ ucwords(str_replace('_', ' ', $order->order_status)) }}
@@ -601,6 +616,7 @@
 
                                     ${user.user_role == 'admin' ? `
 
+
                                                     <td class="p-3">${item.seller_info.store_name} / ${item.seller_info.seller_name}</td>
 
                                                       <td class="p-3">${item?.delivery_status || 'N/A'}</td>
@@ -613,7 +629,6 @@
 
                                                      </td>
                                                      ` : ''}
-
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
 

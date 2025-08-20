@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Store;
 use App\Models\Seller;
-use App\Models\Products;
 use App\Models\RiderModel;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\EmailController;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -351,7 +352,6 @@ class OrderController extends Controller
 
     public function updateOrderStatus(Request $request)
     {
-
         if (session('user_details.user_role') === 'admin') {
             $request->validate([
                 'order_id' => 'required|exists:orders,order_id',
@@ -374,31 +374,26 @@ class OrderController extends Controller
             ]);
         }
 
-
         $order = Order::find($request->order_id);
 
-        // Admin update
+        // --- Admin update ---
         if ($request->filled('order_status')) {
             $order->order_status = $request->order_status;
             $order->rider_id = $request->rider_id;
             $order->tracking_number = $request->filled('tracking_number') ? $request->tracking_number : '';
         }
 
-        //  Seller update (update status of a product inside order_items JSON)
-
-
+        // --- Seller update ---
         if ($request->filled('delivery_status')) {
             $orderItems = json_decode($order->order_items, true);
             $videoPath = null;
 
-            // Upload the video once if provided
             if ($request->hasFile('status_video')) {
                 $video = $request->file('status_video');
                 $videoPath = $video->store('orders', 'public');
             }
 
             foreach ($orderItems as &$item) {
-                // Fetch product to check seller ownership
                 $product = Products::find($item['product_id']);
 
                 if ($product && $product->seller_id == session('user_details.seller_id')) {
@@ -406,19 +401,35 @@ class OrderController extends Controller
                     $item['order_weight'] = $request->weight_admin;
                     $item['order_size'] = $request->size_admin;
 
-                    // Set video if uploaded
                     if ($videoPath) {
                         if (!empty($item['status_video']) && Storage::disk('public')->exists($item['status_video'])) {
                             Storage::disk('public')->delete($item['status_video']);
                         }
                         $item['status_video'] = $videoPath;
                     }
+
+                    // ✅ Send Email to Admin about status update
+                    $sellerInfo = json_decode($product->personal_info, true);
+                    $sellerName = $sellerInfo['name'] ?? '';
+                    $status = ucfirst($request->delivery_status);
+
+                    $subject = "Order #{$order->order_id} - Product Status Updated";
+                    $body = "Hello Admin,<br><br>"
+                        . "Seller <strong>{$sellerName}</strong> has updated the status of product "
+                        . "<strong>{$product->product_name}</strong> in Order #{$order->order_id}.<br><br>"
+                        . "New Delivery Status: <strong>{$status}</strong><br><br>"
+                        . "Please review the update in the admin panel.";
+
+                    // Use your existing email function
+
+                    (new EmailController())->sendMail("info.arham.org@gmail.com", $subject, $body);
                 }
             }
 
             $order->order_items = json_encode($orderItems);
         }
 
+        // --- Reduce stock when shipped ---
         if ($request->filled('order_status') && $request->order_status === 'shipped') {
             $orderItems = is_string($order->order_items)
                 ? json_decode($order->order_items, true)
@@ -433,7 +444,6 @@ class OrderController extends Controller
                     foreach ($variations as &$variation) {
                         $parentMatched = false;
 
-                        // Match parent option
                         if (
                             isset($item['parent_option']['value'], $variation['parentname']) &&
                             $variation['parentname'] === $item['parent_option']['value']
@@ -442,7 +452,6 @@ class OrderController extends Controller
                             $parentMatched = true;
                         }
 
-                        // Match child option
                         if (!empty($variation['children']) && isset($item['child_option']['value'])) {
                             foreach ($variation['children'] as &$child) {
                                 if (isset($child['name']) && $child['name'] === $item['child_option']['value']) {
@@ -452,13 +461,11 @@ class OrderController extends Controller
                             }
                         }
 
-                        // Optional: break loop if parent matched
                         if ($parentMatched) {
                             break;
                         }
                     }
 
-                    // Save updated variation back to product
                     $product->product_variation = json_encode($variations);
                     $product->save();
                 }
@@ -586,7 +593,6 @@ class OrderController extends Controller
 
         return view('pages.slip', $data);
     }
-
 
     public function markAsPaid($orderId)
     {
