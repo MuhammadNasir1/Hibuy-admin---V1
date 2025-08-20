@@ -120,16 +120,20 @@ class ProductsController extends Controller
     public function storeProduct(Request $request)
     {
         try {
+            // Retrieve user details from sessions
+
             $userDetails = session('user_details');
             if (!$userDetails) {
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
             if ($userDetails['user_role'] !== 'admin') {
+                // Find the seller record for the authenticated users
                 $seller = Seller::where('user_id', $userDetails['user_id'])->first();
                 if (!$seller) {
                     return response()->json(['error' => 'Seller record not found'], 404);
                 }
+                // Fetch store_id based on  seller_id
 
                 $store = Store::where('seller_id', $seller->seller_id)->first();
                 if (!$store) {
