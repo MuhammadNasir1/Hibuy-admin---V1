@@ -31,7 +31,7 @@ class ProductsController extends Controller
                 return response()->json(['success' => false, 'message' => 'User not found.'], 404);
             }
 
-            // Fetch only top-level categories (where parent_id is null)
+            // Fetch only top-level categories (where parent_id is null )
             $categories = product_category::select('id', 'name', 'image')
                 ->where('category_type', 'products')
                 ->whereNull('parent_id')
