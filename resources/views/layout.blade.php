@@ -634,7 +634,8 @@
                                 <path
                                     d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z" />
                             </svg>
-                            <span class="ms-3 text-custom15">My Store - Store Name</span>
+                            <span class="ms-3 text-custom15 text-capitalize">My Store -
+                                {{ session('user_details.store_name') ?? 'Store Name' }}</span>
                         </a>
                     </li>
                 @endif
@@ -867,14 +868,14 @@
                             <svg class="w-5 h-5 transition duration-200" width="25" height="26"
                                 viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                                               10-4.48 10-10S17.52 2 12 2zm0 17
-                                               c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
-                                               c-.9.9-1.07 1.25-1.07 2.25h-2
-                                               v-.5c0-1.1.45-2.1 1.17-2.83
-                                               .59-.59 1.07-1 1.07-1.67
-                                               0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
-                                               c0-2.21 1.79-4 4-4s4 1.79 4 4
-                                               c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor" stroke="white"
+                                                   10-4.48 10-10S17.52 2 12 2zm0 17
+                                                   c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                                                   c-.9.9-1.07 1.25-1.07 2.25h-2
+                                                   v-.5c0-1.1.45-2.1 1.17-2.83
+                                                   .59-.59 1.07-1 1.07-1.67
+                                                   0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                                                   c0-2.21 1.79-4 4-4s4 1.79 4 4
+                                                   c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor" stroke="white"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
 
@@ -934,13 +935,13 @@
                 </li>
                 @if (
                     (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer') &&
-                        session('user_details.store_id'))
+                        session('user_details.store_url'))
                     <li class="mt-6">
-                        <a href="https://hibuy.vercel.app/store/{{ session('user_details.store_id') }}" target="_blank"
+                        <a href="https://hibuy.pk/{{ session('user_details.store_url') }}" target="_blank"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                              {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'active bg-white text-primary' : 'text-white' }}">
+                              {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_url') ? 'active bg-white text-primary' : 'text-white' }}">
                             <svg class="w-5 h-5 transition duration-200
-                                    {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'text-primary' : 'text-white' }}"
+                                    {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_url') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_2377_15331)">

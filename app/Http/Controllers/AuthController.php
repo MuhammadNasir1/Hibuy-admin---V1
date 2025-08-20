@@ -439,6 +439,24 @@ class AuthController extends Controller
         $kyc_status = Seller::where('user_id', $user->user_id)->first();
         $store = Store::where('user_id', $user->user_id)->first();
         $store_id = $store ? $store->store_id : null;
+        $store_name = null;
+        // Extract store_name from JSON column if available
+        if ($store && !empty($store->store_profile_detail)) {
+            $profileDetail = json_decode($store->store_profile_detail, true);
+            $store_name = $profileDetail['store_name'] ?? null;
+        }
+        if ($store) {
+            $store_info = json_decode($store->store_info, true);
+            $store_name = $store_info['store_name'] ?? null;
+
+            if ($store_name) {
+                // make lowercase and replace spaces with -
+                $store_name = strtolower(str_replace(' ', '-', $store_name));
+            }
+        }
+
+
+        $url = 'store/' . $store_name . '?i=' . base64_encode($store_id);
         // Regenerate session to prevent session fixation attacks
         session()->regenerate();
 
@@ -450,6 +468,8 @@ class AuthController extends Controller
                 'user_name' => $user->user_name,
                 'user_email' => $user->user_email,
                 'store_id' => $store_id,
+                'store_url' => $url,
+                'store_name' => $store_name,
             ]
         ]);
         $role = $user->user_role;
