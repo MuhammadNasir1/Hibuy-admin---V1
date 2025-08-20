@@ -31,7 +31,7 @@ class ProductsController extends Controller
                 return response()->json(['success' => false, 'message' => 'User not found.'], 404);
             }
 
-            // Fetch only top-level categories (where parent_id is null)
+            // Fetch only top-level categories (where parent_id is null )
             $categories = product_category::select('id', 'name', 'image')
                 ->where('category_type', 'products')
                 ->whereNull('parent_id')
@@ -120,16 +120,19 @@ class ProductsController extends Controller
     public function storeProduct(Request $request)
     {
         try {
+
             $userDetails = session('user_details');
             if (!$userDetails) {
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
             if ($userDetails['user_role'] !== 'admin') {
+
                 $seller = Seller::where('user_id', $userDetails['user_id'])->first();
                 if (!$seller) {
                     return response()->json(['error' => 'Seller record not found'], 404);
                 }
+
 
                 $store = Store::where('seller_id', $seller->seller_id)->first();
                 if (!$store) {
@@ -953,4 +956,25 @@ class ProductsController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
+
+
+    public function getVehicleType(Request $request)
+    {
+        $weight = $request->weight;
+        $length = $request->length;
+        $width  = $request->width;
+
+        $height = $request->height;
+
+        // Example: match by size & weight from vehicle_types
+        $vehicleTypes = DB::table('vehicle_types')
+            ->where('max_weight', '>=', $weight)
+            ->where('max_length', '>=', $length)
+            ->where('max_width', '>=', $width)
+            ->where('max_height', '>=', $height)
+            ->get(['id', 'vehicle_type']);
+
+        return response()->json($vehicleTypes);
+    }
+
 }

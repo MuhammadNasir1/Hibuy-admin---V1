@@ -783,6 +783,68 @@
                 });
             @endif
 
+
+
+            function fetchVehicleType() {
+                let weight = $("#weight").val();
+                let length = $("#length").val();
+                let width = $("#width").val();
+                let height = $("#height").val();
+
+                // Only call if all values are filled
+                if (weight && length && width && height) {
+                    $.ajax({
+                        url: "/get-vehicle-type", // Laravel route
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}", // CSRF protections
+                            weight: weight,
+                            length: length,
+                            width: width,
+                            height: height
+                        },
+                        success: function(response) {
+                            $("#vehicleType").empty().append(
+                                '<option disabled selected> Select Vehicle Type</option>');
+                            if (response.length > 0) {
+                                $.each(response, function(key, value) {
+                                    $("#vehicleType").append(
+                                        '<option value="' + value.id + '">' + value
+                                        .vehicle_type +
+                                        '</option>'
+                                    );
+                                });
+                            } else {
+                                $("#vehicleType").append('<option disabled> No match found</option>');
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Trigger when size fields change
+            $("#weight, #length, #width, #height").on("keyup change", function() {
+                let weight = $("#weight").val();
+                let length = $("#length").val();
+                let width = $("#width").val();
+                let height = $("#height").val();
+
+                if (weight && length && width && height) {
+                    fetchVehicleType();
+                    
+                }
+            });
+
+            // // ✅ On edit page load: if values already exist, call once
+            // let weight = $("#weight").val();
+            // let length = $("#length").val();
+            // let width = $("#width").val();
+            // let height = $("#height").val();
+
+            // // if (weight && length && width && height) {
+            // //     fetchVehicleType();
+            // // }
+
         });
 
 
