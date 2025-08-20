@@ -5,7 +5,7 @@
 @section('main-content')
     <style>
         @page {
-            size: A5;
+            size: A4;
             margin: 0;
         }
 
@@ -17,8 +17,8 @@
         }
 
         .label {
-            border: 2px dashed #000;
-            padding: 10px;
+            border: 1px dashed #000;
+            padding: 8px;
             width: 100%;
             box-sizing: border-box;
         }
@@ -30,28 +30,31 @@
             margin-bottom: 10px;
         }
 
-        td,
-        th {
+        td, th {
             border: 1px solid #000;
-            padding: 4px;
+            padding: 6px;
             vertical-align: top;
+            text-align: left;
         }
 
         th {
-            background-color: #f2f2f2;
-            text-align: left;
+            background: #f2f2f2;
             font-weight: bold;
         }
 
-        .capitalize {
-            text-transform: capitalize;
+        .qr {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 11px;
+            color: #666;
+            margin: auto;
         }
 
-        h2 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            text-align: center;
-            text-transform: uppercase;
+        .remarks td, .order-details td {
+            font-size: 13px;
         }
     </style>
 
@@ -79,83 +82,72 @@
             </div>
         @endforeach
     @else
-        <!-- Non-Admin View -->
+        <!-- Non-Admin View (Shipping Label Design) -->
         <div class="label">
-            {{-- <h2>Shipping Label</h2> --}}
-
-            <!-- Main Information Table -->
-            <table style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px;" border="1">
+            <table>
                 <tr>
-                    <th style="width: 33%; text-align: left; padding: 6px;">Customer Information</th>
-                    <th style="width: 33%; text-align: left; padding: 6px;">Shipment Information</th>
-                    <th style="width: 34%; text-align: left; padding: 6px;"></th>
+                    <th colspan="2">Customer Information</th>
+                    <th colspan="2">Shipment Information</th>
+                    <th colspan="2">Order Information</th>
                 </tr>
                 <tr>
-                    <td style="padding: 6px;">
-                        <strong>Name:</strong> {{ $order->customer_name ?? 'N/A' }}<br>
-                        <strong>Contact 1:</strong> {{ $order->phone ?? 'N/A' }}<br>
-                        {{-- <strong>Contact 2:</strong> {{ $order->second_phone ?? 'N/A' }}<br> --}}
-                        <strong>Delivery Address:</strong> {{ $order->address ?? 'N/A' }}
-                    </td>
-                    <td style="padding: 6px;">
-                        {{-- <strong>Pieces:</strong> {{ count($products) }}<br> --}}
-                        <strong>Order Ref:</strong> #{{ $order->order_id ?? 'N/A' }}<br>
-                        <strong>Tracking No:</strong> {{ $order->tracking_id ?? 'N/A' }}<br>
-                        {{-- <strong>Origin:</strong> {{ $seller->store_address ?? 'N/A' }}<br> --}}
-                        <strong>Ship Date:</strong> {{ $order->updated_at ? \Carbon\Carbon::parse($order->updated_at)->format('d M Y') : 'N/A' }}<br>
-                        <strong>Destination:</strong> {{ $order->address ?? 'N/A' }}<br>
-                        {{-- <strong>Return City:</strong> {{ $seller->store_address ?? 'N/A' }} --}}
-                    </td>
-                    <td style="padding: 6px;">
-
-                    </td>
-                </tr>
-            </table>
-
-            <!-- Shipper Information Table -->
-            <table style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px;" border="1">
-                <tr>
-                    <th style="width: 33%; text-align: left; padding: 6px;">Shipper Information</th>
-                    <th style="width: 33%; text-align: left; padding: 6px;">Remarks</th>
-                    <th style="width: 34%; text-align: left; padding: 6px;">Order Information</th>
-                </tr>
-                <tr>
-                    <td style="padding: 6px;">
-                        <strong>Name:</strong> {{ $seller->store_name ?? 'N/A' }}<br>
-                        <strong>Email:</strong> {{ $seller->store_email ?? 'N/A' }}<br>
-                        <strong>Contact:</strong> {{ $seller->store_phone ?? 'N/A' }}<br>
-                        <strong>Return Address:</strong> {{ $seller->store_address ?? 'N/A' }}
-                    </td>
-                    <td style="padding: 6px;">
-                        Please call before delivering.
-                    </td>
-                    <td style="padding: 6px;">
+                    <td><b>Name:</b></td><td>{{ $order->customer_name ?? 'N/A' }}</td>
+                    <td><b>Ship Date:</b></td><td> {{ $order->updated_at ? \Carbon\Carbon::parse($order->updated_at)->format('d/m/Y') : 'N/A' }}</td>
+                    <td rowspan="5" colspan="2" style="text-align:center;">
+                        {{-- <div class="qr">QR Code</div> --}}
                         @php
                             $totalAmount = 0;
                             foreach ($products as $product) {
                                 $totalAmount += $product['quantity'] * $product['price'];
                             }
                         @endphp
-                        <strong>Amount:</strong> {{ number_format($totalAmount, 2) }}/-<br>
-                        <strong>Order Date:</strong> {{ $order->order_date ?? 'N/A' }}<br>
-                        <strong>Order Type:</strong> Cash On Delivery
+                        <div><b>Amount:</b> {{ number_format($totalAmount, 2) }}/-</div>
+                        <div><b>Date:</b> {{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : 'N/A' }}</div>
+                        <div><b>Order Type:</b> Cash On Delivery</div>
                     </td>
                 </tr>
+                <tr>
+                    <td><b>Contact:</b></td><td>{{ $order->phone ?? 'N/A' }}</td>
+                    <td><b>Order Ref:</b></td><td>#{{ $order->order_id ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td><b>Delivery Address:</b></td><td>{{ $order->address ?? 'N/A' }}</td>
+                    <td><b>Tracking No:</b></td><td>{{ $order->tracking_id ?? 'N/A' }}</td>
+                </tr>
+                {{-- <tr>
+                    <td><b></b></td><td></td>
+                    <td><b>Destination:</b></td><td>{{ $order->address ?? 'N/A' }}</td>
+                </tr> --}}
+
             </table>
 
-            <!-- Order Details Table -->
-            <table style="width:100%; border-collapse: collapse; font-size: 13px;" border="1">
+            <table>
                 <tr>
-                    <td style="padding: 6px;">
-                        <strong>Order Details:</strong>
+                    <th colspan="4">Shipper Information</th>
+                </tr>
+                <tr>
+                    <td><b>Name:</b></td><td>{{ $seller->store_name ?? 'N/A' }}</td>
+                    <td><b>Contact:</b></td><td>{{ $seller->store_phone ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td><b>Email:</b></td><td colspan="3">{{ $seller->store_email ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td><b>Pickup Address:</b></td><td colspan="3">{{ $seller->store_address ?? 'N/A' }}</td>
+                </tr>
+            </table>
+            <table class="order-details">
+                <tr>
+                    <th>Order Details</th>
+                </tr>
+                <tr>
+                    <td>
                         @foreach ($products as $product)
-                            [ {{ $product['quantity'] }} x {{ $product['product_name'] }} - Rs
-                            {{ $product['price'] * $product['quantity'] }} ]
+                            [ {{ $product['quantity'] }} x {{ $product['product_name'] }} - Rs {{ $product['price'] * $product['quantity'] }} ]
                         @endforeach
                     </td>
                 </tr>
             </table>
         </div>
-
     @endif
 @endsection
