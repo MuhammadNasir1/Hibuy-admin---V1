@@ -26,15 +26,7 @@ class Products extends Model
         'product_variation',
         'product_status',
         'is_boosted',
-
-        // 👇 Newly added fields
-        'weight',
-        'length',
-        'width',
-        'height',
-        'vehicle_type_id',
     ];
-
     public function store()
     {
         return $this->belongsTo(Store::class, 'store_id', 'store_id');
@@ -52,11 +44,8 @@ class Products extends Model
     }
 
     public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-    public function vehicleType()
-    {
-        return $this->belongsTo(VehicleType::class, 'vehicle_type_id', 'id');
-    }
+{
+    return $this->belongsTo(User::class, 'user_id');
 }
+}
+
