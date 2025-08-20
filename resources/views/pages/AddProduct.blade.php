@@ -212,7 +212,7 @@
                         </div>
                         {{-- These are for product size --}}
                         <div>
-                            <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01" 
+                            <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01"
                                 label="Estimated Weight (kg)" required placeholder="Weight in kg" id="weight" name="weight" />
                         </div>
 
@@ -838,7 +838,7 @@
                         url: "/get-vehicle-type", // Laravel route
                         type: "POST",
                         data: {
-                            _token: "{{ csrf_token() }}", // CSRF protection
+                            _token: "{{ csrf_token() }}", // CSRF protections
                             weight: weight,
                             length: length,
                             width: width,
@@ -846,7 +846,7 @@
                         },
                         success: function(response) {
                             $("#vehicleType").empty().append(
-                                '<option disabled selected>Select Vehicle Type</option>');
+                                '<option disabled selected> Select Vehicle Type</option>');
                             if (response.length > 0) {
                                 $.each(response, function(key, value) {
                                     $("#vehicleType").append(
@@ -856,7 +856,7 @@
                                     );
                                 });
                             } else {
-                                $("#vehicleType").append('<option disabled>No match found</option>');
+                                $("#vehicleType").append('<option disabled> No match found</option>');
                             }
                         }
                     });
@@ -872,6 +872,7 @@
 
                 if (weight && length && width && height) {
                     fetchVehicleType();
+                    
                 }
             });
 
