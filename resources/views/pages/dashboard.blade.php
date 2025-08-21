@@ -326,20 +326,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
             <!-- Sales Data Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-md border">
-                <h2 class="text-lg font-semibold">Sales Data</h2>
-                <canvas id="salesChart" class="mt-4"></canvas>
-                <div class="flex items-center mt-4 space-x-4">
-                    <div class="flex items-center cursor-pointer" id="toggleThisMonth">
-                        <span class="w-3 h-3 bg-blue-500 rounded-full inline-block mr-2"></span>
-                        <span class="text-gray-600 text-sm">This month</span>
-                    </div>
-                    <div class="flex items-center cursor-pointer" id="togglePrevMonth">
-                        <span class="w-3 h-3 bg-black rounded-full inline-block mr-2"></span>
-                        <span class="text-gray-600 text-sm">Prev month</span>
-                    </div>
-                </div>
-            </div>
+
 
             @if ($userRole === 'admin')
                 {{-- Top Selling Stores Section --}}
@@ -428,88 +415,103 @@
                 </div>
             @endif
 
+
+            <!-- Top Selling Stores Table -->
+                  <div class="bg-white p-6 rounded-lg shadow-md border">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+        <h2 class="text-lg font-semibold">Latest Orders</h2>
+        <div class="relative">
+            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
+                class="text-white bg-primary hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
+                type="button">
+                Today
+                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" d="m1 1 4 4 4-4" />
+                </svg>
+            </button>
+
+            <!-- Dropdown menu -->
+            <div id="dropdown"
+                class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-44">
+                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDefaultButton">
+                    <li>
+                        <a href="#"
+                            class="block px-4 py-2 hover:bg-gray-100">Today</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block px-4 py-2 hover:bg-gray-100">Yesterday</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Table -->
+    <div class="mt-4">
+        <table class="min-w-full text-sm text-left">
+            <thead>
+                <tr class="text-gray-600 border-b">
+                    <th class="py-3 px-4">Date</th>
+                    <th class="py-3 px-4">Customer</th>
+                    <th class="py-3 px-4">Phone</th>
+                    <th class="py-3 px-4">Total</th>
+                    <th class="py-3 px-4">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($latestOrders as $order)
+                    <tr class="border-b">
+                        <td class="px-2 py-3">{{ \Carbon\Carbon::parse($order->date)->format('M d') }}</td>
+                        <td class="px-2 py-3">{{ $order->customer_name }}</td>
+                        <td class="px-2 py-3">{{ $order->phone }}</td>
+                        <td class="px-2 py-3">{{ number_format($order->total) }}</td>
+                        <td class="px-2 py-3">
+                            @php
+                                $statusColors = [
+                                    'delivered' => 'bg-green-100 text-green-700',
+                                    'pending' => 'bg-yellow-100 text-yellow-700',
+                                    'cancelled' => 'bg-red-100 text-red-700',
+                                ];
+                                $color = $statusColors[strtolower($order->status)] ?? 'bg-gray-100 text-gray-700';
+                            @endphp
+                            <span class="{{ $color }} px-3 py-1 rounded-full text-xs font-semibold">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-            <!-- Top Selling Stores Table -->
-            <div class="bg-white p-6 rounded-lg shadow-md border">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold">Latest Orders</h2>
-                    <div class="relative">
 
-                        <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
-                            class="text-white bg-primary hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                            type="button">Today <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 1 4 4 4-4" />
-                            </svg>
-                        </button>
-
-                        <!-- Dropdown menu -->
-                        <div id="dropdown"
-                            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-44 dark:bg-gray-700">
-                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownDefaultButton">
-                                <li>
-                                    <a href="#"
-                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</a>
-                                </li>
-                            </ul>
-                        </div>
-
+{{-- <div class="bg-white p-6 rounded-lg shadow-md border">
+                <h2 class="text-lg font-semibold">Sales Data</h2>
+                <canvas id="salesChart" class="mt-4"></canvas>
+                <div class="flex items-center mt-4 space-x-4">
+                    <div class="flex items-center cursor-pointer" id="toggleThisMonth">
+                        <span class="w-3 h-3 bg-blue-500 rounded-full inline-block mr-2"></span>
+                        <span class="text-gray-600 text-sm">This month</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer" id="togglePrevMonth">
+                        <span class="w-3 h-3 bg-black rounded-full inline-block mr-2"></span>
+                        <span class="text-gray-600 text-sm">Prev month</span>
                     </div>
                 </div>
-                <table class="w-full mt-4 ">
-                    <thead>
-                        <tr class="text-gray-600 text-sm border-b">
-                            <th class="text-left py-3 px-4">Date</th>
-                            <th class="text-left py-3 px-4">Customer</th>
-                            <th class="text-left py-3 px-4">Phone</th>
-                            <th class="text-left py-3 px-4">Total</th>
-                            <th class="text-left py-3 px-4">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($latestOrders as $order)
-                            <tr class="border-b">
-                                <td class="px-4 py-3">{{ \Carbon\Carbon::parse($order->date)->format('M d') }}
-                                </td>
-                                <td class="px-4 py-3">{{ $order->customer_name }}</td>
-                                <td class="px-4 py-3">{{ $order->phone }}</td>
-                                <td class="px-4 py-3">{{ number_format($order->total) }}</td>
-                                <td class="px-4 py-3">
-                                    @php
-                                        $statusColors = [
-                                            'delivered' => 'bg-green-100 text-green-700',
-                                            'pending' => 'bg-yellow-100 text-yellow-700',
-                                            'cancelled' => 'bg-red-100 text-red-700',
-                                        ];
-                                        $color =
-                                            $statusColors[strtolower($order->status)] ?? 'bg-gray-100 text-gray-700';
-                                    @endphp
-                                    <span class="{{ $color }} px-3 py-1 rounded-full text-xs font-semibold">
-                                        {{ ucfirst($order->status) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-
-                </table>
-            </div>
-
-            <div class="bg-white p-6 rounded-lg shadow-md border">
+            </div> --}}
+            {{-- <div class="bg-white p-6 rounded-lg shadow-md border">
                 <h2 class="text-lg font-semibold">Sales Data</h2>
                 <div class="map-container">
                     <h2>Segmentation</h2>
                     <canvas id="worldMap"></canvas>
                 </div>
-            </div>
+            </div> --}}
 
 
         </div>
