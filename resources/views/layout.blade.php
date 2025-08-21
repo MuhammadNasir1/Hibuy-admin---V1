@@ -145,7 +145,7 @@
                                 <span class="ms-3 text-custom15">Approve Products</span>
                             </div>
                             <span id="approveProductCount"
-                                class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                         </a>
                     </li>
 
@@ -203,7 +203,7 @@
                             <i class="bi bi-chevron-down"></i>
                         </span>
                         <span id="sumSF"
-                            class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                     </div>
 
                     <!-- Dropdown Menu -->
@@ -255,7 +255,7 @@
                                     <span class="text-[15px] ml-2 font-bold">Seller</span>
                                 </div>
                                 <span id="sellerCount"
-                                    class=" bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                    class=" bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                             </div>
                         </a>
 
@@ -301,7 +301,7 @@
                                     <span class="text-[13px] ml-2 font-bold">Freelancers</span>
                                 </div>
                                 <span id="freelancerCount"
-                                    class=" bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                    class=" bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                             </div>
 
                         </a>
@@ -374,7 +374,7 @@
                                 <span class="ms-3 text-custom15">Orders</span>
                             </div>
                             <span id="orderCount"
-                                class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                         </a>
                     </li>
 
@@ -616,7 +616,7 @@
                                 <span class="ms-3 text-custom15">Credits Requests</span>
                             </div>
                             <span id="creditCount"
-                                class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                         </a>
                     </li>
                 @endif
@@ -763,7 +763,7 @@
                             <span class="ms-3 text-custom15">Queries</span>
                         </div>
                         <span id="queriesCount"
-                            class="me-4 bg-[#ff0000] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
                     </a>
                 </li>
                 @if (session('user_details.user_role') == 'seller')
