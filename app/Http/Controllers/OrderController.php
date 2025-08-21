@@ -162,8 +162,8 @@ class OrderController extends Controller
             // Step 9: Rider details if assigned
             $response['rider_details'] = $order->rider_id
                 ? RiderModel::select('id', 'rider_name', 'rider_email', 'phone', 'vehicle_type', 'vehicle_number', 'city')
-                ->where('id', $order->rider_id)
-                ->first()
+                    ->where('id', $order->rider_id)
+                    ->first()
                 : null;
 
             return response()->json($response, 200);
@@ -192,6 +192,7 @@ class OrderController extends Controller
             $today = now()->format('Y-m-d');
             $fromDate = request('from_date');
             $toDate = request('to_date');
+            $orderStatus = request('order_status'); // Get order_status from request
 
             if ($isLedgerView && !$fromDate && !$toDate) {
                 $fromDate = $today;
@@ -232,7 +233,15 @@ class OrderController extends Controller
                 }
             }
 
-            // 6. Role-specific processing
+            // 6. Order status filtering
+            if ($orderStatus) {
+                $validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'];
+                if (in_array($orderStatus, $validStatuses)) {
+                    $query->where('order_status', $orderStatus);
+                }
+            }
+
+            // 7. Role-specific processing
             if ($userRole === 'admin') {
                 $selectedStoreId = request('store_id');
 
@@ -283,9 +292,7 @@ class OrderController extends Controller
 
                     $order->grand_total = $productTotal + (float) $order->delivery_fee;
                     $order->grand_discount = $productTotal * 0.05;
-
                     $order->net_total = $productTotal - $order->grand_discount;
-
 
                     return $order;
                 })->filter();
@@ -306,7 +313,7 @@ class OrderController extends Controller
                 $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
 
                 $orders = $query->get()->map(function ($order) use ($productIds) {
-                    $orderItems = json_decode($order->order_items, true) ?? [];
+                    $orderItems = json_decode($order->order_items , true) ?? [];
                     $filteredItems = array_filter($orderItems, function ($item) use ($productIds) {
                         return in_array($item['product_id'] ?? null, $productIds);
                     });
@@ -323,24 +330,25 @@ class OrderController extends Controller
 
                     $order->grand_total = $productTotal + (float) $order->delivery_fee;
                     $order->grand_discount = $productTotal * 0.05;
-
                     $order->net_total = $productTotal - $order->grand_discount;
 
                     return $order;
                 })->filter();
 
-                $stores = null; // sellers don’t get all stores
+                $stores = null; // Sellers don’t get all stores
             }
 
-            // 7. View data
+            // 8. View data
             $viewData = [
                 'orders' => $orders,
                 'fromDate' => $fromDate,
                 'toDate' => $toDate,
+                'orderStatus' => $orderStatus, // Pass order_status to view
                 'isLedgerView' => $isLedgerView,
                 'defaultDate' => $today,
-                'stores' => $stores, // ✅ pass stores to view (null if seller)
+                'stores' => $stores, // Pass stores to view (null if seller)
             ];
+
             return $isLedgerView
                 ? view('pages.orders_ledger', $viewData)
                 : view('pages.Orders', $viewData);
@@ -348,6 +356,7 @@ class OrderController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 
     public function updateOrderStatus(Request $request)
     {

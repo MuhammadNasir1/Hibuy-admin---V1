@@ -65,55 +65,91 @@
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
 
         <div class="px-5">
-            @if (session('user_details.user_role') === 'admin')
-                <form method="GET" action="{{ url()->current() }}">
-                    <div class="mb-4">
-                        <label for="store_id" class="block text-sm font-medium text-gray-700">Select Store</label>
-                        <select name="store_id" id="store_id"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            onchange="this.form.submit()">
+            <form method="GET" action="{{ url()->current() }}" class="w-full">
+                <div class="flex flex-col lg:flex-row lg:flex-nowrap items-end gap-4">
 
-                            <option value="">-- Select Store --</option>
-                            @foreach ($stores as $store)
-                                <option value="{{ $store->store_id }}"
-                                    {{ request('store_id') == $store->store_id ? 'selected' : '' }}>
-                                    {{ $store->store_name }}
-                                </option>
-                            @endforeach
+                    {{-- Store (Admin only) --}}
+                    @if (session('user_details.user_role') === 'admin')
+                        <div class="flex flex-col w-full lg:w-auto min-w-[200px]">
+                            <label for="store_id" class="text-sm font-medium text-gray-700">Select Store</label>
+                            <select name="store_id" id="store_id"
+                                class="mt-1 h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                <option value="">Select Store</option>
+                                @foreach ($stores as $store)
+                                    <option value="{{ $store->store_id }}"
+                                        {{ request('store_id') == $store->store_id ? 'selected' : '' }}>
+                                        {{ $store->store_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
+                    {{-- Order Status --}}
+                    <div class="flex flex-col w-full lg:w-auto min-w-[150px]">
+                        <label for="order_status" class="text-sm font-medium text-gray-700">Order Status</label>
+                        <select id="order_status" name="order_status"
+                            class="mt-1 h-10 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                            <option value="">Select Status</option>
+                            <option value="pending" {{ request('order_status') == 'pending' ? 'selected' : '' }}>Pending
+                            </option>
+                            <option value="processing" {{ request('order_status') == 'processing' ? 'selected' : '' }}>
+                                Processing</option>
+                            <option value="shipped" {{ request('order_status') == 'shipped' ? 'selected' : '' }}>Shipped
+                            </option>
+                            <option value="delivered" {{ request('order_status') == 'delivered' ? 'selected' : '' }}>
+                                Delivered</option>
+                            <option value="cancelled" {{ request('order_status') == 'cancelled' ? 'selected' : '' }}>
+                                Cancelled</option>
+                            <option value="returned" {{ request('order_status') == 'returned' ? 'selected' : '' }}>Returned
+                            </option>
                         </select>
                     </div>
 
-                </form>
-            @endif
+                    {{-- From Date --}}
+                    <div class="flex flex-col w-full lg:w-auto min-w-[100px]">
+                        <label for="from_date" class="text-sm font-medium text-gray-700">From</label>
+                        <input type="date" id="from_date" name="from_date" value="{{ request('from_date') }}"
+                            class="mt-1 h-10 w-full rounded-md border px-3 text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
 
-            <div class="my-5 flex flex-wrap items-center justify-center gap-4">
-                <div class="flex items-center gap-2">
-                    <label for="from_date" class="text-sm font-medium">From:</label>
-                    <input type="date" id="from_date" name="from_date" value="{{ request('from_date') }}"
-                        class="border rounded-md px-3 py-1 text-sm">
+                    {{-- To Date --}}
+                    <div class="flex flex-col w-full lg:w-auto min-w-[100px]">
+                        <label for="to_date" class="text-sm font-medium text-gray-700">To</label>
+                        <input type="date" id="to_date" name="to_date" value="{{ request('to_date') }}"
+                            class="mt-1 h-10 w-full rounded-md border px-3 text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    {{-- Apply --}}
+                    <div class="flex flex-col w-full lg:w-auto">
+                        <label class="text-sm font-medium invisible">Apply</label>
+                        <button type="submit" id="apply_date_filter"
+                            class="h-10 w-full lg:w-auto bg-primary text-white px-4 rounded-md text-sm">
+                            Apply Filter
+                        </button>
+                    </div>
+
+                    {{-- Clear --}}
+                    @if (request('from_date') || request('to_date') || request('order_status') || request('store_id'))
+                        <div class="flex flex-col w-full lg:w-auto">
+                            <label class="text-sm font-medium invisible">Clear</label>
+                            <a href="{{ url()->current() }}"
+                                class="h-10 inline-flex items-center justify-center px-4 rounded-md text-sm text-red-600 border border-red-200 hover:bg-red-50">
+                                Clear
+                            </a>
+                        </div>
+                    @endif
+
                 </div>
+            </form>
 
-                <div class="flex items-center gap-2">
-                    <label for="to_date" class="text-sm font-medium">To:</label>
-                    <input type="date" id="to_date" name="to_date" value="{{ request('to_date') }}"
-                        class="border rounded-md px-3 py-1 text-sm">
-                </div>
-
-                <button id="apply_date_filter" class="bg-primary text-white px-4 py-1 rounded-md text-sm">
-                    Apply Filter
-                </button>
-
-                @if (request('from_date') || request('to_date'))
-                    <a href="{{ url()->current() }}" class="text-sm text-red-500 hover:underline">
-                        Clear Filters
-                    </a>
-                @endif
-            </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5 printArea">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5 mt-5 printArea">
                 <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
-                    <h3 class="text-gray-500 text-sm font-medium">Total Orders</h3>
+                    <h3 class="text-gray-500 text-sm font-medium">
+                        {{ request('order_status') ? ucwords(str_replace('_', ' ', request('order_status'))) . ' Orders' : 'Total Orders' }}
+                    </h3>
                     <p class="text-2xl font-bold text-primary">{{ count($orders) }}</p>
                 </div>
                 <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
@@ -512,13 +548,13 @@
                             </td>
                             <td class="p-3">${item.product_name}</td>
                             ${user.user_role == 'admin' ? `
-                                                    <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                    <td class="p-3">
-                                                        ${item.status_video ? `
+                                                            <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                                                            <td class="p-3">
+                                                                ${item.status_video ? `
                                         <video controls class="w-28 h-16 rounded shadow">
                                             <source src="/storage/${item.status_video}" type="video/mp4">
                                         </video>` : 'No video'}
-                                                    </td>` : ''}
+                                                            </td>` : ''}
                             <td class="p-3 text-center">${item.quantity}</td>
                             <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'}</td>
                             <td class="p-3 text-center">
