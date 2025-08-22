@@ -11,45 +11,45 @@ class KYCController extends Controller
 {
 
     public function kycData($type)
-{
-    $jsonFields = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
+    {
+        $jsonFields = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
 
-    $query = Seller::join('users', 'seller.user_id', '=', 'users.user_id')
-        ->select('seller.*', 'users.*')
-        ->where('users.user_role', $type);
+        $query = Seller::join('users', 'seller.user_id', '=', 'users.user_id')
+            ->select('seller.*', 'users.*')
+            ->where('users.user_role', $type);
 
-    // Add whereNotNull for each JSON field
-    foreach ($jsonFields as $field) {
-        $query->whereNotNull("seller.$field");
-    }
-
-    $sellers = $query->get()->map(function ($seller) use ($jsonFields) {
-        $seller->submission_date = Carbon::parse($seller->updated_at)->format('Y-m-d');
-
-        $pendingCount = 0;
-        $approvedCount = 0;
-        $totalSteps = count($jsonFields); // Total steps
-
+        // Add whereNotNull for each JSON field
         foreach ($jsonFields as $field) {
-            if (!empty($seller->$field)) {
-                $data = json_decode($seller->$field, true);
-                if (isset($data['status'])) {
-                    if ($data['status'] == 'pending') {
-                        $pendingCount++;
-                    } elseif ($data['status'] == 'approved') {
-                        $approvedCount++;
+            $query->whereNotNull("seller.$field");
+        }
+
+        $sellers = $query->get()->map(function ($seller) use ($jsonFields) {
+            $seller->submission_date = Carbon::parse($seller->updated_at)->format('Y-m-d');
+
+            $pendingCount = 0;
+            $approvedCount = 0;
+            $totalSteps = count($jsonFields); // Total steps
+
+            foreach ($jsonFields as $field) {
+                if (!empty($seller->$field)) {
+                    $data = json_decode($seller->$field, true);
+                    if (isset($data['status'])) {
+                        if ($data['status'] == 'pending') {
+                            $pendingCount++;
+                        } elseif ($data['status'] == 'approved') {
+                            $approvedCount++;
+                        }
                     }
                 }
             }
-        }
 
-        // Store counts in the same seller object
-        $seller->steps_progress = "$approvedCount/$totalSteps";
-        return $seller;
-    });
+            // Store counts in the same seller object
+            $seller->steps_progress = "$approvedCount/$totalSteps";
+            return $seller;
+        });
 
-    return view('admin.KYC', compact('sellers', 'type'));
-}
+        return view('admin.KYC', compact('sellers', 'type'));
+    }
 
 
 
@@ -125,6 +125,8 @@ class KYCController extends Controller
             $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
             $allStepsApproved = true;
             $isUpdated = false;
+            $approvedReason = '';
+            $approvedStepName = '';
 
             foreach ($jsonColumns as $column) {
                 if (!empty($seller->$column)) {
@@ -133,9 +135,14 @@ class KYCController extends Controller
                     if (isset($jsonData['step']) && $jsonData['step'] == $step) {
                         $jsonData['status'] = 'approved';
 
+                        // Store the reason before clearing it
                         if (isset($jsonData['reason'])) {
+                            $approvedReason = $jsonData['reason'];
                             $jsonData['reason'] = '';
                         }
+
+                        // Store which step is approved (column name)
+                        $approvedStepName = ucfirst(str_replace('_', ' ', $column));
 
                         $seller->$column = json_encode($jsonData);
                         $isUpdated = true;
@@ -153,6 +160,16 @@ class KYCController extends Controller
 
             if ($isUpdated) {
                 $seller->save();
+
+                // Send email
+                $subject = "KYC Step Approved: {$approvedStepName}";
+                $body = "Hello {$seller->name},\n\n" .
+                    "Your KYC step '{$approvedStepName}' has been approved.\n" .
+                    (!empty($approvedReason) ? "Reason: {$approvedReason}\n" : "") .
+                    "\nThank you for your cooperation.";
+
+                (new EmailController)->sendMail($seller->email, $subject, $body);
+
                 return response()->json(['message' => 'KYC Approved successfully']);
             }
 
@@ -164,6 +181,7 @@ class KYCController extends Controller
             ], 500);
         }
     }
+
 
     public function rejectKyc(Request $request)
     {
@@ -181,6 +199,7 @@ class KYCController extends Controller
             $jsonColumns = ['personal_info', 'store_info', 'documents_info', 'bank_info', 'business_info'];
             $allStepsRejected = true;
             $isUpdated = false;
+            $rejectedStepName = '';
 
             foreach ($jsonColumns as $column) {
                 if (!empty($seller->$column)) {
@@ -189,6 +208,10 @@ class KYCController extends Controller
                     if (isset($jsonData['step']) && $jsonData['step'] == $step) {
                         $jsonData['status'] = 'rejected';
                         $jsonData['reason'] = $reason;
+
+                        // Store step name for email
+                        $rejectedStepName = ucfirst(str_replace('_', ' ', $column));
+
                         $seller->$column = json_encode($jsonData);
                         $isUpdated = true;
                     }
@@ -205,6 +228,17 @@ class KYCController extends Controller
 
             if ($isUpdated) {
                 $seller->save();
+
+                // Send rejection email
+                $subject = "KYC Step Rejected: {$rejectedStepName}";
+                $body = "Hello {$seller->name},\n\n" .
+                    "Your KYC step '{$rejectedStepName}' has been rejected.\n" .
+                    "Reason: {$reason}\n\n" .
+                    "Please review the feedback and resubmit the necessary details.\n\n" .
+                    "Thank you.";
+
+                (new EmailController)->sendMail($seller->email, $subject, $body);
+
                 return response()->json(['message' => 'KYC Rejected successfully']);
             }
 
@@ -216,7 +250,6 @@ class KYCController extends Controller
             ], 500);
         }
     }
-
 
 
 
