@@ -16,15 +16,21 @@ class ApproveProductsController extends Controller
             'user',
             'seller',
             'products' => function ($query) {
-                $query->where(function ($q) {
-                    $q->where('is_rejected', true)
-                        ->orWhere('product_status', false);
-                });
+                $query->where('product_status', 0)
+                    ->where('is_approved', 0)
+                    ->where('is_rejected', 0);
             },
-        ])->get();
-        // return response()->json($stores);
+        ])
+            ->whereHas('products', function ($query) {
+                $query->where('product_status', 0)
+                    ->where('is_approved', 0)
+                    ->where('is_rejected', 0);
+            })
+            ->get();
+
         return view('admin.approveProducts', compact('stores'));
     }
+
 
     public function approve(Request $request)
     {

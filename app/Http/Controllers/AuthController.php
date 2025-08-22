@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\Products;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Mail\ForgotPasswordMail;
 use App\Mail\SellerRegistration;
 use Illuminate\Support\Facades\DB;
@@ -135,34 +136,6 @@ class AuthController extends Controller
                     }
                 }
 
-                $latestOrders = Order::select([
-                    'order_id',
-                    'user_id',
-                    'tracking_id',
-                    'order_items',
-                    'total',
-                    'delivery_fee',
-                    'customer_name',
-                    'phone',
-                    'address',
-                    'status',
-                    'order_status',
-                    'order_date',
-                    'created_at'
-                ])
-                    ->orderBy('order_id', 'desc') // latest first
-                    ->limit(5) // only get 5 rows
-                    ->get()
-                    ->map(function ($order) {
-                        return (object) [
-                            'date' => $order->created_at->format('M d'),
-                            'customer_name' => $order->customer_name,
-                            'status' => $order->status,
-                            'total' => $order->total, // using total directly from DB
-                            'phone' => $order->phone,
-                        ];
-                    });
-
                 break;
             case 'seller':
                 $sellerId = Seller::where('user_id', $userId)->value('seller_id');
@@ -275,56 +248,6 @@ class AuthController extends Controller
                     ->take(5)
                     ->values();
 
-
-                $storeId = Store::where('seller_id', $sellerId)->value('store_id');
-                $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
-
-                $latestOrders = Order::select([
-                    'order_id',
-                    'user_id',
-                    'tracking_id',
-                    'order_items',
-                    'total',
-                    'delivery_fee',
-                    'customer_name',
-                    'phone',
-                    'address',
-                    'status',
-                    'order_status',
-                    'order_date',
-                    'created_at'
-                ])
-                    ->orderBy('order_id', 'desc')
-                    ->get()
-                    ->map(function ($order) use ($productIds) {
-                        $orderItems = json_decode($order->order_items, true) ?? [];
-
-
-                        $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
-                            return in_array($item['product_id'], $productIds);
-                        });
-
-
-                        if (empty($filteredOrderItems)) {
-                            return null;
-                        }
-
-
-                        $grandTotal = array_sum(array_column($filteredOrderItems, 'price'));
-
-
-                        return (object) [
-                            'date' => $order->created_at->format('M d'),
-                            'customer_name' => $order->customer_name,
-                            'status' => $order->status,
-                            'total' => $order->total,
-                            'phone' => $order->phone,
-                        ];
-                    })
-                    ->filter()
-                    ->take(5)
-                    ->values();
-
                 break;
 
 
@@ -336,7 +259,7 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('error', 'Invalid user role.');
         }
 
-        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts', 'latestOrders'));
+        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts',));
     }
 
 
@@ -629,4 +552,116 @@ class AuthController extends Controller
             'redirect' => route('login')
         ]);
     }
+
+
+
+public function filter(Request $request)
+{
+    $userDetails = session('user_details');
+    $userRole = $userDetails['user_role'] ?? null;
+    $userId = $userDetails['user_id'] ?? null;
+
+    // Determine date filter (default: today)
+    $filter = $request->orderdate ?? 'today';
+
+    if ($userRole !== 'admin') {
+        // ✅ Seller-specific filtering
+        $sellerId = Seller::where('user_id', $userId)->value('seller_id');
+        $storeId = Store::where('seller_id', $sellerId)->value('store_id');
+        $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
+
+        $query = Order::select([
+            'order_id', 'user_id', 'tracking_id', 'order_items', 'total', 'delivery_fee',
+            'customer_name', 'phone', 'address', 'status', 'order_status', 'order_date', 'created_at'
+        ]);
+
+        // ✅ Apply date filter
+        $query = $this->applyDateFilter($query, $filter);
+
+        // ✅ Fetch and filter by product IDs
+        $latestOrders = $query->orderBy('order_id', 'desc')
+            ->get()
+            ->map(function ($order) use ($productIds) {
+                $orderItems = json_decode($order->order_items, true) ?? [];
+
+                $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
+                    return in_array($item['product_id'], $productIds);
+                });
+
+                if (empty($filteredOrderItems)) {
+                    return null;
+                }
+
+                return [
+                    'date' => $order->created_at->format('M d'),
+                    'customer_name' => $order->customer_name,
+                    'status' => $order->order_status,
+                    'total' => $order->total,
+                    'phone' => $order->phone,
+                ];
+            })
+            ->filter()
+            ->take(5)
+            ->values();
+    } else {
+        // ✅ Admin: show latest 5 orders without product filtering
+        $query = Order::select([
+            'order_id', 'user_id', 'tracking_id', 'order_items', 'total', 'delivery_fee',
+            'customer_name', 'phone', 'address', 'status', 'order_status', 'order_date', 'created_at'
+        ]);
+
+        // ✅ Apply date filter
+        $query = $this->applyDateFilter($query, $filter);
+
+        $latestOrders = $query->orderBy('order_id', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'date' => $order->created_at->format('M d'),
+                    'customer_name' => $order->customer_name,
+                    'status' => $order->order_status,
+                    'total' => $order->total,
+                    'phone' => $order->phone,
+                ];
+            });
+    }
+
+    return response()->json($latestOrders);
+}
+
+/**
+ * Apply date filtering logic
+ */
+private function applyDateFilter($query, $filter)
+{
+    switch ($filter) {
+        case 'today':
+            $query->whereDate('created_at', Carbon::today());
+            break;
+        case 'yesterday':
+            $query->whereDate('created_at', Carbon::yesterday());
+            break;
+        case 'last7days':
+            $query->whereBetween('created_at', [Carbon::now()->subDays(6), Carbon::now()]);
+            break;
+        case 'last30days':
+            $query->whereBetween('created_at', [Carbon::now()->subDays(29), Carbon::now()]);
+            break;
+        case 'thismonth':
+            $query->whereMonth('created_at', Carbon::now()->month)
+                ->whereYear('created_at', Carbon::now()->year);
+            break;
+        case 'lastmonth':
+            $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
+                ->whereYear('created_at', Carbon::now()->subMonth()->year);
+            break;
+        default:
+            $query->whereDate('created_at', Carbon::today());
+            break;
+    }
+    return $query;
+}
+
+
 }
