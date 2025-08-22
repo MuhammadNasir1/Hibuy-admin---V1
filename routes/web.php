@@ -45,8 +45,7 @@ Route::middleware(['custom_auth'])->group(function () {
                 Route::get('/Kyc-profile', 'kycView')->name('kycView');
             });
             Route::get('/Users', [UserController::class, 'showUsers'])->name('CreateUser');
-            Route::get('/dashboard/counts', [UserController::class, 'dashboardCounts'])
-            ->name('dashboard.counts');
+
 
             Route::get('/profile-detail', [UserController::class, 'profileDetail'])->name('ProfileDetail');
             Route::get('/create-profile', function () {
@@ -65,6 +64,8 @@ Route::middleware(['custom_auth'])->group(function () {
 
             Route::post('/submit-product', [ProductsController::class, 'storeProduct'])->name('product.store');
             Route::GET('/', [AuthController::class, 'dashboard'])->name('dashboard');
+            Route::get('/orders/filter', [AuthController::class, 'filter'])->name('orders.filter');
+
             // Route::get('/', function () {
             //     return view('pages.dashboard');
             // })->name('dashboard');
@@ -79,6 +80,8 @@ Route::middleware(['custom_auth'])->group(function () {
                 Route::POST('/update-product-status', 'updateStatus');
             });
 
+            Route::get('/dashboard/counts', [UserController::class, 'dashboardCounts'])
+                ->name('dashboard.counts');
             // KYC APPROVE
             Route::controller(KYCController::class)->group(function () {
                 Route::get('/KYC/{type}', 'kycData')->name('KYC_auth');

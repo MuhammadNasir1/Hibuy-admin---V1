@@ -144,8 +144,7 @@
                                 </svg>
                                 <span class="ms-3 text-custom15">Approve Products</span>
                             </div>
-                            <span id="approveProductCount"
-                                class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            <div id="approveProductCount"></div>
                         </a>
                     </li>
 
@@ -202,8 +201,7 @@
                         <span class="text-sm duration-300 transform" id="arrow1">
                             <i class="bi bi-chevron-down"></i>
                         </span>
-                        <span id="sumSF"
-                            class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                        <div id="sumSF"></div>
                     </div>
 
                     <!-- Dropdown Menu -->
@@ -254,8 +252,7 @@
                                     </svg>
                                     <span class="text-[15px] ml-2 font-bold">Seller</span>
                                 </div>
-                                <span id="sellerCount"
-                                    class=" bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                <div id="sellerCount"></div>
                             </div>
                         </a>
 
@@ -300,8 +297,7 @@
                                     </svg>
                                     <span class="text-[13px] ml-2 font-bold">Freelancers</span>
                                 </div>
-                                <span id="freelancerCount"
-                                    class=" bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                                <div id="freelancerCount"></div>
                             </div>
 
                         </a>
@@ -373,8 +369,7 @@
                                 </svg>
                                 <span class="ms-3 text-custom15">Orders</span>
                             </div>
-                            <span id="orderCount"
-                                class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            <div id="orderCount"></div>
                         </a>
                     </li>
 
@@ -615,8 +610,8 @@
                                 </svg>
                                 <span class="ms-3 text-custom15">Credits Requests</span>
                             </div>
-                            <span id="creditCount"
-                                class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                            <div id="creditCount"></div>
+
                         </a>
                     </li>
                 @endif
@@ -634,7 +629,8 @@
                                 <path
                                     d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z" />
                             </svg>
-                            <span class="ms-3 text-custom15">My Store - {{ session('user_details.store_name') ?? 'Store Name' }}</span>
+                            <span class="ms-3 text-custom15">My Store -
+                                {{ session('user_details.store_name') ?? 'Store Name' }}</span>
                         </a>
                     </li>
                 @endif
@@ -705,45 +701,50 @@
                     </li>
                     <li class="mt-6">
                         <a href="{{ route('promotions') }}"
-                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                                  {{ request()->routeIs('promotions') ? 'active bg-white text-primary' : 'text-white' }}"
+                            class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
+          {{ request()->routeIs('promotions') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="promotion_list">
-                            <svg class="w-5 h-5 transition duration-200
-                                        {{ request()->routeIs('promotions') ? 'text-primary' : 'text-white' }}"
-                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_1853_20490)">
-                                    <path
-                                        d="M12.0627 25.5007C9.85645 24.8669 7.75983 24.267 5.66718 23.6611C3.12413 22.9257 3.12213 22.9237 3.12413 20.3129C3.12612 18.9218 3.1321 17.5307 3.14007 16.1376C3.14007 16.0758 3.17594 16.012 3.23972 15.8008C4.03492 16.0758 4.83013 16.3469 5.62135 16.6259C6.62183 16.9766 7.65021 17.2676 8.60884 17.7101C9.53757 18.1386 10.2291 17.9891 10.8868 17.2457C11.1818 16.9109 11.5744 16.6637 12.0607 16.2612C12.0627 19.4141 12.0627 22.3677 12.0627 25.5007Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M12.9316 16.324C13.2724 16.5711 13.5554 16.6947 13.7209 16.9099C14.6596 18.1276 15.7378 18.0459 17.0332 17.4879C18.5459 16.8362 20.1363 16.3678 21.8862 15.75C21.8862 16.9896 21.8862 18.0938 21.8862 19.1979C21.8862 20.2263 21.9141 21.2546 21.8662 22.279C21.8543 22.5421 21.655 22.9646 21.4557 23.0244C18.6954 23.8475 15.9191 24.6208 13.1449 25.4001C13.0931 25.414 13.0233 25.3642 12.9316 25.3343C12.9316 22.3867 12.9316 19.4271 12.9316 16.324Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M18.526 11.4689C19.0781 11.6363 19.8833 11.8815 20.6904 12.1246C20.7004 12.1984 20.7083 12.2721 20.7183 12.3439C20.2739 12.4933 19.8314 12.6488 19.385 12.7943C17.3362 13.4619 15.2894 14.1395 13.2326 14.7813C12.8719 14.8929 12.4295 14.9746 12.0867 14.869C9.49179 14.0658 6.91286 13.2128 4.28809 12.1705C5.09325 11.9074 5.89643 11.6463 6.68964 11.3872C6.88296 11.8237 7.00055 12.4654 7.21181 12.4973C7.98309 12.6169 8.79424 12.583 9.5735 12.4854C9.715 12.4674 9.90832 11.8675 9.86647 11.5666C9.73493 10.608 10.1375 10.1974 11.0463 10.014C11.8495 9.85261 12.569 9.56363 13.4558 9.83268C14.5739 10.1715 15.4369 10.4963 15.1559 11.9293C15.122 12.1027 15.5345 12.5152 15.7857 12.5611C16.3317 12.6607 16.9476 12.7165 17.4578 12.5531C17.8305 12.4375 18.0836 11.9413 18.526 11.4689Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M11.7677 15.5297C11.0642 16.1356 10.5082 16.6378 9.92023 17.1002C9.79069 17.2038 9.5296 17.2457 9.37017 17.1899C6.88291 16.3269 4.39964 15.446 1.80078 14.5272C2.1376 13.9672 2.37476 13.4968 2.68766 13.0863C2.81123 12.9229 3.14605 12.7614 3.31745 12.8152C6.07974 13.6802 8.83405 14.579 11.7677 15.5297Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M13.2207 15.5364C16.1504 14.5857 18.8768 13.6909 21.6112 12.8299C21.7985 12.7701 22.1553 12.8718 22.2709 13.0212C22.6057 13.4577 22.8568 13.956 23.1996 14.5259C20.6247 15.4387 18.1733 16.3236 15.706 17.1587C15.4688 17.2384 15.0742 17.069 14.837 16.8976C14.3268 16.5369 13.8744 16.0984 13.2207 15.5364Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M14.5117 3.64072C15.287 2.48677 15.9048 1.56402 16.6103 0.511719C17.3338 1.57797 17.9716 2.51866 18.7389 3.65068C17.3956 3.42946 17.3956 4.11704 17.4075 4.92221C17.4414 7.2002 17.4195 9.48018 17.4195 11.814C16.8575 11.814 16.411 11.814 15.8331 11.814C15.8331 9.92861 15.8331 8.0831 15.8331 6.23759C15.8331 5.77322 15.8032 5.30686 15.8391 4.84648C15.9028 4.03732 15.7593 3.44142 14.5117 3.64072Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M9.1688 11.8302C8.59282 11.8302 8.17031 11.8302 7.61227 11.8302C7.61227 9.13564 7.61227 6.471 7.61227 3.76452C7.17381 3.69078 6.86091 3.63697 6.34473 3.54928C7.01437 2.55079 7.64017 1.61408 8.38754 0.5C9.09705 1.56027 9.72086 2.49299 10.4583 3.59312C9.19271 3.4576 9.14089 4.13522 9.15684 4.97825C9.19471 7.22236 9.1688 9.47046 9.1688 11.8302Z"
-                                        fill="currentColor" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_1853_20490">
-                                        <rect width="25" height="25" fill="currentColor"
-                                            transform="translate(0 0.5)" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                            <span class="ms-3 text-custom15">Promotions</span>
+
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 transition duration-200
+                    {{ request()->routeIs('promotions') ? 'text-primary' : 'text-white' }}"
+                                    width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_1853_20490)">
+                                        <path
+                                            d="M12.0627 25.5007C9.85645 24.8669 7.75983 24.267 5.66718 23.6611C3.12413 22.9257 3.12213 22.9237 3.12413 20.3129C3.12612 18.9218 3.1321 17.5307 3.14007 16.1376C3.14007 16.0758 3.17594 16.012 3.23972 15.8008C4.03492 16.0758 4.83013 16.3469 5.62135 16.6259C6.62183 16.9766 7.65021 17.2676 8.60884 17.7101C9.53757 18.1386 10.2291 17.9891 10.8868 17.2457C11.1818 16.9109 11.5744 16.6637 12.0607 16.2612C12.0627 19.4141 12.0627 22.3677 12.0627 25.5007Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M12.9316 16.324C13.2724 16.5711 13.5554 16.6947 13.7209 16.9099C14.6596 18.1276 15.7378 18.0459 17.0332 17.4879C18.5459 16.8362 20.1363 16.3678 21.8862 15.75C21.8862 16.9896 21.8862 18.0938 21.8862 19.1979C21.8862 20.2263 21.9141 21.2546 21.8662 22.279C21.8543 22.5421 21.655 22.9646 21.4557 23.0244C18.6954 23.8475 15.9191 24.6208 13.1449 25.4001C13.0931 25.414 13.0233 25.3642 12.9316 25.3343C12.9316 22.3867 12.9316 19.4271 12.9316 16.324Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M18.526 11.4689C19.0781 11.6363 19.8833 11.8815 20.6904 12.1246C20.7004 12.1984 20.7083 12.2721 20.7183 12.3439C20.2739 12.4933 19.8314 12.6488 19.385 12.7943C17.3362 13.4619 15.2894 14.1395 13.2326 14.7813C12.8719 14.8929 12.4295 14.9746 12.0867 14.869C9.49179 14.0658 6.91286 13.2128 4.28809 12.1705C5.09325 11.9074 5.89643 11.6463 6.68964 11.3872C6.88296 11.8237 7.00055 12.4654 7.21181 12.4973C7.98309 12.6169 8.79424 12.583 9.5735 12.4854C9.715 12.4674 9.90832 11.8675 9.86647 11.5666C9.73493 10.608 10.1375 10.1974 11.0463 10.014C11.8495 9.85261 12.569 9.56363 13.4558 9.83268C14.5739 10.1715 15.4369 10.4963 15.1559 11.9293C15.122 12.1027 15.5345 12.5152 15.7857 12.5611C16.3317 12.6607 16.9476 12.7165 17.4578 12.5531C17.8305 12.4375 18.0836 11.9413 18.526 11.4689Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M11.7677 15.5297C11.0642 16.1356 10.5082 16.6378 9.92023 17.1002C9.79069 17.2038 9.5296 17.2457 9.37017 17.1899C6.88291 16.3269 4.39964 15.446 1.80078 14.5272C2.1376 13.9672 2.37476 13.4968 2.68766 13.0863C2.81123 12.9229 3.14605 12.7614 3.31745 12.8152C6.07974 13.6802 8.83405 14.579 11.7677 15.5297Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M13.2207 15.5364C16.1504 14.5857 18.8768 13.6909 21.6112 12.8299C21.7985 12.7701 22.1553 12.8718 22.2709 13.0212C22.6057 13.4577 22.8568 13.956 23.1996 14.5259C20.6247 15.4387 18.1733 16.3236 15.706 17.1587C15.4688 17.2384 15.0742 17.069 14.837 16.8976C14.3268 16.5369 13.8744 16.0984 13.2207 15.5364Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M14.5117 3.64072C15.287 2.48677 15.9048 1.56402 16.6103 0.511719C17.3338 1.57797 17.9716 2.51866 18.7389 3.65068C17.3956 3.42946 17.3956 4.11704 17.4075 4.92221C17.4414 7.2002 17.4195 9.48018 17.4195 11.814C16.8575 11.814 16.411 11.814 15.8331 11.814C15.8331 9.92861 15.8331 8.0831 15.8331 6.23759C15.8331 5.77322 15.8032 5.30686 15.8391 4.84648C15.9028 4.03732 15.7593 3.44142 14.5117 3.64072Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M9.1688 11.8302C8.59282 11.8302 8.17031 11.8302 7.61227 11.8302C7.61227 9.13564 7.61227 6.471 7.61227 3.76452C7.17381 3.69078 6.86091 3.63697 6.34473 3.54928C7.01437 2.55079 7.64017 1.61408 8.38754 0.5C9.09705 1.56027 9.72086 2.49299 10.4583 3.59312C9.19271 3.4576 9.14089 4.13522 9.15684 4.97825C9.19471 7.22236 9.1688 9.47046 9.1688 11.8302Z"
+                                            fill="currentColor" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_1853_20490">
+                                            <rect width="25" height="25" fill="currentColor"
+                                                transform="translate(0 0.5)" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <span class="ms-3 text-custom15">Promotions</span>
+                            </div>
+                            <div id="pendingPromotion"></div>
                         </a>
+
                     </li>
                 @endif
                 <li class="mt-6">
@@ -762,8 +763,8 @@
                             </svg>
                             <span class="ms-3 text-custom15">Queries</span>
                         </div>
-                        <span id="queriesCount"
-                            class="me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px]  text-center flex justify-center items-center text-[13px]">0</span>
+                        <div id="queriesCount">
+                        </div>
                     </a>
                 </li>
                 @if (session('user_details.user_role') == 'seller')
@@ -867,15 +868,16 @@
                             <svg class="w-5 h-5 transition duration-200" width="25" height="26"
                                 viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                                               10-4.48 10-10S17.52 2 12 2zm0 17
-                                               c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
-                                               c-.9.9-1.07 1.25-1.07 2.25h-2
-                                               v-.5c0-1.1.45-2.1 1.17-2.83
-                                               .59-.59 1.07-1 1.07-1.67
-                                               0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
-                                               c0-2.21 1.79-4 4-4s4 1.79 4 4
-                                               c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor" stroke="white"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                                           10-4.48 10-10S17.52 2 12 2zm0 17
+                                                                           c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                                                                           c-.9.9-1.07 1.25-1.07 2.25h-2
+                                                                           v-.5c0-1.1.45-2.1 1.17-2.83
+                                                                           .59-.59 1.07-1 1.07-1.67
+                                                                           0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                                                                           c0-2.21 1.79-4 4-4s4 1.79 4 4
+                                                                           c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor"
+                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                </path>
                             </svg>
 
                             <span class="ms-3 text-custom15">Help Centre</span>
@@ -1225,57 +1227,8 @@
                 console.error('Sidebar scroll error:', e);
             }
         })();
-    </script>
-    {{-- <script>
-    function toggleDropdown(menuId, arrowId) {
-        const menu = document.getElementById(menuId);
-        const arrow = document.getElementById(arrowId);
-        menu.classList.toggle('hidden');
-        arrow.classList.toggle('rotate-180'); // optional arrow rotation
-    }
-</script> --}}
-
-    {{-- <script>
-   function toggleDropdown(menuId, arrowId) {
-    // Hide all other dropdowns
-    document.querySelectorAll('[id^="submenu"]').forEach(el => {
-        if (el.id !== menuId) el.classList.add('hidden');
-    });
-
-    // Reset arrow rotation
-    document.querySelectorAll('[id^="arrow"]').forEach(el => {
-        if (el.id !== arrowId) el.classList.remove('rotate-180');
-    });
-
-    // Remove active styles from all dropdown cards
-    document.querySelectorAll('[id^="dropdown-card"]').forEach(el => {
-        if (el.id !== 'dropdown-card1') {
-            el.classList.remove('bg-white', 'text-primary');
-        }
-    });
-
-    // Toggle current dropdown
-    const dropdown = document.getElementById(menuId);
-    const arrow = document.getElementById(arrowId);
-    const card = document.getElementById('dropdown-card1');
-    const text = document.getElementById('dropdown-text1');
-    const svg = card.querySelector('svg');
-
-    dropdown.classList.toggle('hidden');
-    arrow.classList.toggle('rotate-180');
-    card.classList.toggle('bg-white');
-    card.classList.toggle('text-primary');
-
-    // Toggle text and SVG color
-    text.classList.toggle('text-primary');
-    svg.classList.toggle('text-primary');
-    svg.classList.toggle('text-white');
-}
 
 
-</script> --}}
-
-    <script>
         function toggleDropdown(menuId, arrowId) {
             const dropdown = document.getElementById(menuId);
             const arrow = document.getElementById(arrowId);
@@ -1312,30 +1265,50 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetch("{{ route('dashboard.counts') }}")
-                .then(res => res.json())
-                .then(data => {
-                    updateBadge('orderCount', data.orders);
-                    updateBadge('approveProductCount', data.approved);
-                    updateBadge('queriesCount', data.queries);
-                    updateBadge('creditCount', data.credit);
-                    updateBadge('sellerCount', data.seller);
-                    updateBadge('freelancerCount', data.freelancer);
-                    updateBadge('sumSF', data.sumSF);
-                });
+            $.ajax({
+                url: "{{ route('dashboard.counts') }}",
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response);
+
+                    // Always available fields (for both admin and non-admin)
+                    setBadge('#orderCount', response.orders || 0);
+                    setBadge('#queriesCount', response.queries || 0);
+
+                    // Admin-only fields
+                    if (response.approved !== undefined) {
+                        setBadge('#approveProductCount', response.approved);
+                    }
+                    if (response.credit !== undefined) {
+                        setBadge('#creditCount', response.credit);
+                    }
+                    if (response.seller !== undefined) {
+                        setBadge('#sellerCount', response.seller);
+                    }
+                    if (response.freelancer !== undefined) {
+                        setBadge('#freelancerCount', response.freelancer);
+                    }
+                    if (response.pendingPromotion !== undefined) {
+                        setBadge('#pendingPromotion', response.pendingPromotion);
+                    }
+                    if (response.sumSF !== undefined) {
+                        setBadge('#sumSF', response.sumSF);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', status, error);
+                }
+            });
         });
 
-        function updateBadge(id, count) {
-            let displayCount = count > 99 ? '99+' : count;
-            let el = document.getElementById(id);
-            if (el) {
-                if (count > 0) {
-                    el.textContent = displayCount;
-                    el.style.display = 'flex';
-                } else {
-                    el.textContent = '';
-                    el.style.display = 'none';
-                }
+        function setBadge(selector, count) {
+            if (count > 0) {
+                $(selector).html(
+                    `<span class="badge me-4 bg-[#1c64f2] text-white w-[28px] h-[28px] rounded-[24px] text-center flex justify-center items-center text-[13px]">${count > 99 ? '99+' : count}</span>`
+                );
+            } else {
+                $(selector).html(''); // Hide badge if count is 0
             }
         }
     </script>
