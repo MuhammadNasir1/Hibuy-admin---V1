@@ -12,6 +12,7 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\EmailController;
 use App\Models\Complaints;
 use App\Models\Faq;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,20 @@ class apiAuthController extends Controller
                 // Merge with user data
                 $userData = array_merge($userData, $customerData);
             }
+
+            $htmlContent = "
+    <h2>Welcome, {$user->user_name} 🎉</h2>
+    <p>You have successfully logged in to <strong>Hibuy</strong>.</p>
+    <p>We’re glad to see you back!</p>
+    <hr>
+    <small>Login Time: " . now()->toDateTimeString() . "</small>
+";
+
+            (new EmailController())->sendMail(
+                $user->user_email,
+                "Welcome To Hibuy",
+                $htmlContent // send raw HTML
+            );
 
             return response()->json([
                 'success' => true,

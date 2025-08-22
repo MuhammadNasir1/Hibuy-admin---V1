@@ -14,7 +14,7 @@ class welcomeemail extends Mailable
     use Queueable, SerializesModels;
 
     public $mailmessage;
-   public $subject;
+    public $subject;
 
     /**
      * Create a new message instance.
@@ -32,8 +32,7 @@ class welcomeemail extends Mailable
     {
         return new Envelope(
             subject: $this->subject,
-        );  
-
+        );
     }
 
     /**
@@ -43,6 +42,10 @@ class welcomeemail extends Mailable
     {
         return new Content(
             view: 'Mail.template',
+            with: [
+                'mailmessage' => $this->mailmessage,
+                'headerImage' => asset('asset/email_header_main.png'), // ✅ full URL
+            ]
         );
     }
 
