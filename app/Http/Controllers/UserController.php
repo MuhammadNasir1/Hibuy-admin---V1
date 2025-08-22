@@ -768,53 +768,76 @@ class UserController extends Controller
     public function dashboardCounts()
     {
         try {
-            $userId = session('user_details.user_id');
-            $userRole = session('user_details.user_role');
+            $userDetails = session('user_details');
+            $userId = $userDetails['user_id'];
+            $userRole = $userDetails['user_role'];
+            // For Admin
+            if ($userRole === 'admin') {
+                // counts
+                $orders = Order::where('order_status', 'pending')->count();
 
-            // counts
-            $orders = Order::where('status', 'pending')->count();
+                $approved = Products::where('is_approved', 0)
+                    ->where('is_rejected', 0)
+                    ->where('product_status', 0)
+                    ->count();
 
-            $approved = Products::where('is_approved', 0)
-                ->where('product_status', 0)
-                ->count();
+                $queries = Query::where('status', 'pending')
+                    ->count();
 
-            $queries = Query::where('user_id', $userId)
-                ->where('status', 'pending')
-                ->count();
+                $credit = DB::table('credit_request')
+                    ->where('request_status', 'pending')->count();
 
-            $creditQuery = DB::table('credit_request');
-            if ($userRole === 'freelancer') {
-                $creditQuery->where('user_id', $userId);
+                $result = Seller::whereHas('user', function ($q) {
+                    $q->whereIn('user_role', ['seller', 'freelancer'])
+                        ->where('status', 'pending');
+                })
+                    ->whereNotNull('personal_info')
+                    ->whereNotNull('store_info')
+                    ->whereNotNull('documents_info')
+                    ->whereNotNull('bank_info')
+                    ->whereNotNull('business_info')
+                    ->selectRaw("
+                            COUNT(CASE WHEN user_role = 'seller' THEN 1 END) as seller_count,
+                            COUNT(CASE WHEN user_role = 'freelancer' THEN 1 END) as freelancer_count,
+                            COUNT(*) as total_count ")
+                    ->join('users', 'seller.user_id', '=', 'users.user_id')
+                    ->first();
+                $pendingPromotion = User::whereNotNull('package_detail')
+                    ->where('package_detail->package_status', 'pending')
+                    ->count();
+
+
+                return response()->json([
+                    'orders' => $orders,
+                    'approved' => $approved,
+                    'queries' => $queries,
+                    'credit' => $credit,
+                    'seller' => $result->seller_count,
+                    'freelancer' => $result->freelancer_count,
+                    'sumSF' => $result->total_count,
+                    'pendingPromotion' => $pendingPromotion,
+                ]);
+            } else {
+                // Non-admin user
+                $queries = Query::where('user_id', $userId)
+                    ->where('status', 'pending')
+                    ->count();
+
+                $productIds = Products::where('user_id', $userId)->pluck('product_id')->toArray();
+
+                $orders = Order::where('order_status', 'pending')
+                    ->where(function ($q) use ($productIds) {
+                        foreach ($productIds as $id) {
+                            $q->orWhereJsonContains('order_items', ['product_id' => $id]);
+                        }
+                    })
+                    ->count();
+
+                return response()->json([
+                    'orders' => $orders,
+                    'queries' => $queries,
+                ]);
             }
-            $credit = $creditQuery->where('request_status', 'pending')->count();
-
-            $seller = Seller::whereHas(
-                'user',
-                fn($q) =>
-                $q->where('user_role', 'seller')->where('status', 'pending')
-            )->count();
-
-            $freelancer = Seller::whereHas(
-                'user',
-                fn($q) =>
-                $q->where('user_role', 'freelancer')->where('status', 'pending')
-            )->count();
-
-            $sumSF = Seller::whereHas(
-                'user',
-                fn($q) =>
-                $q->whereIn('user_role', ['seller', 'freelancer'])->where('status', 'pending')
-            )->count();
-
-            return response()->json([
-                'orders' => $orders,
-                'approved' => $approved,
-                'queries' => $queries,
-                'credit' => $credit,
-                'seller' => $seller,
-                'freelancer' => $freelancer,
-                'sumSF' => $sumSF,
-            ]);
 
         } catch (\Exception $e) {
             \Log::error('Dashboard counts error: ' . $e->getMessage());

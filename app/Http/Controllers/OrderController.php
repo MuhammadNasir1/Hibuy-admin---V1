@@ -313,7 +313,7 @@ class OrderController extends Controller
                 $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
 
                 $orders = $query->get()->map(function ($order) use ($productIds) {
-                    $orderItems = json_decode($order->order_items , true) ?? [];
+                    $orderItems = json_decode($order->order_items, true) ?? [];
                     $filteredItems = array_filter($orderItems, function ($item) use ($productIds) {
                         return in_array($item['product_id'] ?? null, $productIds);
                     });
@@ -528,6 +528,14 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
                     'store_id' => $product->store_id,
+                    'parent_option' => [
+                        'name' => $item['parent_option']['name'] ?? null,
+                        'value' => $item['parent_option']['value'] ?? null,
+                    ],
+                    'child_option' => [
+                        'name' => $item['child_option']['name'] ?? null,
+                        'value' => $item['child_option']['value'] ?? null,
+                    ],
                 ];
             }
         }
