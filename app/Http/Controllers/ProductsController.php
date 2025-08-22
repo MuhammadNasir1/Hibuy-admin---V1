@@ -57,7 +57,7 @@ class ProductsController extends Controller
                         ->get();
                 }
             }
-// return $products;
+            // return $products;
             return view('pages.AddProduct', compact('user', 'categories', 'products', 'categoryIds', 'vehicleTypes'));
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
@@ -142,7 +142,7 @@ class ProductsController extends Controller
                 }
 
                 // Fetch store_id based on  seller_id
-                
+
                 $store = Store::where('seller_id', $seller->seller_id)->first();
                 if (!$store) {
                     return redirect('/products')->with('error', 'Store record not found. Please Create Store First');
@@ -318,6 +318,35 @@ class ProductsController extends Controller
                         ]);
                     }
                 }
+                $newProduct = Products::create($productData);
+
+                // ✅ Send email to Seller
+                $personalInfo = json_decode($seller->personal_info, true);
+                $sellerEmail = $personalInfo['email'] ?? null;
+                $sellerName = $personalInfo['full_name'] ?? 'Seller';
+
+                if ($sellerEmail) {
+                    $subject = "Your product is under review";
+                    $body = "
+                        <h3>Hello {$sellerName},</h3>
+                        <p>Your product <b>{$newProduct->product_name}</b> has been submitted and is now under review by the admin team.</p>
+                        <p>You will be notified once it is approved.</p>
+                        <p>Thanks,</p>
+                    ";
+                    (new EmailController)->sendMail($sellerEmail, $subject, $body);
+                }
+
+                // ✅ Send email to Admin
+                $adminEmail = "info.arham.org@gmail.com";
+                $subjectAdmin = "New product submitted for review";
+                $bodyAdmin = "
+                    <h3>Hello Admin,</h3>
+                    <p>Seller <b>{$sellerName}</b> has added a new product for review.</p>
+                    <p><b>Product:</b> {$newProduct->product_name}<br>
+                       <b>Brand:</b> {$newProduct->product_brand}<br>
+                    <p>Please review it in the admin panel.</p>
+                ";
+                (new EmailController)->sendMail($adminEmail, $subjectAdmin, $bodyAdmin);
 
                 if ($userDetails['user_role'] == 'admin') {
                     return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
