@@ -211,7 +211,7 @@
                         <!-- Seller Link -->
                         <a href="{{ route('KYC_auth', ['type' => 'seller']) }}">
                             <div
-                                class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-4 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7] ">
+                                class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-2 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7] ">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'text-primary' : 'text-primary' }}"
@@ -250,16 +250,16 @@
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <span class="text-[15px] ml-2 font-bold">Seller</span>
+                                    <span class="text-[15px] ml-2 font-bold">Sellers</span>
                                 </div>
                                 <div id="sellerCount"></div>
                             </div>
                         </a>
 
                         <!-- Freelancer Link -->
-                        <a href="{{ route('KYC_auth', ['type' => 'freelancers']) }}">
+                        <a href="{{ route('KYC_auth', ['type' => 'freelancer']) }}">
                             <div
-                                class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-4 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7]">
+                                class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-2 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7]">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 transition duration-200
                                         {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'text-primary' : 'text-primary' }}"
@@ -868,15 +868,16 @@
                             <svg class="w-5 h-5 transition duration-200" width="25" height="26"
                                 viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                                                                           10-4.48 10-10S17.52 2 12 2zm0 17
-                                                                           c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
-                                                                           c-.9.9-1.07 1.25-1.07 2.25h-2
-                                                                           v-.5c0-1.1.45-2.1 1.17-2.83
-                                                                           .59-.59 1.07-1 1.07-1.67
-                                                                           0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
-                                                                           c0-2.21 1.79-4 4-4s4 1.79 4 4
-                                                                           c0 1.4-.83 2.1-1.43 2.75z" fill="currentColor"
-                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                   10-4.48 10-10S17.52 2 12 2zm0 17
+                                                                                   c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                                                                                   c-.9.9-1.07 1.25-1.07 2.25h-2
+                                                                                   v-.5c0-1.1.45-2.1 1.17-2.83
+                                                                                   .59-.59 1.07-1 1.07-1.67
+                                                                                   0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                                                                                   c0-2.21 1.79-4 4-4s4 1.79 4 4
+                                                                                   c0 1.4-.83 2.1-1.43 2.75z"
+                                    fill="currentColor" stroke="white" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                 </path>
                             </svg>
 
@@ -938,11 +939,12 @@
                     (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer') &&
                         session('user_details.store_id'))
                     <li class="mt-6">
-                        <a href="https://hibuy.vercel.app/store/{{ session('user_details.store_id') }}" target="_blank"
+                        <a href="https://www.hibuy.pk/store/{{ Str::slug(session('user_details.store_name')) }}?i={{ base64_encode(session('user_details.store_id')) }}"
+                            target="_blank"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
-                              {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'active bg-white text-primary' : 'text-white' }}">
+                              {{ request()->url() == 'https://www.hibuy.pk/store/' . session('user_details.store_id') ? 'active bg-white text-primary' : 'text-white' }}">
                             <svg class="w-5 h-5 transition duration-200
-                                    {{ request()->url() == 'https://hibuy.vercel.app/store/' . session('user_details.store_id') ? 'text-primary' : 'text-white' }}"
+                                    {{ request()->url() == 'https://www.hibuy.pk/store/' . session('user_details.store_id') ? 'text-primary' : 'text-white' }}"
                                 width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_2377_15331)">
