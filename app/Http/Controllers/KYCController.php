@@ -127,10 +127,16 @@ class KYCController extends Controller
             $isUpdated = false;
             $approvedReason = '';
             $approvedStepName = '';
+            $sellerEmail = null; // we'll extract email from personal_info
 
             foreach ($jsonColumns as $column) {
                 if (!empty($seller->$column)) {
                     $jsonData = json_decode($seller->$column, true);
+
+                    // Get seller email from personal_info JSON
+                    if ($column === 'personal_info' && isset($jsonData['email'])) {
+                        $sellerEmail = $jsonData['email'];
+                    }
 
                     if (isset($jsonData['step']) && $jsonData['step'] == $step) {
                         $jsonData['status'] = 'approved';
@@ -161,14 +167,16 @@ class KYCController extends Controller
             if ($isUpdated) {
                 $seller->save();
 
-                // Send email
-                $subject = "KYC Step Approved: {$approvedStepName}";
-                $body = "Hello {$seller->name},\n\n" .
-                    "Your KYC step '{$approvedStepName}' has been approved.\n" .
-                    (!empty($approvedReason) ? "Reason: {$approvedReason}\n" : "") .
-                    "\nThank you for your cooperation.";
+                if ($sellerEmail) {
+                    // Send email
+                    $subject = "KYC Step Approved: {$approvedStepName}";
+                    $body = "Hello {$seller->name},\n\n" .
+                        "Your KYC step '{$approvedStepName}' has been approved.\n" .
+                        (!empty($approvedReason) ? "Reason: {$approvedReason}\n" : "") .
+                        "\nThank you for your cooperation.";
 
-                (new EmailController)->sendMail($seller->email, $subject, $body);
+                    (new EmailController)->sendMail($sellerEmail, $subject, $body);
+                }
 
                 return response()->json(['message' => 'KYC Approved successfully']);
             }
@@ -181,6 +189,7 @@ class KYCController extends Controller
             ], 500);
         }
     }
+
 
 
     public function rejectKyc(Request $request)
@@ -200,10 +209,22 @@ class KYCController extends Controller
             $allStepsRejected = true;
             $isUpdated = false;
             $rejectedStepName = '';
+            $sellerEmail = null;
+            $sellerName = $seller->name ?? ''; // fallback to DB column if exists
 
             foreach ($jsonColumns as $column) {
                 if (!empty($seller->$column)) {
                     $jsonData = json_decode($seller->$column, true);
+
+                    // Extract email & name from personal_info
+                    if ($column === 'personal_info') {
+                        if (isset($jsonData['email'])) {
+                            $sellerEmail = $jsonData['email'];
+                        }
+                        if (isset($jsonData['name'])) {
+                            $sellerName = $jsonData['name'];
+                        }
+                    }
 
                     if (isset($jsonData['step']) && $jsonData['step'] == $step) {
                         $jsonData['status'] = 'rejected';
@@ -229,15 +250,17 @@ class KYCController extends Controller
             if ($isUpdated) {
                 $seller->save();
 
-                // Send rejection email
-                $subject = "KYC Step Rejected: {$rejectedStepName}";
-                $body = "Hello {$seller->name},\n\n" .
-                    "Your KYC step '{$rejectedStepName}' has been rejected.\n" .
-                    "Reason: {$reason}\n\n" .
-                    "Please review the feedback and resubmit the necessary details.\n\n" .
-                    "Thank you.";
+                if ($sellerEmail) {
+                    // Send rejection email
+                    $subject = "KYC Step Rejected: {$rejectedStepName}";
+                    $body = "Hello {$sellerName},\n\n" .
+                        "Your KYC step '{$rejectedStepName}' has been rejected.\n" .
+                        "Reason: {$reason}\n\n" .
+                        "Please review the feedback and resubmit the necessary details.\n\n" .
+                        "Thank you.";
 
-                (new EmailController)->sendMail($seller->email, $subject, $body);
+                    (new EmailController)->sendMail($sellerEmail, $subject, $body);
+                }
 
                 return response()->json(['message' => 'KYC Rejected successfully']);
             }
