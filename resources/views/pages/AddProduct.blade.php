@@ -148,9 +148,12 @@
                         <label for="images" class="block text-sm font-medium text-gray-700">
                             Upload Product Images
                         </label>
-                        <p class="text-xs text-red-500 mt-1">
-                            Please upload images of resolution 1080 × 1080 pixels for best quality.
+                        <p class="text-xs  mt-1">
+                            Note: For best quality, upload images with a resolution of <span
+                                class="font-semibold text-blue-600">1080 ×
+                                1080 pixels</span>.
                         </p>
+
 
                         <div id="dropzone" class="dropzone p-0" style="min-height: auto !important;"></div>
                         <!-- Dropzone container -->
@@ -170,7 +173,8 @@
                     <div class="mt-5 flex flex-wrap gap-4 items-end">
                         <div>
                             <x-input value="{{ $products ? $products->product_brand : '' }}" type="text"
-                                label="Brand / Company" placeholder="Brand / Company" required id="company" name="company" />
+                                label="Brand / Company" placeholder="Brand / Company" required id="company"
+                                name="company" />
                         </div>
 
                         <div id="category-selects" class="flex gap-4">
@@ -192,12 +196,14 @@
 
                         <div>
                             <x-input value="{{ $products ? $products->purchase_price : '' }}" type="number"
-                                label="Purchase Price" requiredk placeholder="Price Here" id="purchase_price" name="purchase_price" />
+                                label="Purchase Price" requiredk placeholder="Price Here" id="purchase_price"
+                                name="purchase_price" />
                         </div>
 
                         <div>
-                            <x-input value="{{ $products ? $products->product_price : '0' }}" type="number"
-                                label="Product Price" required placeholder="Price Here" id="product_price" name="product_price" />
+                            <x-input value="{{ $products ? $products->product_price : '' }}" type="number"
+                                label="Product Price" required placeholder="Price Here" id="product_price"
+                                name="product_price" />
                         </div>
 
                         <div>
@@ -213,27 +219,32 @@
                         {{-- These are for product size --}}
                         <div>
                             <x-input value="{{ $products ? $products->weight : '' }}" type="number" step="0.01"
-                                label="Estimated Weight (kg)" required placeholder="Weight in kg" id="weight" name="weight" />
+                                label="Estimated Weight (kg)" required placeholder="Weight in kg" id="weight"
+                                name="weight" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->length : '' }}" type="number" step="0.01"
-                                label="Estimated Length (inches)" required placeholder="Length in inches" id="length" name="length" />
+                                label="Estimated Length (inches)" required placeholder="Length in inches" id="length"
+                                name="length" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->width : '' }}" type="number" step="0.01"
-                                label="Estimated Width (inches)" required placeholder="Width in inches" id="width" name="width" />
+                                label="Estimated Width (inches)" required placeholder="Width in inches" id="width"
+                                name="width" />
                         </div>
 
                         <div>
                             <x-input value="{{ $products ? $products->height : '' }}" type="number" step="0.01"
-                                label="Estimated Height (inches)" required placeholder="Height in inches" id="height" name="height" />
+                                label="Estimated Height (inches)" required placeholder="Height in inches" id="height"
+                                name="height" />
                         </div>
 
                         <div id="vehicleType-selects" class="flex gap-4">
                             <div class="dynamic-vehicleType">
-                                <label class="block mb-1 text-sm font-medium text-gray-700">Vehicle Type {{ $products ? $products->vehicle_type_id : '' }}</label>
+                                <label class="block mb-1 text-sm font-medium text-gray-700">Vehicle Type
+                                    {{ $products ? $products->vehicle_type_id : '' }}</label>
                                 <select name="vehicleType" id="vehicleType" required
                                     class="dynamic-vehicleType block w-full rounded border-gray-300">
                                     <option value="" disabled {{ empty($products) ? 'selected' : '' }}>Select
@@ -346,10 +357,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                                    </div>`).join('')}
+                                                                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                                                </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -513,10 +524,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                    </div>`).join('')}
+                                                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                                </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -568,10 +579,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                </div>`).join('')}
+                                                                                                                                                                                                                            <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                            </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -718,6 +729,312 @@
                     });
                 }
             });
+            // $("#productForm").on("submit", function(event) {
+            //     // Check if there is at least one variation
+            //     if (options.length === 0) {
+            //         event.preventDefault(); // Prevent form submission
+            //         Swal.fire({
+            //             icon: 'error',
+            //             title: 'No Variants Added',
+            //             text: 'Please add at least one variant (e.g., size or color) before submitting the form.',
+            //             confirmButtonColor: '#d33'
+            //         });
+            //         return false;
+            //     }
+
+            //     // Check if variant fields are filled and not empty
+            //     let hasEmptyFields = false;
+            //     let errorMessages = [];
+
+            //     // Get the discounted price
+            //     let discountedPrice = parseFloat($("#discounted_price").val()) || 0;
+
+            //     // Iterate through each variant option
+            //     options.forEach((option, index) => {
+            //         let isNameEmpty = !option.name.trim();
+            //         let isValuesEmpty = option.values.length === 0 || option.values.some(value => !
+            //             value.trim());
+
+            //         // Check if both name and values are empty
+            //         if (isNameEmpty && isValuesEmpty) {
+            //             hasEmptyFields = true;
+            //             errorMessages.push('Option name and values cannot be empty for variant ' + (
+            //                 index + 1) + '.');
+            //         } else {
+            //             // Check if only name is empty
+            //             if (isNameEmpty) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push('Option name cannot be empty for variant ' + (index +
+            //                     1) + '.');
+            //             }
+            //             // Check if only values are empty
+            //             if (isValuesEmpty) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push('Option values cannot be empty for variant ' + (
+            //                     index + 1) + '.');
+            //             }
+            //         }
+            //     });
+
+            //     // Check variant table inputs (price, stock, image, and compare price with discounted_price)
+            //     $("#variantTableBody tr").each(function() {
+            //         let parentIndex = $(this).data("parent-index");
+            //         if (typeof parentIndex !== 'undefined') {
+            //             // Check parent row fields
+            //             let priceInput = $(this).find(`#parent-price-${parentIndex}`).val();
+            //             let stockInput = $(this).find(`#parent-stock-${parentIndex}`).val();
+
+            //             if (!priceInput || priceInput.trim() === '' || parseFloat(priceInput) <=
+            //                 0) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push(
+            //                     'Price must be provided and greater than 0 for variant ' + (
+            //                         parentIndex + 1) + '.');
+            //             } else if (discountedPrice > 0 && parseFloat(priceInput) >
+            //                 discountedPrice) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push('Price for variant ' + (parentIndex + 1) +
+            //                     ' cannot be greater than the discounted price (' +
+            //                     discountedPrice.toFixed(2) + ').');
+            //             }
+
+            //             if (!stockInput || stockInput.trim() === '' || parseInt(stockInput) < 0) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push(
+            //                     'Stock must be provided and cannot be negative for variant ' + (
+            //                         parentIndex + 1) + '.');
+            //             }
+
+            //             // Check if image is required (only if no image preview exists)
+            //             let imagePreview = $(this).find('.image-preview img').length;
+            //             let imageInput = $(this).find('input[type="file"]').val();
+            //             if (!imagePreview && !imageInput) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push('An image must be uploaded for variant ' + (
+            //                     parentIndex + 1) + '.');
+            //             }
+            //         }
+
+            //         // Check child rows if they exist
+            //         let childRows = $(`#child-rows-${parentIndex} tr`);
+            //         childRows.each(function() {
+            //             let childIndex = $(this).data("child-index");
+            //             let childPrice = $(this).find(`.child-price-${parentIndex}`).val();
+            //             let childStock = $(this).find(`.child-stock-${parentIndex}`).val();
+
+            //             if (!childPrice || childPrice.trim() === '' || parseFloat(
+            //                     childPrice) <= 0) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push(
+            //                     'Price must be provided and greater than 0 for child variant ' +
+            //                     (childIndex + 1) + ' of parent ' + (parentIndex + 1) +
+            //                     '.');
+            //             } else if (discountedPrice > 0 && parseFloat(childPrice) >
+            //                 discountedPrice) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push('Price for child variant ' + (childIndex +
+            //                         1) + ' of parent ' + (parentIndex + 1) +
+            //                     ' cannot be greater than the discounted price (' +
+            //                     discountedPrice.toFixed(2) + ').');
+            //             }
+
+            //             if (!childStock || childStock.trim() === '' || parseInt(
+            //                     childStock) < 0) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push(
+            //                     'Stock must be provided and cannot be negative for child variant ' +
+            //                     (childIndex + 1) + ' of parent ' + (parentIndex + 1) +
+            //                     '.');
+            //             }
+
+            //             // Check if child image is required (only if no image preview exists)
+            //             let childImagePreview = $(this).find('.image-preview img').length;
+            //             let childImageInput = $(this).find('input[type="file"]').val();
+            //             if (!childImagePreview && !childImageInput) {
+            //                 hasEmptyFields = true;
+            //                 errorMessages.push(
+            //                     'An image must be uploaded for child variant ' + (
+            //                         childIndex + 1) + ' of parent ' + (parentIndex +
+            //                         1) + '.');
+            //             }
+            //         });
+            //     });
+
+            //     // If any required field is empty or invalid, prevent submission and show error
+            //     if (hasEmptyFields) {
+            //         event.preventDefault();
+            //         // Show the first error message
+            //         let errorMessage = errorMessages[0] ||
+            //             'Please ensure all variant fields (name, values, price, stock, and image) are filled and valid.';
+            //         Swal.fire({
+            //             icon: 'error',
+            //             title: 'Missing or Invalid Fields',
+            //             text: errorMessage,
+            //             confirmButtonColor: '#d33'
+            //         });
+            //         return false;
+            //     }
+            // });
+
+            $("#productForm").on("submit", function(event) {
+                // Check if there is at least one variation
+                if (options.length === 0) {
+                    event.preventDefault(); // Prevent form submission
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No Variants Added',
+                        text: 'Please add at least one variant (e.g., size or color) before submitting the form.',
+                        confirmButtonColor: '#d33'
+                    });
+                    return false;
+                }
+
+                // Check if variant fields are filled and not empty
+                let hasEmptyFields = false;
+                let errorMessages = [];
+
+                // Get the discounted price
+                let discountedPrice = parseFloat($("#discounted_price").val()) || 0;
+
+                // Iterate through each variant option
+                options.forEach((option, index) => {
+                    let isNameEmpty = !option.name.trim();
+                    let isValuesEmpty = option.values.length === 0 || option.values.some(value => !
+                        value.trim());
+
+                    // Check if both name and values are empty
+                    if (isNameEmpty && isValuesEmpty) {
+                        hasEmptyFields = true;
+                        errorMessages.push('Option name and values cannot be empty for variant ' + (
+                            index + 1) + '.');
+                    } else {
+                        // Check if only name is empty
+                        if (isNameEmpty) {
+                            hasEmptyFields = true;
+                            errorMessages.push('Option name cannot be empty for variant ' + (index +
+                                1) + '.');
+                        }
+                        // Check if only values are empty
+                        if (isValuesEmpty) {
+                            hasEmptyFields = true;
+                            errorMessages.push('Option values cannot be empty for variant ' + (
+                                index + 1) + '.');
+                        }
+                    }
+                });
+
+                // Check parent variant table inputs (price, stock, image, and compare price with discounted_price)
+                $("#variantTableBody tr.parent-row").each(function() {
+                    let parentIndex = $(this).data("parent-index");
+                    if (typeof parentIndex !== 'undefined') {
+                        // Check parent row fields
+                        let priceInput = $(this).find(`#parent-price-${parentIndex}`).val();
+                        let stockInput = $(this).find(`#parent-stock-${parentIndex}`).val();
+
+                        if (!priceInput || priceInput.trim() === '' || parseFloat(priceInput) <=
+                            0) {
+                            hasEmptyFields = true;
+                            errorMessages.push(
+                                'Price must be provided and greater than 0 for variant ' + (
+                                    parentIndex + 1) + '.');
+                        } else if (discountedPrice > 0 && parseFloat(priceInput) >
+                            discountedPrice) {
+                            hasEmptyFields = true;
+                            errorMessages.push('Price for variant ' + (parentIndex + 1) +
+                                ' cannot be greater than the discounted price (' +
+                                discountedPrice.toFixed(2) + ').');
+                        }
+
+                        if (!stockInput || stockInput.trim() === '' || parseInt(stockInput) < 0) {
+                            hasEmptyFields = true;
+                            errorMessages.push(
+                                'Stock must be provided and cannot be negative for variant ' + (
+                                    parentIndex + 1) + '.');
+                        }
+
+                        // Check if image is required (only if no image preview exists)
+                        let imagePreview = $(this).find('.image-preview img').length;
+                        let imageInput = $(this).find('input[type="file"]').val();
+                        if (!imagePreview && !imageInput) {
+                            hasEmptyFields = true;
+                            errorMessages.push('An image must be uploaded for variant ' + (
+                                parentIndex + 1) + '.');
+                        }
+                    }
+                });
+
+                // Separately validate child rows to ensure correct targeting
+                $("[id^='child-rows-']").each(function() {
+                    let parentIndex = $(this).attr('id').split('-').pop();
+                    let childRows = $(this).find('tr.child-row');
+
+                    childRows.each(function() {
+                        let childIndex = $(this).data('child-index');
+                        // Use name-based selectors for precision
+                        let childPriceInput = $(this).find(
+                            `input[name="variants[${parentIndex}][children][${childIndex}][price]"]`
+                            ).val();
+                        let childStockInput = $(this).find(
+                            `input[name="variants[${parentIndex}][children][${childIndex}][stock]"]`
+                            ).val();
+                        let childImagePreview = $(this).find('.image-preview img').length;
+                        let childImageInput = $(this).find(
+                            `input[name="variants[${parentIndex}][children][${childIndex}][image]"]`
+                            ).val();
+
+                        if (!childPriceInput || childPriceInput.trim() === '' || parseFloat(
+                                childPriceInput) <= 0) {
+                            hasEmptyFields = true;
+                            errorMessages.push(
+                                'Price must be provided and greater than 0 for child variant ' +
+                                (childIndex + 1) + ' of parent ' + (parentIndex + 1) +
+                                '.');
+                        } else if (discountedPrice > 0 && parseFloat(childPriceInput) >
+                            discountedPrice) {
+                            hasEmptyFields = true;
+                            errorMessages.push('Price for child variant ' + (childIndex +
+                                1) + ' of parent ' + (parentIndex + 1) +
+                                ' cannot be greater than the discounted price (' +
+                                discountedPrice.toFixed(2) + ').');
+                        }
+
+                        if (!childStockInput || childStockInput.trim() === '' || parseInt(
+                                childStockInput) < 0) {
+                            hasEmptyFields = true;
+                            errorMessages.push(
+                                'Stock must be provided and cannot be negative for child variant ' +
+                                (childIndex + 1) + ' of parent ' + (parentIndex + 1) +
+                                '.');
+                        }
+
+                        if (!childImagePreview && !childImageInput) {
+                            hasEmptyFields = true;
+                            errorMessages.push(
+                                'An image must be uploaded for child variant ' + (
+                                    childIndex + 1) + ' of parent ' + (parentIndex +
+                                1) + '.');
+                        }
+                    });
+                });
+
+                // If any required field is empty or invalid, prevent submission and show error
+                if (hasEmptyFields) {
+                    event.preventDefault();
+                    // Show the first error message
+                    let errorMessage = errorMessages[0] ||
+                        'Please ensure all variant fields (name, values, price, stock, and image) are filled and valid.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Missing or Invalid Fields',
+                        text: errorMessage,
+                        confirmButtonColor: '#d33'
+                    });
+                    return false;
+                }
+            });
+
+
+
         });
     </script>
     @if ($products && $products->product_images)
@@ -846,7 +1163,7 @@
                         },
                         success: function(response) {
                             $("#vehicleType").empty().append(
-                                '<option disabled selected> Select Vehicle Type</option>');
+                                '<option value=""> Select Vehicle Type</option>');
                             if (response.length > 0) {
                                 $.each(response, function(key, value) {
                                     $("#vehicleType").append(
@@ -872,7 +1189,7 @@
 
                 if (weight && length && width && height) {
                     fetchVehicleType();
-                    
+
                 }
             });
 

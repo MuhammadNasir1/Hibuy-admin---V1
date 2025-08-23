@@ -19,13 +19,20 @@ class ApproveProductsController extends Controller
                 $query->where('product_status', 0)
                     ->where('is_approved', 0)
                     ->where('is_rejected', 0);
-            },
+            }
         ])
             ->whereHas('products', function ($query) {
                 $query->where('product_status', 0)
                     ->where('is_approved', 0)
                     ->where('is_rejected', 0);
             })
+            ->withCount([
+                'products as pending_products_count' => function ($query) {
+                    $query->where('product_status', 0)
+                        ->where('is_approved', 0)
+                        ->where('is_rejected', 0);
+                }
+            ])
             ->get();
 
         return view('admin.approveProducts', compact('stores'));
