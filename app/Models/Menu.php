@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Previlige;
 use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
