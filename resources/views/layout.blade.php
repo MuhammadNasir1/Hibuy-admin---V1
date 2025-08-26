@@ -60,44 +60,68 @@
             class="h-full pl-3 py-4 ml-3 mt-3 overflow-y-auto bg-primary text-white rounded-tl-[30px] rounded-tr-[15px] rounded-br-[80px] rounded-bl-[5px]">
             <ul class="space-y-2 font-medium sidebar_li_btn_margin">
                 <li>
-                    <a href="#"
+                    <a href="#" id="menu-logo"
                         class="flex mb-4 relative px-5 py-1 w-[80%] bg-white rounded-tl-[30px] rounded-tr-[10px] rounded-br-[30px] rounded-bl-[3px]">
                         <img class="" src="{{ asset('asset/HiBuy-New4.png') }}" alt="Logo">
                     </a>
                 </li>
-                <li class="mt-6">
-                    <a href="{{ route('dashboard') }}"
-                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('dashboard') ? 'active bg-white text-primary' : 'text-white' }}"
-                        data-tab="dashboard">
-                        <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('dashboard') ? 'text-primary' : 'text-white' }}"
-                            viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="15.1827" y="3" width="2.43901" height="5.69101" rx="1" fill="currentColor" />
-                            <rect x="18.4351" y="3" width="4.06501" height="5.69101" rx="1" fill="currentColor" />
-                            <rect x="2.49994" y="3" width="11.382" height="5.69101" rx="1" fill="currentColor" />
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M22.4999 11C22.4999 10.4477 22.0522 10 21.4999 10H3.49994C2.94765 10 2.49994 10.4477 2.49994 11V22C2.49994 22.5523 2.94765 23 3.49994 23H21.4999C22.0522 23 22.4999 22.5523 22.4999 22V11ZM20.3862 17.634C20.3862 17.185 20.0222 16.821 19.5732 16.821C19.1242 16.821 18.7602 17.185 18.7602 17.634V20.073C18.7602 20.522 19.1242 20.886 19.5732 20.886C20.0222 20.886 20.3862 20.522 20.3862 20.073V17.634ZM17.1342 13.569C17.1342 13.12 16.7702 12.756 16.3212 12.756C15.8722 12.756 15.5082 13.12 15.5082 13.569V20.073C15.5082 20.522 15.8722 20.886 16.3212 20.886C16.7702 20.886 17.1342 20.522 17.1342 20.073V13.569ZM5.31824 19.694C6.08029 20.4561 7.1135 20.8848 8.19121 20.886C9.26931 20.886 10.3033 20.4578 11.0656 19.6954C11.8279 18.9331 12.2562 17.8991 12.2562 16.821C12.2562 15.7429 11.8279 14.709 11.0656 13.9466C10.4965 13.3775 9.77603 12.9946 8.99883 12.837C8.55877 12.7478 8.19121 13.12 8.19121 13.569C8.19121 14.018 8.56495 14.3694 8.98925 14.5163C9.18493 14.584 9.37222 14.6768 9.54625 14.7931C9.94734 15.0611 10.26 15.442 10.4446 15.8877C10.6292 16.3333 10.6775 16.8237 10.5833 17.2969C10.4892 17.77 10.2569 18.2046 9.91584 18.5457C9.57474 18.8868 9.14015 19.1191 8.66703 19.2132C8.19391 19.3073 7.70351 19.259 7.25784 19.0744C6.81217 18.8898 6.43125 18.5772 6.16325 18.1761C6.04688 18.0019 5.95407 17.8145 5.8863 17.6186C5.73955 17.1945 5.38843 16.821 4.93969 16.821C4.49057 16.821 4.11847 17.189 4.20818 17.629C4.36648 18.4056 4.74953 19.1253 5.31824 19.694Z"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Dashboard</span>
-                    </a>
-                </li>
-                <li class="mt-6">
-                    <a href="{{ route('products') }}"
-                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('products') ? 'active bg-white text-primary' : 'text-white' }}"
-                        data-tab="products">
-                        <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('products') ? 'text-primary' : 'text-white' }}"
-                            viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12.5002 10.4736L16.2861 8.9592L6.91094 5.20915L3.67864 6.50207C3.51274 6.56843 3.36015 6.65677 3.22367 6.76295L12.5002 10.4736ZM2.54427 7.83748C2.51519 7.96885 2.5 8.10465 2.5 8.24296V17.8004C2.5 18.5671 2.96678 19.2565 3.67864 19.5413L10.8752 22.4199C11.1993 22.5495 11.535 22.6389 11.8752 22.688V11.5698L2.54427 7.83748ZM13.1252 22.6879C13.4652 22.6388 13.8008 22.5495 14.1248 22.4199L21.3214 19.5413C22.0332 19.2565 22.5 18.5671 22.5 17.8004V8.24296C22.5 8.1047 22.4848 7.96894 22.4558 7.83762L13.1252 11.5698V22.6879ZM21.7765 6.76305L17.9689 8.28606L8.5938 4.53601L10.8752 3.62346C11.9182 3.20624 13.0818 3.20624 14.1248 3.62346L21.3214 6.50207C21.4873 6.56845 21.6399 6.65683 21.7765 6.76305Z"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Product</span>
-                    </a>
+                @php
+                    function canViewMenu($slug)
+                    {
+                        $privileges = session('user_details.user_privileges') ?? [];
+                        foreach ($privileges as $priv) {
+                            if ($priv['menu_slug'] === $slug && $priv['can_view'] == 1) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                @endphp
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('dashboard'))
+                    <li class="mt-6">
+                        <a href="{{ route('dashboard') }}" id="menu-dashboard"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('dashboard') ? 'active bg-white text-primary' : 'text-white' }}">
+                            <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('dashboard') ? 'text-primary' : 'text-white' }}"
+                                viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="15.1827" y="3" width="2.43901" height="5.69101" rx="1"
+                                    fill="currentColor" />
+                                <rect x="18.4351" y="3" width="4.06501" height="5.69101" rx="1"
+                                    fill="currentColor" />
+                                <rect x="2.49994" y="3" width="11.382" height="5.69101" rx="1"
+                                    fill="currentColor" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M22.4999 11C22.4999 10.4477 22.0522 10 21.4999 10H3.49994C2.94765 10 2.49994 10.4477 2.49994 11V22C2.49994 22.5523 2.94765 23 3.49994 23H21.4999C22.0522 23 22.4999 22.5523 22.4999 22V11ZM20.3862 17.634C20.3862 17.185 20.0222 16.821 19.5732 16.821C19.1242 16.821 18.7602 17.185 18.7602 17.634V20.073C18.7602 20.522 19.1242 20.886 19.5732 20.886C20.0222 20.886 20.3862 20.522 20.3862 20.073V17.634ZM17.1342 13.569C17.1342 13.12 16.7702 12.756 16.3212 12.756C15.8722 12.756 15.5082 13.12 15.5082 13.569V20.073C15.5082 20.522 15.8722 20.886 16.3212 20.886C16.7702 20.886 17.1342 20.522 17.1342 20.073V13.569ZM5.31824 19.694C6.08029 20.4561 7.1135 20.8848 8.19121 20.886C9.26931 20.886 10.3033 20.4578 11.0656 19.6954C11.8279 18.9331 12.2562 17.8991 12.2562 16.821C12.2562 15.7429 11.8279 14.709 11.0656 13.9466C10.4965 13.3775 9.77603 12.9946 8.99883 12.837C8.55877 12.7478 8.19121 13.12 8.19121 13.569C8.19121 14.018 8.56495 14.3694 8.98925 14.5163C9.18493 14.584 9.37222 14.6768 9.54625 14.7931C9.94734 15.0611 10.26 15.442 10.4446 15.8877C10.6292 16.3333 10.6775 16.8237 10.5833 17.2969C10.4892 17.77 10.2569 18.2046 9.91584 18.5457C9.57474 18.8868 9.14015 19.1191 8.66703 19.2132C8.19391 19.3073 7.70351 19.259 7.25784 19.0744C6.81217 18.8898 6.43125 18.5772 6.16325 18.1761C6.04688 18.0019 5.95407 17.8145 5.8863 17.6186C5.73955 17.1945 5.38843 16.821 4.93969 16.821C4.49057 16.821 4.11847 17.189 4.20818 17.629C4.36648 18.4056 4.74953 19.1253 5.31824 19.694Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Dashboard</span>
+                        </a>
+                    </li>
+                @endif
 
-                </li>
+                {{-- Products --}}
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('products'))
+                    <li class="mt-6">
+                        <a href="{{ route('products') }}" id="menu-products"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('products') ? 'active bg-white text-primary' : 'text-white' }}">
+                            <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('products') ? 'text-primary' : 'text-white' }}"
+                                viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.5002 10.4736L16.2861 8.9592L6.91094 5.20915L3.67864 6.50207C3.51274 6.56843 3.36015 6.65677 3.22367 6.76295L12.5002 10.4736ZM2.54427 7.83748C2.51519 7.96885 2.5 8.10465 2.5 8.24296V17.8004C2.5 18.5671 2.96678 19.2565 3.67864 19.5413L10.8752 22.4199C11.1993 22.5495 11.535 22.6389 11.8752 22.688V11.5698L2.54427 7.83748ZM13.1252 22.6879C13.4652 22.6388 13.8008 22.5495 14.1248 22.4199L21.3214 19.5413C22.0332 19.2565 22.5 18.5671 22.5 17.8004V8.24296C22.5 8.1047 22.4848 7.96894 22.4558 7.83762L13.1252 11.5698V22.6879ZM21.7765 6.76305L17.9689 8.28606L8.5938 4.53601L10.8752 3.62346C11.9182 3.20624 13.0818 3.20624 14.1248 3.62346L21.3214 6.50207C21.4873 6.56845 21.6399 6.65683 21.7765 6.76305Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Product</span>
+                        </a>
+                    </li>
+                @endif
                 @if (session('user_details.user_role') == 'freelancer')
                     <li class="mt-6">
-                        <a href="{{ route('PurchaseProducts') }}"
+                        <a href="{{ route('PurchaseProducts') }}" id="menu-purchase-products"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('PurchaseProducts') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="PurchaseProducts">
                             <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('PurchaseProducts') ? 'text-primary' : 'text-white' }}"
@@ -110,9 +134,9 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin')
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('product-categories'))
                     <li class="mt-6">
-                        <a href="{{ route('addProductCategory') }}"
+                        <a href="{{ route('addProductCategory') }}" id="menu-product-categories"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('addProductCategory') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="addProductCategory">
                             <svg class="w-5 h-5 transition duration-200 {{ request()->routeIs('addProductCategory') ? 'text-primary' : 'text-white' }}"
@@ -131,8 +155,10 @@
                             <span class="ms-3 text-custom15">Product Categories</span>
                         </a>
                     </li>
+                @endif
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('approve-products'))
                     <li class="mt-6">
-                        <a href="{{ route('approveProducts') }}"
+                        <a href="{{ route('approveProducts') }}" id="menu-approve-products"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('approveProducts') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="approveProducts">
                             <div class="flex items-center">
@@ -147,25 +173,25 @@
                             <div id="approveProductCount"></div>
                         </a>
                     </li>
+                @endif
 
-
-                    {{-- <li class="">
-                    <a href="{{ route('PackagesOffer') }}"
-                        class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
-                        <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
-                            viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M7.76316 14.5791C8.29429 14.5789 8.80586 14.7795 9.19531 15.1406C9.58477 15.5018 9.82332 15.9968 9.86316 16.5264L9.86842 16.6843V19.8422C9.86859 20.3733 9.66799 20.8849 9.30685 21.2744C8.9457 21.6638 8.45069 21.9024 7.92105 21.9422L7.76316 21.9475H4.60526C4.07413 21.9476 3.56256 21.747 3.17311 21.3859C2.78365 21.0247 2.5451 20.5297 2.50526 20.0001L2.5 19.8422V16.6843C2.49983 16.1532 2.70043 15.6416 3.06158 15.2522C3.42272 14.8627 3.91773 14.6241 4.44737 14.5843L4.60526 14.5791H7.76316ZM17.2368 18.7896C17.5051 18.7899 17.7632 18.8926 17.9583 19.0768C18.1534 19.261 18.2708 19.5127 18.2865 19.7805C18.3022 20.0484 18.2151 20.3121 18.0429 20.5178C17.8707 20.7236 17.6264 20.8558 17.36 20.8875L17.2368 20.8948H13.0263C12.758 20.8945 12.5 20.7918 12.3049 20.6076C12.1098 20.4235 11.9924 20.1717 11.9767 19.9039C11.9609 19.6361 12.0481 19.3723 12.2203 19.1666C12.3925 18.9609 12.6367 18.8286 12.9032 18.7969L13.0263 18.7896H17.2368ZM21.4474 14.5791C21.7265 14.5791 21.9943 14.69 22.1917 14.8874C22.3891 15.0848 22.5 15.3525 22.5 15.6317C22.5 15.9109 22.3891 16.1786 22.1917 16.376C21.9943 16.5734 21.7265 16.6843 21.4474 16.6843H13.0263C12.7471 16.6843 12.4794 16.5734 12.282 16.376C12.0846 16.1786 11.9737 15.9109 11.9737 15.6317C11.9737 15.3525 12.0846 15.0848 12.282 14.8874C12.4794 14.69 12.7471 14.5791 13.0263 14.5791H21.4474ZM7.76316 4.05273C8.32151 4.05273 8.85699 4.27454 9.2518 4.66935C9.64662 5.06416 9.86842 5.59965 9.86842 6.158V9.31589C9.86842 9.87424 9.64662 10.4097 9.2518 10.8045C8.85699 11.1994 8.32151 11.4212 7.76316 11.4212H4.60526C4.04691 11.4212 3.51143 11.1994 3.11662 10.8045C2.7218 10.4097 2.5 9.87424 2.5 9.31589V6.158C2.5 5.59965 2.7218 5.06416 3.11662 4.66935C3.51143 4.27454 4.04691 4.05273 4.60526 4.05273H7.76316ZM17.2368 8.26326C17.5051 8.26356 17.7632 8.36629 17.9583 8.55047C18.1534 8.73465 18.2708 8.98637 18.2865 9.2542C18.3022 9.52204 18.2151 9.78577 18.0429 9.99151C17.8707 10.1972 17.6264 10.3295 17.36 10.3612L17.2368 10.3685H13.0263C12.758 10.3682 12.5 10.2655 12.3049 10.0813C12.1098 9.89714 11.9924 9.64542 11.9767 9.37758C11.9609 9.10975 12.0481 8.84602 12.2203 8.64028C12.3925 8.43454 12.6367 8.30232 12.9032 8.27063L13.0263 8.26326H17.2368ZM21.4474 4.05273C21.7157 4.05303 21.9737 4.15577 22.1688 4.33994C22.3639 4.52412 22.4813 4.77584 22.497 5.04368C22.5127 5.31151 22.4256 5.57524 22.2534 5.78098C22.0812 5.98672 21.8369 6.11894 21.5705 6.15063L21.4474 6.158H13.0263C12.758 6.1577 12.5 6.05497 12.3049 5.87079C12.1098 5.68661 11.9924 5.43489 11.9767 5.16706C11.9609 4.89922 12.0481 4.63549 12.2203 4.42975C12.3925 4.22401 12.6367 4.09179 12.9032 4.0601L13.0263 4.05273H21.4474Z"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Packages Offer</span>
-                    </a>
-                </li> --}}
-
+                {{-- <li class="">
+    <a href="{{ route('PackagesOffer') }}"
+    class="flex listItem items-center duration-25 p-2 py-2.5 text-white rounded-l-full hover:text-primary hover:bg-white  group hover:rounded-tl-10 hover:rounded-bl-10 relative">
+    <svg class="w-5 h-5 text-white transition duration-25  group-hover:text-primary "
+    viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+    d="M7.76316 14.5791C8.29429 14.5789 8.80586 14.7795 9.19531 15.1406C9.58477 15.5018 9.82332 15.9968 9.86316 16.5264L9.86842 16.6843V19.8422C9.86859 20.3733 9.66799 20.8849 9.30685 21.2744C8.9457 21.6638 8.45069 21.9024 7.92105 21.9422L7.76316 21.9475H4.60526C4.07413 21.9476 3.56256 21.747 3.17311 21.3859C2.78365 21.0247 2.5451 20.5297 2.50526 20.0001L2.5 19.8422V16.6843C2.49983 16.1532 2.70043 15.6416 3.06158 15.2522C3.42272 14.8627 3.91773 14.6241 4.44737 14.5843L4.60526 14.5791H7.76316ZM17.2368 18.7896C17.5051 18.7899 17.7632 18.8926 17.9583 19.0768C18.1534 19.261 18.2708 19.5127 18.2865 19.7805C18.3022 20.0484 18.2151 20.3121 18.0429 20.5178C17.8707 20.7236 17.6264 20.8558 17.36 20.8875L17.2368 20.8948H13.0263C12.758 20.8945 12.5 20.7918 12.3049 20.6076C12.1098 20.4235 11.9924 20.1717 11.9767 19.9039C11.9609 19.6361 12.0481 19.3723 12.2203 19.1666C12.3925 18.9609 12.6367 18.8286 12.9032 18.7969L13.0263 18.7896H17.2368ZM21.4474 14.5791C21.7265 14.5791 21.9943 14.69 22.1917 14.8874C22.3891 15.0848 22.5 15.3525 22.5 15.6317C22.5 15.9109 22.3891 16.1786 22.1917 16.376C21.9943 16.5734 21.7265 16.6843 21.4474 16.6843H13.0263C12.7471 16.6843 12.4794 16.5734 12.282 16.376C12.0846 16.1786 11.9737 15.9109 11.9737 15.6317C11.9737 15.3525 12.0846 15.0848 12.282 14.8874C12.4794 14.69 12.7471 14.5791 13.0263 14.5791H21.4474ZM7.76316 4.05273C8.32151 4.05273 8.85699 4.27454 9.2518 4.66935C9.64662 5.06416 9.86842 5.59965 9.86842 6.158V9.31589C9.86842 9.87424 9.64662 10.4097 9.2518 10.8045C8.85699 11.1994 8.32151 11.4212 7.76316 11.4212H4.60526C4.04691 11.4212 3.51143 11.1994 3.11662 10.8045C2.7218 10.4097 2.5 9.87424 2.5 9.31589V6.158C2.5 5.59965 2.7218 5.06416 3.11662 4.66935C3.51143 4.27454 4.04691 4.05273 4.60526 4.05273H7.76316ZM17.2368 8.26326C17.5051 8.26356 17.7632 8.36629 17.9583 8.55047C18.1534 8.73465 18.2708 8.98637 18.2865 9.2542C18.3022 9.52204 18.2151 9.78577 18.0429 9.99151C17.8707 10.1972 17.6264 10.3295 17.36 10.3612L17.2368 10.3685H13.0263C12.758 10.3682 12.5 10.2655 12.3049 10.0813C12.1098 9.89714 11.9924 9.64542 11.9767 9.37758C11.9609 9.10975 12.0481 8.84602 12.2203 8.64028C12.3925 8.43454 12.6367 8.30232 12.9032 8.27063L13.0263 8.26326H17.2368ZM21.4474 4.05273C21.7157 4.05303 21.9737 4.15577 22.1688 4.33994C22.3639 4.52412 22.4813 4.77584 22.497 5.04368C22.5127 5.31151 22.4256 5.57524 22.2534 5.78098C22.0812 5.98672 21.8369 6.11894 21.5705 6.15063L21.4474 6.158H13.0263C12.758 6.1577 12.5 6.05497 12.3049 5.87079C12.1098 5.68661 11.9924 5.43489 11.9767 5.16706C11.9609 4.89922 12.0481 4.63549 12.2203 4.42975C12.3925 4.22401 12.6367 4.09179 12.9032 4.0601L13.0263 4.05273H21.4474Z"
+    fill="currentColor" />
+</svg>
+<span class="ms-3 text-custom15">Packages Offer</span>
+</a>
+</li> --}}
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('kyc'))
                     <!-- Dropdown Trigger -->
-                    <div id="dropdown-card1"
+                    <div id="menu-kyc"
                         class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
-    {{ request()->routeIs('KYC_auth') ? 'active bg-white text-primary' : 'text-white' }}"
+                   {{ request()->routeIs('KYC_auth') ? 'active bg-white text-primary' : 'text-white' }}"
                         onclick="toggleDropdown('submenu1', 'arrow1')" style="margin: 0;">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 transition duration-200
@@ -203,13 +229,15 @@
                         </span>
                         <div id="sumSF"></div>
                     </div>
+                @endif
+                <!-- Dropdown Menu -->
+                <div id="submenu1"
+                    class="text-left text-sm mt-2 w-4/5 mx-auto text-gray-200 duration-300 font-bold hidden">
 
-                    <!-- Dropdown Menu -->
-                    <div id="submenu1"
-                        class="text-left text-sm mt-2 w-4/5 mx-auto text-gray-200 duration-300 font-bold hidden">
+                    <!-- Seller Link -->
 
-                        <!-- Seller Link -->
-                        <a href="{{ route('KYC_auth', ['type' => 'seller']) }}">
+                    @if (session('user_details.user_role') == 'admin' || canViewMenu('kyc-sellers'))
+                        <a href="{{ route('KYC_auth', ['type' => 'seller']) }}" id="menu-kyc-sellers">
                             <div
                                 class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-2 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7] ">
                                 <div class="flex items-center">
@@ -255,9 +283,10 @@
                                 <div id="sellerCount"></div>
                             </div>
                         </a>
-
+                    @endif
+                    @if (session('user_details.user_role') == 'admin' || canViewMenu('kyc-freelancers'))
                         <!-- Freelancer Link -->
-                        <a href="{{ route('KYC_auth', ['type' => 'freelancer']) }}">
+                        <a href="{{ route('KYC_auth', ['type' => 'freelancer']) }}" id="menu-kyc-freelancers">
                             <div
                                 class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-2 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7]">
                                 <div class="flex items-center">
@@ -301,10 +330,11 @@
                             </div>
 
                         </a>
-                    </div>
+                    @endif
+                </div>
 
 
-                    {{-- <li class="mt-6">
+                {{-- <li class="mt-6">
                         <a href="{{ route('KYC_auth') }}"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('KYC_auth') ? 'active bg-white text-primary' : 'text-white' }}"
@@ -340,12 +370,13 @@
                             <span class="ms-3 text-custom15">KYC</span>
                         </a>
                     </li> --}}
-                @endif
+
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
-                        session('user_details.user_role') == 'freelancer')
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('orders'))
                     <li class="mt-6">
-                        <a href="{{ route('allorders') }}"
+                        <a href="{{ route('allorders') }}" id="menu-orders"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('allorders') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="allorders">
@@ -372,9 +403,13 @@
                             <div id="orderCount"></div>
                         </a>
                     </li>
-
+                @endif
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('returns'))
                     <li class="mt-6">
-                        <a href="{{ route('return_orders') }}"
+                        <a href="{{ route('return_orders') }}" id="menu-returns"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('return_orders') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="return_orders">
@@ -395,9 +430,9 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin')
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('sellers-management'))
                     <li class="mt-6">
-                        <a href="{{ route('manage_seller') }}"
+                        <a href="{{ route('manage_seller') }}" id="menu-sellers-management"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('manage_seller') || request()->routeIs('SellerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_seller">
@@ -441,9 +476,10 @@
                             <span class="ms-3 text-custom15">Sellers Management</span>
                         </a>
                     </li>
-
+                @endif
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('buyers-management'))
                     <li class="mt-6">
-                        <a href="{{ route('manage_buyer') }}"
+                        <a href="{{ route('manage_buyer') }}" id="menu-buyers-management"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('manage_buyer') || request()->routeIs('BuyerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_buyer">
@@ -488,9 +524,10 @@
                             <span class="ms-3 text-custom15">Buyers Management</span>
                         </a>
                     </li>
-
+                @endif
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('freelancers-management'))
                     <li class="mt-6">
-                        <a href="{{ route('manage_freelancer') }}"
+                        <a href="{{ route('manage_freelancer') }}" id="menu-freelancers-management"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('manage_freelancer') || request()->routeIs('FreelancerProfile') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_freelancer">
@@ -531,8 +568,10 @@
                             <span class="ms-3 text-custom15">Freelancers Management</span>
                         </a>
                     </li>
+                @endif
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('rider'))
                     <li class="mt-6">
-                        <a href="{{ route('rider') }}"
+                        <a href="{{ route('rider') }}" id="menu-rider"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('rider') || request()->routeIs('rider') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="manage_seller">
@@ -576,8 +615,10 @@
                             <span class="ms-3 text-custom15">Rider</span>
                         </a>
                     </li>
+                @endif
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('add-users'))
                     <li class="mt-6">
-                        <a href="{{ route('CreateUser') }}"
+                        <a href="{{ route('CreateUser') }}" id="menu-add-users"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('CreateUser') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="CreateUser">
@@ -593,9 +634,11 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'freelancer')
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('credit-requests'))
                     <li class="mt-6">
-                        <a href="{{ route('credit-requests') }}"
+                        <a href="{{ route('credit-requests') }}" id="menu-credit-requests"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('credit-requests') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="credit-requests">
@@ -618,7 +661,7 @@
 
                 @if (session('user_details.user_role') == 'seller' || session('user_details.user_role') == 'freelancer')
                     <li class="mt-6">
-                        <a href="{{ route('getStoreDetails') }}"
+                        <a href="{{ route('getStoreDetails') }}" id="menu-my-store"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('getStoreDetails') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="getStoreDetails">
@@ -636,7 +679,7 @@
                 @endif
                 @if (session('user_details.user_role') == 'seller')
                     <li class="mt-6">
-                        <a href="{{ route('other-seller-product') }}"
+                        <a href="{{ route('other-seller-product') }}" id="menu-other-seller-product"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('other-seller-product') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="other-seller-product">
@@ -654,7 +697,7 @@
                     </li>
 
                     <li class="mt-6">
-                        <a href="{{ route('seller.purchases') }}"
+                        <a href="{{ route('seller.purchases') }}" id="menu-seller-purchases"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('seller.purchases') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="seller.purchases">
@@ -682,9 +725,9 @@
                     </li>
                 @endif
 
-                @if (session('user_details.user_role') == 'admin')
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('hibuy-products'))
                     <li class="mt-6">
-                        <a href="{{ route('hibuy_product') }}"
+                        <a href="{{ route('hibuy_product') }}" id="menu-hibuy-products"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('hibuy_product') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="hibuy_product">
@@ -699,8 +742,11 @@
                             <span class="ms-3 text-custom15">Hibuy Products</span>
                         </a>
                     </li>
+                @endif
+
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('promotions'))
                     <li class="mt-6">
-                        <a href="{{ route('promotions') }}"
+                        <a href="{{ route('promotions') }}" id="menu-promotions"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
           {{ request()->routeIs('promotions') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="promotion_list">
@@ -747,29 +793,34 @@
 
                     </li>
                 @endif
-                <li class="mt-6">
-                    <a href="{{ route('queries') }}"
-                        class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('queries'))
+                    <li class="mt-6">
+                        <a href="{{ route('queries') }}" id="menu-queries"
+                            class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('queries') ? 'active bg-white text-primary' : 'text-white' }}"
-                        data-tab="queries">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 transition duration-200
+                            data-tab="queries">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('queries') ? 'text-primary' : 'text-white' }}"
-                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M2.5 13C2.5 7.47715 6.97715 3 12.5 3C18.0228 3 22.5 7.47715 22.5 13C22.5 18.5228 18.0228 23 12.5 23C6.97715 23 2.5 18.5228 2.5 13ZM12.5 10C12.2015 10 11.9344 10.1296 11.7497 10.3388C11.3843 10.7529 10.7523 10.7923 10.3383 10.4268C9.9242 10.0614 9.8848 9.42942 10.2503 9.01535C10.7985 8.3942 11.6038 8 12.5 8C14.1569 8 15.5 9.34315 15.5 11C15.5 12.3072 14.6647 13.4171 13.5 13.829V14C13.5 14.5523 13.0523 15 12.5 15C11.9477 15 11.5 14.5523 11.5 14V13.5C11.5 12.6284 12.1873 12.112 12.7482 11.9692C13.181 11.859 13.5 11.4655 13.5 11C13.5 10.4477 13.0523 10 12.5 10ZM12.5 16C11.9477 16 11.5 16.4477 11.5 17C11.5 17.5523 11.9477 18 12.5 18H12.51C13.0623 18 13.51 17.5523 13.51 17C13.51 16.4477 13.0623 16 12.51 16H12.5Z"
-                                    fill="currentColor" />
-                            </svg>
-                            <span class="ms-3 text-custom15">Queries</span>
-                        </div>
-                        <div id="queriesCount">
-                        </div>
-                    </a>
-                </li>
+                                    width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M2.5 13C2.5 7.47715 6.97715 3 12.5 3C18.0228 3 22.5 7.47715 22.5 13C22.5 18.5228 18.0228 23 12.5 23C6.97715 23 2.5 18.5228 2.5 13ZM12.5 10C12.2015 10 11.9344 10.1296 11.7497 10.3388C11.3843 10.7529 10.7523 10.7923 10.3383 10.4268C9.9242 10.0614 9.8848 9.42942 10.2503 9.01535C10.7985 8.3942 11.6038 8 12.5 8C14.1569 8 15.5 9.34315 15.5 11C15.5 12.3072 14.6647 13.4171 13.5 13.829V14C13.5 14.5523 13.0523 15 12.5 15C11.9477 15 11.5 14.5523 11.5 14V13.5C11.5 12.6284 12.1873 12.112 12.7482 11.9692C13.181 11.859 13.5 11.4655 13.5 11C13.5 10.4477 13.0523 10 12.5 10ZM12.5 16C11.9477 16 11.5 16.4477 11.5 17C11.5 17.5523 11.9477 18 12.5 18H12.51C13.0623 18 13.51 17.5523 13.51 17C13.51 16.4477 13.0623 16 12.51 16H12.5Z"
+                                        fill="currentColor" />
+                                </svg>
+                                <span class="ms-3 text-custom15">Queries</span>
+                            </div>
+                            <div id="queriesCount">
+                            </div>
+                        </a>
+                    </li>
+                @endif
                 @if (session('user_details.user_role') == 'seller')
                     <li class="mt-6">
-                        <a href="{{ route('BoostProducts') }}"
+                        <a href="{{ route('BoostProducts') }}" id="menu-boost-products"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('BoostProducts') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="BoostProducts">
@@ -803,7 +854,7 @@
                         </a>
                     </li>
                     <li class="mt-6">
-                        <a href="{{ route('seller.inquiries') }}"
+                        <a href="{{ route('seller.inquiries') }}" id="menu-seller-inquiries"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                                   {{ request()->routeIs('seller.inquiries') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="seller.inquiries">
@@ -837,45 +888,52 @@
                         </a>
                     </li>
                 @endif
-
-                <li class="mt-6">
-                    <a href="{{ session('user_details.user_role') == 'admin' ? route('notifications') : route('allNotifications') }}"
-                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('notifications'))
+                    <li class="mt-6">
+                        <a href="{{ in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']) ? route('notifications') : route('allNotifications') }}"
+                            id="menu-notifications"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('notifications') || request()->routeIs('allNotifications') ? 'active bg-white text-primary' : 'text-white' }}"
-                        data-tab="notifications">
-                        <svg class="w-5 h-5 transition duration-200
+                            data-tab="notifications">
+                            <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('notifications') || request()->routeIs('allNotifications') ? 'text-primary' : 'text-white' }}"
-                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12.3739 2.10019C12.9263 2.10028 13.4561 2.31976 13.8467 2.71039C14.2373 3.10101 14.4568 3.63079 14.4569 4.18321C15.6534 4.74879 16.6734 5.62934 17.4076 6.73047C18.1417 7.83159 18.5624 9.11176 18.6244 10.4337L18.6229 13.5583C18.7013 14.206 18.9307 14.8262 19.2927 15.369C19.6546 15.9119 20.1389 16.3621 20.7067 16.6835L4.04181 16.6843C4.60934 16.3628 5.09348 15.9127 5.45527 15.37C5.81707 14.8273 6.0464 14.2072 6.12483 13.5597L6.12336 10.4337C6.18538 9.11176 6.60603 7.83159 7.3402 6.73046C8.07437 5.62934 9.09437 4.74879 10.2909 4.18321C10.291 3.63079 10.5104 3.10101 10.9011 2.71039C11.2917 2.31976 11.8215 2.10028 12.3739 2.10019Z"
-                                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                fill="currentColor" />
-                            <path
-                                d="M9.24852 16.6835L9.24852 17.7251C9.24852 18.5539 9.57779 19.3488 10.1639 19.9349C10.75 20.5211 11.5449 20.8503 12.3738 20.8503C13.2027 20.8503 13.9976 20.5211 14.5837 19.9349C15.1698 19.3488 15.4991 18.5539 15.4991 17.7251V16.6835"
-                                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Notifications</span>
-                    </a>
-                </li>
-                @if (session('user_details.user_role') == 'admin')
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.3739 2.10019C12.9263 2.10028 13.4561 2.31976 13.8467 2.71039C14.2373 3.10101 14.4568 3.63079 14.4569 4.18321C15.6534 4.74879 16.6734 5.62934 17.4076 6.73047C18.1417 7.83159 18.5624 9.11176 18.6244 10.4337L18.6229 13.5583C18.7013 14.206 18.9307 14.8262 19.2927 15.369C19.6546 15.9119 20.1389 16.3621 20.7067 16.6835L4.04181 16.6843C4.60934 16.3628 5.09348 15.9127 5.45527 15.37C5.81707 14.8273 6.0464 14.2072 6.12483 13.5597L6.12336 10.4337C6.18538 9.11176 6.60603 7.83159 7.3402 6.73046C8.07437 5.62934 9.09437 4.74879 10.2909 4.18321C10.291 3.63079 10.5104 3.10101 10.9011 2.71039C11.2917 2.31976 11.8215 2.10028 12.3739 2.10019Z"
+                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    fill="currentColor" />
+                                <path
+                                    d="M9.24852 16.6835L9.24852 17.7251C9.24852 18.5539 9.57779 19.3488 10.1639 19.9349C10.75 20.5211 11.5449 20.8503 12.3738 20.8503C13.2027 20.8503 13.9976 20.5211 14.5837 19.9349C15.1698 19.3488 15.4991 18.5539 15.4991 17.7251V16.6835"
+                                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Notifications</span>
+                        </a>
+                    </li>
+                @endif
+                @if (session('user_details.user_role') == 'admin' || canViewMenu('help-center'))
                     <li class="mt-6">
                         <a href="{{ session('user_details.user_role') == 'admin' ? route('HelpCenterQuestions') : route('HelpCenterQuestions') }}"
+                            id="menu-help-center"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('HelpCenterQuestions') || request()->routeIs('HelpCenterQuestions') ? 'active bg-white text-primary' : 'text-white' }}"
                             data-tab="notifications">
                             <svg class="w-5 h-5 transition duration-200" width="25" height="26"
                                 viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                                                                                   10-4.48 10-10S17.52 2 12 2zm0 17
-                                                                                   c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
-                                                                                   c-.9.9-1.07 1.25-1.07 2.25h-2
-                                                                                   v-.5c0-1.1.45-2.1 1.17-2.83
-                                                                                   .59-.59 1.07-1 1.07-1.67
-                                                                                   0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
-                                                                                   c0-2.21 1.79-4 4-4s4 1.79 4 4
-                                                                                   c0 1.4-.83 2.1-1.43 2.75z"
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+                                                                                                                               10-4.48 10-10S17.52 2 12 2zm0 17
+                                                                                                                               c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                                                                                                                               c-.9.9-1.07 1.25-1.07 2.25h-2
+                                                                                                                               v-.5c0-1.1.45-2.1 1.17-2.83
+                                                                                                                               .59-.59 1.07-1 1.07-1.67
+                                                                                                                               0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                                                                                                                               c0-2.21 1.79-4 4-4s4 1.79 4 4
+                                                                                                                               c0 1.4-.83 2.1-1.43 2.75z"
                                     fill="currentColor" stroke="white" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
                                 </path>
@@ -885,41 +943,50 @@
                         </a>
                     </li>
                 @endif
-                <li class="mt-6">
-                    <a href="{{ route('sellerReport') }}"
-                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        canViewMenu('sale-report'))
+                    <li class="mt-6">
+                        <a href="{{ route('sellerReport') }}" id="menu-sale-report"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('sellerReport') ? 'active bg-white text-primary' : 'text-white' }}"
-                        data-tab="sellerReport">
-                        <svg class="w-5 h-5 transition duration-200
+                            data-tab="sellerReport">
+                            <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('sellerReport') ? 'text-primary' : 'text-white' }}"
-                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12.5036 10.277C11.8353 10.277 11.2094 10.5363 10.7355 11.0102C10.2639 11.484 10.0024 12.1099 10.0024 12.7783C10.0024 13.4466 10.2639 14.0725 10.7355 14.5464C11.2094 15.018 11.8353 15.2796 12.5036 15.2796C13.172 15.2796 13.7979 15.018 14.2718 14.5464C14.7434 14.0725 15.0049 13.4466 15.0049 12.7783C15.0049 12.1099 14.7434 11.484 14.2718 11.0102C14.0403 10.7769 13.7648 10.592 13.4613 10.4661C13.1577 10.3403 12.8322 10.276 12.5036 10.277ZM21.7198 15.5411L20.2579 14.2916C20.3272 13.8669 20.3629 13.4332 20.3629 13.0018C20.3629 12.5704 20.3272 12.1345 20.2579 11.712L21.7198 10.4625C21.8302 10.368 21.9092 10.2421 21.9464 10.1015C21.9835 9.96097 21.977 9.81245 21.9276 9.6757L21.9075 9.61758C21.5052 8.49254 20.9024 7.4497 20.1282 6.53958L20.088 6.49264C19.994 6.38211 19.8687 6.30266 19.7286 6.26475C19.5886 6.22684 19.4403 6.23226 19.3034 6.28029L17.4883 6.92629C16.8178 6.37641 16.0712 5.94276 15.262 5.641L14.9111 3.74323C14.8846 3.60027 14.8152 3.46875 14.7122 3.36614C14.6092 3.26353 14.4774 3.19469 14.3343 3.16876L14.274 3.15759C13.1116 2.94747 11.8867 2.94747 10.7244 3.15759L10.664 3.16876C10.5209 3.19469 10.3891 3.26353 10.2861 3.36614C10.1831 3.46875 10.1138 3.60027 10.0873 3.74323L9.73412 5.64994C8.93261 5.95411 8.18594 6.3867 7.52342 6.93076L5.69495 6.28029C5.55807 6.23188 5.4097 6.22626 5.26956 6.2642C5.12942 6.30213 5.00413 6.3818 4.91036 6.49264L4.87012 6.53958C4.09737 7.45067 3.49468 8.49325 3.09083 9.61758L3.07071 9.6757C2.97013 9.95511 3.05283 10.2681 3.2786 10.4625L4.75836 11.7255C4.68907 12.1457 4.65554 12.5749 4.65554 12.9996C4.65554 13.4288 4.68907 13.8579 4.75836 14.2737L3.28307 15.5366C3.17263 15.6312 3.0936 15.7571 3.05646 15.8976C3.01933 16.0382 3.02586 16.1867 3.07518 16.3235L3.0953 16.3816C3.49989 17.5059 4.09671 18.5453 4.87459 19.4596L4.91483 19.5065C5.00883 19.617 5.13412 19.6965 5.27418 19.7344C5.41424 19.7723 5.5625 19.7669 5.69942 19.7189L7.52789 19.0684C8.194 19.616 8.93612 20.0497 9.73859 20.3492L10.0918 22.2559C10.1182 22.3989 10.1876 22.5304 10.2906 22.633C10.3936 22.7356 10.5254 22.8045 10.6685 22.8304L10.7288 22.8416C11.9026 23.0528 13.1047 23.0528 14.2785 22.8416L14.3388 22.8304C14.4819 22.8045 14.6137 22.7356 14.7167 22.633C14.8197 22.5304 14.889 22.3989 14.9155 22.2559L15.2665 20.3582C16.0756 20.0542 16.8222 19.6227 17.4928 19.0729L19.3079 19.7189C19.4447 19.7673 19.5931 19.7729 19.7333 19.735C19.8734 19.697 19.9987 19.6173 20.0925 19.5065L20.1327 19.4596C20.9106 18.5409 21.5074 17.5059 21.912 16.3816L21.9321 16.3235C22.0282 16.0463 21.9455 15.7356 21.7198 15.5411ZM12.5036 16.7079C10.3332 16.7079 8.574 14.9488 8.574 12.7783C8.574 10.6078 10.3332 8.84864 12.5036 8.84864C14.6741 8.84864 16.4333 10.6078 16.4333 12.7783C16.4333 14.9488 14.6741 16.7079 12.5036 16.7079Z"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Sale Report</span>
-                    </a>
-                </li>
-                <li class="mt-6">
-                    <a href="{{ route('settings') }}"
-                        class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.5036 10.277C11.8353 10.277 11.2094 10.5363 10.7355 11.0102C10.2639 11.484 10.0024 12.1099 10.0024 12.7783C10.0024 13.4466 10.2639 14.0725 10.7355 14.5464C11.2094 15.018 11.8353 15.2796 12.5036 15.2796C13.172 15.2796 13.7979 15.018 14.2718 14.5464C14.7434 14.0725 15.0049 13.4466 15.0049 12.7783C15.0049 12.1099 14.7434 11.484 14.2718 11.0102C14.0403 10.7769 13.7648 10.592 13.4613 10.4661C13.1577 10.3403 12.8322 10.276 12.5036 10.277ZM21.7198 15.5411L20.2579 14.2916C20.3272 13.8669 20.3629 13.4332 20.3629 13.0018C20.3629 12.5704 20.3272 12.1345 20.2579 11.712L21.7198 10.4625C21.8302 10.368 21.9092 10.2421 21.9464 10.1015C21.9835 9.96097 21.977 9.81245 21.9276 9.6757L21.9075 9.61758C21.5052 8.49254 20.9024 7.4497 20.1282 6.53958L20.088 6.49264C19.994 6.38211 19.8687 6.30266 19.7286 6.26475C19.5886 6.22684 19.4403 6.23226 19.3034 6.28029L17.4883 6.92629C16.8178 6.37641 16.0712 5.94276 15.262 5.641L14.9111 3.74323C14.8846 3.60027 14.8152 3.46875 14.7122 3.36614C14.6092 3.26353 14.4774 3.19469 14.3343 3.16876L14.274 3.15759C13.1116 2.94747 11.8867 2.94747 10.7244 3.15759L10.664 3.16876C10.5209 3.19469 10.3891 3.26353 10.2861 3.36614C10.1831 3.46875 10.1138 3.60027 10.0873 3.74323L9.73412 5.64994C8.93261 5.95411 8.18594 6.3867 7.52342 6.93076L5.69495 6.28029C5.55807 6.23188 5.4097 6.22626 5.26956 6.2642C5.12942 6.30213 5.00413 6.3818 4.91036 6.49264L4.87012 6.53958C4.09737 7.45067 3.49468 8.49325 3.09083 9.61758L3.07071 9.6757C2.97013 9.95511 3.05283 10.2681 3.2786 10.4625L4.75836 11.7255C4.68907 12.1457 4.65554 12.5749 4.65554 12.9996C4.65554 13.4288 4.68907 13.8579 4.75836 14.2737L3.28307 15.5366C3.17263 15.6312 3.0936 15.7571 3.05646 15.8976C3.01933 16.0382 3.02586 16.1867 3.07518 16.3235L3.0953 16.3816C3.49989 17.5059 4.09671 18.5453 4.87459 19.4596L4.91483 19.5065C5.00883 19.617 5.13412 19.6965 5.27418 19.7344C5.41424 19.7723 5.5625 19.7669 5.69942 19.7189L7.52789 19.0684C8.194 19.616 8.93612 20.0497 9.73859 20.3492L10.0918 22.2559C10.1182 22.3989 10.1876 22.5304 10.2906 22.633C10.3936 22.7356 10.5254 22.8045 10.6685 22.8304L10.7288 22.8416C11.9026 23.0528 13.1047 23.0528 14.2785 22.8416L14.3388 22.8304C14.4819 22.8045 14.6137 22.7356 14.7167 22.633C14.8197 22.5304 14.889 22.3989 14.9155 22.2559L15.2665 20.3582C16.0756 20.0542 16.8222 19.6227 17.4928 19.0729L19.3079 19.7189C19.4447 19.7673 19.5931 19.7729 19.7333 19.735C19.8734 19.697 19.9987 19.6173 20.0925 19.5065L20.1327 19.4596C20.9106 18.5409 21.5074 17.5059 21.912 16.3816L21.9321 16.3235C22.0282 16.0463 21.9455 15.7356 21.7198 15.5411ZM12.5036 16.7079C10.3332 16.7079 8.574 14.9488 8.574 12.7783C8.574 10.6078 10.3332 8.84864 12.5036 8.84864C14.6741 8.84864 16.4333 10.6078 16.4333 12.7783C16.4333 14.9488 14.6741 16.7079 12.5036 16.7079Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Sale Report</span>
+                        </a>
+                    </li>
+                @endif
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'seller' ||
+                        session('user_details.user_role') == 'freelancer' ||
+                        canViewMenu('settings'))
+                    <li class="mt-6">
+                        <a href="{{ route('settings') }}" id="menu-settings"
+                            class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('settings') ? 'active bg-white text-primary' : 'text-white' }}"
-                        data-tab="settings">
-                        <svg class="w-5 h-5 transition duration-200
+                            data-tab="settings">
+                            <svg class="w-5 h-5 transition duration-200
                                     {{ request()->routeIs('settings') ? 'text-primary' : 'text-white' }}"
-                            width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12.5036 10.277C11.8353 10.277 11.2094 10.5363 10.7355 11.0102C10.2639 11.484 10.0024 12.1099 10.0024 12.7783C10.0024 13.4466 10.2639 14.0725 10.7355 14.5464C11.2094 15.018 11.8353 15.2796 12.5036 15.2796C13.172 15.2796 13.7979 15.018 14.2718 14.5464C14.7434 14.0725 15.0049 13.4466 15.0049 12.7783C15.0049 12.1099 14.7434 11.484 14.2718 11.0102C14.0403 10.7769 13.7648 10.592 13.4613 10.4661C13.1577 10.3403 12.8322 10.276 12.5036 10.277ZM21.7198 15.5411L20.2579 14.2916C20.3272 13.8669 20.3629 13.4332 20.3629 13.0018C20.3629 12.5704 20.3272 12.1345 20.2579 11.712L21.7198 10.4625C21.8302 10.368 21.9092 10.2421 21.9464 10.1015C21.9835 9.96097 21.977 9.81245 21.9276 9.6757L21.9075 9.61758C21.5052 8.49254 20.9024 7.4497 20.1282 6.53958L20.088 6.49264C19.994 6.38211 19.8687 6.30266 19.7286 6.26475C19.5886 6.22684 19.4403 6.23226 19.3034 6.28029L17.4883 6.92629C16.8178 6.37641 16.0712 5.94276 15.262 5.641L14.9111 3.74323C14.8846 3.60027 14.8152 3.46875 14.7122 3.36614C14.6092 3.26353 14.4774 3.19469 14.3343 3.16876L14.274 3.15759C13.1116 2.94747 11.8867 2.94747 10.7244 3.15759L10.664 3.16876C10.5209 3.19469 10.3891 3.26353 10.2861 3.36614C10.1831 3.46875 10.1138 3.60027 10.0873 3.74323L9.73412 5.64994C8.93261 5.95411 8.18594 6.3867 7.52342 6.93076L5.69495 6.28029C5.55807 6.23188 5.4097 6.22626 5.26956 6.2642C5.12942 6.30213 5.00413 6.3818 4.91036 6.49264L4.87012 6.53958C4.09737 7.45067 3.49468 8.49325 3.09083 9.61758L3.07071 9.6757C2.97013 9.95511 3.05283 10.2681 3.2786 10.4625L4.75836 11.7255C4.68907 12.1457 4.65554 12.5749 4.65554 12.9996C4.65554 13.4288 4.68907 13.8579 4.75836 14.2737L3.28307 15.5366C3.17263 15.6312 3.0936 15.7571 3.05646 15.8976C3.01933 16.0382 3.02586 16.1867 3.07518 16.3235L3.0953 16.3816C3.49989 17.5059 4.09671 18.5453 4.87459 19.4596L4.91483 19.5065C5.00883 19.617 5.13412 19.6965 5.27418 19.7344C5.41424 19.7723 5.5625 19.7669 5.69942 19.7189L7.52789 19.0684C8.194 19.616 8.93612 20.0497 9.73859 20.3492L10.0918 22.2559C10.1182 22.3989 10.1876 22.5304 10.2906 22.633C10.3936 22.7356 10.5254 22.8045 10.6685 22.8304L10.7288 22.8416C11.9026 23.0528 13.1047 23.0528 14.2785 22.8416L14.3388 22.8304C14.4819 22.8045 14.6137 22.7356 14.7167 22.633C14.8197 22.5304 14.889 22.3989 14.9155 22.2559L15.2665 20.3582C16.0756 20.0542 16.8222 19.6227 17.4928 19.0729L19.3079 19.7189C19.4447 19.7673 19.5931 19.7729 19.7333 19.735C19.8734 19.697 19.9987 19.6173 20.0925 19.5065L20.1327 19.4596C20.9106 18.5409 21.5074 17.5059 21.912 16.3816L21.9321 16.3235C22.0282 16.0463 21.9455 15.7356 21.7198 15.5411ZM12.5036 16.7079C10.3332 16.7079 8.574 14.9488 8.574 12.7783C8.574 10.6078 10.3332 8.84864 12.5036 8.84864C14.6741 8.84864 16.4333 10.6078 16.4333 12.7783C16.4333 14.9488 14.6741 16.7079 12.5036 16.7079Z"
-                                fill="currentColor" />
-                        </svg>
-                        <span class="ms-3 text-custom15">Settings</span>
-                    </a>
-                </li>
+                                width="25" height="26" viewBox="0 0 25 26" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.5036 10.277C11.8353 10.277 11.2094 10.5363 10.7355 11.0102C10.2639 11.484 10.0024 12.1099 10.0024 12.7783C10.0024 13.4466 10.2639 14.0725 10.7355 14.5464C11.2094 15.018 11.8353 15.2796 12.5036 15.2796C13.172 15.2796 13.7979 15.018 14.2718 14.5464C14.7434 14.0725 15.0049 13.4466 15.0049 12.7783C15.0049 12.1099 14.7434 11.484 14.2718 11.0102C14.0403 10.7769 13.7648 10.592 13.4613 10.4661C13.1577 10.3403 12.8322 10.276 12.5036 10.277ZM21.7198 15.5411L20.2579 14.2916C20.3272 13.8669 20.3629 13.4332 20.3629 13.0018C20.3629 12.5704 20.3272 12.1345 20.2579 11.712L21.7198 10.4625C21.8302 10.368 21.9092 10.2421 21.9464 10.1015C21.9835 9.96097 21.977 9.81245 21.9276 9.6757L21.9075 9.61758C21.5052 8.49254 20.9024 7.4497 20.1282 6.53958L20.088 6.49264C19.994 6.38211 19.8687 6.30266 19.7286 6.26475C19.5886 6.22684 19.4403 6.23226 19.3034 6.28029L17.4883 6.92629C16.8178 6.37641 16.0712 5.94276 15.262 5.641L14.9111 3.74323C14.8846 3.60027 14.8152 3.46875 14.7122 3.36614C14.6092 3.26353 14.4774 3.19469 14.3343 3.16876L14.274 3.15759C13.1116 2.94747 11.8867 2.94747 10.7244 3.15759L10.664 3.16876C10.5209 3.19469 10.3891 3.26353 10.2861 3.36614C10.1831 3.46875 10.1138 3.60027 10.0873 3.74323L9.73412 5.64994C8.93261 5.95411 8.18594 6.3867 7.52342 6.93076L5.69495 6.28029C5.55807 6.23188 5.4097 6.22626 5.26956 6.2642C5.12942 6.30213 5.00413 6.3818 4.91036 6.49264L4.87012 6.53958C4.09737 7.45067 3.49468 8.49325 3.09083 9.61758L3.07071 9.6757C2.97013 9.95511 3.05283 10.2681 3.2786 10.4625L4.75836 11.7255C4.68907 12.1457 4.65554 12.5749 4.65554 12.9996C4.65554 13.4288 4.68907 13.8579 4.75836 14.2737L3.28307 15.5366C3.17263 15.6312 3.0936 15.7571 3.05646 15.8976C3.01933 16.0382 3.02586 16.1867 3.07518 16.3235L3.0953 16.3816C3.49989 17.5059 4.09671 18.5453 4.87459 19.4596L4.91483 19.5065C5.00883 19.617 5.13412 19.6965 5.27418 19.7344C5.41424 19.7723 5.5625 19.7669 5.69942 19.7189L7.52789 19.0684C8.194 19.616 8.93612 20.0497 9.73859 20.3492L10.0918 22.2559C10.1182 22.3989 10.1876 22.5304 10.2906 22.633C10.3936 22.7356 10.5254 22.8045 10.6685 22.8304L10.7288 22.8416C11.9026 23.0528 13.1047 23.0528 14.2785 22.8416L14.3388 22.8304C14.4819 22.8045 14.6137 22.7356 14.7167 22.633C14.8197 22.5304 14.889 22.3989 14.9155 22.2559L15.2665 20.3582C16.0756 20.0542 16.8222 19.6227 17.4928 19.0729L19.3079 19.7189C19.4447 19.7673 19.5931 19.7729 19.7333 19.735C19.8734 19.697 19.9987 19.6173 20.0925 19.5065L20.1327 19.4596C20.9106 18.5409 21.5074 17.5059 21.912 16.3816L21.9321 16.3235C22.0282 16.0463 21.9455 15.7356 21.7198 15.5411ZM12.5036 16.7079C10.3332 16.7079 8.574 14.9488 8.574 12.7783C8.574 10.6078 10.3332 8.84864 12.5036 8.84864C14.6741 8.84864 16.4333 10.6078 16.4333 12.7783C16.4333 14.9488 14.6741 16.7079 12.5036 16.7079Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ms-3 text-custom15">Settings</span>
+                        </a>
+                    </li>
+                @endif
 
                 <li class="mt-6">
-                    <a href="{{ route('logout') }}"
+                    <a href="{{ route('logout') }}" id="menu-logout"
                         class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->routeIs('logout') ? 'active bg-white text-primary' : 'text-white' }}"
                         data-tab="logout">
@@ -940,7 +1007,7 @@
                         session('user_details.store_id'))
                     <li class="mt-6">
                         <a href="https://www.hibuy.pk/store/{{ Str::slug(session('user_details.store_name')) }}?i={{ base64_encode(session('user_details.store_id')) }}"
-                            target="_blank"
+                            target="_blank" id="menu-visit-store"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
                               {{ request()->url() == 'https://www.hibuy.pk/store/' . session('user_details.store_id') ? 'active bg-white text-primary' : 'text-white' }}">
                             <svg class="w-5 h-5 transition duration-200
@@ -1234,7 +1301,7 @@
         function toggleDropdown(menuId, arrowId) {
             const dropdown = document.getElementById(menuId);
             const arrow = document.getElementById(arrowId);
-            const card = document.getElementById('dropdown-card1');
+            const card = document.getElementById('menu-kyc');
             const svgIcon = card.querySelector('svg');
 
             const isOpen = !dropdown.classList.contains('hidden');
@@ -1247,7 +1314,7 @@
                 svgIcon?.classList.remove('text-primary');
                 svgIcon?.classList.add('text-white');
             } else {
-                openDropdown(menuId, arrowId, 'dropdown-card1');
+                openDropdown(menuId, arrowId, 'menu-kyc');
             }
         }
 

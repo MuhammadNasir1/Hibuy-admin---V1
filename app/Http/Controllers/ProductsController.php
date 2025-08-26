@@ -825,7 +825,7 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role'];
 
-        if ($loggedInUserRole == 'admin') {
+        if ($loggedInUserRole == 'admin' || $loggedInUserRole == 'manager' || $loggedInUserRole == 'staff') {
             $p_id = $loggedInUserId;
         }
 
@@ -848,7 +848,7 @@ class ProductsController extends Controller
             ->orderBy('products.product_id', 'desc'); // ⬅️ This adds DESC order
 
 
-        if ($loggedInUserRole !== 'admin') {
+        if ($loggedInUserRole !== 'admin' && $loggedInUserRole !== 'manager' && $loggedInUserRole !== 'staff') {
             $query->where('products.user_id', $loggedInUserId);
         } else {
             $query->where('products.user_id', '!=', $p_id);
@@ -886,7 +886,7 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role']; // Get user role
 
-        if ($loggedInUserRole == 'admin') {
+        if ($loggedInUserRole == 'admin' || $loggedInUserRole == 'staff' || $loggedInUserRole == 'manager') {
             $p_id = $loggedInUserId;
         }
 
@@ -911,7 +911,7 @@ class ProductsController extends Controller
 
 
         // If not admin, filter by logged-in user_id
-        if ($loggedInUserRole !== 'admin') {
+        if ($loggedInUserRole !== 'admin' && $loggedInUserRole !== 'staff' && $loggedInUserRole !== 'manager') {
             $query->where('products.user_id', $loggedInUserId);
         }
 

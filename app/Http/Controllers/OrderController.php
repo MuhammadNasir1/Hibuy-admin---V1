@@ -54,7 +54,7 @@ class OrderController extends Controller
             $orderItems = json_decode($order->order_items, true);
 
             // Step 3: Filter logic
-            if ($userRole === 'admin') {
+            if ($userRole === 'admin' || $userRole === 'staff' || $userRole === 'manager') {
                 if ($requestedStoreId) {
                     // Admin + specific store_id → only that store’s products
                     $productIds = Products::where('store_id', $requestedStoreId)
@@ -242,7 +242,7 @@ class OrderController extends Controller
             }
 
             // 7. Role-specific processing
-            if ($userRole === 'admin') {
+            if ($userRole === 'admin' || $userRole === 'manager' || $userRole === 'staff') {
                 $selectedStoreId = request('store_id');
 
                 $orders = $query->get()->map(function ($order) use ($selectedStoreId) {
@@ -484,7 +484,7 @@ class OrderController extends Controller
         // Get user role from session
         $userDetails = Session('user_details');
         $userRole = $userDetails['user_role'] ?? null;
-        $isAdmin = $userRole === 'admin';
+        $isAdmin = $userRole === 'admin' || 'staff' || 'manager';
         $userStoreId = $userDetails['store_id'] ?? null;
 
         // Get the order with customer details

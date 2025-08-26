@@ -69,7 +69,7 @@
                 <div class="flex flex-col lg:flex-row lg:flex-nowrap items-end gap-4">
 
                     {{-- Store (Admin only) --}}
-                    @if (session('user_details.user_role') === 'admin')
+                    @if (in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']))
                         <div class="flex flex-col w-full lg:w-auto min-w-[200px]">
                             <label for="store_id" class="text-sm font-medium text-gray-700">Select Store</label>
                             <select name="store_id" id="store_id"
@@ -182,17 +182,17 @@
         <div class="printArea">
             @php
                 $headers = [
-                    'Sr.',
-                    'ID / Track Number',
-                    'Customer / Phone',
-                    session('user_details.user_role') == 'admin' ? 'Seller / Phone' : 'Rider',
-                    'Bill Amount',
-                    '5% Less',
-                    'Date',
-                    'Delivery Status',
-                    'Status',
-                    'Action',
-                ];
+    'Sr.',
+    'ID / Track Number',
+    'Customer / Phone',
+    in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']) ? 'Seller / Phone' : 'Rider',
+    'Bill Amount',
+    '5% Less',
+    'Date',
+    'Delivery Status',
+    'Status',
+    'Action',
+];
             @endphp
 
             <x-table :headers="$headers">
@@ -222,7 +222,7 @@
                             </td>
 
                             <td class="px-4 py-2">
-                                @if (session('user_details.user_role') == 'admin')
+                                @if (in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']))
                                     @if (!empty($order->seller_name_for_list))
                                         <span class="text-gray-700 font-medium">{{ $order->seller_name_for_list }}</span>
                                         <br>
@@ -364,7 +364,7 @@
                     </div>
 
                     <!-- Seller Details Section (Admin Only) -->
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']))
                         <div class="mb-3 pt-2">
                             <button id="sellerDropdownButton"
                                 class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 font-semibold text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-300">
@@ -425,7 +425,7 @@
                                                 <tr class="bg-gray-200">
                                                     <th class="p-3 text-left">Image</th>
                                                     <th class="p-3 text-left">Product</th>
-                                                    @if (session('user_details.user_role') == 'admin')
+                                                    @if (in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']))
                                                         <th class="p-3 text-left">Status</th>
                                                         <th class="p-3 text-left">Video Prove</th>
                                                     @endif
@@ -547,15 +547,15 @@
                                 <img src="${item.product_image}" alt="${item.product_name}" class="w-16 h-16 object-cover" onerror="this.onerror=null; this.src='${fallbackImage}'">
                             </td>
                             <td class="p-3">${item.product_name}</td>
-                            ${user.user_role == 'admin' ? `
-                                                            <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                            <td class="p-3">
-                                                                ${item.status_video ? `
-                                        <video controls class="w-28 h-16 rounded shadow">
-                                            <source src="/storage/${item.status_video}" type="video/mp4">
-                                        </video>` : 'No video'}
-                                                            </td>` : ''}
-                            <td class="p-3 text-center">${item.quantity}</td>
+                            ${['admin', 'staff', 'manager'].includes(user.user_role) ? `
+    <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+    <td class="p-3">
+        ${item.status_video ? `
+            <video controls class="w-28 h-16 rounded shadow">
+                <source src="/storage/${item.status_video}" type="video/mp4">
+            </video>` : 'No video'}
+    </td>` : ''}
+    <td class="p-3 text-center">${item.quantity}</td>
                             <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'}</td>
                             <td class="p-3 text-center">
                                 <div class="inline-block text-sm text-gray-700">
@@ -596,7 +596,7 @@
                             $("#rider-email").text('N/A');
                         }
 
-                        if (user.user_role === 'admin' && response.order_items.length > 0) {
+                        if (['admin', 'staff', 'manager'].includes(user.user_role) && response.order_items.length > 0) {
                             const firstItem = response.order_items[0];
                             if (firstItem.seller_info) {
                                 $("#seller-name").text(firstItem.seller_info.seller_name ||
