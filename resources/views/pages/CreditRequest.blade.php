@@ -6,7 +6,7 @@
     <div class="w-full py-4 rounded-lg custom-shadow">
         <div class="flex flex-col items-center text-center mb-4 sm:mb-20">
             <h3 class="text-lg sm:text-xl font-bold text-customBlack mb-2">
-                @if (session('user_details.user_role') == 'admin')
+                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                     Total Credit Distributed
                 @else
                     My Balance
@@ -14,7 +14,7 @@
                 (Rs)
             </h3>
             <h3 class="text-xl sm:text-2xl font-bold text-customBlack">
-                @if (session('user_details.user_role') == 'admin')
+                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                     {{ $approvedTotalAmount }}
                 @else
                     {{ $approvedTotalAmount - $totalUsedAmount }}
@@ -24,14 +24,14 @@
         <div class="flex justify-center px-5 text-center my-5">
             <div class="flex w-1/3 flex-col items-center border-r">
                 <div class="text-sm sm:text-xl font-bold text-customBlack mb-2">
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                         Pending Requests
                     @else
                         Total Credit Allocated
                     @endif
                 </div>
                 <div class="text-sm sm:text-xl font-bold text-customBlack">
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                         {{ $pendingCount }}
                     @else
                         {{ $approvedTotalAmount }}
@@ -40,14 +40,14 @@
             </div>
             <div class="flex w-1/3 flex-col items-center border-r border-l">
                 <div class="text-sm sm:text-xl font-bold text-customBlack mb-2">
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                         Approved Requests
                     @else
                         Credit Used
                     @endif
                 </div>
                 <div class="text-sm sm:text-xl font-bold text-customBlack">
-                    @if (session('user_details.user_role') == 'admin')
+                   @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                         {{ $approvedCount }}
                     @else
                         {{ $totalUsedAmount }}
@@ -56,14 +56,14 @@
             </div>
             <div class="flex w-1/3 flex-col items-center border-l">
                 <div class="text-sm sm:text-xl font-bold text-customBlack mb-2">
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                         Rejected Requests
                     @else
                         Credit Remaining
                     @endif
                 </div>
                 <div class="text-sm sm:text-xl font-bold text-customBlack">
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
                         {{ $rejectedCount }}
                     @else
                         {{ $approvedTotalAmount - $totalUsedAmount }}
@@ -75,7 +75,7 @@
     <div class="w-full mt-3 pt-10 min-h-[86vh] rounded-lg custom-shadow">
         <div class="flex justify-between items-center px-5">
             <h2 class="text-2xl font-medium ">Credit Request History</h2>
-            @if (session('user_details.user_role') !== 'admin')
+            @if (session('user_details.user_role') !== 'admin' && session('user_details.user_role') !== 'staff' && session('user_details.user_role') !== 'manager')
                 <button class="px-3 py-2 font-semibold text-white rounded-full bg-primary"
                     data-modal-target="creditrequest-modal" data-modal-toggle="creditrequest-modal"
                     >
@@ -169,7 +169,7 @@
             </x-slot>
         </x-table>
 
-@if (session('user_details.user_role') !== 'admin')
+ @if (session('user_details.user_role') !== 'admin' && session('user_details.user_role') !== 'staff' && session('user_details.user_role') !== 'manager')
         <x-modal id="creditrequest-modal">
             <x-slot name="title">Request Credit</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>

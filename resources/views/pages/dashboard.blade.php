@@ -327,8 +327,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
             <!-- Sales Data Chart -->
 
-
-            @if ($userRole === 'admin')
+            @if ($userRole === 'admin' || $userRole === 'staff' || $userRole === 'manager')
                 {{-- Top Selling Stores Section --}}
                 <div class="bg-white p-6 rounded-lg shadow-md border">
                     <div class="flex justify-between items-center">

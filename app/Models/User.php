@@ -69,4 +69,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Store::class, 'user_id', 'user_id')->withDefault();
     }
+
+    public function addedBy()
+    {
+        return $this->belongsTo(User::class, 'added_user_id');
+    }
+
 }

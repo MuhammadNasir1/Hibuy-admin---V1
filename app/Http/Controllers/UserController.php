@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -28,12 +29,15 @@ class UserController extends Controller
         $userDetails = session('user_details');
 
         $role = $userDetails['user_role'] ?? null;
-        if ($role !== 'admin') {
+        if ($role !== 'admin' && $role !== 'manager' && $role !== 'staff') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 
         // Fetch all users except the admin
-        $users = User::where('user_role', '!=', 'admin')->get();
+        $users = User::whereNotIn('user_role', ['admin', 'seller', 'freelancer', 'customer'])
+            ->with('addedBy') // load the user who added them
+            ->latest('user_id')
+            ->get();
 
         // dd($users);
 
@@ -310,7 +314,7 @@ class UserController extends Controller
         $user_id = $userDetails['user_id'] ?? null;
         $role = $userDetails['user_role'] ?? null;
 
-        if ($role !== 'admin') {
+        if ($role !== 'admin' && $role !== 'manager' && $role !== 'staff') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 
@@ -413,7 +417,7 @@ class UserController extends Controller
         $userDetails = session('user_details');
         $role = $userDetails['user_role'] ?? null;
 
-        if ($role !== 'admin') {
+        if ($role !== 'admin' && $role !== 'staff' && $role !== 'manager') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 
@@ -506,7 +510,7 @@ class UserController extends Controller
         $user_id = $userDetails['user_id'] ?? null;
         $role = $userDetails['user_role'] ?? null;
 
-        if ($role !== 'admin') {
+        if ($role !== 'admin' && $role !== 'manager' && $role !== 'staff') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 
@@ -645,7 +649,7 @@ class UserController extends Controller
             ->get(['user_name', 'user_email', 'created_at']);
         $referredCount = $referredUsers->count();
 
-        if (session('user_details.user_role') !== 'admin') {
+        if (!in_array(session('user_details.user_role'), ['admin', 'staff', 'manager'])) {
             $seller = DB::table('seller')->where('user_id', $userId)->first();
             $personalInfo = json_decode($seller->personal_info, true);
 
@@ -772,7 +776,7 @@ class UserController extends Controller
             $userId = $userDetails['user_id'];
             $userRole = $userDetails['user_role'];
             // For Admin
-            if ($userRole === 'admin') {
+            if ($userRole === 'admin' && $userRole === 'staff' && $userRole === 'manager') {
                 // counts
                 $orders = Order::where('order_status', 'pending')->count();
 
@@ -844,4 +848,135 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to load counts'], 500);
         }
     }
+
+
+    public function store(Request $request)
+    {
+        $userId = session('user_details.user_id');
+        $validator = Validator::make($request->all(), [
+            'user_name' => 'required|string|max:255',
+            'user_email' => 'required|email|unique:users,user_email',
+            'user_password' => 'required|string|min:8',
+            'user_role' => 'required|in:manager,staff,support',
+            'user_status' => 'required|in:0,1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            $user = new User();
+            $user->user_name = $request->user_name;
+            $user->user_email = $request->user_email;
+            $user->user_password = Hash::make($request->user_password);
+            $user->user_role = $request->user_role;
+            $user->user_status = $request->user_status;
+            $user->added_user_id = $userId;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User created successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('User creation failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create user: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Get user data for edit
+    public function edit($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'user' => [
+                    'user_id' => $user->user_id,
+                    'user_name' => $user->user_name,
+                    'user_email' => $user->user_email,
+                    'user_role' => $user->user_role,
+                    'user_status' => $user->user_status
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('User fetch failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+    }
+
+    // Update an existing user
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'user_name' => 'required|string|max:255',
+            'user_email' => 'required|email|unique:users,user_email,' . $id . ',user_id', // Allow current user's email
+            'user_password' => 'nullable|string|min:8', // Nullable for optional password update
+            'user_role' => 'required|in:manager,staff,support',
+            'user_status' => 'required|in:0,1'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            $user->user_name = $request->user_name;
+            $user->user_email = $request->user_email;
+
+            if (!empty($request->user_password)) {
+                $user->user_password = Hash::make($request->user_password);
+            }
+
+            $user->user_role = $request->user_role;
+            $user->user_status = $request->user_status;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('User update failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update user: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function destroy($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('User delete failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete user'
+            ], 500);
+        }
+    }
+
 }

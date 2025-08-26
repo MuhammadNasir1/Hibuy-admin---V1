@@ -44,6 +44,10 @@ class AuthController extends Controller
 
         switch ($userRole) {
             case 'admin':
+            case 'staff':
+            case 'manager':
+                // dd(session('user_details'));
+
                 // Revenue, counts
                 $data['revenue'] = Order::where('order_status', '=', 'delivered')->sum('grand_total');
                 $data['totalUsers'] = User::where('user_role', 'seller')->count();
@@ -259,7 +263,7 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('error', 'Invalid user role.');
         }
 
-        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts',));
+        return view('pages.dashboard', compact('data', 'userRole', 'topStores', 'topProducts', ));
     }
 
 
@@ -343,7 +347,7 @@ class AuthController extends Controller
         ]);
         // Find user by email
         $user = User::where('user_email', $validatedData['user_email'])
-            ->whereIn('user_role', ['seller', 'freelancer', 'admin'])
+            ->whereIn('user_role', ['seller', 'freelancer', 'admin', 'staff','manager'])
             ->first();
 
         // If user not found
@@ -383,6 +387,30 @@ class AuthController extends Controller
             $profileDetail = json_decode($store->store_profile_detail, true);
             $store_name = $profileDetail['store_name'] ?? null;
         }
+
+
+
+        $userPrivileges = DB::table('previliges')
+            ->join('menus', 'previliges.menu_id', '=', 'menus.menu_id') // Adjust column names if different
+            ->where('previliges.user_id', $user->user_id)
+            ->get([
+                'previliges.menu_id',
+                'menus.menu_slug', // Add menu name or any column from menus table
+                'previliges.can_view',
+                'previliges.can_add',
+                'previliges.can_edit',
+                'previliges.can_delete'
+            ])
+            ->toArray();
+
+
+        // Convert to array for easier handling in Blade
+        $userPrivileges = json_decode(json_encode($userPrivileges), true);
+
+        // Pass privileges to the view
+
+
+
         // Regenerate session to prevent session fixation attacks
         session()->regenerate();
 
@@ -395,6 +423,7 @@ class AuthController extends Controller
                 'user_email' => $user->user_email,
                 'store_id' => $store_id,
                 'store_name' => $store_name,
+                'user_privileges' => $userPrivileges,
             ]
         ]);
         $role = $user->user_role;
@@ -555,113 +584,135 @@ class AuthController extends Controller
 
 
 
-public function filter(Request $request)
-{
-    $userDetails = session('user_details');
-    $userRole = $userDetails['user_role'] ?? null;
-    $userId = $userDetails['user_id'] ?? null;
+    public function filter(Request $request)
+    {
+        $userDetails = session('user_details');
+        $userRole = $userDetails['user_role'] ?? null;
+        $userId = $userDetails['user_id'] ?? null;
 
-    // Determine date filter (default: today)
-    $filter = $request->orderdate ?? 'today';
+        // Determine date filter (default: today)
+        $filter = $request->orderdate ?? 'today';
 
-    if ($userRole !== 'admin') {
-        // ✅ Seller-specific filtering
-        $sellerId = Seller::where('user_id', $userId)->value('seller_id');
-        $storeId = Store::where('seller_id', $sellerId)->value('store_id');
-        $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
+        if ($userRole !== 'admin' && $userRole !== 'manager' && $userRole !== 'staff' ) {
+            // ✅ Seller-specific filtering
+            $sellerId = Seller::where('user_id', $userId)->value('seller_id');
+            $storeId = Store::where('seller_id', $sellerId)->value('store_id');
+            $productIds = Products::where('store_id', $storeId)->pluck('product_id')->toArray();
 
-        $query = Order::select([
-            'order_id', 'user_id', 'tracking_id', 'order_items', 'total', 'delivery_fee',
-            'customer_name', 'phone', 'address', 'status', 'order_status', 'order_date', 'created_at'
-        ]);
+            $query = Order::select([
+                'order_id',
+                'user_id',
+                'tracking_id',
+                'order_items',
+                'total',
+                'delivery_fee',
+                'customer_name',
+                'phone',
+                'address',
+                'status',
+                'order_status',
+                'order_date',
+                'created_at'
+            ]);
 
-        // ✅ Apply date filter
-        $query = $this->applyDateFilter($query, $filter);
+            // ✅ Apply date filter
+            $query = $this->applyDateFilter($query, $filter);
 
-        // ✅ Fetch and filter by product IDs
-        $latestOrders = $query->orderBy('order_id', 'desc')
-            ->get()
-            ->map(function ($order) use ($productIds) {
-                $orderItems = json_decode($order->order_items, true) ?? [];
+            // ✅ Fetch and filter by product IDs
+            $latestOrders = $query->orderBy('order_id', 'desc')
+                ->get()
+                ->map(function ($order) use ($productIds) {
+                    $orderItems = json_decode($order->order_items, true) ?? [];
 
-                $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
-                    return in_array($item['product_id'], $productIds);
+                    $filteredOrderItems = array_filter($orderItems, function ($item) use ($productIds) {
+                        return in_array($item['product_id'], $productIds);
+                    });
+
+                    if (empty($filteredOrderItems)) {
+                        return null;
+                    }
+
+                    return [
+                        'date' => $order->created_at->format('M d'),
+                        'customer_name' => $order->customer_name,
+                        'status' => $order->order_status,
+                        'total' => $order->total,
+                        'phone' => $order->phone,
+                    ];
+                })
+                ->filter()
+                ->take(5)
+                ->values();
+        } else {
+            // ✅ Admin: show latest 5 orders without product filtering
+            $query = Order::select([
+                'order_id',
+                'user_id',
+                'tracking_id',
+                'order_items',
+                'total',
+                'delivery_fee',
+                'customer_name',
+                'phone',
+                'address',
+                'status',
+                'order_status',
+                'order_date',
+                'created_at'
+            ]);
+
+            // ✅ Apply date filter
+            $query = $this->applyDateFilter($query, $filter);
+
+            $latestOrders = $query->orderBy('order_id', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function ($order) {
+                    return [
+                        'date' => $order->created_at->format('M d'),
+                        'customer_name' => $order->customer_name,
+                        'status' => $order->order_status,
+                        'total' => $order->total,
+                        'phone' => $order->phone,
+                    ];
                 });
+        }
 
-                if (empty($filteredOrderItems)) {
-                    return null;
-                }
-
-                return [
-                    'date' => $order->created_at->format('M d'),
-                    'customer_name' => $order->customer_name,
-                    'status' => $order->order_status,
-                    'total' => $order->total,
-                    'phone' => $order->phone,
-                ];
-            })
-            ->filter()
-            ->take(5)
-            ->values();
-    } else {
-        // ✅ Admin: show latest 5 orders without product filtering
-        $query = Order::select([
-            'order_id', 'user_id', 'tracking_id', 'order_items', 'total', 'delivery_fee',
-            'customer_name', 'phone', 'address', 'status', 'order_status', 'order_date', 'created_at'
-        ]);
-
-        // ✅ Apply date filter
-        $query = $this->applyDateFilter($query, $filter);
-
-        $latestOrders = $query->orderBy('order_id', 'desc')
-            ->limit(5)
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'date' => $order->created_at->format('M d'),
-                    'customer_name' => $order->customer_name,
-                    'status' => $order->order_status,
-                    'total' => $order->total,
-                    'phone' => $order->phone,
-                ];
-            });
+        return response()->json($latestOrders);
     }
 
-    return response()->json($latestOrders);
-}
-
-/**
- * Apply date filtering logic
- */
-private function applyDateFilter($query, $filter)
-{
-    switch ($filter) {
-        case 'today':
-            $query->whereDate('created_at', Carbon::today());
-            break;
-        case 'yesterday':
-            $query->whereDate('created_at', Carbon::yesterday());
-            break;
-        case 'last7days':
-            $query->whereBetween('created_at', [Carbon::now()->subDays(6), Carbon::now()]);
-            break;
-        case 'last30days':
-            $query->whereBetween('created_at', [Carbon::now()->subDays(29), Carbon::now()]);
-            break;
-        case 'thismonth':
-            $query->whereMonth('created_at', Carbon::now()->month)
-                ->whereYear('created_at', Carbon::now()->year);
-            break;
-        case 'lastmonth':
-            $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                ->whereYear('created_at', Carbon::now()->subMonth()->year);
-            break;
-        default:
-            $query->whereDate('created_at', Carbon::today());
-            break;
+    /**
+     * Apply date filtering logic
+     */
+    private function applyDateFilter($query, $filter)
+    {
+        switch ($filter) {
+            case 'today':
+                $query->whereDate('created_at', Carbon::today());
+                break;
+            case 'yesterday':
+                $query->whereDate('created_at', Carbon::yesterday());
+                break;
+            case 'last7days':
+                $query->whereBetween('created_at', [Carbon::now()->subDays(6), Carbon::now()]);
+                break;
+            case 'last30days':
+                $query->whereBetween('created_at', [Carbon::now()->subDays(29), Carbon::now()]);
+                break;
+            case 'thismonth':
+                $query->whereMonth('created_at', Carbon::now()->month)
+                    ->whereYear('created_at', Carbon::now()->year);
+                break;
+            case 'lastmonth':
+                $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
+                    ->whereYear('created_at', Carbon::now()->subMonth()->year);
+                break;
+            default:
+                $query->whereDate('created_at', Carbon::today());
+                break;
+        }
+        return $query;
     }
-    return $query;
-}
 
 
 }

@@ -197,7 +197,7 @@
                                             class="flex flex-col items-center justify-center pt-5 pb-6">
                                             <!-- SVG and text -->
                                             <span class="font-semibold">Upload Banners</span></p>
-                                            <p class="text-xs text-gray-500">Max 2MB each Size 820*312</p>
+                                            <p class="text-xs text-gray-500">Max 2MB each Size 1280*720</p>
                                         </div>
                                         <input type="file" class="hidden file-input" id="banner_input"
                                             name="banners[]" accept="image/*" multiple onchange="previewFiles(event)" />
@@ -211,6 +211,7 @@
 
                             <div class="px-6 mt-5">
                                 <label class="block text-gray-700 font-medium text-sm mb-2">Posts</label>
+
                                 <div class="flex gap-5">
                                     <x-file-uploader name="store_posts[]" id="store_posts" />
                                     <x-file-uploader name="store_posts[]" id="store_posts" />
@@ -273,8 +274,8 @@
             errorContainer.style.display = 'none';
 
             const maxSizeMB = 2;
-            const maxWidth = 820;
-            const maxHeight = 312;
+            const maxWidth = 1280;
+            const maxHeight = 720;
 
             if (files.length > 0) {
                 Array.from(files).forEach(file => {
@@ -561,6 +562,38 @@
                 if ($("#tag-container").children.length === 0) {
                     $("#tag-container").addClass("hidden");
                 }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInputs = document.querySelectorAll(
+                'input[name="store_posts[]"]'); // Select all inputs with that name
+
+            fileInputs.forEach(function(fileInput) {
+                fileInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    const label = event.target.closest('label');
+                    const preview = label.querySelector('.file-preview');
+
+                    if (file) {
+                        const img = new Image();
+                        img.src = URL.createObjectURL(file);
+
+                        img.onload = function() {
+                            if (img.width === 1080 && img.height === 1080) {
+                                // Valid: show preview
+                                preview.src = img.src;
+                                preview.classList.remove('hidden');
+                            } else {
+                                alert("Image must be exactly 1080 x 1080 pixels.");
+                                event.target.value = ""; // Reset file input
+                                preview.classList.add('hidden');
+                                preview.src = "";
+                            }
+                        };
+                    }
+                });
             });
         });
     </script>
