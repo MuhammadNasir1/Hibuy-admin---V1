@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Previlige;
+use App\Models\Privilege;
 use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
@@ -12,6 +12,6 @@ class Menu extends Model
 
     public function permissions()
     {
-        return $this->hasOne(Previlige::class, 'menu_id', 'menu_id');
+        return $this->hasOne(Privilege::class, 'menu_id', 'menu_id');
     }
 }
