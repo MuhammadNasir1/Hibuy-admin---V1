@@ -776,7 +776,7 @@ class UserController extends Controller
             $userId = $userDetails['user_id'];
             $userRole = $userDetails['user_role'];
             // For Admin
-            if ($userRole === 'admin' && $userRole === 'staff' && $userRole === 'manager') {
+            if ($userRole === 'admin' || $userRole === 'staff' || $userRole === 'manager') {
                 // counts
                 $orders = Order::where('order_status', 'pending')->count();
 
