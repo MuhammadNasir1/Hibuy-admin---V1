@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Menu;
 use Illuminate\Database\Eloquent\Model;
 
 class Previlige extends Model
