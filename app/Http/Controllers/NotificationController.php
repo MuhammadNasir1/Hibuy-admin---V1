@@ -39,7 +39,7 @@ class NotificationController extends Controller
 
     public function show()
     {
-        if (session('user_details')['user_role'] !== 'admin') {
+        if (session('user_details')['user_role'] !== 'admin' && session('user_details')['user_role'] !== 'staff' && session('user_details')['user_role'] !== 'manager') {
             return redirect()->route('allNotifications');
         }
 

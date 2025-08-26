@@ -89,6 +89,8 @@
                     $("input").removeClass("border-red-500");
                 },
                 success: function (response) {
+                    console.log(response);
+
                     $("#btnSpinner").addClass("hidden");
                     $("#btnText").removeClass("hidden");
                     $("#submitBtn").attr("disabled", false);
@@ -100,7 +102,7 @@
                         timer: 2000,
                         showConfirmButton: false
                     }).then(() => {
-                        if (response.user.user_role === 'admin' || response.seller_status === 'approved') {
+                        if (response.user.user_role === 'admin' || response.seller_status === 'approved' || response.user.user_role === 'staff' || response.user.user_role === 'manager') {
                             window.location.href = "../";
                         } else {
                             window.location.href = "../create-profile";

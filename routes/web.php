@@ -18,6 +18,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Middleware\CheckSellerKyc;
 use App\Http\Middleware\CheckSellerKycApproved;
 use App\Http\Middleware\FetchNotifications;
+use App\Http\Controllers\MenuController;
 
 Route::get('/Login', function () {
     return view('Auth.login');
@@ -209,6 +210,14 @@ Route::middleware(['custom_auth'])->group(function () {
             Route::GET('/Settings', [UserController::class, 'settings'])->name("settings");
             Route::POST('/updatePersonalInfo', [UserController::class, 'updatePersonalInfo'])->name("updatePersonalInfo");
             Route::POST('/updateUserPassword', [UserController::class, 'updateUserPassword'])->name("updateUserPassword");
+            Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+            Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+            Route::post('/users/{id}/update', [UserController::class, 'update'])->name('users.update');
+            Route::delete('/users/{id}/delete', [UserController::class, 'destroy'])->name('users.delete');
+
+            
+            Route::get('/menus/privileges/{user_id}', [MenuController::class, 'index'])->name('menus.privileges');
+            Route::post('/menus/update', [MenuController::class, 'update'])->name('menus.update');
             Route::get('/print-slip/{orderId}', [OrderController::class, 'printSlip'])->name('print.slip');
             Route::get('/send-email', [EmailController::class, 'sendMail'])->name('sendEmail');
         });

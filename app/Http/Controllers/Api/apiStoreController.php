@@ -55,6 +55,10 @@ class apiStoreController extends Controller
                 "product_images"
             )
                 ->where('store_id', $store_id)
+                ->where('product_status', '=', 1)
+                ->whereHas('user', function ($q) {
+                    $q->where('user_status', 1);
+                })
                 ->with(['category:id,name'])
                 ->get();
 
@@ -112,16 +116,16 @@ class apiStoreController extends Controller
 
             // Return Response
             return response()->json([
-                'success'    => true,
-                'message'    => 'Store details fetched successfully',
-                'store'      => $storeData,
-                'products'   => $products,
+                'success' => true,
+                'message' => 'Store details fetched successfully',
+                'store' => $storeData,
+                'products' => $products,
                 'categories' => $categoryTree
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'success'  => false,
-                'message'  => $e->getMessage()
+                'success' => false,
+                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -153,8 +157,8 @@ class apiStoreController extends Controller
                 $storeImage = $profileDetail['store_image'] ?? null;
 
                 return [
-                    'store_id'    => $store->store_id,
-                    'store_name'  => $profileDetail['store_name'] ?? null,
+                    'store_id' => $store->store_id,
+                    'store_name' => $profileDetail['store_name'] ?? null,
                     'store_image' => !empty($storeImage) ? $storeImage : asset('asset/default-image.png'),
                 ];
             });
@@ -162,7 +166,7 @@ class apiStoreController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Store List fetched successfully',
-                'stores'  => $storeList,
+                'stores' => $storeList,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

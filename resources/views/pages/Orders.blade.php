@@ -151,7 +151,9 @@
                                         d="M128 128C128 92.7 156.7 64 192 64L405.5 64C422.5 64 438.8 70.7 450.8 82.7L493.3 125.2C505.3 137.2 512 153.5 512 170.5L512 208L128 208L128 128zM64 320C64 284.7 92.7 256 128 256L512 256C547.3 256 576 284.7 576 320L576 416C576 433.7 561.7 448 544 448L512 448L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 448L96 448C78.3 448 64 433.7 64 416L64 320zM192 480L192 512L448 512L448 416L192 416L192 480zM520 336C520 322.7 509.3 312 496 312C482.7 312 472 322.7 472 336C472 349.3 482.7 360 496 360C509.3 360 520 349.3 520 336z" />
                                 </svg>
                             </a>
-                            @if (session('user_details.user_role') === 'admin')
+                            @if (session('user_details.user_role') === 'admin' ||
+                                    session('user_details.user_role') === 'staff' ||
+                                    session('user_details.user_role') === 'manager')
                                 <a href="#" id=""
                                     class="paidBtn p-2 rounded-md transition-colors duration-200
                                  {{ $order->paid ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-primary text-white' }}"
@@ -180,8 +182,10 @@
                     <form id="statusForm" class="w-full">
                         @csrf
                         <div
-                            class="{{ session('user_details.user_role') == 'admin' ? 'grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end' : '' }}">
-                            @if (session('user_details.user_role') == 'admin')
+                            class="{{ session('user_details.user_role') === 'admin' || session('user_details.user_role') === 'staff' || session('user_details.user_role') === 'manager' ? 'grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 mb-4 items-end' : '' }}">
+                            @if (session('user_details.user_role') === 'admin' ||
+                                    session('user_details.user_role') === 'staff' ||
+                                    session('user_details.user_role') === 'manager')
                                 {{-- Order Status --}}
 
                                 <div>
@@ -423,10 +427,10 @@
                                                 <tr class="bg-gray-200">
                                                     <th class="p-3 text-left">Image</th>
                                                     <th class="p-3 text-left">Product</th>
-                                                    @if (session('user_details.user_role') === 'admin')
+                                                    @if (session('user_details.user_role') === 'admin' ||
+                                                            session('user_details.user_role') === 'staff' ||
+                                                            session('user_details.user_role') === 'manager')
                                                         <th class="p-3 text-left">Store / Seller</th>
-                                                    @endif
-                                                    @if (session('user_details.user_role') == 'admin')
                                                         <th class="p-3 text-left">Status</th>
                                                         <th class="p-3 text-left">Video Prove</th>
                                                     @endif
@@ -520,7 +524,8 @@
                             return;
                         }
 
-                        if (user.user_role === 'admin') {
+                        if (user.user_role === 'admin' || user.user_role === 'staff' || user
+                            .user_role === 'manager') {
                             const riders = response.riders;
                             const selectBox = document.getElementById('rider_id');
                             selectBox.innerHTML =
@@ -575,7 +580,8 @@
                                     .change();
                                 $("#editbyseller_orderstatus_id").val(item.product_id);
 
-                                if (user.user_role !== 'admin') {
+                                if (user.user_role !== 'admin' && user.user_role !==
+                                    'staff' && user.user_role !== 'manager') {
                                     if (item.status_video) {
                                         const videoUrl =
                                             `/storage/${item.status_video}`;
@@ -599,20 +605,17 @@
                                     </td>
                                     <td class="p-3">${item.product_name}</td>
 
-                                    ${user.user_role == 'admin' ? `
+                                                            ${['admin', 'staff', 'manager'].includes(user.user_role) ? `
 
-                                                    <td class="p-3">${item.seller_info.store_name} / ${item.seller_info.seller_name}</td>
+                                    <td class="p-3">${item.seller_info.store_name} / ${item.seller_info.seller_name}</td>
+                                                                   <td class="p-3">${item?.delivery_status || 'N/A'}</td>
+                <td class="p-3">
+                    ${item.status_video ? `
+            <video controls class="w-28 h-16 rounded shadow">
+                <source src="/storage/${item.status_video}" type="video/mp4">
+            </video>` : 'No video'}
+                </td>` : ''}
 
-                                                      <td class="p-3">${item?.delivery_status || 'N/A'}</td>
-                                                      <td class="p-3">
-                                                        ${item.status_video ? `
-                                                <video controls class="w-28 h-16 rounded shadow">
-                                                    <source src="/storage/${item.status_video}" type="video/mp4">
-                                                    Your browser does not support the video tag.
-                                                </video>` : 'No video'}
-
-                                                     </td>
-                                                     ` : ''}
 
                                     <td class="p-3 text-center">${item.quantity}</td>
                                     <td class="p-3 text-center">${item.order_weight ?? '0'} / ${item.order_size ?? '0'} </td>
@@ -668,8 +671,11 @@
                         }
 
                         // Populate seller details (Admin only)
-                        if (user.user_role === 'admin' && response.order_items && response
-                            .order_items.length > 0) {
+                        if (
+                            ['admin', 'staff', 'manager'].includes(user.user_role) &&
+                            response.order_items &&
+                            response.order_items.length > 0
+                        ) {
                             // Get seller info from the first item (assuming all items are from the same seller)
                             const firstItem = response.order_items[0];
                             console.log('First item seller info:', firstItem
@@ -693,7 +699,10 @@
                                 $("#store-name").text('N/A');
                                 $("#store-address").text('N/A');
                             }
-                        } else if (user.user_role === 'admin') {
+                        } else if (
+                            (user.user_role === 'admin' || user.user_role === 'staff' || user
+                                .user_role === 'manager')
+                        ) {
                             // Clear seller details if no items
                             $("#seller-name").text('N/A');
                             $("#seller-email").text('N/A');
