@@ -14,7 +14,7 @@
         </div>
         <x-table :headers="['ID', 'Name', 'Email', 'Role', 'Status', 'Added By', 'Created At', 'Action']">
             <x-slot name="tablebody">
-                @forelse ($users as $user)
+                @foreach ($users as $user)
                     <tr>
                         <!-- ID -->
                         <td>{{ $user->user_id }}</td>
@@ -78,11 +78,7 @@
                             </span>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" class="text-center py-4 text-gray-500">No users found.</td>
-                    </tr>
-                @endforelse
+               @endforeach
             </x-slot>
         </x-table>
 
