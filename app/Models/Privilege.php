@@ -4,7 +4,7 @@ namespace App\Models;
 use App\Models\Menu;
 use Illuminate\Database\Eloquent\Model;
 
-class Previlige extends Model
+class Privilege extends Model
 {
      protected $table = 'previliges';
     protected $primaryKey = 'previlige_id';
