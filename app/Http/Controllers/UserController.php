@@ -681,7 +681,7 @@ class UserController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($userRole === 'admin') {
+        if ($userRole === 'admin' || $userRole === 'staff' || $userRole === 'manager') {
             // If admin, only update the user_name in users table
             $user = User::find($userId);
 
@@ -692,7 +692,7 @@ class UserController extends Controller
             $user->user_name = $validated['full_name']; // Only update full_name to user_name
             $user->save();
 
-            return response()->json(['message' => 'Admin information updated successfully!']);
+            return response()->json(['message' => 'Information updated successfully!']);
         }
 
         // Normal seller update

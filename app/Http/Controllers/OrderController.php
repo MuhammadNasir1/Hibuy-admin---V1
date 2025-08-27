@@ -361,7 +361,7 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request)
     {
 
-        if (session('user_details.user_role') === 'admin') {
+        if (in_array(session('user_details.user_role'), ['admin', 'staff', 'manager'])) {
             $request->validate([
                 'order_id' => 'required|exists:orders,order_id',
                 'order_status' => 'required|string',
