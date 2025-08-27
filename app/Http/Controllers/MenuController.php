@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
-use App\Models\Previlige;
+use App\Models\Privilege;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,13 +39,13 @@ class MenuController extends Controller
         try {
             DB::transaction(function () use ($userId, $menuPermissions, $submittedMenuIds) {
                 // Delete privileges for menus that were not submitted
-                Previlige::where('user_id', $userId)
+                Privilege::where('user_id', $userId)
                     ->whereNotIn('menu_id', $submittedMenuIds)
                     ->delete();
 
                 // Process submitted menus
                 foreach ($menuPermissions as $menuId => $privileges) {
-                    Previlige::updateOrCreate(
+                    Privilege::updateOrCreate(
                         [
                             'user_id' => $userId,
                             'menu_id' => $menuId,

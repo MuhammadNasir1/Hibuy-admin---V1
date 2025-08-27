@@ -5,7 +5,9 @@
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between items-center px-5">
             <h2 class="text-2xl font-medium ">Product List</h1>
-                @if (session('user_details.user_role') !== 'admin')
+                @if (session('user_details.user_role') !== 'admin' &&
+                        session('user_details.user_role') !== 'staff' &&
+                        session('user_details.user_role') !== 'manager')
                     <a href="{{ route('product.add') }}" class="px-3 py-2 font-semibold text-white rounded-full bg-primary">
                         Add Product
                     </a>
@@ -126,7 +128,9 @@
                                             </svg>
                                         </button>
                                         {{--  --}}
-                                        @if (session('user_details.user_role') !== 'admin')
+                                        @if (session('user_details.user_role') !== 'admin' &&
+                                                session('user_details.user_role') !== 'staff' &&
+                                                session('user_details.user_role') !== 'manager')
                                             <a href="{{ route('product.add', $product->product_id) }}"
                                                 class="updateDataBtn">
                                                 <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
@@ -258,26 +262,28 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (session('user_details.user_role') == 'admin')
-                            <form id="statusForm" class="max-w-sm">
-                                @csrf
-                                <div class="flex items-center mt-5 mb-4">
-                                    <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
-                                    <div>
-                                        <input type="hidden" id="edit_status_id" name="edit_status_id">
-                                        <select id="product_status" name="product_status"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option value="" selected>Select</option>
-                                            <option value="1">Approved</option>
-                                            <option value="0">Pending</option>
-                                        </select>
+                            @if (session('user_details.user_role') == 'admin' ||
+                                    session('user_details.user_role') == 'staff' ||
+                                    session('user_details.user_role') == 'manager')
+                                <form id="statusForm" class="max-w-sm">
+                                    @csrf
+                                    <div class="flex items-center mt-5 mb-4">
+                                        <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
+                                        <div>
+                                            <input type="hidden" id="edit_status_id" name="edit_status_id">
+                                            <select id="product_status" name="product_status"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                <option value="" selected>Select</option>
+                                                <option value="1">Approved</option>
+                                                <option value="0">Pending</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <button type="submit" id="submitStatus"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded-full">
-                                    Submit
-                                </button>
-                            </form>
+                                    <button type="submit" id="submitStatus"
+                                        class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded-full">
+                                        Submit
+                                    </button>
+                                </form>
                             @endif
                         </div>
                     </div>
@@ -442,7 +448,7 @@
                             const images = response.product.product_images;
                             if (images && images.length > 0) {
                                 const defaultImage =
-                                "{{ asset('asset/defualt-image.png') }}"; // Replace with your actual image path
+                                    "{{ asset('asset/defualt-image.png') }}"; // Replace with your actual image path
                                 $("#main-image").attr("src", images[0] || defaultImage);
                                 $("#sub-image-1").attr("src", images[1] || defaultImage);
                                 $("#sub-image-2").attr("src", images[2] || defaultImage);
