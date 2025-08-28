@@ -211,11 +211,12 @@
 
                             <div class="px-6 mt-5">
                                 <label class="block text-gray-700 font-medium text-sm mb-2">Posts</label>
-
+                                <div class="text-xs text-gray-500">Each Post Size 1080*1080</div>
                                 <div class="flex gap-5">
                                     <x-file-uploader name="store_posts[]" id="store_posts" />
                                     <x-file-uploader name="store_posts[]" id="store_posts" />
                                 </div>
+
                                 <div class="" id="store_posts_container">
                                     <!-- Dynamic post images will be inserted here -->
                                 </div>

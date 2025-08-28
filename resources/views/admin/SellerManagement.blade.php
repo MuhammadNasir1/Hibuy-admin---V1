@@ -48,10 +48,12 @@
                                         </defs>
                                     </svg>
                                 </a>
+                                 @if (session('user_details.user_role') == 'admin' || canMenuAction('sellers-management', 'delete'))
                                 <button class="disable_btn" data-id="{{ $seller->user_id }}"
                                     data-modal-target="disableSellerModal" data-modal-toggle="disableSellerModal">
                                     <img src="{{ asset('asset/delete.png') }}" width="30" alt="">
                                 </button>
+                                @endif
                                 @if ($seller->user->user_status == 1)
                                     <span class="text-green-600 font-medium">Active</span>
                                 @else

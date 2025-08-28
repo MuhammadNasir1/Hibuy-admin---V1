@@ -6,7 +6,9 @@
     <div class="w-full py-4 rounded-lg custom-shadow">
         <div class="flex flex-col items-center text-center mb-4 sm:mb-20">
             <h3 class="text-lg sm:text-xl font-bold text-customBlack mb-2">
-                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'staff' ||
+                        session('user_details.user_role') == 'manager')
                     Total Credit Distributed
                 @else
                     My Balance
@@ -14,7 +16,9 @@
                 (Rs)
             </h3>
             <h3 class="text-xl sm:text-2xl font-bold text-customBlack">
-                @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                @if (session('user_details.user_role') == 'admin' ||
+                        session('user_details.user_role') == 'staff' ||
+                        session('user_details.user_role') == 'manager')
                     {{ $approvedTotalAmount }}
                 @else
                     {{ $approvedTotalAmount - $totalUsedAmount }}
@@ -24,14 +28,18 @@
         <div class="flex justify-center px-5 text-center my-5">
             <div class="flex w-1/3 flex-col items-center border-r">
                 <div class="text-sm sm:text-xl font-bold text-customBlack mb-2">
-                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                    @if (session('user_details.user_role') == 'admin' ||
+                            session('user_details.user_role') == 'staff' ||
+                            session('user_details.user_role') == 'manager')
                         Pending Requests
                     @else
                         Total Credit Allocated
                     @endif
                 </div>
                 <div class="text-sm sm:text-xl font-bold text-customBlack">
-                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                    @if (session('user_details.user_role') == 'admin' ||
+                            session('user_details.user_role') == 'staff' ||
+                            session('user_details.user_role') == 'manager')
                         {{ $pendingCount }}
                     @else
                         {{ $approvedTotalAmount }}
@@ -40,14 +48,18 @@
             </div>
             <div class="flex w-1/3 flex-col items-center border-r border-l">
                 <div class="text-sm sm:text-xl font-bold text-customBlack mb-2">
-                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                    @if (session('user_details.user_role') == 'admin' ||
+                            session('user_details.user_role') == 'staff' ||
+                            session('user_details.user_role') == 'manager')
                         Approved Requests
                     @else
                         Credit Used
                     @endif
                 </div>
                 <div class="text-sm sm:text-xl font-bold text-customBlack">
-                   @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                    @if (session('user_details.user_role') == 'admin' ||
+                            session('user_details.user_role') == 'staff' ||
+                            session('user_details.user_role') == 'manager')
                         {{ $approvedCount }}
                     @else
                         {{ $totalUsedAmount }}
@@ -56,14 +68,18 @@
             </div>
             <div class="flex w-1/3 flex-col items-center border-l">
                 <div class="text-sm sm:text-xl font-bold text-customBlack mb-2">
-                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                    @if (session('user_details.user_role') == 'admin' ||
+                            session('user_details.user_role') == 'staff' ||
+                            session('user_details.user_role') == 'manager')
                         Rejected Requests
                     @else
                         Credit Remaining
                     @endif
                 </div>
                 <div class="text-sm sm:text-xl font-bold text-customBlack">
-                    @if (session('user_details.user_role') == 'admin' || session('user_details.user_role') == 'staff' || session('user_details.user_role') == 'manager')
+                    @if (session('user_details.user_role') == 'admin' ||
+                            session('user_details.user_role') == 'staff' ||
+                            session('user_details.user_role') == 'manager')
                         {{ $rejectedCount }}
                     @else
                         {{ $approvedTotalAmount - $totalUsedAmount }}
@@ -75,10 +91,11 @@
     <div class="w-full mt-3 pt-10 min-h-[86vh] rounded-lg custom-shadow">
         <div class="flex justify-between items-center px-5">
             <h2 class="text-2xl font-medium ">Credit Request History</h2>
-            @if (session('user_details.user_role') !== 'admin' && session('user_details.user_role') !== 'staff' && session('user_details.user_role') !== 'manager')
+            @if (session('user_details.user_role') !== 'admin' &&
+                    session('user_details.user_role') !== 'staff' &&
+                    session('user_details.user_role') !== 'manager')
                 <button class="px-3 py-2 font-semibold text-white rounded-full bg-primary"
-                    data-modal-target="creditrequest-modal" data-modal-toggle="creditrequest-modal"
-                    >
+                    data-modal-target="creditrequest-modal" data-modal-toggle="creditrequest-modal">
                     Request Credit
                 </button>
             @endif
@@ -169,53 +186,57 @@
             </x-slot>
         </x-table>
 
- @if (session('user_details.user_role') !== 'admin' && session('user_details.user_role') !== 'staff' && session('user_details.user_role') !== 'manager')
-        <x-modal id="creditrequest-modal">
-            <x-slot name="title">Request Credit</x-slot>
-            <x-slot name="modal_width">max-w-4xl</x-slot>
-            <x-slot name="body">
-                <form id="creditRequestForm" action="{{ route('credit-request.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" id="user_id" name="user_id" value="{{ session('user_details.user_id') }}">
+        @if (session('user_details.user_role') !== 'admin' &&
+                session('user_details.user_role') !== 'staff' &&
+                session('user_details.user_role') !== 'manager')
+            <x-modal id="creditrequest-modal">
+                <x-slot name="title">Request Credit</x-slot>
+                <x-slot name="modal_width">max-w-4xl</x-slot>
+                <x-slot name="body">
+                    <form id="creditRequestForm" action="{{ route('credit-request.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" id="user_id" name="user_id"
+                            value="{{ session('user_details.user_id') }}">
 
-                    <div class="md:py-5">
-                        <div class="flex gap-6 px-6 mt-5">
-                            <div class="w-full">
-                                <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Amount
-                                    (Rs)</label>
-                                <input type="number" name="amount" id="amount" placeholder="Enter Here"
-                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <div class="md:py-5">
+                            <div class="flex gap-6 px-6 mt-5">
+                                <div class="w-full">
+                                    <label class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Amount
+                                        (Rs)</label>
+                                    <input type="number" name="amount" id="amount" placeholder="Enter Here"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 
-                            </div>
-
-                        </div>
-
-                        <div class="flex gap-6 px-6 mt-5">
-                            <div class="w-full">
-                                <label
-                                    class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Reason</label>
-                                <input type="text" name="reason" id="reason" placeholder="Enter Here"
-                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                </div>
 
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Buttons -->
-                    <div class="mt-6 bg-gray-300 rounded-b-lg">
-                        <div class="flex items-center justify-between p-2">
-                            <button type="button" data-modal-hide="creditrequest-modal"
-                                class="px-6 py-2 text-white bg-red-500 rounded-full close-modal">Close</button>
+                            <div class="flex gap-6 px-6 mt-5">
+                                <div class="w-full">
+                                    <label
+                                        class="block mb-2 text-sm font-medium dark:text-white text-customBlack">Reason</label>
+                                    <input type="text" name="reason" id="reason" placeholder="Enter Here"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 
-                            <button type="submit" id="request" class="px-6 py-2 text-white bg-primary rounded-3xl">
-                                Send Request
-                            </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </x-slot>
-        </x-modal>
-@endif
+
+                        <!-- Buttons -->
+                        <div class="mt-6 bg-gray-300 rounded-b-lg">
+                            <div class="flex items-center justify-between p-2">
+                                <button type="button" data-modal-hide="creditrequest-modal"
+                                    class="px-6 py-2 text-white bg-red-500 rounded-full close-modal">Close</button>
+
+                                <button type="submit" id="request"
+                                    class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                    Send Request
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </x-slot>
+            </x-modal>
+        @endif
         <x-modal id="viewrequest-modal">
             <x-slot name="title">Credit Request</x-slot>
             <x-slot name="modal_width">max-w-4xl</x-slot>
@@ -250,7 +271,7 @@
                     </div>
 
                     <!-- Status Update Form -->
-                    @if (session('user_details.user_role') == 'admin')
+                    @if (session('user_details.user_role') == 'admin' || canMenuAction('credit-requests', 'edit'))
                         <form id="statusForm" class="max-w-sm mt-6">
                             @csrf
                             <input type="hidden" id="edit_status_id" name="edit_status_id">

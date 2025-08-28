@@ -357,7 +357,7 @@ class UserController extends Controller
         $userDetails = session('user_details');
         $role = $userDetails['user_role'] ?? null;
 
-        if ($role !== 'admin') {
+        if ($role !== 'admin' && $role !== 'staff' && $role !== 'manager') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 

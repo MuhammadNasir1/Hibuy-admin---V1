@@ -123,7 +123,6 @@ class ProductsController extends Controller
 
         return response()->json($filePaths);
     }
-
     public function storeProduct(Request $request)
     {
         try {
@@ -134,7 +133,7 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            if ($userDetails['user_role'] !== 'admin') {
+            if ($userDetails['user_role'] !== 'admin' && $userDetails['user_role'] !== 'staff' && $userDetails['user_role'] !== 'manager') {
                 // Find the seller record for the authenticated users
                 $seller = Seller::where('user_id', $userDetails['user_id'])->first();
                 if (!$seller) {
@@ -181,7 +180,7 @@ class ProductsController extends Controller
                 'vehicleType' => 'required|string|max:255',
             ]);
 
-            if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
+            if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin' && $userDetails['user_role'] !== 'staff' && $userDetails['user_role'] !== 'manager') {
                 $user = User::where('user_id', $userDetails['user_id'])->first();
 
                 if (!$user) {
@@ -318,37 +317,8 @@ class ProductsController extends Controller
                         ]);
                     }
                 }
-                $newProduct = Products::create($productData);
 
-                // ✅ Send email to Seller
-                $personalInfo = json_decode($seller->personal_info, true);
-                $sellerEmail = $personalInfo['email'] ?? null;
-                $sellerName = $personalInfo['full_name'] ?? 'Seller';
-
-                if ($sellerEmail) {
-                    $subject = "Your product is under review";
-                    $body = "
-                        <h3>Hello {$sellerName},</h3>
-                        <p>Your product <b>{$newProduct->product_name}</b> has been submitted and is now under review by the admin team.</p>
-                        <p>You will be notified once it is approved.</p>
-                        <p>Thanks,</p>
-                    ";
-                    (new EmailController)->sendMail($sellerEmail, $subject, $body);
-                }
-
-                // ✅ Send email to Admin
-                $adminEmail = "info.arham.org@gmail.com";
-                $subjectAdmin = "New product submitted for review";
-                $bodyAdmin = "
-                    <h3>Hello Admin,</h3>
-                    <p>Seller <b>{$sellerName}</b> has added a new product for review.</p>
-                    <p><b>Product:</b> {$newProduct->product_name}<br>
-                       <b>Brand:</b> {$newProduct->product_brand}<br>
-                    <p>Please review it in the admin panel.</p>
-                ";
-                (new EmailController)->sendMail($adminEmail, $subjectAdmin, $bodyAdmin);
-
-                if ($userDetails['user_role'] == 'admin') {
+                if ($userDetails['user_role'] == 'admin' || $userDetails['user_role'] == 'staff' || $userDetails['user_role'] == 'manager') {
                     return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
                 } else {
                     return redirect()->route('products')->with('success', 'Product updated successfully');
@@ -432,7 +402,7 @@ class ProductsController extends Controller
                     }
                 }
 
-                if ($userDetails['user_role'] == 'admin') {
+                if ($userDetails['user_role'] == 'admin' || $userDetails['user_role'] == 'staff' || $userDetails['user_role'] == 'manager') {
                     return redirect()->route('hibuy_product')->with('success', 'Product added successfully');
                 } else {
                     return redirect()->route('products')->with('success', 'Product added successfully');
@@ -442,7 +412,6 @@ class ProductsController extends Controller
             return redirect('/product/add')->with('error', $th->getMessage());
         }
     }
-
 
 
 
@@ -625,7 +594,8 @@ class ProductsController extends Controller
 
                 // Step 2: remove childId from parent's sub_categories json
                 $subCategories = json_decode($category->sub_categories, true);
-                if (!is_array($subCategories)) $subCategories = [];
+                if (!is_array($subCategories))
+                    $subCategories = [];
 
                 $filtered = array_filter($subCategories, function ($item) use ($childId) {
                     return $item['id'] != $childId;
@@ -660,7 +630,8 @@ class ProductsController extends Controller
     private function deleteCategoryRecursively($id)
     {
         $category = product_category::find($id);
-        if (!$category) return;
+        if (!$category)
+            return;
 
         // Delete children first
         $subCategories = json_decode($category->sub_categories, true);
@@ -754,68 +725,7 @@ class ProductsController extends Controller
         }
     }
 
-
-    //     public function showAllProducts()
-    //     {
-    //         // Retrieve user details from session
-    //         $userDetails = session('user_details');
-    //         if (!$userDetails) {
-    //             return response()->json(['error' => 'User not authenticated'], 401);
-    //         }
-
-    //         $loggedInUserId = $userDetails['user_id'];
-    //         $loggedInUserRole = $userDetails['user_role']; // Get user role
-
-    //         if ($loggedInUserRole == 'admin') {
-    //             $p_id = $loggedInUserId;
-    //         }
-
-    //         // Base query
-    //         $query = DB::table('products')
-    //             ->leftJoin('categories', 'products.product_category', '=', 'categories.id')
-    //             ->join('users', 'products.user_id', '=', 'users.user_id')
-    //             ->select(
-    //                 'products.product_id',
-    //                 'products.user_id',
-    //                 'products.product_name',
-    //                 'categories.name as product_category',
-    //                 'products.product_discounted_price',
-    //                 'products.product_images',
-    //                 'products.product_status',
-    //                 'products.is_boosted',
-    //                 'products.created_at',
-    //                 'products.updated_at',
-    //                 'users.user_name as user_name'
-    //             );
-
-
-    //         // If not admin, filter by logged-in user_id
-    //         if ($loggedInUserRole !== 'admin') {
-    //             $query->where('products.user_id', $loggedInUserId);
-    //         } else {
-    //             $query->where('products.user_id', '!=', $p_id);
-    //         }
-
-    //         // Fetch products and format image
-    //         $products = $query->get()->map(function ($product) {
-    //             $images = json_decode($product->product_images, true);
-    //             $product->first_image = $images[0] ?? null;
-    //             unset($product->product_images);
-    //             return $product;
-    //         });
-
-    // // return $products;
-    //  $user = User::where('user_id', $loggedInUserId)->first();
-    //     $packageDetail = json_decode($user->package_detail, true);
-
-    //     $packageStatus = $packageDetail['package_status'] ?? null;
-
-    //     // return $products;
-    //     return view('pages.products', compact('products', 'packageStatus'));
-    // }
-
-
-    public function showAllProducts(Request $request)
+     public function showAllProducts(Request $request)
     {
         $userDetails = session('user_details');
         if (!$userDetails) {
@@ -825,12 +735,12 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role'];
 
-        if ($loggedInUserRole == 'admin' || $loggedInUserRole == 'manager' || $loggedInUserRole == 'staff') {
+        if (in_array($loggedInUserRole, ['admin', 'manager', 'staff'])) {
             $p_id = $loggedInUserId;
         }
 
         $query = DB::table('products')
-            ->Join('categories', 'products.product_category', '=', 'categories.id')
+            ->join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
             ->select(
                 'products.product_id',
@@ -845,12 +755,14 @@ class ProductsController extends Controller
                 'products.updated_at',
                 'users.user_name as user_name'
             )
-            ->orderBy('products.product_id', 'desc'); // ⬅️ This adds DESC order
+            ->orderBy('products.product_id', 'desc')
+            ->whereNotIn('users.user_role', ['admin', 'staff', 'manager']); // ✅ Exclude products owned by these roles
 
-
-        if ($loggedInUserRole !== 'admin' && $loggedInUserRole !== 'manager' && $loggedInUserRole !== 'staff') {
+        // If the logged-in user is NOT admin/manager/staff, show only their products
+        if (!in_array($loggedInUserRole, ['admin', 'manager', 'staff'])) {
             $query->where('products.user_id', $loggedInUserId);
         } else {
+            // If admin/manager/staff, exclude their own products
             $query->where('products.user_id', '!=', $p_id);
         }
 
@@ -875,6 +787,7 @@ class ProductsController extends Controller
     }
 
 
+
     public function showHibuyProducts()
     {
         // Retrieve user details from session
@@ -886,15 +799,10 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role']; // Get user role
 
-        if ($loggedInUserRole == 'admin' || $loggedInUserRole == 'staff' || $loggedInUserRole == 'manager') {
-            $p_id = $loggedInUserId;
-        }
-
-        // Base query
+        // Base query: join products, categories, users
         $query = DB::table('products')
             ->join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
-            ->where('products.user_id', '=', $p_id)
             ->select(
                 'products.product_id',
                 'products.user_id',
@@ -909,9 +817,11 @@ class ProductsController extends Controller
                 'users.user_name as user_name'
             );
 
-
-        // If not admin, filter by logged-in user_id
-        if ($loggedInUserRole !== 'admin' && $loggedInUserRole !== 'staff' && $loggedInUserRole !== 'manager') {
+        // If logged-in user is admin/staff/manager -> show products where user role is admin/staff/manager
+        if (in_array($loggedInUserRole, ['admin', 'staff', 'manager'])) {
+            $query->whereIn('users.user_role', ['admin', 'staff', 'manager']);
+        } else {
+            // For other roles -> show only their own products
             $query->where('products.user_id', $loggedInUserId);
         }
 
@@ -923,9 +833,9 @@ class ProductsController extends Controller
             return $product;
         });
 
-
         return view('admin.HibuyProduct', compact('products'));
     }
+
 
 
 
@@ -1143,7 +1053,7 @@ class ProductsController extends Controller
     {
         $weight = $request->weight;
         $length = $request->length;
-        $width  = $request->width;
+        $width = $request->width;
 
         $height = $request->height;
 

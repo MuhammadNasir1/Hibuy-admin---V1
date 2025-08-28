@@ -5,11 +5,12 @@
     <div class="px-5 w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium ">Notifications List</h1>
-                <button id="addModalBtn" data-modal-target="notification-modal" data-modal-toggle="notification-modal"
-                    class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
-                    Send New
-                </button>
-
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('notifications', 'add'))
+                    <button id="addModalBtn" data-modal-target="notification-modal" data-modal-toggle="notification-modal"
+                        class="px-5 py-3 font-semibold text-white rounded-full bg-primary">
+                        Send New
+                    </button>
+                @endif
         </div>
         @php
             $headers = ['Sr.', 'Title', 'Description', 'Type', 'Date Sent', 'Status', 'Action'];
@@ -30,17 +31,18 @@
                         </td>
                         <td>
                             <span class='flex gap-4'>
-                                <button class="deleteDataBtn" data-id="{{ $data->notification_id }}">
+                                @if (session('user_details.user_role') == 'admin' || canMenuAction('notifications', 'delete'))
+                                    <button class="deleteDataBtn" data-id="{{ $data->notification_id }}">
 
-                                    <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
-                                        xmlns='http://www.w3.org/2000/svg'>
-                                        <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
-                                        <path fill-rule='evenodd' clip-rule='evenodd'
-                                            d='M23.4905 13.7423C23.7356 13.7423 23.9396 13.9458 23.9396 14.2047V14.4441C23.9396 14.6967 23.7356 14.9065 23.4905 14.9065H13.0493C12.8036 14.9065 12.5996 14.6967 12.5996 14.4441V14.2047C12.5996 13.9458 12.8036 13.7423 13.0493 13.7423H14.8862C15.2594 13.7423 15.5841 13.4771 15.6681 13.1028L15.7642 12.6732C15.9137 12.0879 16.4058 11.6992 16.9688 11.6992H19.5704C20.1273 11.6992 20.6249 12.0879 20.7688 12.6423L20.8718 13.1022C20.9551 13.4771 21.2798 13.7423 21.6536 13.7423H23.4905ZM22.557 22.4932C22.7487 20.7059 23.0845 16.4598 23.0845 16.4169C23.0968 16.2871 23.0545 16.1643 22.9705 16.0654C22.8805 15.9728 22.7665 15.918 22.6409 15.918H13.9025C13.7762 15.918 13.6562 15.9728 13.5728 16.0654C13.4883 16.1643 13.4466 16.2871 13.4527 16.4169C13.4539 16.4248 13.4659 16.5744 13.4861 16.8244C13.5755 17.9353 13.8248 21.0292 13.9858 22.4932C14.0998 23.5718 14.8074 24.2496 15.8325 24.2742C16.6235 24.2925 17.4384 24.2988 18.2717 24.2988C19.0566 24.2988 19.8537 24.2925 20.6692 24.2742C21.7298 24.2559 22.4369 23.59 22.557 22.4932Z'
-                                            fill='#D11A2A' />
-                                    </svg>
-                                </button>
-
+                                        <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
+                                            xmlns='http://www.w3.org/2000/svg'>
+                                            <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
+                                            <path fill-rule='evenodd' clip-rule='evenodd'
+                                                d='M23.4905 13.7423C23.7356 13.7423 23.9396 13.9458 23.9396 14.2047V14.4441C23.9396 14.6967 23.7356 14.9065 23.4905 14.9065H13.0493C12.8036 14.9065 12.5996 14.6967 12.5996 14.4441V14.2047C12.5996 13.9458 12.8036 13.7423 13.0493 13.7423H14.8862C15.2594 13.7423 15.5841 13.4771 15.6681 13.1028L15.7642 12.6732C15.9137 12.0879 16.4058 11.6992 16.9688 11.6992H19.5704C20.1273 11.6992 20.6249 12.0879 20.7688 12.6423L20.8718 13.1022C20.9551 13.4771 21.2798 13.7423 21.6536 13.7423H23.4905ZM22.557 22.4932C22.7487 20.7059 23.0845 16.4598 23.0845 16.4169C23.0968 16.2871 23.0545 16.1643 22.9705 16.0654C22.8805 15.9728 22.7665 15.918 22.6409 15.918H13.9025C13.7762 15.918 13.6562 15.9728 13.5728 16.0654C13.4883 16.1643 13.4466 16.2871 13.4527 16.4169C13.4539 16.4248 13.4659 16.5744 13.4861 16.8244C13.5755 17.9353 13.8248 21.0292 13.9858 22.4932C14.0998 23.5718 14.8074 24.2496 15.8325 24.2742C16.6235 24.2925 17.4384 24.2988 18.2717 24.2988C19.0566 24.2988 19.8537 24.2925 20.6692 24.2742C21.7298 24.2559 22.4369 23.59 22.557 22.4932Z'
+                                                fill='#D11A2A' />
+                                        </svg>
+                                    </button>
+                                @endif
                                 <button data-modal-target="view-notification-modal"
                                     data-modal-toggle="view-notification-modal" class="viewModalBtn">
                                     <svg width='37' height='36' viewBox='0 0 37 36' fill='none'
@@ -207,9 +209,11 @@
                     <div class="mt-6 bg-gray-300 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
-                            <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl">
-                                Submit
-                            </button>
+                            @if (session('user_details.user_role') == 'admin' || canMenuAction('notifications', 'edit'))
+                                <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                    Submit
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </form>

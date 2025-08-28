@@ -152,9 +152,11 @@
                     <div class="mt-6 bg-gray-300 rounded-b-lg">
                         <div class="flex items-center justify-between p-2">
                             <div></div>
-                            <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl">
-                                Submit
-                            </button>
+                            @if (session('user_details.user_role') == 'admin' || canMenuAction('promotions', 'edit'))
+                                <button type="submit" class="px-6 py-2 text-white bg-primary rounded-3xl">
+                                    Submit
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </form>
