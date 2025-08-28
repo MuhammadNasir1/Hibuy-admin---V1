@@ -263,8 +263,7 @@
                                 </div>
                             </div>
                             @if (session('user_details.user_role') == 'admin' ||
-                                    session('user_details.user_role') == 'staff' ||
-                                    session('user_details.user_role') == 'manager')
+                                    canMenuAction('products', 'edit'))
                                 <form id="statusForm" class="max-w-sm">
                                     @csrf
                                     <div class="flex items-center mt-5 mb-4">

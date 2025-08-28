@@ -41,7 +41,8 @@
                                 <span
                                     class="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-primary rounded-full">
                                     {{ $store->pending_products_count ?? 0 }}
-                                </span></td>
+                                </span>
+                            </td>
                             <td class="px-6 py-4 text-sm text-gray-900">{{ $sellerInfo['full_name'] ?? 'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-900">{{ $storeInfo['phone_no'] ?? 'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-900">{{ $storeInfo['email'] ?? 'N/A' }}</td>
@@ -126,11 +127,13 @@
                         <div id="products-table-section" class="mt-4 hidden">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-lg font-semibold text-gray-700">Store Products</h3>
-                                <button id="approve-selected-btn"
-                                    class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50"
-                                    disabled>
-                                    Approve Selected
-                                </button>
+                                @if (session('user_details.user_role') == 'admin' || canMenuAction('approve-products', 'edit'))
+                                    <button id="approve-selected-btn"
+                                        class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50"
+                                        disabled>
+                                        Approve Selected
+                                    </button>
+                                @endif
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full border-collapse border border-gray-300 text-sm text-gray-700">
@@ -391,10 +394,12 @@
                                       class="text-blue-600 hover:text-blue-900 text-sm">
                                   View
                               </button>
+                              @if (session('user_details.user_role') == 'admin' || canMenuAction('approve-products', 'edit'))
                               <button onclick="openRejectModal(${product.product_id})"
                                       class="text-red-600 hover:text-red-800 text-sm">
                                   Reject
                               </button>
+                              @endif
                           </td>
                       `;
                         tableBody.appendChild(row);

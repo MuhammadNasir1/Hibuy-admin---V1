@@ -357,10 +357,10 @@
                             <label>Option values</label>
                             <div class="values-container">
                                 ${option.values.map(value => `
-                                                                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                                                                </div>`).join('')}
+                                                                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                                                    </div>`).join('')}
                                 <div class="value-item flex items-center mb-2">
                                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                                 </div>
@@ -524,10 +524,10 @@
                     // Update edit-container for next edit
                     container.find(".edit-container .values-container").html(`
                 ${values.map(value => `
-                                                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                                                </div>`).join('')}
+                                                                                                                                                                                                                                    <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                                        <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                                        <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                                    </div>`).join('')}
                 <div class="value-item flex items-center mb-2">
                     <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                     ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -579,10 +579,10 @@
                 // Update edit-container for next edit
                 container.find(".edit-container .values-container").html(`
             ${values.map(value => `
-                                                                                                                                                                                                                            <div class="value-item flex items-center mb-2">
-                                                                                                                                                                                                                                <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
-                                                                                                                                                                                                                                <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
-                                                                                                                                                                                                                            </div>`).join('')}
+                                                                                                                                                                                                                                <div class="value-item flex items-center mb-2">
+                                                                                                                                                                                                                                    <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" value="${value}">
+                                                                                                                                                                                                                                    <button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>
+                                                                                                                                                                                                                                </div>`).join('')}
             <div class="value-item flex items-center mb-2">
                 <input type="text" class="option-value bg-gray-50 border text-sm rounded-lg w-full p-2.5" placeholder="Add Value">
                 ${values.length > 0 ? `<button class="remove-value-btn bg-red-600 px-2 py-1 ml-2 rounded text-white">-</button>` : ''}
@@ -729,154 +729,20 @@
                     });
                 }
             });
-            // $("#productForm").on("submit", function(event) {
-            //     // Check if there is at least one variation
-            //     if (options.length === 0) {
-            //         event.preventDefault(); // Prevent form submission
-            //         Swal.fire({
-            //             icon: 'error',
-            //             title: 'No Variants Added',
-            //             text: 'Please add at least one variant (e.g., size or color) before submitting the form.',
-            //             confirmButtonColor: '#d33'
-            //         });
-            //         return false;
-            //     }
-
-            //     // Check if variant fields are filled and not empty
-            //     let hasEmptyFields = false;
-            //     let errorMessages = [];
-
-            //     // Get the discounted price
-            //     let discountedPrice = parseFloat($("#discounted_price").val()) || 0;
-
-            //     // Iterate through each variant option
-            //     options.forEach((option, index) => {
-            //         let isNameEmpty = !option.name.trim();
-            //         let isValuesEmpty = option.values.length === 0 || option.values.some(value => !
-            //             value.trim());
-
-            //         // Check if both name and values are empty
-            //         if (isNameEmpty && isValuesEmpty) {
-            //             hasEmptyFields = true;
-            //             errorMessages.push('Option name and values cannot be empty for variant ' + (
-            //                 index + 1) + '.');
-            //         } else {
-            //             // Check if only name is empty
-            //             if (isNameEmpty) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push('Option name cannot be empty for variant ' + (index +
-            //                     1) + '.');
-            //             }
-            //             // Check if only values are empty
-            //             if (isValuesEmpty) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push('Option values cannot be empty for variant ' + (
-            //                     index + 1) + '.');
-            //             }
-            //         }
-            //     });
-
-            //     // Check variant table inputs (price, stock, image, and compare price with discounted_price)
-            //     $("#variantTableBody tr").each(function() {
-            //         let parentIndex = $(this).data("parent-index");
-            //         if (typeof parentIndex !== 'undefined') {
-            //             // Check parent row fields
-            //             let priceInput = $(this).find(`#parent-price-${parentIndex}`).val();
-            //             let stockInput = $(this).find(`#parent-stock-${parentIndex}`).val();
-
-            //             if (!priceInput || priceInput.trim() === '' || parseFloat(priceInput) <=
-            //                 0) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push(
-            //                     'Price must be provided and greater than 0 for variant ' + (
-            //                         parentIndex + 1) + '.');
-            //             } else if (discountedPrice > 0 && parseFloat(priceInput) >
-            //                 discountedPrice) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push('Price for variant ' + (parentIndex + 1) +
-            //                     ' cannot be greater than the discounted price (' +
-            //                     discountedPrice.toFixed(2) + ').');
-            //             }
-
-            //             if (!stockInput || stockInput.trim() === '' || parseInt(stockInput) < 0) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push(
-            //                     'Stock must be provided and cannot be negative for variant ' + (
-            //                         parentIndex + 1) + '.');
-            //             }
-
-            //             // Check if image is required (only if no image preview exists)
-            //             let imagePreview = $(this).find('.image-preview img').length;
-            //             let imageInput = $(this).find('input[type="file"]').val();
-            //             if (!imagePreview && !imageInput) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push('An image must be uploaded for variant ' + (
-            //                     parentIndex + 1) + '.');
-            //             }
-            //         }
-
-            //         // Check child rows if they exist
-            //         let childRows = $(`#child-rows-${parentIndex} tr`);
-            //         childRows.each(function() {
-            //             let childIndex = $(this).data("child-index");
-            //             let childPrice = $(this).find(`.child-price-${parentIndex}`).val();
-            //             let childStock = $(this).find(`.child-stock-${parentIndex}`).val();
-
-            //             if (!childPrice || childPrice.trim() === '' || parseFloat(
-            //                     childPrice) <= 0) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push(
-            //                     'Price must be provided and greater than 0 for child variant ' +
-            //                     (childIndex + 1) + ' of parent ' + (parentIndex + 1) +
-            //                     '.');
-            //             } else if (discountedPrice > 0 && parseFloat(childPrice) >
-            //                 discountedPrice) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push('Price for child variant ' + (childIndex +
-            //                         1) + ' of parent ' + (parentIndex + 1) +
-            //                     ' cannot be greater than the discounted price (' +
-            //                     discountedPrice.toFixed(2) + ').');
-            //             }
-
-            //             if (!childStock || childStock.trim() === '' || parseInt(
-            //                     childStock) < 0) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push(
-            //                     'Stock must be provided and cannot be negative for child variant ' +
-            //                     (childIndex + 1) + ' of parent ' + (parentIndex + 1) +
-            //                     '.');
-            //             }
-
-            //             // Check if child image is required (only if no image preview exists)
-            //             let childImagePreview = $(this).find('.image-preview img').length;
-            //             let childImageInput = $(this).find('input[type="file"]').val();
-            //             if (!childImagePreview && !childImageInput) {
-            //                 hasEmptyFields = true;
-            //                 errorMessages.push(
-            //                     'An image must be uploaded for child variant ' + (
-            //                         childIndex + 1) + ' of parent ' + (parentIndex +
-            //                         1) + '.');
-            //             }
-            //         });
-            //     });
-
-            //     // If any required field is empty or invalid, prevent submission and show error
-            //     if (hasEmptyFields) {
-            //         event.preventDefault();
-            //         // Show the first error message
-            //         let errorMessage = errorMessages[0] ||
-            //             'Please ensure all variant fields (name, values, price, stock, and image) are filled and valid.';
-            //         Swal.fire({
-            //             icon: 'error',
-            //             title: 'Missing or Invalid Fields',
-            //             text: errorMessage,
-            //             confirmButtonColor: '#d33'
-            //         });
-            //         return false;
-            //     }
-            // });
 
             $("#productForm").on("submit", function(event) {
+                // Check if product_images is empty
+                let productImages = $("#product_images").val().trim();
+                if (!productImages || productImages === '[]' || productImages === '') {
+                    event.preventDefault(); // Prevent form submission
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No Images Uploaded',
+                        text: 'Please upload at least one product image before submitting the form.',
+                        confirmButtonColor: '#d33'
+                    });
+                    return false;
+                }
                 // Check if there is at least one variation
                 if (options.length === 0) {
                     event.preventDefault(); // Prevent form submission
@@ -973,14 +839,14 @@
                         // Use name-based selectors for precision
                         let childPriceInput = $(this).find(
                             `input[name="variants[${parentIndex}][children][${childIndex}][price]"]`
-                            ).val();
+                        ).val();
                         let childStockInput = $(this).find(
                             `input[name="variants[${parentIndex}][children][${childIndex}][stock]"]`
-                            ).val();
+                        ).val();
                         let childImagePreview = $(this).find('.image-preview img').length;
                         let childImageInput = $(this).find(
                             `input[name="variants[${parentIndex}][children][${childIndex}][image]"]`
-                            ).val();
+                        ).val();
 
                         if (!childPriceInput || childPriceInput.trim() === '' || parseFloat(
                                 childPriceInput) <= 0) {
@@ -993,7 +859,7 @@
                             discountedPrice) {
                             hasEmptyFields = true;
                             errorMessages.push('Price for child variant ' + (childIndex +
-                                1) + ' of parent ' + (parentIndex + 1) +
+                                    1) + ' of parent ' + (parentIndex + 1) +
                                 ' cannot be greater than the discounted price (' +
                                 discountedPrice.toFixed(2) + ').');
                         }
@@ -1012,7 +878,7 @@
                             errorMessages.push(
                                 'An image must be uploaded for child variant ' + (
                                     childIndex + 1) + ' of parent ' + (parentIndex +
-                                1) + '.');
+                                    1) + '.');
                         }
                     });
                 });
@@ -1244,7 +1110,7 @@
                     });
 
                     document.getElementById("product_images").value = JSON.stringify(filenames);
-                    submitButton.disabled = filenames.length === 0;
+                    // submitButton.disabled = filenames.length === 0;
                 }
 
                 // Handle new file uploads
@@ -1301,7 +1167,7 @@
                         filenames = filenames.filter(path => path !== pathToRemove);
                     }
                     document.getElementById("product_images").value = JSON.stringify(filenames);
-                    submitButton.disabled = filenames.length === 0;
+                    // submitButton.disabled = filenames.length === 0;
                 });
 
                 this.on("error", function(file, errorMessage) {

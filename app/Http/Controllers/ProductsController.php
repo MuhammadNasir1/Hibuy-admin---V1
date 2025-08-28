@@ -124,6 +124,324 @@ class ProductsController extends Controller
         return response()->json($filePaths);
     }
 
+    // public function storeProduct(Request $request)
+    // {
+    //     try {
+
+    //         // Retrieve user details from sessions
+    //         $userDetails = session('user_details');
+    //         if (!$userDetails) {
+    //             return response()->json(['error' => 'User not authenticated'], 401);
+    //         }
+
+    //         if ($userDetails['user_role'] !== 'admin') {
+    //             // Find the seller record for the authenticated users
+    //             $seller = Seller::where('user_id', $userDetails['user_id'])->first();
+    //             if (!$seller) {
+    //                 return response()->json(['error' => 'Seller record not found'], 404);
+    //             }
+
+    //             // Fetch store_id based on  seller_id
+
+    //             $store = Store::where('seller_id', $seller->seller_id)->first();
+    //             if (!$store) {
+    //                 return redirect('/products')->with('error', 'Store record not found. Please Create Store First');
+    //             }
+    //         } else {
+    //             $seller_id = '0';
+    //             $store_id = '0';
+    //             $store = (object) [
+    //                 'store_id' => $store_id,
+    //                 'seller_id' => $seller_id,
+    //             ];
+    //         }
+
+    //         $productId = $request->product_edit_id;
+
+    //         // Validate request data
+    //         $validatedData = $request->validate([
+    //             'title' => 'required|string|max:255',
+    //             'description' => 'nullable|string',
+    //             'company' => 'required|string|max:255',
+    //             'category_id' => 'required|integer|max:255',
+    //             // 'sub_category' => 'required|string|max:255',
+    //             'purchase_price' => 'required|numeric|min:0',
+    //             'product_price' => 'required|numeric|min:0',
+    //             'discount' => 'nullable|numeric|min:0',
+    //             'discounted_price' => 'nullable|numeric|min:0',
+    //             'variants' => 'nullable|array',
+    //             'product_status' => 'nullable|integer|in:0,1',
+    //             'product_edit_id' => 'nullable|integer',
+    //             'is_boosted' => 'nullable|in:0,1',
+    //             // ✅ new fields
+    //             'weight' => 'required|numeric|min:0.01',
+    //             'length' => 'required|numeric|min:0.01',
+    //             'width' => 'required|numeric|min:0.01',
+    //             'height' => 'required|numeric|min:0.01',
+    //             'vehicleType' => 'required|string|max:255',
+    //         ]);
+
+    //         if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
+    //             $user = User::where('user_id', $userDetails['user_id'])->first();
+
+    //             if (!$user) {
+    //                 return redirect('/products')->with('error', 'User not found.');
+    //             }
+
+    //             $packageDetail = is_array($user->package_detail)
+    //                 ? $user->package_detail
+    //                 : json_decode($user->package_detail, true);
+
+    //             if (!isset($packageDetail['package_status']) || $packageDetail['package_status'] !== 'approved') {
+    //                 return redirect('/products')->with('error', 'You are not authorized to boost products.');
+    //             }
+    //         }
+    //         $isBoosted = $request->has('is_boosted') ? 1 : 0;
+
+    //         // Check if updating an existing product
+    //         if ($request->filled('product_edit_id')) {
+    //             // Process Variants
+    //             $product = Products::where('product_id', $productId)
+    //                 ->where('user_id', $userDetails['user_id'])
+    //                 ->first();
+
+    //             if (!$product) {
+    //                 return response()->json(['error' => 'Product not found or unauthorized'], 404);
+    //             }
+    //             $productVariants = $request->variants ?? [];
+    //             $existingVariants = json_decode($product->product_variation, true) ?? [];
+
+    //             foreach ($productVariants as $parentIndex => &$parentVariant) {
+    //                 $existingParent = $existingVariants[$parentIndex] ?? [];
+
+    //                 // Process parent image
+    //                 if ($request->hasFile("variants.$parentIndex.parentimage")) {
+    //                     $parentImage = $request->file("variants.$parentIndex.parentimage");
+    //                     $parentImagePath = $parentImage->store('variants', 'public');
+    //                     $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+    //                 } else {
+    //                     $parentVariant['parentimage'] = $existingParent['parentimage'] ?? null;
+    //                 }
+
+    //                 foreach ($existingParent as $key => $value) {
+    //                     if (!isset($parentVariant[$key]) && $key !== 'children') {
+    //                         $parentVariant[$key] = $value;
+    //                     }
+    //                 }
+
+    //                 $parentVariant['children'] = $parentVariant['children'] ?? [];
+    //                 $existingChildren = $existingParent['children'] ?? [];
+
+    //                 foreach ($parentVariant['children'] as $childIndex => &$child) {
+    //                     $existingChild = $existingChildren[$childIndex] ?? [];
+
+    //                     if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
+    //                         $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
+    //                         $childImagePath = $childImage->store('variants', 'public');
+    //                         $child['image'] = "storage/" . $childImagePath;
+    //                     } else {
+    //                         $child['image'] = $existingChild['image'] ?? null;
+    //                     }
+
+    //                     foreach ($existingChild as $key => $value) {
+    //                         if (!isset($child[$key]) && $key !== 'image') {
+    //                             $child[$key] = $value;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             $storedImagePaths = [];
+    //             if ($request->has('product_images')) {
+    //                 $storedImagePaths = json_decode($request->product_images, true) ?? [];
+    //             }
+
+    //             $product = Products::where('product_id', $request->product_edit_id)
+    //                 ->where('user_id', $userDetails['user_id'])
+    //                 ->first();
+
+    //             if (!$product) {
+    //                 return response()->json(['error' => 'Product not found or unauthorized'], 404);
+    //             }
+    //             // calculate total stock before
+    //             $totalStock = collect($productVariants)->sum(function ($parent) {
+    //                 return (int) ($parent['parentstock'] ?? 0);
+    //             });
+    //             // return $totalStock;
+    //             $updateData = [
+    //                 'user_id' => $userDetails['user_id'],
+    //                 'store_id' => $store->store_id,
+    //                 'product_name' => $validatedData['title'],
+    //                 'product_description' => $validatedData['description'] ?? null,
+    //                 'product_brand' => $validatedData['company'],
+    //                 'product_category' => $validatedData['category_id'],
+    //                 // 'product_subcategory' => $validatedData['sub_category'],
+    //                 'purchase_price' => $validatedData['purchase_price'],
+    //                 'product_price' => $validatedData['product_price'],
+    //                 'product_discount' => $validatedData['discount'] ?? 0,
+    //                 'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
+    //                 'product_stock' => $totalStock,
+    //                 // ✅ new fields
+    //                 'weight' => $validatedData['weight'] ?? 0,
+    //                 'length' => $validatedData['length'] ?? 0,
+    //                 'width' => $validatedData['width'] ?? 0,
+    //                 'height' => $validatedData['height'] ?? 0,
+    //                 'vehicle_type_id' => $validatedData['vehicleType'],
+    //             ];
+    //             if (!empty($productVariants)) {
+    //                 $updateData['product_variation'] = json_encode($productVariants);
+    //             }
+
+    //             if (!empty($storedImagePaths)) {
+    //                 $updateData['product_images'] = json_encode($storedImagePaths);
+    //             }
+
+    //             $product->update($updateData);
+
+    //             // ✅ NEW: update pivot table
+    //             $categoryIds = [
+    //                 1 => $request->category_id,
+    //                 2 => $request->subcategory_id,
+    //                 3 => $request->sub_subcategory_id,
+    //                 4 => $request->category_level_3,
+    //                 5 => $request->category_level_4,
+    //                 6 => $request->category_level_5,
+    //             ];
+    //             DB::table('product_category_product')->where('product_id', $product->product_id)->delete();
+    //             foreach ($categoryIds as $level => $categoryId) {
+    //                 if ($categoryId) {
+    //                     DB::table('product_category_product')->insert([
+    //                         'product_id' => $product->product_id,
+    //                         'category_id' => $categoryId,
+    //                         'category_level' => $level,
+    //                         'created_at' => now(),
+    //                         'updated_at' => now(),
+    //                     ]);
+    //                 }
+    //             }
+    //             $newProduct = Products::create($productData);
+
+    //             // ✅ Send email to Seller
+    //             $personalInfo = json_decode($seller->personal_info, true);
+    //             $sellerEmail = $personalInfo['email'] ?? null;
+    //             $sellerName = $personalInfo['full_name'] ?? 'Seller';
+
+    //             if ($sellerEmail) {
+    //                 $subject = "Your product is under review";
+    //                 $body = "
+    //                     <h3>Hello {$sellerName},</h3>
+    //                     <p>Your product <b>{$newProduct->product_name}</b> has been submitted and is now under review by the admin team.</p>
+    //                     <p>You will be notified once it is approved.</p>
+    //                     <p>Thanks,</p>
+    //                 ";
+    //                 (new EmailController)->sendMail($sellerEmail, $subject, $body);
+    //             }
+
+    //             // ✅ Send email to Admin
+    //             $adminEmail = "info.arham.org@gmail.com";
+    //             $subjectAdmin = "New product submitted for review";
+    //             $bodyAdmin = "
+    //                 <h3>Hello Admin,</h3>
+    //                 <p>Seller <b>{$sellerName}</b> has added a new product for review.</p>
+    //                 <p><b>Product:</b> {$newProduct->product_name}<br>
+    //                    <b>Brand:</b> {$newProduct->product_brand}<br>
+    //                 <p>Please review it in the admin panel.</p>
+    //             ";
+    //             (new EmailController)->sendMail($adminEmail, $subjectAdmin, $bodyAdmin);
+
+    //             if ($userDetails['user_role'] == 'admin') {
+    //                 return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
+    //             } else {
+    //                 return redirect()->route('products')->with('success', 'Product updated successfully');
+    //             }
+    //         } else {
+    //             $storedImagePaths = [];
+    //             if ($request->has('product_images')) {
+    //                 $storedImagePaths = json_decode($request->product_images, true) ?? [];
+    //             }
+
+    //             $productVariants = $request->variants ?? [];
+
+    //             foreach ($productVariants as $parentIndex => &$parentVariant) {
+    //                 if ($request->hasFile("variants.$parentIndex.parentimage")) {
+    //                     $parentImage = $request->file("variants.$parentIndex.parentimage");
+    //                     $parentImagePath = $parentImage->store('variants', 'public');
+    //                     $parentVariant['parentimage'] = "storage/" . $parentImagePath;
+    //                 }
+
+    //                 if (!isset($parentVariant['children']) || !is_array($parentVariant['children'])) {
+    //                     $parentVariant['children'] = [];
+    //                 }
+
+    //                 foreach ($parentVariant['children'] as $childIndex => &$child) {
+    //                     if ($request->hasFile("variants.$parentIndex.children.$childIndex.image")) {
+    //                         $childImage = $request->file("variants.$parentIndex.children.$childIndex.image");
+    //                         $childImagePath = $childImage->store('variants', 'public');
+    //                         $child['image'] = "storage/" . $childImagePath;
+    //                     }
+    //                 }
+    //             }
+    //             // calculate total stock before
+    //             $totalStock = collect($productVariants)->sum(function ($parent) {
+    //                 return (int) ($parent['parentstock'] ?? 0);
+    //             });
+    //             $productData = [
+    //                 'user_id' => $userDetails['user_id'],
+    //                 'store_id' => $store->store_id,
+    //                 'product_name' => $validatedData['title'],
+    //                 'product_description' => $validatedData['description'] ?? null,
+    //                 'product_brand' => $validatedData['company'],
+    //                 'product_category' => $validatedData['category_id'],
+    //                 // 'product_subcategory' => $validatedData['sub_category'],
+    //                 'purchase_price' => $validatedData['purchase_price'],
+    //                 'product_price' => $validatedData['product_price'],
+    //                 'product_discount' => $validatedData['discount'] ?? 0,
+    //                 'product_discounted_price' => $validatedData['discounted_price'] ?? 0,
+    //                 'product_images' => json_encode($storedImagePaths),
+    //                 'product_variation' => json_encode($productVariants),
+    //                 'product_status' => $validatedData['product_status'] ?? 0,
+    //                 'is_boosted' => $isBoosted,
+    //                 'product_stock' => $totalStock, // ✅ added
+    //                 // ✅ new fields
+    //                 'weight' => $validatedData['weight'] ?? 0,
+    //                 'length' => $validatedData['length'] ?? 0,
+    //                 'width' => $validatedData['width'] ?? 0,
+    //                 'height' => $validatedData['height'] ?? 0,
+    //                 'vehicle_type_id' => $validatedData['vehicleType'],
+    //             ];
+
+    //             $newProduct = Products::create($productData);
+
+    //             // ✅ NEW: insert pivot data
+    //             $categoryIds = [
+    //                 1 => $request->category_id,
+    //                 2 => $request->subcategory_id,
+    //                 3 => $request->sub_subcategory_id,
+    //                 4 => $request->category_level_3,
+    //                 5 => $request->category_level_4,
+    //                 6 => $request->category_level_5,
+    //             ];
+    //             foreach ($categoryIds as $level => $categoryId) {
+    //                 if ($categoryId) {
+    //                     DB::table('product_category_product')->insert([
+    //                         'product_id' => $newProduct->product_id,
+    //                         'category_id' => $categoryId,
+    //                         'category_level' => $level,
+    //                         'created_at' => now(),
+    //                         'updated_at' => now(),
+    //                     ]);
+    //                 }
+    //             }
+
+    //             if ($userDetails['user_role'] == 'admin') {
+    //                 return redirect()->route('hibuy_product')->with('success', 'Product added successfully');
+    //             } else {
+    //                 return redirect()->route('products')->with('success', 'Product added successfully');
+    //             }
+    //         }
+    //     } catch (\Exception $th) {
+    //         return redirect('/product/add')->with('error', $th->getMessage());
+    //     }
+    // }
     public function storeProduct(Request $request)
     {
         try {
@@ -134,7 +452,7 @@ class ProductsController extends Controller
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            if ($userDetails['user_role'] !== 'admin') {
+            if ($userDetails['user_role'] !== 'admin' && $userDetails['user_role'] !== 'staff' && $userDetails['user_role'] !== 'manager') {
                 // Find the seller record for the authenticated users
                 $seller = Seller::where('user_id', $userDetails['user_id'])->first();
                 if (!$seller) {
@@ -181,7 +499,7 @@ class ProductsController extends Controller
                 'vehicleType' => 'required|string|max:255',
             ]);
 
-            if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin') {
+            if ($request->has('is_boosted') && $userDetails['user_role'] !== 'admin' && $userDetails['user_role'] !== 'staff' && $userDetails['user_role'] !== 'manager') {
                 $user = User::where('user_id', $userDetails['user_id'])->first();
 
                 if (!$user) {
@@ -318,37 +636,8 @@ class ProductsController extends Controller
                         ]);
                     }
                 }
-                $newProduct = Products::create($productData);
 
-                // ✅ Send email to Seller
-                $personalInfo = json_decode($seller->personal_info, true);
-                $sellerEmail = $personalInfo['email'] ?? null;
-                $sellerName = $personalInfo['full_name'] ?? 'Seller';
-
-                if ($sellerEmail) {
-                    $subject = "Your product is under review";
-                    $body = "
-                        <h3>Hello {$sellerName},</h3>
-                        <p>Your product <b>{$newProduct->product_name}</b> has been submitted and is now under review by the admin team.</p>
-                        <p>You will be notified once it is approved.</p>
-                        <p>Thanks,</p>
-                    ";
-                    (new EmailController)->sendMail($sellerEmail, $subject, $body);
-                }
-
-                // ✅ Send email to Admin
-                $adminEmail = "info.arham.org@gmail.com";
-                $subjectAdmin = "New product submitted for review";
-                $bodyAdmin = "
-                    <h3>Hello Admin,</h3>
-                    <p>Seller <b>{$sellerName}</b> has added a new product for review.</p>
-                    <p><b>Product:</b> {$newProduct->product_name}<br>
-                       <b>Brand:</b> {$newProduct->product_brand}<br>
-                    <p>Please review it in the admin panel.</p>
-                ";
-                (new EmailController)->sendMail($adminEmail, $subjectAdmin, $bodyAdmin);
-
-                if ($userDetails['user_role'] == 'admin') {
+                if ($userDetails['user_role'] == 'admin' || $userDetails['user_role'] == 'staff' || $userDetails['user_role'] == 'manager') {
                     return redirect()->route('hibuy_product')->with('success', 'Product updated successfully');
                 } else {
                     return redirect()->route('products')->with('success', 'Product updated successfully');
@@ -432,7 +721,7 @@ class ProductsController extends Controller
                     }
                 }
 
-                if ($userDetails['user_role'] == 'admin') {
+                if ($userDetails['user_role'] == 'admin' || $userDetails['user_role'] == 'staff' || $userDetails['user_role'] == 'manager') {
                     return redirect()->route('hibuy_product')->with('success', 'Product added successfully');
                 } else {
                     return redirect()->route('products')->with('success', 'Product added successfully');
@@ -442,7 +731,6 @@ class ProductsController extends Controller
             return redirect('/product/add')->with('error', $th->getMessage());
         }
     }
-
 
 
 
@@ -625,7 +913,8 @@ class ProductsController extends Controller
 
                 // Step 2: remove childId from parent's sub_categories json
                 $subCategories = json_decode($category->sub_categories, true);
-                if (!is_array($subCategories)) $subCategories = [];
+                if (!is_array($subCategories))
+                    $subCategories = [];
 
                 $filtered = array_filter($subCategories, function ($item) use ($childId) {
                     return $item['id'] != $childId;
@@ -660,7 +949,8 @@ class ProductsController extends Controller
     private function deleteCategoryRecursively($id)
     {
         $category = product_category::find($id);
-        if (!$category) return;
+        if (!$category)
+            return;
 
         // Delete children first
         $subCategories = json_decode($category->sub_categories, true);
@@ -825,12 +1115,12 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role'];
 
-        if ($loggedInUserRole == 'admin' || $loggedInUserRole == 'manager' || $loggedInUserRole == 'staff') {
+        if (in_array($loggedInUserRole, ['admin', 'manager', 'staff'])) {
             $p_id = $loggedInUserId;
         }
 
         $query = DB::table('products')
-            ->Join('categories', 'products.product_category', '=', 'categories.id')
+            ->join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
             ->select(
                 'products.product_id',
@@ -845,12 +1135,14 @@ class ProductsController extends Controller
                 'products.updated_at',
                 'users.user_name as user_name'
             )
-            ->orderBy('products.product_id', 'desc'); // ⬅️ This adds DESC order
+            ->orderBy('products.product_id', 'desc')
+            ->whereNotIn('users.user_role', ['admin', 'staff', 'manager']); // ✅ Exclude products owned by these roles
 
-
-        if ($loggedInUserRole !== 'admin' && $loggedInUserRole !== 'manager' && $loggedInUserRole !== 'staff') {
+        // If the logged-in user is NOT admin/manager/staff, show only their products
+        if (!in_array($loggedInUserRole, ['admin', 'manager', 'staff'])) {
             $query->where('products.user_id', $loggedInUserId);
         } else {
+            // If admin/manager/staff, exclude their own products
             $query->where('products.user_id', '!=', $p_id);
         }
 
@@ -875,6 +1167,7 @@ class ProductsController extends Controller
     }
 
 
+
     public function showHibuyProducts()
     {
         // Retrieve user details from session
@@ -886,15 +1179,10 @@ class ProductsController extends Controller
         $loggedInUserId = $userDetails['user_id'];
         $loggedInUserRole = $userDetails['user_role']; // Get user role
 
-        if ($loggedInUserRole == 'admin' || $loggedInUserRole == 'staff' || $loggedInUserRole == 'manager') {
-            $p_id = $loggedInUserId;
-        }
-
-        // Base query
+        // Base query: join products, categories, users
         $query = DB::table('products')
             ->join('categories', 'products.product_category', '=', 'categories.id')
             ->join('users', 'products.user_id', '=', 'users.user_id')
-            ->where('products.user_id', '=', $p_id)
             ->select(
                 'products.product_id',
                 'products.user_id',
@@ -909,9 +1197,11 @@ class ProductsController extends Controller
                 'users.user_name as user_name'
             );
 
-
-        // If not admin, filter by logged-in user_id
-        if ($loggedInUserRole !== 'admin' && $loggedInUserRole !== 'staff' && $loggedInUserRole !== 'manager') {
+        // If logged-in user is admin/staff/manager -> show products where user role is admin/staff/manager
+        if (in_array($loggedInUserRole, ['admin', 'staff', 'manager'])) {
+            $query->whereIn('users.user_role', ['admin', 'staff', 'manager']);
+        } else {
+            // For other roles -> show only their own products
             $query->where('products.user_id', $loggedInUserId);
         }
 
@@ -923,9 +1213,9 @@ class ProductsController extends Controller
             return $product;
         });
 
-
         return view('admin.HibuyProduct', compact('products'));
     }
+
 
 
 
@@ -1143,7 +1433,7 @@ class ProductsController extends Controller
     {
         $weight = $request->weight;
         $length = $request->length;
-        $width  = $request->width;
+        $width = $request->width;
 
         $height = $request->height;
 

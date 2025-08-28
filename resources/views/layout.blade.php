@@ -65,22 +65,11 @@
                         <img class="" src="{{ asset('asset/HiBuy-New4.png') }}" alt="Logo">
                     </a>
                 </li>
-                @php
-                    function canViewMenu($slug)
-                    {
-                        $privileges = session('user_details.user_privileges') ?? [];
-                        foreach ($privileges as $priv) {
-                            if ($priv['menu_slug'] === $slug && $priv['can_view'] == 1) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                @endphp
+
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('dashboard'))
+                        canMenuAction('dashboard', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('dashboard') }}" id="menu-dashboard"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('dashboard') ? 'active bg-white text-primary' : 'text-white' }}">
@@ -105,7 +94,7 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('products'))
+                        canMenuAction('products', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('products') }}" id="menu-products"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('products') ? 'active bg-white text-primary' : 'text-white' }}">
@@ -134,7 +123,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('product-categories'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('product-categories', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('addProductCategory') }}" id="menu-product-categories"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('addProductCategory') ? 'active bg-white text-primary' : 'text-white' }}"
@@ -156,7 +145,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('approve-products'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('approve-products', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('approveProducts') }}" id="menu-approve-products"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative {{ request()->routeIs('approveProducts') ? 'active bg-white text-primary' : 'text-white' }}"
@@ -187,7 +176,7 @@
 <span class="ms-3 text-custom15">Packages Offer</span>
 </a>
 </li> --}}
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('kyc'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('kyc', 'view'))
                     <!-- Dropdown Trigger -->
                     <div id="menu-kyc"
                         class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -236,7 +225,7 @@
 
                     <!-- Seller Link -->
 
-                    @if (session('user_details.user_role') == 'admin' || canViewMenu('kyc-sellers'))
+                    @if (session('user_details.user_role') == 'admin' || canMenuAction('kyc-sellers', 'view'))
                         <a href="{{ route('KYC_auth', ['type' => 'seller']) }}" id="menu-kyc-sellers">
                             <div
                                 class="bg-black text-[#4a90e2] sidebar-link p-2 mt-3 flex items-center rounded-md justify-between text-center px-2 mx-5 duration-300 cursor-pointer hover:bg-[#edf2f7] ">
@@ -284,7 +273,7 @@
                             </div>
                         </a>
                     @endif
-                    @if (session('user_details.user_role') == 'admin' || canViewMenu('kyc-freelancers'))
+                    @if (session('user_details.user_role') == 'admin' || canMenuAction('kyc-freelancers', 'view'))
                         <!-- Freelancer Link -->
                         <a href="{{ route('KYC_auth', ['type' => 'freelancer']) }}" id="menu-kyc-freelancers">
                             <div
@@ -374,7 +363,7 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('orders'))
+                        canMenuAction('orders', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('allorders') }}" id="menu-orders"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -407,7 +396,7 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('returns'))
+                        canMenuAction('returns', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('return_orders') }}" id="menu-returns"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -430,7 +419,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('sellers-management'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('sellers-management', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('manage_seller') }}" id="menu-sellers-management"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -477,7 +466,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('buyers-management'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('buyers-management', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('manage_buyer') }}" id="menu-buyers-management"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -525,7 +514,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('freelancers-management'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('freelancers-management', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('manage_freelancer') }}" id="menu-freelancers-management"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -569,7 +558,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('rider'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('rider', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('rider') }}" id="menu-rider"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -616,7 +605,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('add-users'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('add-users', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('CreateUser') }}" id="menu-add-users"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -636,7 +625,7 @@
                 @endif
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('credit-requests'))
+                        canMenuAction('credit-requests', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('credit-requests') }}" id="menu-credit-requests"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -725,7 +714,7 @@
                     </li>
                 @endif
 
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('hibuy-products'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('hibuy-products', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('hibuy_product') }}" id="menu-hibuy-products"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -744,7 +733,7 @@
                     </li>
                 @endif
 
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('promotions'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('promotions', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('promotions') }}" id="menu-promotions"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -796,7 +785,7 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('queries'))
+                        canMenuAction('queries', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('queries') }}" id="menu-queries"
                             class="sidebar-item flex items-center justify-between text-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -891,7 +880,7 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('notifications'))
+                        canMenuAction('notifications', 'view'))
                     <li class="mt-6">
                         <a href="{{ in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']) ? route('notifications') : route('allNotifications') }}"
                             id="menu-notifications"
@@ -915,7 +904,7 @@
                         </a>
                     </li>
                 @endif
-                @if (session('user_details.user_role') == 'admin' || canViewMenu('help-center'))
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('help-center', 'view'))
                     <li class="mt-6">
                         <a href="{{ session('user_details.user_role') == 'admin' ? route('HelpCenterQuestions') : route('HelpCenterQuestions') }}"
                             id="menu-help-center"
@@ -926,14 +915,14 @@
                                 viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-                                                                                                                               10-4.48 10-10S17.52 2 12 2zm0 17
-                                                                                                                               c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
-                                                                                                                               c-.9.9-1.07 1.25-1.07 2.25h-2
-                                                                                                                               v-.5c0-1.1.45-2.1 1.17-2.83
-                                                                                                                               .59-.59 1.07-1 1.07-1.67
-                                                                                                                               0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
-                                                                                                                               c0-2.21 1.79-4 4-4s4 1.79 4 4
-                                                                                                                               c0 1.4-.83 2.1-1.43 2.75z"
+                                                                                                                                   10-4.48 10-10S17.52 2 12 2zm0 17
+                                                                                                                                   c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm1.07-7.75
+                                                                                                                                   c-.9.9-1.07 1.25-1.07 2.25h-2
+                                                                                                                                   v-.5c0-1.1.45-2.1 1.17-2.83
+                                                                                                                                   .59-.59 1.07-1 1.07-1.67
+                                                                                                                                   0-.83-.67-1.5-1.5-1.5S9.5 8.17 9.5 9H7.5
+                                                                                                                                   c0-2.21 1.79-4 4-4s4 1.79 4 4
+                                                                                                                                   c0 1.4-.83 2.1-1.43 2.75z"
                                     fill="currentColor" stroke="white" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
                                 </path>
@@ -945,7 +934,7 @@
                 @endif
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
-                        canViewMenu('sale-report'))
+                        canMenuAction('sale-report', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('sellerReport') }}" id="menu-sale-report"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -966,7 +955,7 @@
                 @if (session('user_details.user_role') == 'admin' ||
                         session('user_details.user_role') == 'seller' ||
                         session('user_details.user_role') == 'freelancer' ||
-                        canViewMenu('settings'))
+                        canMenuAction('settings', 'view'))
                     <li class="mt-6">
                         <a href="{{ route('settings') }}" id="menu-settings"
                             class="sidebar-item flex items-center group duration-200 p-2 py-2.5 rounded-l-full relative
@@ -1156,7 +1145,7 @@
                             @endforeach
                         @endif
 
-                        <a href="{{ session('user_details.user_role') == 'admin' ? route('notifications') : route('allNotifications') }}"
+                        <a href="{{ in_array(session('user_details.user_role'), ['admin', 'staff', 'manager']) ? route('notifications') : route('allNotifications') }}"
                             class="block py-2 text-sm font-medium text-center text-white rounded-b-lg  bg-primary">
                             <div class="inline-flex items-center ">
                                 <svg class="w-4 h-4 me-2 text-white" aria-hidden="true"

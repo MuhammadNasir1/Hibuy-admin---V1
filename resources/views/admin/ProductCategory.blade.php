@@ -19,10 +19,13 @@
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between px-5">
             <h2 class="text-2xl font-medium">Product Category List</h1>
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('product-categories', 'add'))
                 <button id="addModalBtn" data-modal-target="productcategory-modal" data-modal-toggle="productcategory-modal"
                     class="px-3 py-2 font-semibold text-white rounded-full bg-primary">Add New</button>
+               @endif
         </div>
         @php
+        // dd(session('user_details.user_privileges'));
             $headers = ['ID', 'Image', 'Name', 'No. of Sub Category', 'No. of Products', 'Status', 'Action'];
         @endphp
         {{-- {{ dd($parentcategories) }} --}}
@@ -71,6 +74,7 @@
                             </td>
                             <td style="padding: 8px 10px !important;">
                                 <span class='flex gap-4'>
+                                     @if (session('user_details.user_role') == 'admin' || canMenuAction('product-categories', 'edit'))
                                     <button class="updateDataBtn" onclick="updateData({{ $categorie->id }})">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                             xmlns='http://www.w3.org/2000/svg'>
@@ -80,6 +84,8 @@
                                                 fill='#233A85' />
                                         </svg>
                                     </button>
+                                    @endif
+                                     @if (session('user_details.user_role') == 'admin' || canMenuAction('product-categories', 'delete'))
                                     <button class="" onclick="deleteCategory({{ $categorie->id }})">
                                         <svg width='36' height='36' viewBox='0 0 36 36' fill='none' xmlns='http://www.w3.org/2000/svg'>
                                             <circle opacity='0.1' cx='18' cy='18' r='18' fill='#DF6F79' />
@@ -88,7 +94,7 @@
                                                 fill='#D11A2A' />
                                         </svg>
                                     </button>
-
+@endif
                                     <button class="viewModalBtn" data-id="{{ $categorie->id }}"
                                         data-modal-target="editproductcategory-modal"
                                         data-modal-toggle="editproductcategory-modal">

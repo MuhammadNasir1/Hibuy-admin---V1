@@ -5,8 +5,10 @@
     <div class="w-full pt-10 min-h-[86vh]   rounded-lg custom-shadow">
         <div class="flex justify-between items-center px-5">
             <h2 class="text-2xl font-medium  ">Hibuy Product List</h1>
+                @if (session('user_details.user_role') == 'admin' || canMenuAction('hibuy-products', 'add'))
                <a href="{{ route('product.add') }}"> <button id="addModalBtn"
                 class="px-3 py-2 font-semibold text-white rounded-full bg-primary">Add New</button></a>
+                @endif
         </div>
         @php
             $headers = [
@@ -14,10 +16,10 @@
                 'Image',
                 'Title',
                 'Category',
-                'price',
-                'Stock',
-                'Orders',
-                'Rating',
+                'Price',
+                'Listed On',
+                'Add By',
+                'Boosted',
                 'Status',
                 'Action',
             ];
@@ -78,6 +80,7 @@
                                     </defs>
                                 </svg>
                             </button>
+                            @if (session('user_details.user_role') == 'admin' || canMenuAction('hibuy-products', 'edit'))
                             <a href="{{ route('product.add', $product->product_id) }}" class="updateDataBtn">
                                 <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
@@ -87,6 +90,8 @@
                                         fill='#233A85' />
                                 </svg>
                             </a>
+                            @endif
+                            @if (session('user_details.user_role') == 'admin' || canMenuAction('hibuy-products', 'delete'))
                             <button delurl="/delete-product/{{ $product->product_id }}" class="deleteDataBtn">
                                 <svg width='36' height='36' viewBox='0 0 36 36' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
@@ -96,6 +101,7 @@
                                         fill='#D11A2A' />
                                 </svg>
                             </button>
+                            @endif
                         </span>
                     </td>
                 </tr>
@@ -202,6 +208,7 @@
                             </div>
                             <form id="statusForm" class="max-w-sm">
                                 @csrf
+                                @if (session('user_details.user_role') == 'admin' || canMenuAction('hibuy-products', 'edit'))
                                 <div class="flex items-center mt-5 mb-4">
                                     <label class="mr-6 text-sm font-normal text-gray-600">Status</label>
                                     <div>
@@ -218,6 +225,7 @@
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full">
                                     Submit
                                 </button>
+                                @endif
                             </form>
                         </div>
                     </div>
