@@ -713,7 +713,7 @@
 
 
             $("#description").on("input", function() {
-                let maxLength = 150;
+                let maxLength = 400;
                 let currentLength = $(this).val().length;
 
                 if (currentLength > maxLength) {
@@ -724,7 +724,7 @@
                     Swal.fire({
                         icon: 'warning',
                         title: 'Limit Exceeded',
-                        text: 'Description can only be up to 150 characters.',
+                        text: 'Description can only be up to 400 characters.',
                         confirmButtonText: 'OK'
                     });
                 }
